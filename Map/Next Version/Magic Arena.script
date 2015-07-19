@@ -3824,7 +3824,10 @@ begin
       Players[P].LastUsedSkill := sSacrificialTeleport;
       Players[P].FieldSkillDelay := Round(PIKE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Actions.GroupKillAll(Players[P].Hero, False);
-      Players[P].HP := Players[P].HP - 1;
+      if not Players[P].CaptureMind then
+        Players[P].HP := Players[P].HP - 1;
+      if Players[P].CaptureMind then
+        Players[M[P]].HP := Players[M[P]].HP - 1;  
       Players[P].Hero := Actions.GiveGroup(P, Players[P].TempHeroType, X, Y, NewDir, 1, 1);
       Actions.GroupHungerset(Players[P].Hero, States.UnitMaxHunger);
     end;
