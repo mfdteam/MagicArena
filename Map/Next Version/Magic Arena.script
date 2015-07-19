@@ -2017,6 +2017,7 @@ begin
       if (U <> - 1)
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroInFear)
+      and (not Players[O].HeroImmortal)
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
@@ -4908,6 +4909,10 @@ begin
           Exit;
       end;
 
+      if (InRange(O, 0, 8))
+      and (Players[O].HeroImmortal) then
+        Exit;
+
       if (U <> - 1) then
       begin
         if (U = States.GroupMember(Players[O].Hero, 0)) then
@@ -5807,6 +5812,7 @@ begin
         begin
           O := States.GroupOwner(G);
           if (G = Players[O].Hero)
+          and (not Players[O].HeroImmortal)
           and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
             Players[O].HeroSilentStartTime := States.GameTime + 1;
         end;
@@ -5862,6 +5868,7 @@ begin
       if (U <> - 1)
       and (InRange(O, 0, 7))
       and (O <> P)
+      and (not Players[O].HeroImmortal)
       and (U = States.GroupMember(Players[O].Hero, 0)) then
       begin
         TilesRoadLength[P] := TilesRoadLength[P] + 4;
@@ -6639,6 +6646,7 @@ begin
         O := States.UnitOwner(U);
       if (U <> - 1)
       and (U = States.GroupMember(Players[O].Hero, 0))
+      and (not Players[O].HeroImmortal)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
         TilesFieldLength[P] := TilesFieldLength[P] + 4;
@@ -8126,7 +8134,8 @@ begin
                   O := States.UnitOwner(U);
                   UT := States.UnitType(U);
                   D := States.UnitDirection(U);
-                  if (InRange(O, 0, 7)) then
+                  if (InRange(O, 0, 7))
+                  and (not Players[O].HeroImmortal) then
                   begin
                     Actions.GroupKillAll(Players[O].Hero, True);
                     Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX, Players[P].GravityY, D, 1, 1);
@@ -9100,6 +9109,7 @@ begin
       and (Abs(aY - States.UnitPositionY(States.GroupMember(Players[O].Hero, 0))) <= IN_FEAR_RADIUS)
       and (CanUseWineFieldSkill(X, Y))
       and (P <> O)
+      and (not Players[O].HeroImmortal)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
       and (not Players[O].HeroInFear) then
       begin
@@ -9858,6 +9868,7 @@ begin
           O := States.UnitOwner(U);
           if (P <> O)
           and (CanUseSkillAgainstUnit(P, U))
+          and (not Players[O].HeroImmortal)
           and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
           and (States.KaMRandom > 0.1) then 
           begin
@@ -9921,6 +9932,7 @@ begin
           O := States.UnitOwner(U);
           if (P <> O)
           and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+          and (not Players[O].HeroImmortal)
           and (States.KaMRandom > 0.1) then 
           begin
             Prison(P, X, Y);
