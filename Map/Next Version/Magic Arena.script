@@ -6338,7 +6338,7 @@ begin
         O := States.UnitOwner(U);
       if (U <> - 1)
       and (U = States.GroupMember(Players[O].Hero, 0))
-      and (not Players[O].HeroInFear)
+      and (not Players[O].HeroImmortal)
       and (Players[P].HP >= 2)
       and (O = P)
       or (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
