@@ -6139,7 +6139,12 @@ begin
             or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 1], TilesFieldY[P][Length(TilesFieldY[P]) - 1]), SWORD_OBJECT, VAGA_OBJECT6)) then
               ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEANUP_TIME;
 
-            Players[O].HP := Players[O].HP - 1;
+            if (not Players[O].MindStunned) and (not Players[O].CaptureMind) then
+              Players[O].HP := Players[O].HP - 1;
+            if Players[O].CaptureMind then
+              Players[M[P]].HP := Players[M[P]].HP - 1;
+            if Players[O].MindStunned then
+              Players[P].HP := Players[P].HP - 1;
           end;
 
           for K := 0 to 7 do
@@ -6190,7 +6195,7 @@ begin
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
-        M[P] := O; M2[P] := P;
+        M[P] := O; M2[O] := P;
         DirP := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
         DirO := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));    
         Players[P].HeroMindType := Players[P].HeroType;
@@ -6200,14 +6205,14 @@ begin
         Players[P].CaptureMind := True;
         Actions.GroupKillAll(Players[P].Hero, True);
         Players[P].HeroType := Players[O].HeroType
-        Players[P].Hero := Actions.GiveGroup(P, Players[O].HeroType, X, Y, DirP, 1, 1);
+        Players[P].Hero := Actions.GiveGroup(P, Players[O].HeroType, X, Y, DirO, 1, 1);
         Players[P].TempHeroType := Players[O].HeroType;
 
         Players[O].HeroStunned := True;
         Players[O].MindStunned := True;
         Actions.GroupKillAll(Players[O].Hero, True);
         Players[O].HeroType := Players[P].HeroMindType;
-        Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, X2, Y2, DirO, 1, 1);
+        Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, X2, Y2, DirP, 1, 1);
 
         Players[O].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME; 
         Players[P].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME; 
@@ -7408,8 +7413,8 @@ begin
         if Players[P].MindStunned then
         begin
           Players[M2[P]].HP := Players[M2[P]].HP - 1;
-          Actions.GroupBlockOrders(Players[M2[P]].Hero, True);
-          Actions.GroupOrderHalt(Players[M2[P]].Hero);
+          Actions.GroupBlockOrders(Players[P].Hero, True);
+          Actions.GroupOrderHalt(Players[P].Hero);
         end;
       end;
       Players[P].HeroImmortal := True;
@@ -7423,15 +7428,30 @@ begin
 
   if aObj = VAGA_OBJECT then
   begin
-    if States.GameTime > Players[P].RegenDelay then
-    begin
-      if Players[P].HP < MAX_HP then
-      begin
-        Players[P].HP := Players[P].HP + 1;
-        Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
-        Actions.MapTileObjectSet(aX, aY, 255);
-      end;
-    end;
+    if (not Players[P].MindStunned) and (not Players[P].CaptureMind) then
+      if States.GameTime > Players[P].RegenDelay then
+        if Players[P].HP < MAX_HP then
+        begin
+          Players[P].HP := Players[P].HP + 1;
+          Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
+          Actions.MapTileObjectSet(aX, aY, 255);
+        end;
+    if Players[P].CaptureMind then
+      if States.GameTime > Players[M[P]].RegenDelay then
+        if Players[M[P]].HP < MAX_HP then
+        begin
+          Players[M[P]].HP := Players[M[P]].HP + 1;
+          Players[M[P]].RegenDelay := States.GameTime + REGEN_DELAY;
+          Actions.MapTileObjectSet(aX, aY, 255);
+        end;
+    if Players[P].MindStunned then
+      if States.GameTime > Players[M2[P]].RegenDelay then
+        if Players[M2[P]].HP < MAX_HP then
+        begin
+          Players[M2[P]].HP := Players[M2[P]].HP + 1;
+          Players[M2[P]].RegenDelay := States.GameTime + REGEN_DELAY;
+          Actions.MapTileObjectSet(aX, aY, 255);
+        end;
   end;
 
   if aObj = RUNE_DOUBLE_OBJ then
@@ -8050,8 +8070,8 @@ begin
       if Players[O].MindStunned then
         begin
           Players[M2[O]].HP := Players[M2[O]].HP - 1;
-          Actions.GroupBlockOrders(Players[M2[O]].Hero, True);
-          Actions.GroupOrderHalt(Players[M2[O]].Hero);
+          Actions.GroupBlockOrders(Players[O].Hero, True);
+          Actions.GroupOrderHalt(Players[O].Hero);
         end;
     end;
     Players[O].HeroImmortal := True;
@@ -8255,9 +8275,10 @@ begin
          Actions.GroupKillAll(Players[I1].Hero, True);
          Actions.GroupKillAll(Players[M[I1]].Hero, True);
          Players[I1].HeroType := Players[I1].HeroMindType;
+         Players[M[I1]].HeroType := Players[M[I1]].HeroMindType;
          Players[I1].TempHeroType := Players[I1].TempHeroMindType;
-         Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, aX2, aY2, aD, 1, 1);
-         Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, aX, aY, aD2, 1, 1);
+         Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, aX2, aY2, aD2, 1, 1);
+         Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, aX, aY, aD, 1, 1);
          Players[I1].WineSkillDelay := Round(SCOUT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[I1].ReCharge)));
          Players[M[I1]].LastUsedSkill := Players[I1].LastUsedSkill;
        end;
