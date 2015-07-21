@@ -8279,6 +8279,11 @@ begin
          Players[I1].TempHeroType := Players[I1].TempHeroMindType;
          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, aX2, aY2, aD2, 1, 1);
          Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, aX, aY, aD, 1, 1);
+         Players[M[I1]].RoadSkillDelay := Players[I1].RoadSkillDelay;
+         Players[M[I1]].FieldSkillDelay := Players[I1].FieldSkillDelay;
+         Players[M[I1]].WineSkillDelay := Players[I1].WineSkillDelay;
+         Players[I1].RoadSkillDelay := 0;
+         Players[I1].FieldSkillDelay := 0;
          Players[I1].WineSkillDelay := Round(SCOUT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[I1].ReCharge)));
          Players[M[I1]].LastUsedSkill := Players[I1].LastUsedSkill;
        end;
