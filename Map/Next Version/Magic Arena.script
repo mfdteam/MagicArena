@@ -369,6 +369,7 @@ type
     CaptureMindTime: Integer;
     MindStunned: Boolean;
     Stone: Integer;
+    StoneRogue: Boolean;
   end;
 
 
@@ -1618,7 +1619,7 @@ begin
     18: Result := '[$00A5FF]<$11>[]';
     19: Result := '[$4782FF]<$12>[]';
     20: Result := '[$B8B8B8]<$13>[]';
-    21: Result := '[$FFFFFF]<$99>[]' + IntToStr(Players[P].Stone) + '[]<$100>[]';
+    21: Result := '[$FFFFFF]<$99> []<$100> []' + IntToStr(Players[P].Stone) + ')[]';
     22: Result := '[$634BBA]<$50>[]';
     23: Result := '[$499AEE]<$14>[]';
     26: Result := '[$0022FF]<$46>[]';
@@ -1661,7 +1662,12 @@ begin
     23: Result := '[$EE677A]<$30>[]';
     26: Result := '[$1707A6]<$48>[]';
     27: Result := '[$00FC7C]<$31>[]';
-    25: Result := '[$AE209F]' + Players[P].StolenSkillName + '[]';
+    25: begin
+        if Players[P].StolenSkillName = '<$99>' then
+          Result := '[$FFFFFF]<$99> []<$100> []' + IntToStr(Players[P].Stone) + ')[]';
+        if Players[P].StolenSkillName <> '<$99>' then
+          Result := '[$AE209F]' + Players[P].StolenSkillName + '[]';
+        end;
   end;
 end;
 
@@ -6068,11 +6074,12 @@ begin
 
         Players[P].LastUsedSkill := sStones;
 
-        if Players[P].Stone = 0 then
+        if (Players[P].Stone = 0) and (not Players[P].StoneRogue = True) then
         begin
           Players[P].RoadSkillDelay := Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
           ClearRoadTilesArrayTime[P] := States.GameTime + Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
           Players[P].Stone := MAX_SCOUT_STONES;
+          Players[P].StoneRogue := False;
         end;
       end;
     end;
@@ -6523,7 +6530,7 @@ begin
           sSteal: Players[P].StolenSkillName := '<$56>';
           sUniversal: Players[P].StolenSkillName := '<$57>';
 
-          sStones: Players[P].StolenSkillName := '<$99>[]' + IntToStr(Players[P].Stone) + '[]<$100>[]';
+          sStones: Players[P].StolenSkillName := '<$99>';
           sVampire: Players[P].StolenSkillName := '<$101>';
           sMind: Players[P].StolenSkillName := '<$102>';
 
@@ -6821,20 +6828,22 @@ begin
                 Players[P].WineSkillDelay := Round(ROGUE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
               end;
 
-      sStones:if (U > 0)
-             and (Abs(X - X2) <= IN_FEAR_RADIUS)
-             and (Abs(Y - Y2) <= IN_FEAR_RADIUS) then
-             begin
-               TempRoadSkillDelay := Players[P].RoadSkillDelay;
-               Stones(P, X, Y);
-               Players[P].RoadSkillDelay := TempRoadSkillDelay;
-               Players[P].WineSkillDelay := Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-             end;
+      sStones: begin
+                 Players[P].StoneRogue := True;
+                 TempRoadSkillDelay := Players[P].RoadSkillDelay;
+                 Stones(P, X, Y);
+                 Players[P].RoadSkillDelay := TempRoadSkillDelay;
+                 if Players[P].Stone = 0 then
+                 begin
+                   Players[P].WineSkillDelay := Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                   ClearRoadTilesArrayTime[P] := States.GameTime + Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+                   Players[P].Stone := MAX_SCOUT_STONES;
+                 end;
+               end;
 
       sVampire: if (U > 0)
-             and (InRange(O, 0, 7))
-             and (Abs(X - X2) <= IN_FEAR_RADIUS)
-             and (Abs(Y - Y2) <= IN_FEAR_RADIUS)
+             and (Abs(X - X2) <= VAMPIRE_RADIUS)
+             and (Abs(Y - Y2) <= VAMPIRE_RADIUS)
              and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
              or (P = O) then
              begin
@@ -6845,8 +6854,8 @@ begin
              end;
 
       sMind: if (U > 0)
-             and (Abs(X - X2) <= IN_FEAR_RADIUS)
-             and (Abs(Y - Y2) <= IN_FEAR_RADIUS)
+             and (Abs(X - X2) <= MIND_RADIUS)
+             and (Abs(Y - Y2) <= MIND_RADIUS)
              and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
                Mind(P, X, Y);
 
