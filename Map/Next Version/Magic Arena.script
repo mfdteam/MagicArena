@@ -270,7 +270,8 @@ const
 
   DESYNC_FACTOR = 1;
   CLEANUP_TIME = 20;
-  PLANT_TREES_TIME = 1200;
+  PLANT_TREES_TIME = 25;
+  PLANT_TREES_FACTOR = 0.8;
   AVOID_FACTOR = 10;
   RECHARGE_FACTOR = 0.25;
   DEBUG_MODE = True;
@@ -7506,13 +7507,12 @@ begin
   end;
 
   if aObj = BOWMAN_MINE then
-    if not Players[P].HeroImmortal then
-    begin
-      Actions.MapTileObjectSet(aX, aY, 255);
-      if InRange(Roads[aX][aY].Owner, 8, 11) then
-        Actions.PlanRemove(Roads[aX][aY].Owner, aX, aY);
-      Roads[aX][aY].Owner := -1;
-    end;
+  begin
+    Actions.MapTileObjectSet(aX, aY, 255);
+    if InRange(Roads[aX][aY].Owner, 8, 11) then
+      Actions.PlanRemove(Roads[aX][aY].Owner, aX, aY);
+    Roads[aX][aY].Owner := -1;
+  end;
 
   if InRange(aObj, SWORD_OBJECT, SWORD_OBJECT + 3) then
   begin
@@ -8620,30 +8620,29 @@ procedure PlantTrees;
 var
  aX, aY: Integer;
 begin
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
-    if (CanUseWineFieldSkill(aX, aY))
-    and (States.MapTileObject(aX, aY) <> BARB_OBJECT3)
-    and (States.MapTileObject(aX, aY) <> BOWMAN_OBJECT5)
-    and (States.MapTileObject(aX, aY) <> BOWMAN_MINE) then
-    begin
-      if (States.KaMRandom < 0.012)
-      and (States.MapTileObject(aX, aY) = 255) then
-        Actions.MapTileObjectSet(aX, aY, 157);
+  aX := States.KaMRandomI(47) + 12;
+  aY := States.KaMRandomI(47) + 12;
+  if (CanUseWineFieldSkill(aX, aY))
+  and (States.MapTileObject(aX, aY) <> BARB_OBJECT3)
+  and (States.MapTileObject(aX, aY) <> BOWMAN_OBJECT5)
+  and (States.MapTileObject(aX, aY) <> BOWMAN_MINE) then
+  begin
+    if (States.KaMRandom < PLANT_TREES_FACTOR)
+    and (States.MapTileObject(aX, aY) = 255) then
+      Actions.MapTileObjectSet(aX, aY, 157);
 
-      if (States.MapTileObject(aX, aY) = 157)
-      and (States.KaMRandom < 0.4) then
-        Actions.MapTileObjectSet(aX, aY, 158);
+    if (States.MapTileObject(aX, aY) = 157)
+    and (States.KaMRandom < (PLANT_TREES_FACTOR/3)) then
+      Actions.MapTileObjectSet(aX, aY, 158);
 
-      if (States.MapTileObject(aX, aY) = 158)
-      and (States.KaMRandom < 0.2) then
-        Actions.MapTileObjectSet(aX, aY, 159);
+    if (States.MapTileObject(aX, aY) = 158)
+    and (States.KaMRandom < (PLANT_TREES_FACTOR/5)) then
+      Actions.MapTileObjectSet(aX, aY, 159);
 
-      if (States.MapTileObject(aX, aY) = 159)
-      and (States.KaMRandom < 0.125) then
-        Actions.MapTileObjectSet(aX, aY, 172);
-
-    end;
+    if (States.MapTileObject(aX, aY) = 159)
+    and (States.KaMRandom < (PLANT_TREES_FACTOR/10)) then
+      Actions.MapTileObjectSet(aX, aY, 172);
+  end;
 end;
 
 
