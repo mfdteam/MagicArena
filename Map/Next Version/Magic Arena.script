@@ -6225,9 +6225,11 @@ begin
         Players[O].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME; 
         Players[P].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME; 
         Players[O].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
+        Players[P].HeroImmortalTime := States.GameTime + CAPTURE_MIND_TIME;
 
         Actions.GroupBlockOrders(Players[O].Hero, True);
         Actions.GroupOrderHalt(Players[O].Hero);  
+        Players[P].HeroImmortal := True;
 
         Players[P].LastUsedSkill := sMind;
         Players[P].RoadSkillDelay := Players[O].RoadSkillDelay;
