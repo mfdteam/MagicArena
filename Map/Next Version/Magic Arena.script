@@ -8151,6 +8151,7 @@ end;
 procedure CheckStatus;
 var
   aX, aY, aD, aX2, aY2, aD2, I1: Integer;
+  G: array of Integer;
 begin
   for I1 := 0 to 7 do
   begin
@@ -8296,6 +8297,11 @@ begin
          Players[I1].FieldSkillDelay := 0;
          Players[I1].WineSkillDelay := Round(SCOUT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[I1].ReCharge)));
          Players[M[I1]].LastUsedSkill := Players[I1].LastUsedSkill;
+         G := States.PlayerGetAllGroups(I1);
+         if Length(G) > 0 then
+           for K := 0 to Length(G) - 1 do
+             if G[K] <> Players[I1].Hero then
+               Actions.GroupKillAll(G[K], True);
        end;
     end;
   end;
@@ -8698,7 +8704,7 @@ begin
   if (States.PlayerEnabled(P))
   and (Players[P].HP > 0) then
   begin
-    Players[P].Hero := Actions.GiveGroup(I, Players[P].HeroType, Players[P].SkillCastX, Players[P].SkillCastY, Players[P].SkillCastDir, 1, 1);
+    Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SkillCastX, Players[P].SkillCastY, Players[P].SkillCastDir, 1, 1);
     Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
     if (Players[P].HeroStunned)
     or (Players[P].HeroInFear) then
@@ -8711,14 +8717,15 @@ procedure RepeatRespawn(P: Integer);
 var
   G: array of Integer;
 begin
-  if (InRange(States.GameTime, Players[I].SkillCastRespawnTime + 1, Players[I].SkillCastRespawnTime + 3))
-  and (Players[I].Hero = -1) then
+  if (InRange(States.GameTime, Players[P].SkillCastRespawnTime + 1, Players[P].SkillCastRespawnTime + 3))
+  and (Players[P].Hero = -1)
+  and (States.PlayerIsAI(P)) then
   begin
-    RespawnUnit(I);
-    G := States.PlayerGetAllGroups(I);
+    RespawnUnit(P);
+    G := States.PlayerGetAllGroups(P);
       if Length(G) > 0 then
         for K := 0 to Length(G) - 1 do
-          if G[K] <> Players[I].Hero then
+          if G[K] <> Players[P].Hero then
             Actions.GroupKillAll(G[K], True);
   end;
 end;
