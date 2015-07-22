@@ -8689,6 +8689,9 @@ begin
 end;
 
 
+//AI
+
+
 procedure RespawnUnit(P: Integer);
 begin
   if (States.PlayerEnabled(P))
@@ -8815,7 +8818,32 @@ begin
 end;
 
 
-//AI
+procedure AITakeRune(P: Integer);
+begin
+  if (Players[P].Hero <= 0)
+  or (Players[P].CastingSkill) then
+    Exit;
+  if ((States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_BLOCK_OBJ)
+  and (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_REGEN_OBJ))
+  or ((Players[P].HP < MAX_HP)
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_REGEN_OBJ)) then
+    Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
+end;
+
+
+procedure AIWalk(P: Integer);
+begin
+
+  if States.GameTime mod 80 = 0 then
+    if (Players[P].Hero > 0)
+    and (not Players[P].CastingSkill) then
+      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
+
+  if Players[P].Hero > - 1 then
+    if (Abs(Players[P].SkillTime - States.GameTime) = 1) then
+      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
+
+end;
 
 
 function AICanUseSkills(P, UT: Integer): Boolean;
@@ -8922,20 +8950,10 @@ begin
       end;
   end;
 
-  if States.GameTime mod 80 = 0 then
-    if (Players[P].Hero > 0)
-    and (not Players[P].CastingSkill) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
+  AIWalk(P);
 
-  if Players[P].Hero <> - 1 then
-    if (Abs(Players[P].SkillTime - States.GameTime) = 1) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
-
-  if (States.GameTime mod 100 = 0)
-  and (Players[P].Hero > 0)
-  and (not Players[P].CastingSkill) 
-  and (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_BLOCK_OBJ) then
-    Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
+  if States.GameTime mod 100 = 0 then
+    AITakeRune(P);
 
 end;
 
@@ -9062,20 +9080,10 @@ begin
       end;
     end;
 
-  if States.GameTime mod 80 = 0 then
-    if (Players[P].Hero > 0)
-    and (not Players[P].CastingSkill) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
+  AIWalk(P);
 
-  if Players[P].Hero <> - 1 then
-    if (Abs(Players[P].SkillTime - States.GameTime) = 1) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
-
-  if (States.GameTime mod 100 = 0)
-  and (Players[P].Hero > 0)
-  and (not Players[P].CastingSkill) 
-  and (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_BLOCK_OBJ) then
-    Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
+  if States.GameTime mod 100 = 0 then
+    AITakeRune(P);
 
 end;
 
@@ -9244,20 +9252,10 @@ begin
       end;
     end;
 
-  if States.GameTime mod 80 = 0 then
-    if (Players[P].Hero > 0)
-    and (not Players[P].CastingSkill) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
+  AIWalk(P);
 
-  if Players[P].Hero <> - 1 then
-    if (Abs(Players[P].SkillTime - States.GameTime) = 1) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
-
-  if (States.GameTime mod 100 = 0)
-  and (Players[P].Hero > 0)
-  and (not Players[P].CastingSkill) 
-  and (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_BLOCK_OBJ) then
-    Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
+  if States.GameTime mod 100 = 0 then
+    AITakeRune(P);
 
 end;
 
@@ -9336,20 +9334,10 @@ begin
       end;
     end;
 
-  if States.GameTime mod 80 = 0 then
-    if (Players[P].Hero > 0)
-    and (not Players[P].CastingSkill) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
+  AIWalk(P);
 
-  if Players[P].Hero <> - 1 then
-    if (Abs(Players[P].SkillTime - States.GameTime) = 1) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
-
-  if (States.GameTime mod 100 = 0)
-  and (Players[P].Hero > 0)
-  and (not Players[P].CastingSkill) 
-  and (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_BLOCK_OBJ) then
-    Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
+  if States.GameTime mod 100 = 0 then
+    AITakeRune(P);
 
 end;
 
@@ -9521,20 +9509,10 @@ begin
       end;
     end;
 
-  if States.GameTime mod 80 = 0 then
-    if (Players[P].Hero > 0)
-    and (not Players[P].CastingSkill) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
+  AIWalk(P);
 
-  if Players[P].Hero <> - 1 then
-    if (Abs(Players[P].SkillTime - States.GameTime) = 1) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
-
-  if (States.GameTime mod 100 = 0)
-  and (Players[P].Hero > 0)
-  and (not Players[P].CastingSkill) 
-  and (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_BLOCK_OBJ) then
-    Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
+  if States.GameTime mod 100 = 0 then
+    AITakeRune(P);
 
 end;
 
@@ -9682,20 +9660,10 @@ begin
       end;
     end;
 
-  if States.GameTime mod 80 = 0 then
-    if (Players[P].Hero > 0)
-    and (not Players[P].CastingSkill) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
+  AIWalk(P);
 
-  if Players[P].Hero <> - 1 then
-    if (Abs(Players[P].SkillTime - States.GameTime) = 1) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
-
-  if (States.GameTime mod 100 = 0)
-  and (Players[P].Hero > 0)
-  and (not Players[P].CastingSkill) 
-  and (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_BLOCK_OBJ) then
-    Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
+  if States.GameTime mod 100 = 0 then
+    AITakeRune(P);
 
 end;
 
@@ -9828,20 +9796,10 @@ begin
       end;
     end;
 
-  if States.GameTime mod 80 = 0 then
-    if (Players[P].Hero <> -1)
-    and (not Players[P].CastingSkill) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
+  AIWalk(P);
 
-  if Players[P].Hero <> - 1 then
-    if (Abs(Players[P].SkillTime - States.GameTime) = 1) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
-
-  if (States.GameTime mod 100 = 0)
-  and (Players[P].Hero <> -1)
-  and (not Players[P].CastingSkill) 
-  and (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_BLOCK_OBJ) then
-    Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
+  if States.GameTime mod 100 = 0 then
+    AITakeRune(P);
 
   Exit;
 
