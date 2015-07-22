@@ -8839,7 +8839,7 @@ begin
     and (not Players[P].CastingSkill) then
       Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
 
-  if Players[P].Hero > - 1 then
+  if Players[P].Hero > 0 then
     if (Abs(Players[P].SkillTime - States.GameTime) = 1) then
       Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
 
