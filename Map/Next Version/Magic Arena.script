@@ -1681,6 +1681,7 @@ begin
     18:  Result := '<$203>';
     19:  Result := '<$201>';
     20:  Result := '<$206>';
+    21:  Result := '<$211>';
     22:  Result := '<$209>';
     23:  Result := '<$202>';
     25:  Result := '<$210>';
@@ -7505,12 +7506,13 @@ begin
   end;
 
   if aObj = BOWMAN_MINE then
-  begin
-    Actions.MapTileObjectSet(aX, aY, 255);
-    if InRange(Roads[aX][aY].Owner, 8, 11) then
-      Actions.PlanRemove(Roads[aX][aY].Owner, aX, aY);
-    Roads[aX][aY].Owner := -1;
-  end;
+    if not Players[P].HeroImmortal then
+    begin
+      Actions.MapTileObjectSet(aX, aY, 255);
+      if InRange(Roads[aX][aY].Owner, 8, 11) then
+        Actions.PlanRemove(Roads[aX][aY].Owner, aX, aY);
+      Roads[aX][aY].Owner := -1;
+    end;
 
   if InRange(aObj, SWORD_OBJECT, SWORD_OBJECT + 3) then
   begin
