@@ -2024,7 +2024,6 @@ begin
       if (U <> - 1)
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroInFear)
-      and (not Players[O].HeroImmortal)
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
@@ -2042,6 +2041,7 @@ end;
 
 
 //BARBARIAN
+
 
 procedure CrackingEarth(P, X, Y, Dir: Integer);
 var
@@ -5601,7 +5601,6 @@ begin
         begin
           O := States.GroupOwner(G);
           if (G = Players[O].Hero)
-          and (not Players[O].HeroImmortal)
           and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
             Players[O].HeroSilentStartTime := States.GameTime + 1;
         end;
@@ -8915,7 +8914,6 @@ begin
       and (Abs(aY - States.UnitPositionY(States.GroupMember(Players[O].Hero, 0))) <= IN_FEAR_RADIUS)
       and (CanUseWineFieldSkill(X, Y))
       and (P <> O)
-      and (not Players[O].HeroImmortal)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
       and (not Players[O].HeroInFear) then
       begin
@@ -9674,7 +9672,6 @@ begin
           O := States.UnitOwner(U);
           if (P <> O)
           and (CanUseSkillAgainstUnit(P, U))
-          and (not Players[O].HeroImmortal)
           and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
           and (States.KaMRandom > 0.1) then 
           begin
