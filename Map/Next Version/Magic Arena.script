@@ -8624,6 +8624,30 @@ begin
 end;
 
 
+function ObjectIsTree(aX, aY: Integer): Boolean;
+begin
+  if TileOnBattlefield(aX, aY) then
+    Result := ((States.MapTileObject(aX, aY) = 157)
+    or (States.MapTileObject(aX, aY) = 158)
+    or (States.MapTileObject(aX, aY) = 159)
+    or (States.MapTileObject(aX, aY) = 172));
+end;
+
+
+function TileHasTreesAround(aX, aY: Integer): Boolean;
+begin
+  if TileOnBattlefield(aX, aY) then
+    Result := ((ObjectIsTree(aX + 1, aY))
+    or (ObjectIsTree(aX + 1, aY + 1))
+    or (ObjectIsTree(aX + 1, aY - 1))
+    or (ObjectIsTree(aX - 1, aY - 1))
+    or (ObjectIsTree(aX - 1, aY))
+    or (ObjectIsTree(aX - 1, aY + 1))
+    or (ObjectIsTree(aX, aY + 1))
+    or (ObjectIsTree(aX, aY - 1)));
+end;
+
+
 procedure PlantTrees;
 var
  aX, aY: Integer;
@@ -8631,6 +8655,7 @@ begin
   aX := States.KaMRandomI(47) + 12;
   aY := States.KaMRandomI(47) + 12;
   if (CanUseWineFieldSkill(aX, aY))
+  and (not TileHasTreesAround(aX, aY))
   and (States.MapTileObject(aX, aY) <> BARB_OBJECT3)
   and (States.MapTileObject(aX, aY) <> BOWMAN_OBJECT5)
   and (States.MapTileObject(aX, aY) <> BOWMAN_MINE) then
