@@ -4508,8 +4508,8 @@ begin
       Players[P].VagaY := Y2;
       Players[P].VagaDir := NewDir;
       Players[P].VagaAppearTime := States.GameTime + VAGA_TIME;
+      Players[P].TempHeroType := Players[P].HeroType;
       Players[P].HeroType := 27;
-      Players[P].TempHeroType := 27;
       Players[P].LastUsedSkill := sWerewolf;
     end;
   end;
