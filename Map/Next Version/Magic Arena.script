@@ -8702,8 +8702,8 @@ procedure PlantTrees;
 var
  aX, aY: Integer;
 begin
-  aX := States.KaMRandomI(47) + 12;
-  aY := States.KaMRandomI(47) + 12;
+  aX := States.KaMRandomI(46) + 13;
+  aY := States.KaMRandomI(46) + 13;
   if (CanUseWineFieldSkill(aX, aY))
   and (not TileHasTreesAround(aX, aY))
   and (States.MapTileObject(aX, aY) <> BARB_OBJECT3)
