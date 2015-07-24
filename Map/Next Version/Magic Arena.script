@@ -731,6 +731,12 @@ begin
     TempHeroType := -1;
     StolenSkillTime := 0;
     Stone := MAX_SCOUT_STONES;
+    CaptureMind := False;
+    CaptureMindTime := 0;
+    MindStunned := False;
+    HeroMindType := -1;
+    TempHeroMindType := -1;
+    StoneRogue := False;
   end;
 
   with Players[1] do
@@ -798,6 +804,12 @@ begin
     TempHeroType := -1;
     StolenSkillTime := 0;
     Stone := MAX_SCOUT_STONES;
+    CaptureMind := False;
+    CaptureMindTime := 0;
+    MindStunned := False;
+    HeroMindType := -1;
+    TempHeroMindType := -1;
+    StoneRogue := False;
   end;
 
   with Players[2] do
@@ -865,6 +877,12 @@ begin
     TempHeroType := -1;
     StolenSkillTime := 0;
     Stone := MAX_SCOUT_STONES;
+    CaptureMind := False;
+    CaptureMindTime := 0;
+    MindStunned := False;
+    HeroMindType := -1;
+    TempHeroMindType := -1;
+    StoneRogue := False;
   end;
 
   with Players[3] do
@@ -930,6 +948,12 @@ begin
     TempHeroType := -1;
     StolenSkillTime := 0;
     Stone := MAX_SCOUT_STONES;
+    CaptureMind := False;
+    CaptureMindTime := 0;
+    MindStunned := False;
+    HeroMindType := -1;
+    TempHeroMindType := -1;
+    StoneRogue := False;
   end;
 
   with Players[4] do
@@ -997,6 +1021,12 @@ begin
     TempHeroType := -1;
     StolenSkillTime := 0;
     Stone := MAX_SCOUT_STONES;
+    CaptureMind := False;
+    CaptureMindTime := 0;
+    MindStunned := False;
+    HeroMindType := -1;
+    TempHeroMindType := -1;
+    StoneRogue := False;
   end;
 
   with Players[5] do
@@ -1064,6 +1094,12 @@ begin
     TempHeroType := -1;
     StolenSkillTime := 0;
     Stone := MAX_SCOUT_STONES;
+    CaptureMind := False;
+    CaptureMindTime := 0;
+    MindStunned := False;
+    HeroMindType := -1;
+    TempHeroMindType := -1;
+    StoneRogue := False;
   end;
 
   with Players[6] do
@@ -1131,6 +1167,12 @@ begin
     TempHeroType := -1;
     StolenSkillTime := 0;
     Stone := MAX_SCOUT_STONES;
+    CaptureMind := False;
+    CaptureMindTime := 0;
+    MindStunned := False;
+    HeroMindType := -1;
+    TempHeroMindType := -1;
+    StoneRogue := False;
   end;
 
   with Players[7] do
@@ -1198,6 +1240,12 @@ begin
     TempHeroType := -1;
     StolenSkillTime := 0;
     Stone := MAX_SCOUT_STONES;
+    CaptureMind := False;
+    CaptureMindTime := 0;
+    MindStunned := False;
+    HeroMindType := -1;
+    TempHeroMindType := -1;
+    StoneRogue := False;
   end;
 
 end;
@@ -6885,6 +6933,8 @@ begin
   begin
     Players[P].HeroType := States.UnitType(States.UnitAt(X, Y));
     Players[P].TempHeroType := Players[P].HeroType;
+    Players[P].HeroMindType := Players[P].HeroType;
+    Players[P].TempHeroMindType := Players[P].HeroType;
     Players[P].HeroChosen := True;
     Actions.ShowMsg(P, HeroDescription(P, Players[P].HeroType));
     if InRange(P, 0, 3) then
