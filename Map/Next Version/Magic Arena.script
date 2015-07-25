@@ -418,7 +418,6 @@ var
   RuneTime: Integer;
   M, M2: array[0..7] of Integer;
   ZomboHero: array[0..7] of array[0..3] of Integer;
-  IllusionX, IllusionY: array[0..3] of Integer;
   DeathX, DeathY: Integer;
   AISoldiers: array of Integer;
   SpurtTimes, SpurtX, SpurtY, SpurtDir: array[0..11] of array[0..SPURT_LENGTH - 1] of Integer;
@@ -6258,7 +6257,15 @@ begin
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
-        M[P] := O; M2[O] := P;
+        M[P] := O;
+        M2[O] := P;
+
+        if Players[P].HeroType = 27 then
+          Players[O].WerewolfTime := Players[P].WerewolfTime;
+
+        if Players[O].HeroType = 27 then
+          Players[P].WerewolfTime := Players[O].WerewolfTime;
+
         DirP := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
         DirO := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));    
         Players[P].HeroMindType := Players[P].HeroType;
