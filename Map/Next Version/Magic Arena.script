@@ -274,6 +274,7 @@ const
   PLANT_TREES_FACTOR = 0.8;
   AVOID_FACTOR = 10;
   RECHARGE_FACTOR = 0.25;
+  ZOMBIE_ATTACK_FACTOR = 5;
   DEBUG_MODE = True;
 
 //Battlefield
@@ -8931,6 +8932,32 @@ begin
 end;
 
 
+procedure ZombieAttack;
+var
+  G, G1: array of Integer;
+  Target, Target1: Integer;
+begin
+  Target := States.KaMRandomI(4);
+  Target1 := States.KaMRandomI(4) + 4;
+
+  G := States.PlayerGetAllGroups(11);
+  G1 := States.PlayerGetAllGroups(10);
+
+  if Length(G) > 0 then
+    for I := 0 to Length(G) - 1 do
+      if (States.GroupIdle(G[I]))
+      and (Players[Target].Hero > 0) then
+        Actions.GroupOrderAttackUnit(G[I], States.GroupMember(Players[Target].Hero, 0));
+
+  if Length(G1) > 0 then
+    for K := 0 to Length(G1) - 1 do
+      if (States.GroupIdle(G1[K]))
+      and (Players[Target1].Hero > 0) then
+        Actions.GroupOrderAttackUnit(G1[K], States.GroupMember(Players[Target1].Hero, 0));
+
+end;
+
+
 function AICanUseSkills(P, UT: Integer): Boolean;
 begin
   Result := False;
@@ -9900,6 +9927,9 @@ begin
   CheckRuneTime;
 
   GoOutFromRune;
+
+  if States.GameTime mod ZOMBIE_ATTACK_FACTOR = 0 then
+    ZombieAttack;
 
   if States.GameTime mod 10 = 0 then
     CheckImmortal;
