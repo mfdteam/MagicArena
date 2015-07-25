@@ -1575,7 +1575,9 @@ end;
 
 function StatusText(P: Integer): ANSIString;
 begin
-  Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) + PrisonedStatus(P) + WerewolfStatus(P) + RegenStatus(P) + DDStatus(P) + IllusionStatus(P) + SilenceStatus(P) + PreparingStatus(P) + ReChargeStatus(P) + RogueStatus(P) + MindStatus(P) + MindStunnedStatus(P);
+  Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) + PrisonedStatus(P) + WerewolfStatus(P)
+  + RegenStatus(P) + DDStatus(P) {+ IllusionStatus(P)} + SilenceStatus(P) + PreparingStatus(P)
+  + ReChargeStatus(P) + RogueStatus(P) + MindStatus(P) + MindStunnedStatus(P);
 end;
 
 
@@ -2042,7 +2044,7 @@ begin
     and (Abs(Y2 - Y) <= MILIZOMBIE_RADIUS) then
     begin
       Zombie := Actions.GiveGroup(Players[P].ZombiePlayer, 14, X, Y, States.KaMRandomI(8), 1, 1);
-      Actions.GroupHungerSet(Zombie, States.UnitLowHunger);
+      Actions.GroupHungerSet(Zombie, RUNE_ZOMBIE_LIFE);
       Players[P].FieldSkillDelay := Round(SWORD_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Players[P].LastUsedSkill := sZombieSummon;
     end;
@@ -8014,7 +8016,7 @@ begin
                     begin
                       Actions.GroupKillAll(States.UnitsGroup(U), True);
                       G := Actions.GiveGroup(O, UT, Players[P].GravityX, Players[P].GravityY, D, 1, 1);
-                      Actions.GroupHungerSet(G, States.UnitLowHunger);
+                      Actions.GroupHungerSet(G, RUNE_ZOMBIE_LIFE);
                       Break;
                       Exit;
                     end;
