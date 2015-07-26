@@ -234,7 +234,8 @@ const
   RUNE_DOUBLE_TIME = 150;
   RUNE_IMMORTAL_TIME = 200;
   RUNE_ILLUSION_TIME = 1800;
-  RUNE_RECHARGE_TIME = 600;  
+  RUNE_RECHARGE_TIME = 600;
+ 
 
 //Player stats
 
@@ -275,6 +276,8 @@ const
   AVOID_FACTOR = 10;
   RECHARGE_FACTOR = 0.25;
   ZOMBIE_ATTACK_FACTOR = 5;
+  HEAL_CHECK_RADIUS = 4;
+  HEAL_CHECK_TIME = 15;
   DEBUG_MODE = True;
 
 //Battlefield
@@ -8948,6 +8951,30 @@ begin
 end;
 
 
+procedure AITakeHealingBush(P: Integer);
+var
+  X, Y, aX, aY: Integer;
+begin
+  if (Players[P].Hero <= 0)
+  or (Players[P].CastingSkill)
+  or (Players[P].HP = 12)
+  or (Players[P].RegenDelay - States.GameTime > 0) then
+    Exit;
+
+  if States.GroupMember(Players[P].Hero, 0) <= then
+    Exit;
+
+  aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+  aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+
+  for X := aX - HEAL_CHECK_RADIUS to aX + HEAL_CHECK_RADIUS do
+  for Y := aY - HEAL_CHECK_RADIUS to aY + HEAL_CHECK_RADIUS do
+    if TileOnBattlefield(X, Y) then
+      if States.MapTileObject(X, Y) = VAGA_OBJECT then
+        Actions.GroupOrderWalk(Players[P].Hero, X, Y, States.KaMRandomI(8));
+end;
+
+
 procedure ZombieAttack;
 var
   G, G1: array of Integer;
@@ -9082,6 +9109,9 @@ begin
 
   if States.GameTime mod 100 = 0 then
     AITakeRune(P);
+
+  if States.GameTime mod HEAL_CHECK_TIME = 0 then
+    AITakeHealingBush(P);
 
 end;
 
@@ -9265,6 +9295,9 @@ begin
 
   if States.GameTime mod 100 = 0 then
     AITakeRune(P);
+
+  if States.GameTime mod HEAL_CHECK_TIME = 0 then
+    AITakeHealingBush(P);
 
 end;
 
@@ -9492,6 +9525,9 @@ begin
   if States.GameTime mod 100 = 0 then
     AITakeRune(P);
 
+  if States.GameTime mod HEAL_CHECK_TIME = 0 then
+    AITakeHealingBush(P);
+
 end;
 
 
@@ -9573,6 +9609,9 @@ begin
 
   if States.GameTime mod 100 = 0 then
     AITakeRune(P);
+
+  if States.GameTime mod HEAL_CHECK_TIME = 0 then
+    AITakeHealingBush(P);
 
 end;
 
@@ -9749,6 +9788,9 @@ begin
   if States.GameTime mod 100 = 0 then
     AITakeRune(P);
 
+  if States.GameTime mod HEAL_CHECK_TIME = 0 then
+    AITakeHealingBush(P);
+
 end;
 
 
@@ -9900,6 +9942,9 @@ begin
   if States.GameTime mod 100 = 0 then
     AITakeRune(P);
 
+  if States.GameTime mod HEAL_CHECK_TIME = 0 then
+    AITakeHealingBush(P);
+
 end;
 
 
@@ -10035,6 +10080,9 @@ begin
 
   if States.GameTime mod 100 = 0 then
     AITakeRune(P);
+
+  if States.GameTime mod HEAL_CHECK_TIME = 0 then
+    AITakeHealingBush(P);
 
   Exit;
 
