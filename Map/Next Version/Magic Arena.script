@@ -9088,7 +9088,7 @@ end;
 
 procedure AIBarb(P: Integer);
 var
-  aX, aY, O, U, X, Y, uX, uY, A, E: Integer;
+  aX, aY, O, U, X, Y, uX, uY, A, E, sX, sY: Integer;
 begin
 
   if (States.KaMRandomI(10) > 5)
@@ -9181,28 +9181,81 @@ begin
       E := 0;
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - TOTEM_ADD_RADIUS + 1) to (aX + TOTEM_ADD_RADIUS - 1) do
-      for Y := (aY - TOTEM_ADD_RADIUS + 1) to (aY + TOTEM_ADD_RADIUS - 1) do
+      for X := (aX - TOTEM_ADD_RADIUS + 2) to (aX + TOTEM_ADD_RADIUS - 2) do
+      for Y := (aY - TOTEM_ADD_RADIUS + 2) to (aY + TOTEM_ADD_RADIUS - 2) do
       begin
         U := States.UnitAt(X, Y);
-        if (U > 0)
-        and (not InRange(X, aX - TOTEM_RADIUS, aX + TOTEM_RADIUS))
-        and (not InRange(Y, aY - TOTEM_RADIUS, aY + TOTEM_RADIUS))
-        and (CanUseWineFieldSkill(X, Y)) then
+        if (U > 0) then
         begin
-          O := States.UnitOwner(U);
-          if Players[P].PlayersTeam <> Players[O].PlayersTeam then
-            E := E + 1;
-          if Players[P].PlayersTeam = Players[O].PlayersTeam then
-            A := A + 1;
-          if (P <> O)
-          and (CanUseSkillAgainstUnit(P, U))
-          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          and (States.KaMRandom > 0.1)
-          and (E > A) then 
+          if States.GroupIdle(States.UnitsGroup(U)) then
           begin
-            TotemOfAncestors(P, X, Y);
-            Exit;
+            sX := X;
+            sY := Y;
+          end;
+          if not States.GroupIdle(States.UnitsGroup(U)) then
+          begin
+            case States.UnitDirection(U) of
+              0: begin
+                   sX := X;
+                   sY := Y - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              1: begin
+                   sX := X + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              2: begin
+                   sX := X + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y;
+                 end;
+
+              3: begin
+                   sX := X + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              4: begin
+                   sX := X;
+                   sY := Y + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              5: begin
+                   sX := X - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              6: begin
+                   sX := X - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y;
+                 end;
+
+              7: begin
+                   sX := X - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+            end;
+          end;
+
+          if (not InRange(sX, aX - TOTEM_RADIUS, aX + TOTEM_RADIUS))
+          and (not InRange(sY, aY - TOTEM_RADIUS, aY + TOTEM_RADIUS))
+          and (CanUseWineFieldSkill(sX, sY)) then
+          begin
+            O := States.UnitOwner(U);
+            if Players[P].PlayersTeam <> Players[O].PlayersTeam then
+              E := E + 1;
+            if Players[P].PlayersTeam = Players[O].PlayersTeam then
+              A := A + 1;
+            if (P <> O)
+            and (CanUseSkillAgainstUnit(P, U))
+            and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+            and (States.KaMRandom > 0.1)
+            and (E > A) then 
+            begin
+              TotemOfAncestors(P, sX, sY);
+              Exit;
+            end;
           end;
         end;
       end;
@@ -9218,7 +9271,7 @@ end;
 
 procedure AICrossbow(P: Integer);
 var
-  aX, aY, O, U, X, Y, uX, uY, aX1, aX2, aY1, aY2: Integer;
+  aX, aY, O, U, X, Y, uX, uY, aX1, aX2, aY1, aY2, sX, sY: Integer;
 begin
 
   if (States.KaMRandomI(10) > 5)
@@ -9275,23 +9328,77 @@ begin
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - BOMB_RADIUS + 1) to (aX + BOMB_RADIUS - 1) do
-      for Y := (aY - BOMB_RADIUS + 1) to (aY + BOMB_RADIUS - 1) do
+      for X := (aX - BOMB_RADIUS + 3) to (aX + BOMB_RADIUS - 3) do
+      for Y := (aY - BOMB_RADIUS + 3) to (aY + BOMB_RADIUS - 3) do
       begin
         U := States.UnitAt(X, Y);
-        if (U > 0)
-        and (CanUseSkillAgainstUnit(P, U))
-        and (not InRange(X, aX - 3, aX + 3))
-        and (not InRange(Y, aY - 3, aY + 3))
-        and (CanUseWineFieldSkill(X, Y)) then
+        if (U > 0) then
         begin
-          O := States.UnitOwner(U);
-          if (P <> O)
-          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          and (States.KaMRandom > 0.1) then 
+          if States.GroupIdle(States.UnitsGroup(U)) then
           begin
-            SuddenDeath(P, X, Y);
-            Exit;
+            sX := X;
+            sY := Y;
+          end;
+          if not States.GroupIdle(States.UnitsGroup(U)) then
+          begin
+            case States.UnitDirection(U) of
+
+              0: begin
+                   sX := X;
+                   sY := Y - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              1: begin
+                   sX := X + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              2: begin
+                   sX := X + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y;
+                 end;
+
+              3: begin
+                   sX := X + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              4: begin
+                   sX := X;
+                   sY := Y + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              5: begin
+                   sX := X - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              6: begin
+                   sX := X - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y;
+                 end;
+
+              7: begin
+                   sX := X - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+            end;
+          end;
+
+          if (CanUseSkillAgainstUnit(P, U))
+          and (not InRange(sX, aX - 3, aX + 3))
+          and (not InRange(sY, aY - 3, aY + 3))
+          and (CanUseWineFieldSkill(X, Y)) then
+          begin
+            O := States.UnitOwner(U);
+            if (P <> O)
+            and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+            and (States.KaMRandom > 0.1) then 
+            begin
+              SuddenDeath(P, sX, sY);
+              Exit;
+            end;
           end;
         end;
       end;
