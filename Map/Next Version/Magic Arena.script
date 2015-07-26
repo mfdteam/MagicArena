@@ -6163,6 +6163,9 @@ begin
     and (Abs(Y2 - Y) <= VAMPIRE_RADIUS) then
     begin
 
+      hX := MIN_X - 1;
+      hY := MIN_Y - 1;
+
       while (States.UnitAt(hX, hY) > 0)
       or (States.MapTileObject(hX, hY) = SCOUT_OBJECT2)
       or (not TileOnBattlefield(hX, hY))
