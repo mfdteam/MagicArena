@@ -9208,8 +9208,7 @@ begin
       end;
     end;
 
-  if (States.KaMRandomI(10) > 7)
-  and (Players[P].WineSkillDelay = 0)
+  if (Players[P].WineSkillDelay = 0)
   and (Players[P].Hero > 0) then
     if States.GroupMember(Players[P].Hero, 0) > 0 then
     begin
@@ -9223,11 +9222,10 @@ begin
         U := States.UnitAt(X, Y);
         if (U > 0) then
         begin
-          if States.GroupIdle(States.UnitsGroup(U)) then
-          begin
-            sX := X;
-            sY := Y;
-          end;
+
+          sX := X;
+          sY := Y;
+
           if not States.GroupIdle(States.UnitsGroup(U)) then
           begin
             case States.UnitDirection(U) of
@@ -9360,8 +9358,7 @@ begin
       end;
     end;
 
-  if (States.KaMRandomI(10) > 7)
-  and (Players[P].FieldSkillDelay = 0)
+  if (Players[P].FieldSkillDelay = 0)
   and (Players[P].Hero > 0) then
     if States.GroupMember(Players[P].Hero, 0) > 0 then
     begin
@@ -9373,11 +9370,10 @@ begin
         U := States.UnitAt(X, Y);
         if (U > 0) then
         begin
-          if States.GroupIdle(States.UnitsGroup(U)) then
-          begin
-            sX := X;
-            sY := Y;
-          end;
+
+          sX := X;
+          sY := Y;
+
           if not States.GroupIdle(States.UnitsGroup(U)) then
           begin
             case States.UnitDirection(U) of
