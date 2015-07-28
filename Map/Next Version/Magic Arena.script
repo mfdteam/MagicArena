@@ -6179,7 +6179,7 @@ begin
         hX := X + States.KaMRandomI(3) - States.KaMRandomI(3);
         hY := Y + States.KaMRandomI(3) - States.KaMRandomI(3);
         Scan := Scan + 1;
-        if Scan = 24 then
+        if Scan = 100 then
           Exit;
       end;
 
