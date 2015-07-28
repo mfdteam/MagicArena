@@ -6117,7 +6117,7 @@ begin
       and (not States.IsRoadAt(6, TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1])) 
       and (not States.IsRoadAt(7, TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1])) then
       begin
-        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 50;
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 75;
         SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 1;
         TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT;
         if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1]) = BARB_OBJECT3)
@@ -6143,7 +6143,7 @@ end;
 
 procedure Vampire(P, X, Y: Integer);
 var
-  X2, Y2, U, O, hX, hY: Integer;
+  X2, Y2, U, O, hX, hY, Scan: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -6160,6 +6160,7 @@ begin
   if (TileOnBattlefield(X, Y))
   and (Players[P].Hero > 0) then
   begin
+    Scan := 0;
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     if (Abs(X2 - X) <= VAMPIRE_RADIUS)
@@ -6170,12 +6171,16 @@ begin
       hY := MIN_Y - 1;
 
       while (States.UnitAt(hX, hY) > 0)
+      or (States.MapTileObject(hX, hY) = SCOUT_OBJECT)
       or (States.MapTileObject(hX, hY) = SCOUT_OBJECT2)
       or (not TileOnBattlefield(hX, hY))
       or (not CanPlaceObject(hX, hY)) do
       begin
         hX := X + States.KaMRandomI(3) - States.KaMRandomI(3);
         hY := Y + States.KaMRandomI(3) - States.KaMRandomI(3);
+        Scan := Scan + 1;
+        if Scan = 24 then
+          Exit;
       end;
 
       U := States.UnitAt(X, Y);
@@ -6188,6 +6193,7 @@ begin
           Exit;
         if (InRange(O, 0, 7)) then
           if (U = States.GroupMember(Players[O].Hero, 0))
+          and (not Players[O].HeroPrisoned)
           and (not Players[O].HeroImmortal)
           and ((Players[P].PlayersTeam <> Players[O].PlayersTeam)
           or ((P = O) 
