@@ -389,10 +389,21 @@ type
 
 
 type
+  aRoad = Record
+    X: Integer;
+    Y: Integer;
+    Owner: Integer;
+  end;
+
+
+type
   aTile = Record
     X: Integer;
     Y: Integer;
     Owner: Integer;
+    //LastUsedSkill: aSkill;
+    //Obj: Integer;
+    //Damage: Integer;
   end;
 
 
@@ -414,7 +425,8 @@ var
   TimeToClearFireworks2Array, TimeToClearFireworks3Array, TimeToClearFireworks4Array, TimeToClearFireworks5Array,
   TimeToClearVagaArray, TimeToClearKnightArray, TimeToClearRogueArray: array[0..11] of Integer;
   PikeObjects, SOSObjects: array[0..7] of Integer;
-  Roads, Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
+  Roads: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aRoad;
+  Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
   TeamChoice: array[0..1] of ANSIString;
   TeamInfo: array[0..1] of ANSIString;
   ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime: array[0..11] of Integer;
@@ -520,6 +532,9 @@ begin
     Tiles[aX][aY].X := aX;
     Tiles[aX][aY].Y := aY;
     Tiles[aX][aY].Owner := -1;
+    //Tiles[aX][aY].Obj := -1;
+    //Tiles[aX][aY].Damage := 0;
+    //Tiles[aX][aY].LastUsedSkill := sNone;
   end;
 end;
 
@@ -1745,6 +1760,36 @@ begin
 end;
 
 
+{function SkillDamage(Skill: aSkill): Integer;
+begin
+  case Skill of
+    sNone: Result := 0;
+
+    тут все скилы и дамаг к ним
+
+    sTotemOfAncestors: Result := States.KaMRandom(10) + 10; //для примера - 10-20 хп
+  end;
+end;}
+
+
+{procedure DoDamage(aX, aY, P: Integer); //дамажит героя если на тайле заюзан скил
+begin
+
+  if Tiles[aX][aY].LastUsedSkill <> sNone then
+    Players[P].HP := Players[P].HP - Tiles[aX][aY].Damage;
+
+  if Players[P].HP <= 0 then
+  begin
+    Players[P].HP := MAX_HERO_HP;
+    Players[P].Lifes := Players[P].Lifes - 1;
+  end;
+
+  if Players[P].Lifes = 0 then
+    Defeat;
+
+end;} 
+
+
 procedure SetCircle(P, X, Y, R, aObj: Integer; aDef, aSaveCracking, aNone: Boolean);
 var
   X1, X2, Y1, Y2, PosX, PosY: Integer;
@@ -1914,8 +1959,15 @@ begin
     TilesRoadY[P][Length(TilesRoadY[P]) - 2] := Y2 + 1;
     TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
 
-    for I := 1 to 4 do    
+    for I := 1 to 4 do
+    begin
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := SWORD_OBJECT;
+      //на тайле юзнули скил (анимацию) - запомним что за скил, кем юзнут и пр.
+      //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I][TilesRoadY[P][Length(TilesRoadY[P]) - I].Obj := SWORD_OBJECT;
+      //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I][TilesRoadY[P][Length(TilesRoadY[P]) - I].LastUsedSkill := sSpikedEarth;
+      //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I][TilesRoadY[P][Length(TilesRoadY[P]) - I].Damage := SkillDamage(sSpikedEarth);
+      //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I][TilesRoadY[P][Length(TilesRoadY[P]) - I].Owner := P;
+    end;
     
     ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 4] := States.GameTime + 9;
     ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 3] := States.GameTime + 11;
@@ -1951,6 +2003,10 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 45 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Obj := TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1];
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].LastUsedSkill := sSpikedEarth;
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Damage := SkillDamage(sSpikedEarth);
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Owner := P;
              end;
 
       2,3: for X1 := X2 + 2 to X2 + 9 do
@@ -1968,6 +2024,10 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 45 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Obj := TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1];
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].LastUsedSkill := sSpikedEarth;
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Damage := SkillDamage(sSpikedEarth);
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Owner := P;
              end;
 
       4,5: for Y1 := Y2 + 2 to Y2 + 9 do
@@ -1985,6 +2045,10 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 45 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Obj := TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1];
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].LastUsedSkill := sSpikedEarth;
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Damage := SkillDamage(sSpikedEarth);
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Owner := P;
              end;
 
       6,7: for X1 := X2 - 2 downto X2 - 9 do
@@ -2002,6 +2066,10 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 45 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Obj := TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1];
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].LastUsedSkill := sSpikedEarth;
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Damage := SkillDamage(sSpikedEarth);
+               //Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1][TilesRoadY[P][Length(TilesRoadY[P]) - 1].Owner := P;
              end;
         end;
 
@@ -7484,6 +7552,9 @@ begin
   or (aObj = ROGUE_OBJECT)
   or (aObj = ROGUE_OBJECT2)
   or (aObj = ROGUE_OBJECT4) then
+
+  //DoDamage(aX, aY, P); и остальное наверное не нужно будет
+
   begin
     T := Players[P].HeroType;
     if (not States.PlayerDefeated(P))
@@ -8423,6 +8494,8 @@ begin
 
         if States.GameTime = ClearTilesRoadTimes[P][K] then
         begin
+          //Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].LastUsedSkill := sNone;
+          //почистим скил, объект, дамаг, принадлежность и т.д.
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], 255);
 
           if TilesRoadObjects[P][K] = BOWMAN_MINE then
