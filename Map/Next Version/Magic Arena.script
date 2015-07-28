@@ -6272,23 +6272,24 @@ begin
         M[P] := O;
         M2[O] := P;
 
-        if Players[P].HeroType = 27 then
-          Players[O].WerewolfTime := Players[P].WerewolfTime;
-
-        if Players[O].HeroType = 27 then
-          Players[P].WerewolfTime := Players[O].WerewolfTime;
-
         DirP := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
         DirO := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));    
         Players[P].HeroMindType := Players[P].HeroType;
         Players[O].HeroMindType := Players[O].HeroType;
         Players[P].TempHeroMindType := Players[P].TempHeroType;
+        
+        if Players[O].HeroType = 27 then
+        begin
+          Players[P].WerewolfTime := Players[O].WerewolfTime;
+          Players[O].WerewolfTime := 0;
+          Players[O].HeroMindType := 15;
+        end;
 
         Players[P].CaptureMind := True;
         Actions.GroupKillAll(Players[P].Hero, True);
         Players[P].HeroType := Players[O].HeroType
         Players[P].Hero := Actions.GiveGroup(P, Players[O].HeroType, X, Y, DirO, 1, 1);
-        Players[P].TempHeroType := Players[O].HeroType;
+        Players[P].TempHeroType := Players[O].TempHeroType;
 
         Players[O].HeroStunned := True;
         Players[O].MindStunned := True;
@@ -8361,6 +8362,12 @@ begin
        if (Players[I1].Hero > 0)
        and (Players[M[I1]].Hero > 0) then
        begin
+         if Players[I1].HeroType = 27 then
+         begin
+           Players[M[I1]].WerewolfTime := Players[I1].WerewolfTime;
+           Players[I1].WerewolfTime := 0;
+           Players[M[I1]].HeroMindType := 27;
+         end;
          Actions.GroupKillAll(Players[I1].Hero, True);
          Actions.GroupKillAll(Players[M[I1]].Hero, True);
          Players[I1].HeroType := Players[I1].HeroMindType;
