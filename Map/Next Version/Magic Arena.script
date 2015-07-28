@@ -8961,7 +8961,7 @@ begin
   or (Players[P].RegenDelay - States.GameTime > 0) then
     Exit;
 
-  if States.GroupMember(Players[P].Hero, 0) <= then
+  if States.GroupMember(Players[P].Hero, 0) <= 0 then
     Exit;
 
   aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
