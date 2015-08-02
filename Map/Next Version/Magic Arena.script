@@ -373,6 +373,7 @@ type
     CaptureMind: Boolean;
     CaptureMindTime: Integer;
     MindStunned: Boolean;
+    StunnedMindTime: Integer;
     Stone: Integer;
     StoneRogue: Boolean;
   end;
@@ -737,6 +738,7 @@ begin
     CaptureMind := False;
     CaptureMindTime := 0;
     MindStunned := False;
+    StunnedMindTime := 0;
     HeroMindType := -1;
     TempHeroMindType := -1;
     StoneRogue := False;
@@ -810,6 +812,7 @@ begin
     CaptureMind := False;
     CaptureMindTime := 0;
     MindStunned := False;
+    StunnedMindTime := 0;
     HeroMindType := -1;
     TempHeroMindType := -1;
     StoneRogue := False;
@@ -883,6 +886,7 @@ begin
     CaptureMind := False;
     CaptureMindTime := 0;
     MindStunned := False;
+    StunnedMindTime := 0;
     HeroMindType := -1;
     TempHeroMindType := -1;
     StoneRogue := False;
@@ -954,6 +958,7 @@ begin
     CaptureMind := False;
     CaptureMindTime := 0;
     MindStunned := False;
+    StunnedMindTime := 0;
     HeroMindType := -1;
     TempHeroMindType := -1;
     StoneRogue := False;
@@ -1027,6 +1032,7 @@ begin
     CaptureMind := False;
     CaptureMindTime := 0;
     MindStunned := False;
+    StunnedMindTime := 0;
     HeroMindType := -1;
     TempHeroMindType := -1;
     StoneRogue := False;
@@ -1100,6 +1106,7 @@ begin
     CaptureMind := False;
     CaptureMindTime := 0;
     MindStunned := False;
+    StunnedMindTime := 0;
     HeroMindType := -1;
     TempHeroMindType := -1;
     StoneRogue := False;
@@ -1173,6 +1180,7 @@ begin
     CaptureMind := False;
     CaptureMindTime := 0;
     MindStunned := False;
+    StunnedMindTime := 0;
     HeroMindType := -1;
     TempHeroMindType := -1;
     StoneRogue := False;
@@ -1246,6 +1254,7 @@ begin
     CaptureMind := False;
     CaptureMindTime := 0;
     MindStunned := False;
+    StunnedMindTime := 0;
     HeroMindType := -1;
     TempHeroMindType := -1;
     StoneRogue := False;
@@ -1567,7 +1576,7 @@ end;
 function MindStunnedStatus(P: Integer): ANSIString;
 begin
   if Players[P].MindStunned then
-    Result := '|[$51AFEE]<$103>[](' + IntToStr((Players[P].CaptureMindTime - States.GameTime)/10) + ')'
+    Result := '|[$51AFEE]<$103>[](' + IntToStr((Players[P].StunnedMindTime - States.GameTime)/10) + ')'
 
   else
 
@@ -6297,7 +6306,7 @@ begin
         Players[O].HeroType := Players[P].HeroMindType;
         Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, X2, Y2, DirP, 1, 1);
 
-        Players[O].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME; 
+        Players[O].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME; 
         Players[P].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME; 
         Players[O].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
         Players[P].HeroImmortalTime := States.GameTime + CAPTURE_MIND_TIME;
@@ -6960,8 +6969,6 @@ begin
   begin
     Players[P].HeroType := States.UnitType(States.UnitAt(X, Y));
     Players[P].TempHeroType := Players[P].HeroType;
-    Players[P].HeroMindType := Players[P].HeroType;
-    Players[P].TempHeroMindType := Players[P].HeroType;
     Players[P].HeroChosen := True;
     Actions.ShowMsg(P, HeroDescription(P, Players[P].HeroType));
     if InRange(P, 0, 3) then
@@ -8230,7 +8237,6 @@ end;
 procedure CheckStatus;
 var
   aX, aY, aD, aX2, aY2, aD2, I1: Integer;
-  G: array of Integer;
 begin
   for I1 := 0 to 7 do
   begin
@@ -8382,11 +8388,6 @@ begin
          Players[I1].FieldSkillDelay := 0;
          Players[I1].WineSkillDelay := Round(SCOUT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[I1].ReCharge)));
          Players[M[I1]].LastUsedSkill := Players[I1].LastUsedSkill;
-         G := States.PlayerGetAllGroups(I1);
-         if Length(G) > 0 then
-           for K := 0 to Length(G) - 1 do
-             if G[K] <> Players[I1].Hero then
-               Actions.GroupKillAll(G[K], True);
        end;
     end;
   end;
