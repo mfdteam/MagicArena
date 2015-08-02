@@ -369,12 +369,16 @@ type
     StolenSkill: aSkill;
     StolenSkillName: ANSIString;
     StolenSkillTime: Integer;
+    TempStolenSkill: aSkill;
+    TempStolenSkillName: ANSIString;
+    TempStolenSkillTime: Integer;
     TempHeroType: Integer;
     CaptureMind: Boolean;
     CaptureMindTime: Integer;
     MindStunned: Boolean;
     StunnedMindTime: Integer;
     Stone: Integer;
+    TempStone: Integer;
     StoneRogue: Boolean;
   end;
 
@@ -6137,13 +6141,13 @@ begin
 
         Players[P].LastUsedSkill := sStones;
 
-        if (Players[P].Stone = 0) and (not Players[P].StoneRogue = True) then
+        if (Players[P].Stone = 0) and (Players[P].StoneRogue = False) then
         begin
           Players[P].RoadSkillDelay := Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
           ClearRoadTilesArrayTime[P] := States.GameTime + Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
           Players[P].Stone := MAX_SCOUT_STONES;
-          Players[P].StoneRogue := False;
         end;
+        Players[P].StoneRogue := False;
       end;
     end;
   end;
@@ -6286,6 +6290,10 @@ begin
         Players[P].HeroMindType := Players[P].HeroType;
         Players[O].HeroMindType := Players[O].HeroType;
         Players[P].TempHeroMindType := Players[P].TempHeroType;
+        Players[P].TempStolenSkill := Players[P].StolenSkill;
+        Players[P].TempStolenSkillTime := Players[P].StolenSkillTime;
+        Players[P].TempStolenSkillName := Players[P].StolenSkillName;
+        Players[P].TempStone := Players[P].Stone;
         
         if Players[O].HeroType = 27 then
         begin
@@ -6316,6 +6324,10 @@ begin
         Players[P].HeroImmortal := True;
 
         Players[P].LastUsedSkill := sMind;
+        Players[P].StolenSkill := Players[O].StolenSkill;
+        Players[P].StolenSkillTime := Players[O].StolenSkillTime;
+        Players[P].StolenSkillName := Players[O].StolenSkillName;
+        Players[P].Stone := Players[O].Stone;
         Players[P].RoadSkillDelay := Players[O].RoadSkillDelay;
         Players[P].FieldSkillDelay := Players[O].FieldSkillDelay;
         Players[P].WineSkillDelay := Players[O].WineSkillDelay;
@@ -8388,6 +8400,11 @@ begin
          Players[I1].FieldSkillDelay := 0;
          Players[I1].WineSkillDelay := Round(SCOUT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[I1].ReCharge)));
          Players[M[I1]].LastUsedSkill := Players[I1].LastUsedSkill;
+         Players[I1].StolenSkill := Players[I1].TempStolenSkill;
+         Players[I1].StolenSkillTime := Players[I1].TempStolenSkillTime;
+         Players[I1].StolenSkillName := Players[I1].TempStolenSkillName;
+         Players[M[I1]].Stone := Players[I1].Stone;
+         Players[I1].Stone := Players[I1].TempStone;
        end;
     end;
   end;
