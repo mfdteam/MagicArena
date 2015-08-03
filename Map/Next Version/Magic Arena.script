@@ -51,6 +51,7 @@ const
   ROGUE_TOTEM_DELAY = 100;
   ROGUE_FIREWORKS_DELAY = 50;
   ROGUE_REVENGE_DELAY = 25;
+  ROGUE_MENTAL_DELAY = 25;
 
   SCOUT_ROAD_DELAY = 100;
   SCOUT_FIELD_DELAY = 150;
@@ -6453,6 +6454,9 @@ begin
              Players[P].LastUsedSkill := sMentalBurst;
              Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
              ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+             if Players[P].StolenSkill = sMentalBurst then
+               if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
+                 Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
            end;
 
       2,3: begin
@@ -6467,6 +6471,9 @@ begin
              Players[P].LastUsedSkill := sMentalBurst;
              Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
              ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+             if Players[P].StolenSkill = sMentalBurst then
+               if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
+                 Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
            end;
 
       4,5: begin
@@ -6481,6 +6488,9 @@ begin
              Players[P].LastUsedSkill := sMentalBurst;
              Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
              ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+             if Players[P].StolenSkill = sMentalBurst then
+               if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
+                 Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
            end;
 
       6,7: begin
@@ -6495,6 +6505,9 @@ begin
              Players[P].LastUsedSkill := sMentalBurst;
              Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
              ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+             if Players[P].StolenSkill = sMentalBurst then
+               if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
+                 Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
            end;
 
       end;
@@ -6923,6 +6936,8 @@ begin
                       MentalBurst(P, X, Y, -1);
                       Players[P].RoadSkillDelay := TempRoadSkillDelay;
                       Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                      if Players[P].RoadSkillDelay < ROGUE_MENTAL_DELAY then
+                        Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
                     end;
 
       sSteal: if (U > 0)
