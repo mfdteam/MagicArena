@@ -9024,10 +9024,30 @@ end;
 procedure ZombieAttack;
 var
   G, G1: array of Integer;
-  Target, Target1: Integer;
+  Target, Target1, C, C1: Integer;
 begin
-  Target := States.KaMRandomI(4);
-  Target1 := States.KaMRandomI(4) + 4;
+  C := 0;
+  C1 := 0;
+
+  while (not States.PlayerEnabled(Target))
+  or (Players[Target].HP <= 0)
+  or (Players[Target].Hero < 0) do
+  begin
+    Target := States.KaMRandomI(4);
+    C := C + 1;
+    if C >= 20 then
+      Exit;
+  end;
+
+  while (not States.PlayerEnabled(Target1))
+  or (Players[Target1].HP <= 0)
+  or (Players[Target1].Hero < 0) do
+  begin
+    Target1 := States.KaMRandomI(4) + 4;
+    C1 := C1 + 1;
+    if C1 >= 20 then
+      Exit;
+  end;
 
   G := States.PlayerGetAllGroups(11);
   G1 := States.PlayerGetAllGroups(10);
