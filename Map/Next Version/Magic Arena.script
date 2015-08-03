@@ -189,14 +189,14 @@ const
   VAGA_OBJECT5 = 6;
   VAGA_OBJECT6 = 73;
 
-  SOS_OBJECT = 182;
-  SOS_OBJECT2 = 183;
-  SOS_OBJECT3 = 184;
-  SOS_OBJECT4 = 185;
-  SOS_OBJECT5 = 186;
-  SOS_OBJECT6 = 187;
-  SOS_OBJECT7 = 188;
-  SOS_OBJECT8 = 189;
+  SHIELD_OBJECT = 182;
+  SHIELD_OBJECT2 = 183;
+  SHIELD_OBJECT3 = 184;
+  SHIELD_OBJECT4 = 185;
+  SHIELD_OBJECT5 = 186;
+  SHIELD_OBJECT6 = 187;
+  SHIELD_OBJECT7 = 188;
+  SHIELD_OBJECT8 = 189;
 
   WARRIOR_OBJECT = 18;
   WARRIOR_OBJECT2 = 21;
@@ -420,7 +420,7 @@ var
   TimeToClearViseArray, TimeToClearExpArray, TimeToClearGravityArray, TimeToClearFireworks1Array,
   TimeToClearFireworks2Array, TimeToClearFireworks3Array, TimeToClearFireworks4Array, TimeToClearFireworks5Array,
   TimeToClearVagaArray, TimeToClearKnightArray, TimeToClearRogueArray: array[0..11] of Integer;
-  PikeObjects, SOSObjects: array[0..7] of Integer;
+  PikeObjects, ShieldObjects: array[0..7] of Integer;
   Roads, Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
   TeamChoice: array[0..1] of ANSIString;
   TeamInfo: array[0..1] of ANSIString;
@@ -464,7 +464,7 @@ begin
   and (States.MapTileObject(X, Y) <> BARB_OBJECT3)
   and (States.MapTileObject(X, Y) <> BOWMAN_MINE)
   and (States.MapTileObject(X, Y) <> BOWMAN_OBJECT5)
-  and (not InRange(States.MapTileObject(X, Y), SOS_OBJECT, SOS_OBJECT8))
+  and (not InRange(States.MapTileObject(X, Y), SHIELD_OBJECT, SHIELD_OBJECT8))
   and (not InRange(States.MapTileObject(X, Y), SWORD_OBJECT, VAGA_OBJECT6));
 
 end;
@@ -574,14 +574,14 @@ begin
   PikeObjects[6] := PIKE_OBJECT7;
   PikeObjects[7] := PIKE_OBJECT8;
 
-  SOSObjects[0] := SOS_OBJECT;
-  SOSObjects[1] := SOS_OBJECT2;
-  SOSObjects[2] := SOS_OBJECT3;
-  SOSObjects[3] := SOS_OBJECT4;
-  SOSObjects[4] := SOS_OBJECT5;
-  SOSObjects[5] := SOS_OBJECT6;
-  SOSObjects[6] := SOS_OBJECT7;
-  SOSObjects[7] := SOS_OBJECT8;
+  ShieldObjects[0] := SHIELD_OBJECT;
+  ShieldObjects[1] := SHIELD_OBJECT2;
+  ShieldObjects[2] := SHIELD_OBJECT3;
+  ShieldObjects[3] := SHIELD_OBJECT4;
+  ShieldObjects[4] := SHIELD_OBJECT5;
+  ShieldObjects[5] := SHIELD_OBJECT6;
+  ShieldObjects[6] := SHIELD_OBJECT7;
+  ShieldObjects[7] := SHIELD_OBJECT8;
 
   for I := 0 to 11 do
   for K := 0 to 11 do
@@ -675,595 +675,108 @@ begin
   for I := 4 to 7 do
     if States.PlayerEnabled(I) then
       Actions.FogRevealRect(I, 60, 1, 70, 10);
- 
-  with Players[0] do
+
+  for I := 0 to 7 do
   begin
-    SpawnX := 19;
-    SpawnY := 19;
-    Hero := -1;
-    HeroType := -1;
-    HeroImmortal := False;
-    HeroChosen := False;
-    HP := START_HP;
-    RoadSkillDelay := 0;
-    FieldSkillDelay := 0;
-    WineSkillDelay := 0;
-    Direction := 2;
-    TribuneX := 3;
-    TribuneY := 2;
-    HeroImmortalTime := 0;
-    HeroStunnedTime := 0;
-    HeroStunned := False;
-    HeroInFearTime := 0;
-    HeroInFear := False;
-    ZombiePlayer := 10;
-    RoadPlayer := 8;
-    DefenceTime := 0;
-    HeroPrisoned := False;
-    HeroPrisonedTime := 0;
-    WerewolfTime := 0;
-    VagaX := 0;
-    VagaY := 0;
-    VagaAppearTime := 0;
-    VagaDir := 0;
-    RegenDelay := 0;
-    ClearPikeObjTime := 0;
-    GravityX := 0;
-    GravityY := 0;
-    RespawnCheckTime := -1;
-    DDTime := 0;
-    DD := False;
-    InIllusion := False;
-    PlayersTeam := 0;
-    CastingSkill := False;
-    SkillTime := 0;
-    SkillCastX := 0;
-    SkillCastY := 0;
-    SkillCastDir := 0;
-    SkillCastRespawnTime := 0;
-    ArmorStartTime := 0;
-    HeroSilent := False;
-    HeroSilentTime := 0;
-    HeroSilentStartTime := 0;
-    AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
-    RopeUnitDir := -1;
-    RopeAttacker := -1;
-    RopeTime := -1;
-    RopeDX := -1;
-    RopeDY := -1;
-    Preparing := False;
-    PreparingTime := 0;
-    ReCharge := False;
-    ReChargeTime := 0;
-    LastUsedSkill := sNone;
-    StolenSkill := sNone;
-    StolenSkillName := '<$57>';
-    TempHeroType := -1;
-    StolenSkillTime := 0;
-    Stone := MAX_SCOUT_STONES;
-    CaptureMind := False;
-    CaptureMindTime := 0;
-    MindStunned := False;
-    StunnedMindTime := 0;
-    HeroMindType := -1;
-    TempHeroMindType := -1;
-    StoneRogue := False;
+    with Players[I] do
+    begin
+      Hero := -1;
+      HeroType := -1;
+      HeroImmortal := False;
+      HeroChosen := False;
+      HP := START_HP;
+      TribuneY := 2;
+      RoadSkillDelay := 0;
+      FieldSkillDelay := 0;
+      WineSkillDelay := 0;
+      HeroImmortalTime := 0;
+      HeroStunnedTime := 0;
+      HeroStunned := False;
+      HeroInFearTime := 0;
+      HeroInFear := False;
+      DefenceTime := 0;
+      HeroPrisoned := False;
+      HeroPrisonedTime := 0;
+      WerewolfTime := 0;
+      VagaX := 0;
+      VagaY := 0;
+      VagaAppearTime := 0;
+      VagaDir := 0;
+      RegenDelay := 0;
+      ClearPikeObjTime := 0;
+      GravityX := 0;
+      GravityY := 0;
+      RespawnCheckTime := -1;
+      DDTime := 0;
+      DD := False;
+      InIllusion := False;
+      CastingSkill := False;
+      SkillTime := 0;
+      SkillCastX := 0;
+      SkillCastY := 0;
+      SkillCastDir := 0;
+      SkillCastRespawnTime := 0;
+      ArmorStartTime := 0;
+      HeroSilent := False;
+      HeroSilentTime := 0;
+      HeroSilentStartTime := 0;
+      AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
+      RopeUnitDir := -1;
+      RopeAttacker := -1;
+      RopeTime := -1;
+      RopeDX := -1;
+      RopeDY := -1;
+      Preparing := False;
+      PreparingTime := 0;
+      ReCharge := False;
+      ReChargeTime := 0;
+      LastUsedSkill := sNone;
+      StolenSkill := sNone;
+      StolenSkillName := '<$57>';
+      TempHeroType := -1;
+      StolenSkillTime := 0;
+      Stone := MAX_SCOUT_STONES;
+      CaptureMind := False;
+      CaptureMindTime := 0;
+      MindStunned := False;
+      StunnedMindTime := 0;
+      HeroMindType := -1;
+      TempHeroMindType := -1;
+      StoneRogue := False;
+      TempStolenSkill := sNone;
+      TempStolenSkillName := '';
+      TempStolenSkillTime := 0;
+      TempStone := 0;
+      TempPlayersTeam := -1;
+    end;
   end;
 
-  with Players[1] do
+  for I := 0 to 3 do
   begin
-    SpawnX := 19;
-    SpawnY := 30;
-    Hero := -1;
-    HeroType := -1;
-    HeroImmortal := False;
-    HeroChosen := False;
-    HP := START_HP;
-    RoadSkillDelay := 0;
-    FieldSkillDelay := 0;
-    WineSkillDelay := 0;
-    Direction := 2;
-    TribuneX := 5;
-    TribuneY := 2;
-    HeroImmortalTime := 0;
-    HeroStunnedTime := 0;
-    HeroStunned := False;
-    HeroInFearTime := 0;
-    HeroInFear := False;
-    ZombiePlayer := 10;
-    RoadPlayer := 8;
-    DefenceTime := 0;
-    HeroPrisoned := False;
-    HeroPrisonedTime := 0;
-    WerewolfTime := 0;
-    VagaX := 0;
-    VagaY := 0;
-    VagaAppearTime := 0;
-    VagaDir := 0;
-    RegenDelay := 0;
-    ClearPikeObjTime := 0;
-    GravityX := 0;
-    GravityY := 0;
-    RespawnCheckTime := -1;
-    DDTime := 0;
-    DD := False;
-    InIllusion := False;
-    PlayersTeam := 0;
-    CastingSkill := False;
-    SkillTime := 0;
-    SkillCastX := 0;
-    SkillCastY := 0;
-    SkillCastDir := 0;
-    SkillCastRespawnTime := 0;
-    ArmorStartTime := 0;
-    HeroSilent := False;
-    HeroSilentTime := 0;
-    HeroSilentStartTime := 0;
-    AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
-    RopeUnitDir := -1;
-    RopeAttacker := -1;
-    RopeTime := -1;
-    RopeDX := -1;
-    RopeDY := -1;
-    Preparing := False;
-    PreparingTime := 0;
-    ReCharge := False;
-    ReChargeTime := 0;
-    LastUsedSkill := sNone;
-    StolenSkill := sNone;
-    StolenSkillName := '<$57>';
-    TempHeroType := -1;
-    StolenSkillTime := 0;
-    Stone := MAX_SCOUT_STONES;
-    CaptureMind := False;
-    CaptureMindTime := 0;
-    MindStunned := False;
-    StunnedMindTime := 0;
-    HeroMindType := -1;
-    TempHeroMindType := -1;
-    StoneRogue := False;
+    with Players[I] do
+    begin
+      SpawnX := 19;
+      SpawnY := 19 + I * 11;
+      Direction := 2;
+      TribuneX := 3 + 2 * I;
+      ZombiePlayer := 10;
+      RoadPlayer := 8;
+      PlayersTeam := 0;
+    end;
   end;
 
-  with Players[2] do
+  for I := 4 to 7 do
   begin
-    SpawnX := 19;
-    SpawnY := 41;
-    Hero := -1;
-    HeroType := -1;
-    HeroImmortal := False;
-    HeroChosen := False;
-    HP := START_HP;
-    RoadSkillDelay := 0;
-    FieldSkillDelay := 0;
-    WineSkillDelay := 0;
-    Direction := 2;
-    TribuneX := 7;
-    TribuneY := 2;
-    HeroImmortalTime := 0;
-    HeroStunnedTime := 0;
-    HeroStunned := False;
-    HeroInFearTime := 0;
-    HeroInFear := False;
-    ZombiePlayer := 10;
-    RoadPlayer := 8;
-    DefenceTime := 0;
-    HeroPrisoned := False;
-    HeroPrisonedTime := 0;
-    WerewolfTime := 0;
-    VagaX := 0;
-    VagaY := 0;
-    VagaAppearTime := 0;
-    VagaDir := 0;
-    RegenDelay := 0;
-    ClearPikeObjTime := 0;
-    GravityX := 0;
-    GravityY := 0;
-    RespawnCheckTime := -1;
-    DDTime := 0;
-    DD := False;
-    InIllusion := False;
-    PlayersTeam := 0;
-    CastingSkill := False;
-    SkillTime := 0;
-    SkillCastX := 0;
-    SkillCastY := 0;
-    SkillCastDir := 0;
-    SkillCastRespawnTime := 0;
-    ArmorStartTime := 0;
-    HeroSilent := False;
-    HeroSilentTime := 0;
-    HeroSilentStartTime := 0;
-    AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
-    RopeUnitDir := -1;
-    RopeAttacker := -1;
-    RopeTime := -1;
-    RopeDX := -1;
-    RopeDY := -1;
-    Preparing := False;
-    PreparingTime := 0;
-    ReCharge := False;
-    ReChargeTime := 0;
-    LastUsedSkill := sNone;
-    StolenSkill := sNone;
-    StolenSkillName := '<$57>';
-    TempHeroType := -1;
-    StolenSkillTime := 0;
-    Stone := MAX_SCOUT_STONES;
-    CaptureMind := False;
-    CaptureMindTime := 0;
-    MindStunned := False;
-    StunnedMindTime := 0;
-    HeroMindType := -1;
-    TempHeroMindType := -1;
-    StoneRogue := False;
-  end;
-
-  with Players[3] do
-  begin
-    SpawnX := 19;
-    SpawnY := 52;
-    Hero := -1;
-    HeroType := -1;
-    HeroImmortal := False;
-    HeroChosen := False;
-    HP := START_HP;
-    RoadSkillDelay := 0;
-    FieldSkillDelay := 0;
-    WineSkillDelay := 0;
-    Direction := 2;
-    TribuneX := 9;
-    TribuneY := 2;
-    HeroImmortalTime := 0;
-    HeroStunnedTime := 0;
-    HeroStunned := False;
-    HeroInFearTime := 0;
-    HeroInFear := False;
-    ZombiePlayer := 10;
-    RoadPlayer := 8;
-    DefenceTime := 0;
-    HeroPrisoned := False;
-    HeroPrisonedTime := 0;
-    WerewolfTime := 0;
-    VagaX := 0;
-    VagaY := 0;
-    VagaAppearTime := 0;
-    VagaDir := 0;
-    RegenDelay := 0;
-    ClearPikeObjTime := 0;
-    GravityX := 0;
-    GravityY := 0;
-    RespawnCheckTime := -1;
-    DDTime := 0;
-    DD := False;
-    InIllusion := False;
-    PlayersTeam := 0;
-    SkillCastX := 0;
-    SkillCastY := 0;
-    SkillCastDir := 0;
-    SkillCastRespawnTime := 0;
-    ArmorStartTime := 0;
-    HeroSilent := False;
-    HeroSilentTime := 0;
-    HeroSilentStartTime := 0;
-    AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
-    RopeUnitDir := -1;
-    RopeAttacker := -1;
-    RopeTime := -1;
-    RopeDX := -1;
-    RopeDY := -1;
-    Preparing := False;
-    PreparingTime := 0;
-    ReCharge := False;
-    ReChargeTime := 0;
-    LastUsedSkill := sNone;
-    StolenSkill := sNone;
-    StolenSkillName := '<$57>';
-    TempHeroType := -1;
-    StolenSkillTime := 0;
-    Stone := MAX_SCOUT_STONES;
-    CaptureMind := False;
-    CaptureMindTime := 0;
-    MindStunned := False;
-    StunnedMindTime := 0;
-    HeroMindType := -1;
-    TempHeroMindType := -1;
-    StoneRogue := False;
-  end;
-
-  with Players[4] do
-  begin
-    SpawnX := 52;
-    SpawnY := 19;
-    Hero := -1;
-    HeroType := -1;
-    HeroImmortal := False;
-    HeroChosen := False;
-    HP := START_HP;
-    RoadSkillDelay := 0;
-    FieldSkillDelay := 0;
-    WineSkillDelay := 0;
-    Direction := 6;
-    TribuneX := 62;
-    TribuneY := 2;
-    HeroImmortalTime := 0;
-    HeroStunnedTime := 0;
-    HeroStunned := False;
-    HeroInFearTime := 0;
-    HeroInFear := False;
-    ZombiePlayer := 11;
-    RoadPlayer := 9;
-    DefenceTime := 0;
-    HeroPrisoned := False;
-    HeroPrisonedTime := 0;
-    WerewolfTime := 0;
-    VagaX := 0;
-    VagaY := 0;
-    VagaAppearTime := 0;
-    VagaDir := 0;
-    RegenDelay := 0;
-    ClearPikeObjTime := 0;
-    GravityX := 0;
-    GravityY := 0;
-    RespawnCheckTime := -1;
-    DDTime := 0;
-    DD := False;
-    InIllusion := False;
-    PlayersTeam := 1;
-    CastingSkill := False;
-    SkillTime := 0;
-    SkillCastX := 0;
-    SkillCastY := 0;
-    SkillCastDir := 0;
-    SkillCastRespawnTime := 0;
-    ArmorStartTime := 0;
-    HeroSilent := False;
-    HeroSilentTime := 0;
-    HeroSilentStartTime := 0;
-    AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
-    RopeUnitDir := -1;
-    RopeAttacker := -1;
-    RopeTime := -1;
-    RopeDX := -1;
-    RopeDY := -1;
-    Preparing := False;
-    PreparingTime := 0;
-    ReCharge := False;
-    ReChargeTime := 0;
-    LastUsedSkill := sNone;
-    StolenSkill := sNone;
-    StolenSkillName := '<$57>';
-    TempHeroType := -1;
-    StolenSkillTime := 0;
-    Stone := MAX_SCOUT_STONES;
-    CaptureMind := False;
-    CaptureMindTime := 0;
-    MindStunned := False;
-    StunnedMindTime := 0;
-    HeroMindType := -1;
-    TempHeroMindType := -1;
-    StoneRogue := False;
-  end;
-
-  with Players[5] do
-  begin
-    SpawnX := 52;
-    SpawnY := 30;
-    Hero := -1;
-    HeroType := -1;
-    HeroImmortal := False;
-    HeroChosen := False;
-    HP := START_HP;
-    RoadSkillDelay := 0;
-    FieldSkillDelay := 0;
-    WineSkillDelay := 0;
-    Direction := 6;
-    TribuneX := 64;
-    TribuneY := 2;
-    HeroImmortalTime := 0;
-    HeroStunnedTime := 0;
-    HeroStunned := False;
-    HeroInFearTime := 0;
-    HeroInFear := False;
-    ZombiePlayer := 11;
-    RoadPlayer := 9;
-    DefenceTime := 0;
-    HeroPrisoned := False;
-    HeroPrisonedTime := 0;
-    WerewolfTime := 0;
-    VagaX := 0;
-    VagaY := 0;
-    VagaAppearTime := 0;
-    VagaDir := 0;
-    RegenDelay := 0;
-    ClearPikeObjTime := 0;
-    GravityX := 0;
-    GravityY := 0;
-    RespawnCheckTime := -1;
-    DDTime := 0;
-    DD := False;
-    InIllusion := False;
-    PlayersTeam := 1;
-    CastingSkill := False;
-    SkillTime := 0;
-    SkillCastX := 0;
-    SkillCastY := 0;
-    SkillCastDir := 0;
-    SkillCastRespawnTime := 0;
-    ArmorStartTime := 0;
-    HeroSilent := False;
-    HeroSilentTime := 0;
-    HeroSilentStartTime := 0;
-    AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
-    RopeUnitDir := -1;
-    RopeAttacker := -1;
-    RopeTime := -1;
-    RopeDX := -1;
-    RopeDY := -1;
-    Preparing := False;
-    PreparingTime := 0;
-    ReCharge := False;
-    ReChargeTime := 0;
-    LastUsedSkill := sNone;
-    StolenSkill := sNone;
-    StolenSkillName := '<$57>';
-    TempHeroType := -1;
-    StolenSkillTime := 0;
-    Stone := MAX_SCOUT_STONES;
-    CaptureMind := False;
-    CaptureMindTime := 0;
-    MindStunned := False;
-    StunnedMindTime := 0;
-    HeroMindType := -1;
-    TempHeroMindType := -1;
-    StoneRogue := False;
-  end;
-
-  with Players[6] do
-  begin
-    SpawnX := 52;
-    SpawnY := 41;
-    Hero := -1;
-    HeroType := -1;
-    HeroImmortal := False;
-    HeroChosen := False;
-    HP := START_HP;
-    RoadSkillDelay := 0;
-    FieldSkillDelay := 0;
-    WineSkillDelay := 0;
-    Direction := 6;
-    TribuneX := 66;
-    TribuneY := 2;
-    HeroImmortalTime := 0;
-    HeroStunnedTime := 0;
-    HeroStunned := False;
-    HeroInFearTime := 0;
-    HeroInFear := False;
-    ZombiePlayer := 11;
-    RoadPlayer := 9;
-    DefenceTime := 0;
-    HeroPrisoned := False;
-    HeroPrisonedTime := 0;
-    WerewolfTime := 0;
-    VagaX := 0;
-    VagaY := 0;
-    VagaAppearTime := 0;
-    VagaDir := 0;
-    RegenDelay := 0;
-    ClearPikeObjTime := 0;
-    GravityX := 0;
-    GravityY := 0;
-    RespawnCheckTime := -1;
-    DDTime := 0;
-    DD := False;
-    InIllusion := False;
-    PlayersTeam := 1;
-    CastingSkill := False;
-    SkillTime := 0;
-    SkillCastX := 0;
-    SkillCastY := 0;
-    SkillCastDir := 0;
-    SkillCastRespawnTime := 0;
-    ArmorStartTime := 0;
-    HeroSilent := False;
-    HeroSilentTime := 0;
-    HeroSilentStartTime := 0;
-    AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
-    RopeUnitDir := -1;
-    RopeAttacker := -1;
-    RopeTime := -1;
-    RopeDX := -1;
-    RopeDY := -1;
-    Preparing := False;
-    PreparingTime := 0;
-    ReCharge := False;
-    ReChargeTime := 0;
-    LastUsedSkill := sNone;
-    StolenSkill := sNone;
-    StolenSkillName := '<$57>';
-    TempHeroType := -1;
-    StolenSkillTime := 0;
-    Stone := MAX_SCOUT_STONES;
-    CaptureMind := False;
-    CaptureMindTime := 0;
-    MindStunned := False;
-    StunnedMindTime := 0;
-    HeroMindType := -1;
-    TempHeroMindType := -1;
-    StoneRogue := False;
-  end;
-
-  with Players[7] do
-  begin
-    SpawnX := 52;
-    SpawnY := 52;
-    Hero := -1;
-    HeroType := -1;
-    HeroImmortal := False;
-    HeroChosen := False;
-    HP := START_HP;
-    RoadSkillDelay := 0;
-    FieldSkillDelay := 0;
-    WineSkillDelay := 0;
-    Direction := 6;
-    TribuneX := 68;
-    TribuneY := 2;
-    HeroImmortalTime := 0;
-    HeroStunnedTime := 0;
-    HeroStunned := False;
-    HeroInFearTime := 0;
-    HeroInFear := False;
-    ZombiePlayer := 11;
-    RoadPlayer := 9;
-    DefenceTime := 0;
-    HeroPrisoned := False;
-    HeroPrisonedTime := 0;
-    WerewolfTime := 0;
-    VagaX := 0;
-    VagaY := 0;
-    VagaAppearTime := 0;
-    VagaDir := 0;
-    RegenDelay := 0;
-    ClearPikeObjTime := 0;
-    GravityX := 0;
-    GravityY := 0;
-    RespawnCheckTime := -1;
-    DDTime := 0;
-    DD := False;
-    InIllusion := False;
-    PlayersTeam := 1;
-    CastingSkill := False;
-    SkillTime := 0;
-    SkillCastX := 0;
-    SkillCastY := 0;
-    SkillCastDir := 0;
-    SkillCastRespawnTime := 0;
-    ArmorStartTime := 0;
-    HeroSilent := False;
-    HeroSilentTime := 0;
-    HeroSilentStartTime := 0;
-    AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
-    RopeUnitDir := -1;
-    RopeAttacker := -1;
-    RopeTime := -1;
-    RopeDX := -1;
-    RopeDY := -1;
-    Preparing := False;
-    PreparingTime := 0;
-    ReCharge := False;
-    ReChargeTime := 0;
-    LastUsedSkill := sNone;
-    StolenSkill := sNone;
-    StolenSkillName := '<$57>';
-    TempHeroType := -1;
-    StolenSkillTime := 0;
-    Stone := MAX_SCOUT_STONES;
-    CaptureMind := False;
-    CaptureMindTime := 0;
-    MindStunned := False;
-    StunnedMindTime := 0;
-    HeroMindType := -1;
-    TempHeroMindType := -1;
-    StoneRogue := False;
+    with Players[I] do
+    begin
+      SpawnX := 52;
+      SpawnY := 19 + ((I - 4) * 11);
+      Direction := 6;
+      TribuneX := 62 + ((I - 4) * 2);
+      ZombiePlayer := 11;
+      RoadPlayer := 9;
+      PlayersTeam := 1;
+    end;
   end;
 
 end;
@@ -1807,16 +1320,16 @@ begin
         and (States.MapTileObject(PosX, PosY) <> WARRIOR_OBJECT5)
         and (States.MapTileObject(PosX, PosY) <> ROGUE_OBJECT4)
         and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6)) then
-          Actions.MapTileObjectSet(PosX, PosY, SOSObjects[P]);
+          Actions.MapTileObjectSet(PosX, PosY, ShieldObjects[P]);
         if not aSaveCracking then
           if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
-            Actions.MapTileObjectSet(PosX, PosY, SOSObjects[P]);
+            Actions.MapTileObjectSet(PosX, PosY, ShieldObjects[P]);
     end;
   end;
 
   if aObj = BARB_OBJECT2 then
-    if InRange(States.MapTileObject(PosX, PosY), SOS_OBJECT, SOS_OBJECT8) then
-      Actions.MapTileObjectSet(PosX, PosY, SOSObjects[P]);
+    if InRange(States.MapTileObject(PosX, PosY), SHIELD_OBJECT, SHIELD_OBJECT8) then
+      Actions.MapTileObjectSet(PosX, PosY, ShieldObjects[P]);
 
   if aObj = PikeObjects[P] then
     Players[P].ClearPikeObjTime := States.GameTime + 20;
@@ -2328,7 +1841,7 @@ begin
   if (TileOnBattlefield(X, Y))
   and (Players[P].Hero > 0)
   and not (InRange(States.MapTileObject(X, Y), SWORD_OBJECT, VAGA_OBJECT6))
-  and not (InRange(States.MapTileObject(X, Y), SOS_OBJECT, SOS_OBJECT8)) then
+  and not (InRange(States.MapTileObject(X, Y), SHIELD_OBJECT, SHIELD_OBJECT8)) then
   begin
     if States.PlayerIsAI(P) then
     begin
@@ -2912,171 +2425,93 @@ begin
       or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
         ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
-    case Direction of
+    for K := 0 to 1 do
+    begin
 
-      0,1: begin
-             for Y1 := Y2 - 2 downto Y2 - 22 do
-             for X1 := X2 - 1 to X2 + 1 do
-               if TileOnBattlefield(X1, Y1) then
-               begin
-                 Desync := Desync + 1;
-                 TilesWineLength[P] := TilesWineLength[P] + 1;
-                 SetLength(TilesWineX[P], TilesWineLength[P]);
-                 SetLength(TilesWineY[P], TilesWineLength[P]);
-                 SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(TilesWineObjects[P], TilesWineLength[P]);
-                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
-                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 53 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 43 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-               end;
-           end;
+      case Direction of
 
-      2,3: begin
-             for X1 := X2 + 2 to X2 + 22 do
-             for Y1 := Y2 - 1 to Y2 + 1 do
-               if TileOnBattlefield(X1, Y1) then
-               begin
-                 Desync := Desync + 1;
-                 TilesWineLength[P] := TilesWineLength[P] + 1;
-                 SetLength(TilesWineX[P], TilesWineLength[P]);
-                 SetLength(TilesWineY[P], TilesWineLength[P]);
-                 SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(TilesWineObjects[P], TilesWineLength[P]);
-                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
-                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 53 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 43 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-               end;
-           end;
+        0,1: begin
+               for Y1 := Y2 - 2 downto Y2 - 22 do
+               for X1 := X2 - 1 to X2 + 1 do
+                 if TileOnBattlefield(X1, Y1) then
+                 begin
+                   Desync := Desync + 1;
+                   TilesWineLength[P] := TilesWineLength[P] + 1;
+                   SetLength(TilesWineX[P], TilesWineLength[P]);
+                   SetLength(TilesWineY[P], TilesWineLength[P]);
+                   SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
+                   SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
+                   SetLength(TilesWineObjects[P], TilesWineLength[P]);
+                   TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
+                   TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
+                   ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 53 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
+                   SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 43 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
+                   TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
+                 end;
+             end;
 
-      4,5: begin
-             for Y1 := Y2 + 2 to Y2 + 22 do
-             for X1 := X2 - 1 to X2 + 1 do
-               if TileOnBattlefield(X1, Y1) then
-               begin
-                 Desync := Desync + 1;
-                 TilesWineLength[P] := TilesWineLength[P] + 1;
-                 SetLength(TilesWineX[P], TilesWineLength[P]);
-                 SetLength(TilesWineY[P], TilesWineLength[P]);
-                 SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(TilesWineObjects[P], TilesWineLength[P]);
-                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
-                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 53 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 43 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-               end;
-           end;
+        2,3: begin
+               for X1 := X2 + 2 to X2 + 22 do
+               for Y1 := Y2 - 1 to Y2 + 1 do
+                 if TileOnBattlefield(X1, Y1) then
+                 begin
+                   Desync := Desync + 1;
+                   TilesWineLength[P] := TilesWineLength[P] + 1;
+                   SetLength(TilesWineX[P], TilesWineLength[P]);
+                   SetLength(TilesWineY[P], TilesWineLength[P]);
+                   SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
+                   SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
+                   SetLength(TilesWineObjects[P], TilesWineLength[P]);
+                   TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
+                   TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
+                   ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 53 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
+                   SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 43 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
+                   TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
+                 end;
+             end;
 
-      6,7:  begin
-             for X1 := X2 - 2 downto X2 - 22 do
-             for Y1 := Y2 - 1 to Y2 + 1 do
-               if TileOnBattlefield(X1, Y1) then
-               begin
-                 Desync := Desync + 1;
-                 TilesWineLength[P] := TilesWineLength[P] + 1;
-                 SetLength(TilesWineX[P], TilesWineLength[P]);
-                 SetLength(TilesWineY[P], TilesWineLength[P]);
-                 SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(TilesWineObjects[P], TilesWineLength[P]);
-                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
-                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 53 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 43 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-               end;
-           end;
-      end;
+        4,5: begin
+               for Y1 := Y2 + 2 to Y2 + 22 do
+               for X1 := X2 - 1 to X2 + 1 do
+                 if TileOnBattlefield(X1, Y1) then
+                 begin
+                   Desync := Desync + 1;
+                   TilesWineLength[P] := TilesWineLength[P] + 1;
+                   SetLength(TilesWineX[P], TilesWineLength[P]);
+                   SetLength(TilesWineY[P], TilesWineLength[P]);
+                   SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
+                   SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
+                   SetLength(TilesWineObjects[P], TilesWineLength[P]);
+                   TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
+                   TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
+                   ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 53 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
+                   SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 43 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
+                   TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
+                 end;
+             end;
 
-    case Direction of
+        6,7:  begin
+               for X1 := X2 - 2 downto X2 - 22 do
+               for Y1 := Y2 - 1 to Y2 + 1 do
+                 if TileOnBattlefield(X1, Y1) then
+                 begin
+                   Desync := Desync + 1;
+                   TilesWineLength[P] := TilesWineLength[P] + 1;
+                   SetLength(TilesWineX[P], TilesWineLength[P]);
+                   SetLength(TilesWineY[P], TilesWineLength[P]);
+                   SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
+                   SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
+                   SetLength(TilesWineObjects[P], TilesWineLength[P]);
+                   TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
+                   TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
+                   ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 53 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
+                   SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 43 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
+                   TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
+                 end;
+             end;
+        end;
 
-      0,1: begin
-             for Y1 := Y2 - 2 downto Y2 - 22 do
-             for X1 := X2 - 1 to X2 + 1 do
-               if TileOnBattlefield(X1, Y1) then
-               begin
-                 Desync := Desync + 1;
-                 TilesWineLength[P] := TilesWineLength[P] + 1;
-                 SetLength(TilesWineX[P], TilesWineLength[P]);
-                 SetLength(TilesWineY[P], TilesWineLength[P]);
-                 SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(TilesWineObjects[P], TilesWineLength[P]);
-                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
-                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 69 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 59 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-               end;
-           end;
-
-      2,3: begin
-             for X1 := X2 + 2 to X2 + 22 do
-             for Y1 := Y2 - 1 to Y2 + 1 do
-               if TileOnBattlefield(X1, Y1) then
-               begin
-                 Desync := Desync + 1;
-                 TilesWineLength[P] := TilesWineLength[P] + 1;
-                 SetLength(TilesWineX[P], TilesWineLength[P]);
-                 SetLength(TilesWineY[P], TilesWineLength[P]);
-                 SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(TilesWineObjects[P], TilesWineLength[P]);
-                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
-                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 69 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 59 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-               end;
-           end;
-
-      4,5: begin
-             for Y1 := Y2 + 2 to Y2 + 22 do
-             for X1 := X2 - 1 to X2 + 1 do
-               if TileOnBattlefield(X1, Y1) then
-               begin
-                 Desync := Desync + 1;
-                 TilesWineLength[P] := TilesWineLength[P] + 1;
-                 SetLength(TilesWineX[P], TilesWineLength[P]);
-                 SetLength(TilesWineY[P], TilesWineLength[P]);
-                 SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(TilesWineObjects[P], TilesWineLength[P]);
-                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
-                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 69 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 59 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-               end;
-           end;
-
-      6,7:  begin
-             for X1 := X2 - 2 downto X2 - 22 do
-             for Y1 := Y2 - 1 to Y2 + 1 do
-               if TileOnBattlefield(X1, Y1) then
-               begin
-                 Desync := Desync + 1;
-                 TilesWineLength[P] := TilesWineLength[P] + 1;
-                 SetLength(TilesWineX[P], TilesWineLength[P]);
-                 SetLength(TilesWineY[P], TilesWineLength[P]);
-                 SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
-                 SetLength(TilesWineObjects[P], TilesWineLength[P]);
-                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
-                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 69 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 59 + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
-                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-               end;
-           end;
-      end;
+    end;
 
     if (States.PlayerIsAI(P))
     and (Players[P].HP > 0) then
@@ -8725,7 +8160,7 @@ var
 begin
   for aX := MIN_X to MAX_X do
   for aY := MIN_Y to MAX_Y do
-    if States.MapTileObject(aX, aY) = SOSObjects[P] then
+    if States.MapTileObject(aX, aY) = ShieldObjects[P] then
       Actions.MapTileObjectSet(aX, aY, 255);
 end;
 
