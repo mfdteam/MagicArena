@@ -53,7 +53,7 @@ const
   ROGUE_REVENGE_DELAY = 25;
   ROGUE_MENTAL_DELAY = 25;
 
-  SCOUT_ROAD_DELAY = 100;
+  SCOUT_ROAD_DELAY = 120;
   SCOUT_FIELD_DELAY = 150;
   SCOUT_WINE_DELAY = 300;
 
@@ -75,7 +75,7 @@ const
   ARMOR_RADIUS = 5;
   ROPE_RADIUS = 5;
   STEAL_RADIUS = 8;
-  STONES_RADIUS = 5;
+  STONES_RADIUS = 6;
   VAMPIRE_RADIUS = 5;
   MIND_RADIUS = 5;
 
@@ -266,7 +266,7 @@ const
   SPURT_TIME = 25;
   STOLEN_SKILL_TIME = 1200;
   CAPTURE_MIND_TIME = 150;
-  MAX_SCOUT_STONES = 5;
+  MAX_SCOUT_STONES = 8;
 
 //Game mechanics
 
@@ -6457,137 +6457,28 @@ begin
   
 //Use skills
 
-//Vaga-Vaga - Disorientation
-
   if (Players[P].Hero > 0)
   and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 27)
   and (Players[P].RoadSkillDelay = 0)
   and not (Players[P].HeroStunned)
   and not (Players[P].HeroInFear)
   and not (Players[P].HeroSilent) then
-    Disorientation(P, X, Y);
-
-//Axe Fighter - Gravity
-
-  if (Players[P].Hero <> -1)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 15)
-  and (Players[P].RoadSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    Gravity(P, X, Y);
-
-//Pikeman - Vise of Death
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 20)
-  and (Players[P].RoadSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    ViseOfDeath(P, X, Y, -1);
-
-//Sword Fighter - Spiked Earth
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 16)
-  and (Players[P].RoadSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    SpikedEarth(P, X, Y, -1);
-  
-//Crossbowman - Accurate Shot
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 18)
-  and (Players[P].RoadSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    AccurateShot(P, X, Y, -1);
-
-//Bowman - Catch the Bomb!
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 17)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and (Players[P].RoadSkillDelay = 0)
-  and not (Players[P].HeroSilent) then
-    CatchTheBomb(P, X, Y, -1);
-  
-//Lance Carrier - Fiery Lance
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 19)
-  and (Players[P].RoadSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    FieryLance(P, X, Y, -1);
-
-//Barbarian - Cracking Earth
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 23)
-  and (Players[P].RoadSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    CrackingEarth(P, X, Y, -1);
-
-//Warrior - Fiery Snake
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 26)
-  and (Players[P].RoadSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    FierySnake(P, X, Y, -1);
-
-//Knight - Ropes of Death
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 22)
-  and (Players[P].RoadSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    RopesOfDeath(P, X, Y);
-
-//Rogue - Mental Burst
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 25)
-  and (Players[P].RoadSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    MentalBurst(P, X, Y, -1);
-
-//Scout - Stones
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 21)
-  and (Players[P].RoadSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    Stones(P, X, Y);
+  begin
+    case Players[P].HeroType of
+      15: Gravity(P, X, Y);
+      16: SpikedEarth(P, X, Y, -1);
+      17: CatchTheBomb(P, X, Y, -1);
+      18: AccurateShot(P, X, Y, -1);
+      19: FieryLance(P, X, Y, -1);
+      20: ViseOfDeath(P, X, Y, -1);
+      21: Stones(P, X, Y);
+      22: RopesOfDeath(P, X, Y);
+      23: CrackingEarth(P, X, Y, -1);
+      25: MentalBurst(P, X, Y, -1);
+      26: FierySnake(P, X, Y, -1);
+      27: Disorientation(P, X, Y);
+    end;
+  end;
 
 end;
 
@@ -6605,139 +6496,28 @@ begin
 
 //Use skills
 
-//Sword Fighter - Milizombie Summon
-
   if (Players[P].Hero > 0)
   and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 16)
   and (Players[P].FieldSkillDelay = 0)
   and not (Players[P].HeroStunned)
   and not (Players[P].HeroInFear)
   and not (Players[P].HeroSilent) then
-    ZombieSummon(P, X, Y);
-
-//Axe Fighter - Deadly Fireworks
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 15)
-  and (Players[P].FieldSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    DeadlyFireworks(P, X, Y);
-
-//Bowman - Prison
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 17)
-  and (Players[P].FieldSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent)
-  and (States.UnitAt(X, Y) > 0) then
-    Prison(P, X, Y);
-
-//Crossbowman - Sudden Death
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 18)
-  and (Players[P].FieldSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    SuddenDeath(P, X, Y);
-
-
-//Barbarian - Wave of Rage
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 23)
-  and (Players[P].FieldSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    WaveOfRage(P, X, Y);
-
-//Vaga-Vaga - Vaga-Wave
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 27)
-  and (Players[P].FieldSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    VagaWave(P, X, Y);
-   
-//Lance Carrier - Teleport
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 19)
-  and (Players[P].FieldSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    Teleport(P, X, Y);
-
-//Pikeman - Sacrificial Teleport
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 20)
-  and (Players[P].FieldSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    SacrificialTeleport(P, X, Y);
-
-//Warrior - Sturdy Armor
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 26)
-  and (Players[P].FieldSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    SturdyArmor(P, X, Y);
-
-//Knight - Deafening Clatter
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 22)
-  and (Players[P].FieldSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    DeafeningClatter(P, X, Y);
-
-//Rogue - Steal Skills
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 25)
-  and (Players[P].FieldSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    StealSkill(P, X, Y);
-
-//Scout - Vampire
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 21)
-  and (Players[P].FieldSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    Vampire(P, X, Y);
+  begin
+    case Players[P].HeroType of
+      15: DeadlyFireworks(P, X, Y);
+      16: ZombieSummon(P, X, Y);
+      17: Prison(P, X, Y);
+      18: SuddenDeath(P, X, Y);
+      19: Teleport(P, X, Y);
+      20: SacrificialTeleport(P, X, Y);
+      21: Vampire(P, X, Y);
+      22: DeafeningClatter(P, X, Y);
+      23: WaveOfRage(P, X, Y);
+      25: StealSkill(P, X, Y);
+      26: SturdyArmor(P, X, Y);
+      27: VagaWave(P, X, Y);
+    end;
+  end;
 
 end;
 
@@ -6755,137 +6535,28 @@ begin
 
 //Use skills
 
-//Vaga-Vaga - Regen
-
   if (Players[P].Hero > 0)
   and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 27)
   and (Players[P].WineSkillDelay = 0)
   and not (Players[P].HeroStunned)
   and not (Players[P].HeroInFear)
   and not (Players[P].HeroSilent) then
-    Regen(P, X, Y);
-
-//Axe Fighter - Werewolf
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 15)
-  and (Players[P].WineSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    Werewolf(P, X, Y);
-
-//Sword Fighter - Fear
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 16)
-  and (Players[P].WineSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    Fear(P, X, Y);
-
-//Barbarian - Totem of Ancestors
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 23)
-  and (Players[P].WineSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    TotemOfAncestors(P, X, Y);
-
-//Pikeman - Concentration
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 20)
-  and (Players[P].WineSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    Concentration(P, X, Y);
-
-//Crossbowman - Sniper Shot
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 18)
-  and (Players[P].WineSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    SniperShot(P, X, Y, -1);
-
-//Bowman - Revenge from Nowhere
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 17)
-  and (Players[P].WineSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    RevengeFromNowhere(P, X, Y, -1);
-
-//Lance Carrier - Ten Thousands Spears
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 19)
-  and (Players[P].WineSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    TenThousandsSpears(P, X, Y, -1);
-
-//Warrior - Circle of Silence
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 26)
-  and (Players[P].WineSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    CircleOfSilence(P, X, Y);
-
-//Knight - Raging Spurt
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 22)
-  and (Players[P].WineSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    RagingSpurt(P, X, Y, -1);
-
-//Rogue - Use Stolen Skill
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 25)
-  and (Players[P].WineSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    UseStolenSkill(P, X, Y, -1);
-
-//Scout - Mind
-
-  if (Players[P].Hero > 0)
-  and (Players[P].HeroChosen)
-  and (Players[P].HeroType = 21)
-  and (Players[P].WineSkillDelay = 0)
-  and not (Players[P].HeroStunned)
-  and not (Players[P].HeroInFear)
-  and not (Players[P].HeroSilent) then
-    Mind(P, X, Y);
+  begin
+    case Players[P].HeroType of
+      15: Werewolf(P, X, Y);
+      16: Fear(P, X, Y);
+      17: RevengeFromNowhere(P, X, Y, -1);
+      18: SniperShot(P, X, Y, -1);
+      19: TenThousandsSpears(P, X, Y, -1);
+      20: Concentration(P, X, Y);
+      21: Mind(P, X, Y);
+      22: RagingSpurt(P, X, Y, -1);
+      23: TotemOfAncestors(P, X, Y);
+      25: UseStolenSkill(P, X, Y, -1);
+      26: CircleOfSilence(P, X, Y);
+      27: Regen(P, X, Y);
+    end;
+  end;
 
 end;
 
