@@ -7622,7 +7622,8 @@ begin
     Roads[aX][aY].Owner := -1;
   end;
 
-  if InRange(aObj, SWORD_OBJECT, SWORD_OBJECT + 3) then
+  if (InRange(aObj, SWORD_OBJECT1, SWORD_OBJECT1 + 2))
+  or (aObj = SWORD_OBJECT) then
   begin
     if (not States.PlayerDefeated(P))
     and (not Players[P].HeroImmortal) then
