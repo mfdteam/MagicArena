@@ -345,6 +345,7 @@ type
     DD: Boolean;
     InIllusion: Boolean;
     PlayersTeam: Integer;
+    TempPlayersTeam: Integer;
     CastingSkill: Boolean;
     SkillTime: Integer;
     SkillCastX: Integer;
@@ -6209,8 +6210,7 @@ begin
           and (not Players[O].HeroPrisoned)
           and (not Players[O].HeroImmortal)
           and ((Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          or ((P = O) 
-          and (Players[P].HP >= 2))) then
+          or ((P = O) and (Players[P].HP >= 2))) then
           begin
             TilesFieldLength[P] := TilesFieldLength[P] + 1;
             SetLength(TilesFieldX[P], TilesFieldLength[P]);
@@ -6238,15 +6238,18 @@ begin
               Players[M[P]].HP := Players[M[P]].HP - 1;
             if Players[O].MindStunned then
               Players[P].HP := Players[P].HP - 1;
+              
+            Players[P].LastUsedSkill := sVampire;
+            Players[P].FieldSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
           end;
 
         if (InRange(O, 8, 11))
         and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
+        begin
           Actions.UnitKill(U, False);
-
-        Players[P].LastUsedSkill := sVampire;
-        Players[P].FieldSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-
+          Players[P].LastUsedSkill := sVampire;
+          Players[P].FieldSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+        end;
       end;
     end;
   end;
@@ -6279,6 +6282,8 @@ begin
       and (not Players[O].HeroInFear)
       and (not Players[O].MindStunned)
       and (not Players[P].CaptureMind)
+      and (not Players[P].MindStunned)
+      and (not Players[O].CaptureMind)
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
@@ -6286,7 +6291,8 @@ begin
         M2[O] := P;
 
         DirP := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
-        DirO := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));    
+        DirO := States.UnitDirection(States.GroupMember(Players[O].Hero, 0)); 
+        Players[P].TempPlayersTeam := Players[P].PlayersTeam;
         Players[P].HeroMindType := Players[P].HeroType;
         Players[O].HeroMindType := Players[O].HeroType;
         Players[P].TempHeroMindType := Players[P].TempHeroType;
@@ -6331,6 +6337,10 @@ begin
         Players[P].RoadSkillDelay := Players[O].RoadSkillDelay;
         Players[P].FieldSkillDelay := Players[O].FieldSkillDelay;
         Players[P].WineSkillDelay := Players[O].WineSkillDelay;
+        if Players[O].PlayersTeam = 0 then
+          Players[P].PlayersTeam := 1;
+        if Players[O].PlayersTeam = 1 then
+          Players[P].PlayersTeam := 0;
       end;
     end;
   end;
@@ -8408,6 +8418,7 @@ begin
          Players[I1].StolenSkillName := Players[I1].TempStolenSkillName;
          Players[M[I1]].Stone := Players[I1].Stone;
          Players[I1].Stone := Players[I1].TempStone;
+         Players[I1].PlayersTeam := Players[I1].TempPlayersTeam;
        end;
     end;
   end;
