@@ -373,6 +373,8 @@ type
     PreparingTime: Integer;
     ReCharge: Boolean;
     ReChargeTime: Integer;
+    TempReCharge: Boolean;
+    TempReChargeTime: Integer;
     LastUsedSkill: aSkill;
     StolenSkill: aSkill;
     StolenSkillName: ANSIString;
@@ -761,6 +763,8 @@ begin
       PreparingTime := 0;
       ReCharge := False;
       ReChargeTime := 0;
+      TempReCharge := False;
+      TempReChargeTime := 0;
       LastUsedSkill := sNone;
       StolenSkill := sNone;
       StolenSkillName := '<$57>';
@@ -1342,19 +1346,17 @@ begin
       and (States.MapTileObject(PosX, PosY) <> WARRIOR_OBJECT5)
       and (States.MapTileObject(PosX, PosY) <> ROGUE_OBJECT4)
       and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6)) then
-      begin
         Actions.MapTileObjectSet(PosX, PosY, aObj);
-        if not aSaveCracking then
-          if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
-            Actions.MapTileObjectSet(PosX, PosY, aObj);
-        if aChangeRelief then
-        begin
-          aRelief := States.MapTileHeight(PosX, PosY) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
-          if aRelief < 0 then
-            aRelief := -1 * aRelief;
-          Actions.MapTileHeightSet(PosX, PosY, aRelief);
-          Tiles[PosX][PosY].ReliefRefreshTime := States.GameTime + RELIEF_REFRESH_TIME;
-        end;
+      if not aSaveCracking then
+        if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
+          Actions.MapTileObjectSet(PosX, PosY, aObj);
+      if aChangeRelief then
+      begin
+        aRelief := States.MapTileHeight(PosX, PosY) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
+        if aRelief < 0 then
+          aRelief := -1 * aRelief;
+        Actions.MapTileHeightSet(PosX, PosY, aRelief);
+        Tiles[PosX][PosY].ReliefRefreshTime := States.GameTime + RELIEF_REFRESH_TIME;
       end;
   end;
 
@@ -5888,6 +5890,8 @@ begin
         Players[P].TempStolenSkillTime := Players[P].StolenSkillTime;
         Players[P].TempStolenSkillName := Players[P].StolenSkillName;
         Players[P].TempStone := Players[P].Stone;
+        Players[P].TempReCharge := Players[P].ReCharge;
+        Players[P].TempReChargeTime := Players[P].ReChargeTime;
 
         Actions.GroupKillAll(Players[P].Hero, True);
         Actions.GroupKillAll(Players[O].Hero, True);
@@ -7735,6 +7739,10 @@ begin
         Players[I1].StolenSkillName := Players[I1].TempStolenSkillName;
         Players[M[I1]].Stone := Players[I1].Stone;
         Players[I1].Stone := Players[I1].TempStone;
+        Players[M[I1]].ReCharge := Players[I1].ReCharge;
+        Players[I1].ReCharge := Players[I1].TempReCharge;
+        Players[M[I1]].ReChargeTime := Players[I1].ReChargeTime;
+        Players[I1].ReChargeTime := Players[I1].TempReChargeTime;
         Players[I1].PlayersTeam := Players[I1].TempPlayersTeam;
       end;
     end;
