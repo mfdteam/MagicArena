@@ -337,6 +337,7 @@ type
     VagaY: Integer;
     VagaDir: Integer;
     VagaAppearTime: Integer;
+    VagaAppearTimeBack: Integer;
     RegenDelay: Integer;
     ClearPikeObjTime: Integer;
     GravityX: Integer;
