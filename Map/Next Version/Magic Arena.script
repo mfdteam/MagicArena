@@ -1346,17 +1346,19 @@ begin
       and (States.MapTileObject(PosX, PosY) <> WARRIOR_OBJECT5)
       and (States.MapTileObject(PosX, PosY) <> ROGUE_OBJECT4)
       and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6)) then
-        Actions.MapTileObjectSet(PosX, PosY, aObj);
-      if not aSaveCracking then
-        if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
-          Actions.MapTileObjectSet(PosX, PosY, aObj);
-      if aChangeRelief then
       begin
-        aRelief := States.MapTileHeight(PosX, PosY) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
-        if aRelief < 0 then
-          aRelief := -1 * aRelief;
-        Actions.MapTileHeightSet(PosX, PosY, aRelief);
-        Tiles[PosX][PosY].ReliefRefreshTime := States.GameTime + RELIEF_REFRESH_TIME;
+        Actions.MapTileObjectSet(PosX, PosY, aObj);
+        if not aSaveCracking then
+          if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
+            Actions.MapTileObjectSet(PosX, PosY, aObj);
+        if aChangeRelief then
+        begin
+          aRelief := States.MapTileHeight(PosX, PosY) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
+          if aRelief < 0 then
+            aRelief := -1 * aRelief;
+          Actions.MapTileHeightSet(PosX, PosY, aRelief);
+          Tiles[PosX][PosY].ReliefRefreshTime := States.GameTime + RELIEF_REFRESH_TIME;
+        end;
       end;
   end;
 
