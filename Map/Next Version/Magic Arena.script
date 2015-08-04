@@ -253,7 +253,7 @@ const
   CIRCLE_DEF_TIME = 6;
   WEREWOLF_TIME = 450;
   REGEN_TIME = 40;
-  VAGA_TIME = 10;
+  DELAY_OF_TURNING = 2;
   REGEN_DELAY = 60;
   CONCENTRATION_TIME = 60;
   SHOCK_TIME = 10;
@@ -736,12 +736,20 @@ begin
       TempHeroType := -1;
       StolenSkillTime := 0;
       Stone := MAX_SCOUT_STONES;
+      MindX: Integer;
+      MindY: Integer;
+      MindDir: Integer;
+      MindX2: Integer;
+      MindY2: Integer;
+      MindDir2: Integer;
       CaptureMind := False;
       CaptureMindTime := 0;
       MindStunned := False;
       StunnedMindTime := 0;
       HeroMindType := -1;
       TempHeroMindType := -1;
+      MindAppearTime: Integer;
+      MindAppearTimeBack: Integer;
       StoneRogue := False;
       TempStolenSkill := sNone;
       TempStolenSkillName := '';
@@ -5694,7 +5702,7 @@ end;
 
 procedure Mind(P, X, Y: Integer);
 var
- X2, Y2, U, O, DirP, DirO: Integer;
+ X2, Y2, U, O: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -5726,8 +5734,13 @@ begin
         M[P] := O;
         M2[O] := P;
 
-        DirP := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
-        DirO := States.UnitDirection(States.GroupMember(Players[O].Hero, 0)); 
+        Players[P].MindX := X;
+        Players[P].MindY := Y;
+        Players[P].MindDir := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
+        Players[P].MindX2 := X2;
+        Players[P].MindY2 := Y2;
+        Players[P].MindDir2 := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+
         Players[P].TempPlayersTeam := Players[P].PlayersTeam;
         Players[P].HeroMindType := Players[P].HeroType;
         Players[O].HeroMindType := Players[O].HeroType;
@@ -5736,47 +5749,11 @@ begin
         Players[P].TempStolenSkillTime := Players[P].StolenSkillTime;
         Players[P].TempStolenSkillName := Players[P].StolenSkillName;
         Players[P].TempStone := Players[P].Stone;
-        
-        if Players[O].HeroType = 27 then
-        begin
-          Players[P].WerewolfTime := Players[O].WerewolfTime;
-          Players[O].WerewolfTime := 0;
-          Players[O].HeroMindType := 15;
-        end;
 
-        Players[P].CaptureMind := True;
         Actions.GroupKillAll(Players[P].Hero, True);
-        Players[P].HeroType := Players[O].HeroType
-        Players[P].Hero := Actions.GiveGroup(P, Players[O].HeroType, X, Y, DirO, 1, 1);
-        Players[P].TempHeroType := Players[O].TempHeroType;
-
-        Players[O].HeroStunned := True;
-        Players[O].MindStunned := True;
         Actions.GroupKillAll(Players[O].Hero, True);
-        Players[O].HeroType := Players[P].HeroMindType;
-        Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, X2, Y2, DirP, 1, 1);
-
-        Players[O].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME; 
-        Players[P].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME; 
-        Players[O].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
-        Players[P].HeroImmortalTime := States.GameTime + CAPTURE_MIND_TIME;
-
-        Actions.GroupBlockOrders(Players[O].Hero, True);
-        Actions.GroupOrderHalt(Players[O].Hero);  
-        Players[P].HeroImmortal := True;
-
-        Players[P].LastUsedSkill := sMind;
-        Players[P].StolenSkill := Players[O].StolenSkill;
-        Players[P].StolenSkillTime := Players[O].StolenSkillTime;
-        Players[P].StolenSkillName := Players[O].StolenSkillName;
-        Players[P].Stone := Players[O].Stone;
-        Players[P].RoadSkillDelay := Players[O].RoadSkillDelay;
-        Players[P].FieldSkillDelay := Players[O].FieldSkillDelay;
-        Players[P].WineSkillDelay := Players[O].WineSkillDelay;
-        if Players[O].PlayersTeam = 0 then
-          Players[P].PlayersTeam := 1;
-        if Players[O].PlayersTeam = 1 then
-          Players[P].PlayersTeam := 0;
+    
+        Players[P].MindAppearTime := States.GameTime + DELAY_OF_TURNING;
       end;
     end;
   end;
@@ -7380,7 +7357,7 @@ end;
 
 procedure CheckStatus;
 var
-  aX, aY, aD, aX2, aY2, aD2, I1: Integer;
+  aX, aY, aD, I1: Integer;
 begin
   for I1 := 0 to 7 do
   begin
@@ -7394,18 +7371,23 @@ begin
 
     if States.GameTime = Players[I1].WerewolfTime then
     begin
-      if Players[I1].Hero <> -1 then
+      Players[I1].VagaX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
+      Players[I1].VagaY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+      Players[I1].VagaDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
+      Actions.GroupKillAll(Players[I1].Hero, True);
+      Players[I1].VagaAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
+    end;
+    
+    if States.GameTime = Players[I1].VagaAppearTimeBack then  
+    begin
+      if Players[I1].Hero <> -1 then   
       begin
-        aX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
-        aY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
-        aD := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].TempHeroType, aX, aY, aD, 1, 1);
+        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].TempHeroType, Players[I1].VagaX, Players[I1].VagaY, Players[I1].VagaDir, 1, 1);
         Players[I1].HeroType := Players[I1].TempHeroType;
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-        Players[I1].WineSkillDelay := AXE_WINE_DELAY * (1 - Round(RECHARGE_FACTOR * Byte(Players[I1].ReCharge))) - WEREWOLF_TIME;
         Players[I1].RoadSkillDelay := 0;
         Players[I1].FieldSkillDelay := 0;
+        Players[I1].WineSkillDelay := AXE_WINE_DELAY * (1 - Round(RECHARGE_FACTOR * Byte(Players[I1].ReCharge))) - WEREWOLF_TIME;
       end;
     end;
 
@@ -7494,57 +7476,105 @@ begin
       end;
     end;
 
-   if States.GameTime = Players[I1].CaptureMindTime then
-     begin
-       aX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
-       aY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
-       aD := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
-       aX2 := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
-       aY2 := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
-       aD2 := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
-       if Players[M[I1]].HP = 0 then
-       begin
-         aX2 := aX;
-         aY2 := aY;
-       end;
-       Players[I1].CaptureMind := False;
-       Players[M[I1]].MindStunned := False;
-       if (Players[I1].Hero > 0)
-       and (Players[M[I1]].Hero > 0) then
-       begin
-         if Players[I1].HeroType = 27 then
-         begin
-           Players[M[I1]].WerewolfTime := Players[I1].WerewolfTime;
-           Players[I1].WerewolfTime := 0;
-           Players[M[I1]].HeroMindType := 27;
-         end;
-         Actions.GroupKillAll(Players[I1].Hero, True);
-         Actions.GroupKillAll(Players[M[I1]].Hero, True);
-         Players[I1].HeroType := Players[I1].HeroMindType;
-         Players[M[I1]].HeroType := Players[M[I1]].HeroMindType;
-         Players[I1].TempHeroType := Players[I1].TempHeroMindType;
-         Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, aX2, aY2, aD2, 1, 1);
-         Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, aX, aY, aD, 1, 1);
-         Players[M[I1]].RoadSkillDelay := Players[I1].RoadSkillDelay;
-         Players[M[I1]].FieldSkillDelay := Players[I1].FieldSkillDelay;
-         Players[M[I1]].WineSkillDelay := Players[I1].WineSkillDelay;
-         Players[I1].RoadSkillDelay := 0;
-         Players[I1].FieldSkillDelay := 0;
-         Players[I1].WineSkillDelay := Round(SCOUT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[I1].ReCharge)));
-         Players[M[I1]].LastUsedSkill := Players[I1].LastUsedSkill;
-         Players[M[I1]].StolenSkill := Players[I1].StolenSkill;
-         Players[M[I1]].StolenSkillTime := Players[I1].StolenSkillTime;
-         Players[M[I1]].StolenSkillName := Players[I1].StolenSkillName;
-         Players[I1].StolenSkill := Players[I1].TempStolenSkill;
-         Players[I1].StolenSkillTime := Players[I1].TempStolenSkillTime;
-         Players[I1].StolenSkillName := Players[I1].TempStolenSkillName;
-         Players[M[I1]].Stone := Players[I1].Stone;
-         Players[I1].Stone := Players[I1].TempStone;
-         Players[I1].PlayersTeam := Players[I1].TempPlayersTeam;
-       end;
+    if States.GameTime = Players[I1].MindAppearTime then
+    begin
+      if Players[M[I1]].HeroType = 27 then
+      begin
+        Players[I1].WerewolfTime := Players[M[I1]].WerewolfTime;
+        Players[M[I1]].WerewolfTime := 0;
+        Players[M[I1]].HeroMindType := 15;
+      end;
+
+      Players[I1].CaptureMind := True;
+      Players[I1].HeroType := Players[M[I1]].HeroType
+      Players[I1].Hero := Actions.GiveGroup(I1, Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
+      Players[I1].TempHeroType := Players[M[I1]].TempHeroType;
+ 
+      Players[M[I1]].HeroStunned := True;
+      Players[M[I1]].MindStunned := True;
+      Players[M[I1]].HeroType := Players[I1].HeroMindType;
+      Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
+
+      Actions.GroupBlockOrders(Players[M[I1]].Hero, True);
+      Actions.GroupOrderHalt(Players[M[I1]].Hero);  
+      Players[I1].HeroImmortal := True;
+ 
+      Players[I1].LastUsedSkill := sMind;
+      Players[I1].StolenSkill := Players[M[I1]].StolenSkill;
+      Players[I1].StolenSkillTime := Players[M[I1]].StolenSkillTime;
+      Players[I1].StolenSkillName := Players[M[I1]].StolenSkillName;
+      Players[I1].Stone := Players[M[I1]].Stone;
+      Players[I1].RoadSkillDelay := Players[M[I1]].RoadSkillDelay;
+      Players[I1].FieldSkillDelay := Players[M[I1]].FieldSkillDelay;
+      Players[I1].WineSkillDelay := Players[M[I1]].WineSkillDelay;
+      if Players[M[I1]].PlayersTeam = 0 then
+        Players[I1].PlayersTeam := 1;
+      if Players[M[I1]].PlayersTeam = 1 then
+        Players[I1].PlayersTeam := 0;
+ 
+      Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME; 
+      Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME; 
+      Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
+      Players[I1].HeroImmortalTime := States.GameTime + CAPTURE_MIND_TIME;
+    end;
+
+    if States.GameTime = Players[I1].CaptureMindTime then
+    begin
+      Players[I1].MindX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
+      Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+      Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
+      Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
+      Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
+      Players[I1].MindDir2 := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
+      Actions.GroupKillAll(Players[I1].Hero, True);
+      Actions.GroupKillAll(Players[M[I1]].Hero, True);
+      Players[I1].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
+    end;
+   
+
+    if States.GameTime = Players[I1].MindAppearTimeBack then
+    begin
+      if Players[M[I1]].HP = 0 then 
+      begin
+        Players[I1].MindX2 := Players[I1].MindX;
+        Players[I1].MindY := Players[I1].MindY;
+      end;
+      Players[I1].CaptureMind := False;
+      Players[M[I1]].MindStunned := False;
+      if (Players[I1].Hero > 0)
+      and (Players[M[I1]].Hero > 0) then
+      begin
+        if Players[I1].HeroType = 27 then
+        begin
+          Players[M[I1]].WerewolfTime := Players[I1].WerewolfTime;
+          Players[I1].WerewolfTime := 0;
+          Players[M[I1]].HeroMindType := 27;
+        end;
+        Players[I1].HeroType := Players[I1].HeroMindType;
+        Players[M[I1]].HeroType := Players[M[I1]].HeroMindType;
+        Players[I1].TempHeroType := Players[I1].TempHeroMindType;
+        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
+        Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
+        Players[M[I1]].RoadSkillDelay := Players[I1].RoadSkillDelay;
+        Players[M[I1]].FieldSkillDelay := Players[I1].FieldSkillDelay;
+        Players[M[I1]].WineSkillDelay := Players[I1].WineSkillDelay;
+        Players[I1].RoadSkillDelay := 0;
+        Players[I1].FieldSkillDelay := 0;
+        Players[I1].WineSkillDelay := Round(SCOUT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[I1].ReCharge)));
+        Players[M[I1]].LastUsedSkill := Players[I1].LastUsedSkill;
+        Players[M[I1]].StolenSkill := Players[I1].StolenSkill;
+        Players[M[I1]].StolenSkillTime := Players[I1].StolenSkillTime;
+        Players[M[I1]].StolenSkillName := Players[I1].StolenSkillName;
+        Players[I1].StolenSkill := Players[I1].TempStolenSkill;
+        Players[I1].StolenSkillTime := Players[I1].TempStolenSkillTime;
+        Players[I1].StolenSkillName := Players[I1].TempStolenSkillName;
+        Players[M[I1]].Stone := Players[I1].Stone;
+        Players[I1].Stone := Players[I1].TempStone;
+        Players[I1].PlayersTeam := Players[I1].TempPlayersTeam;
+      end;
     end;
   end;
-end;
+end
 
 
 procedure CheckTileRoadObjects(P: Integer);
