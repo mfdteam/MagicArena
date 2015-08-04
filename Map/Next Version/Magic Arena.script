@@ -8150,7 +8150,11 @@ begin
   C := 0;
   C1 := 0;
 
-  while (not States.PlayerEnabled(Target))
+  Target := 8;
+  Target1 := 8;
+
+  while (Target > 7)
+  or (not States.PlayerEnabled(Target))
   or (Players[Target].HP <= 0)
   or (Players[Target].Hero < 0) do
   begin
@@ -8160,7 +8164,8 @@ begin
       Exit;
   end;
 
-  while (not States.PlayerEnabled(Target1))
+  while (Target1 > 7)
+  or (not States.PlayerEnabled(Target1))
   or (Players[Target1].HP <= 0)
   or (Players[Target1].Hero < 0) do
   begin
