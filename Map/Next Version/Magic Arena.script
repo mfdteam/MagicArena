@@ -273,6 +273,8 @@ const
 //Game mechanics
 
   DESYNC_FACTOR = 1;
+  RELIEF_CHANGE_FACTOR = 20;
+  RELIEF_REFRESH_TIME = 5;
   CLEANUP_TIME = 20;
   PLANT_TREES_TIME = 25;
   PLANT_TREES_FACTOR = 0.8;
@@ -410,10 +412,20 @@ type
 
 
 type
+  aRoad = Record
+    X: Integer;
+    Y: Integer;
+    Owner: Integer;
+  end;
+
+
+type
   aTile = Record
     X: Integer;
     Y: Integer;
     Owner: Integer;
+    Relief: Integer;
+    ReliefRefreshTime: Integer;
   end;
 
 
@@ -435,7 +447,8 @@ var
   TimeToClearFireworks2Array, TimeToClearFireworks3Array, TimeToClearFireworks4Array, TimeToClearFireworks5Array,
   TimeToClearVagaArray, TimeToClearKnightArray, TimeToClearRogueArray: array[0..11] of Integer;
   PikeObjects, ShieldObjects: array[0..7] of Integer;
-  Roads, Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
+  Roads: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aRoad;
+  Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
   TeamChoice: array[0..1] of ANSIString;
   TeamInfo: array[0..1] of ANSIString;
   ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime: array[0..11] of Integer;
@@ -541,6 +554,8 @@ begin
     Tiles[aX][aY].X := aX;
     Tiles[aX][aY].Y := aY;
     Tiles[aX][aY].Owner := -1;
+    Tiles[aX][aY].Relief := States.MapTileHeight(aX, aY);
+    Tiles[aX][aY].ReliefRefreshTime := 0;
   end;
 end;
 
@@ -1304,9 +1319,9 @@ begin
 end;
 
 
-procedure SetCircle(P, X, Y, R, aObj: Integer; aDef, aSaveCracking, aNone: Boolean);
+procedure SetCircle(P, X, Y, R, aObj: Integer; aDef, aSaveCracking, aChangeRelief: Boolean);
 var
-  X1, X2, Y1, Y2, PosX, PosY: Integer;
+  X1, X2, Y1, Y2, PosX, PosY, aRelief: Integer;
 begin
   X1 := X - R;
   X2 := X + R;
@@ -1331,6 +1346,14 @@ begin
       if not aSaveCracking then
         if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
           Actions.MapTileObjectSet(PosX, PosY, aObj);
+      if aChangeRelief then
+      begin
+        aRelief := States.MapTileHeight(PosX, PosY) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
+        if aRelief < 0 then
+          aRelief := -1 * aRelief;
+        Actions.MapTileHeightSet(PosX, PosY, aRelief);
+        Tiles[PosX][PosY].ReliefRefreshTime := States.GameTime + RELIEF_REFRESH_TIME;
+      end;
   end;
 
   if aDef then
@@ -7067,7 +7090,7 @@ begin
         if TileOnBattlefield(TotemCircles[P][I].X, TotemCircles[P][I].Y) then
         begin
           if (States.GameTime = TotemCircles[P][I].AddTime) then
-            SetCircle(P, TotemCircles[P][I].X, TotemCircles[P][I].Y, TotemCircles[P][I].Radius, TotemCircles[P][I].Obj, False, False, True);
+            SetCircle(P, TotemCircles[P][I].X, TotemCircles[P][I].Y, TotemCircles[P][I].Radius, TotemCircles[P][I].Obj, False, False, False);
         end;
       end;
 end;
@@ -7082,7 +7105,7 @@ begin
         if TileOnBattlefield(RageCircles[P][I].X, RageCircles[P][I].Y) then
         begin
           if (States.GameTime = RageCircles[P][I].AddTime) then
-            SetCircle(P, RageCircles[P][I].X, RageCircles[P][I].Y, RageCircles[P][I].Radius, RageCircles[P][I].Obj, True, False, true);
+            SetCircle(P, RageCircles[P][I].X, RageCircles[P][I].Y, RageCircles[P][I].Radius, RageCircles[P][I].Obj, True, False, False);
         end;
       end;
 end;
@@ -7097,7 +7120,7 @@ begin
         if TileOnBattlefield(VagaCircles[P][I].X, VagaCircles[P][I].Y) then
         begin
           if (States.GameTime = VagaCircles[P][I].AddTime) then
-            SetCircle(P, VagaCircles[P][I].X, VagaCircles[P][I].Y, VagaCircles[P][I].Radius, VagaCircles[P][I].Obj, True, False, True);
+            SetCircle(P, VagaCircles[P][I].X, VagaCircles[P][I].Y, VagaCircles[P][I].Radius, VagaCircles[P][I].Obj, True, False, False);
         end;
       end;
 end;
@@ -7237,8 +7260,8 @@ begin
         begin
           if (States.GameTime = ViseCircles[P][I].AddTime) then
           begin
-            SetCircle(P, ViseCircles[P][I].X, ViseCircles[P][I].Y, VISE_RADIUS, 255, False, False, True);
-            SetCircle(P, ViseCircles[P][I].X, ViseCircles[P][I].Y, ViseCircles[P][I].Radius, ViseCircles[P][I].Obj, False, False, True);
+            SetCircle(P, ViseCircles[P][I].X, ViseCircles[P][I].Y, VISE_RADIUS, 255, False, False, False);
+            SetCircle(P, ViseCircles[P][I].X, ViseCircles[P][I].Y, ViseCircles[P][I].Radius, ViseCircles[P][I].Obj, False, False, False);
           end;
         end;
       end;
@@ -7258,7 +7281,7 @@ begin
           if (States.GameTime = GravityCircles[P][CC].AddTime) then
           begin
             SetCircle(P, GravityCircles[P][CC].X, GravityCircles[P][CC].Y, GRAVITY_RADIUS, 255, False, True, True);
-            SetCircle(P, GravityCircles[P][CC].X, GravityCircles[P][CC].Y, GravityCircles[P][CC].Radius, GravityCircles[P][CC].Obj, False, True, True);
+            SetCircle(P, GravityCircles[P][CC].X, GravityCircles[P][CC].Y, GravityCircles[P][CC].Radius, GravityCircles[P][CC].Obj, False, True, False);
             for X := GravityCircles[P][CC].X - GravityCircles[P][CC].Radius - 1 to GravityCircles[P][CC].X + GravityCircles[P][CC].Radius + 1 do
             for Y := GravityCircles[P][CC].Y - GravityCircles[P][CC].Radius - 1 to GravityCircles[P][CC].Y + GravityCircles[P][CC].Radius + 1 do
             begin
@@ -7308,9 +7331,20 @@ begin
         if TileOnBattlefield(ConcentrationCircles[P][I].X, ConcentrationCircles[P][I].Y) then
         begin
           if (States.GameTime = ConcentrationCircles[P][I].AddTime) then
-            SetCircle(P, ConcentrationCircles[P][I].X, ConcentrationCircles[P][I].Y, ConcentrationCircles[P][I].Radius, ConcentrationCircles[P][I].Obj, True, False, True);
+            SetCircle(P, ConcentrationCircles[P][I].X, ConcentrationCircles[P][I].Y, ConcentrationCircles[P][I].Radius, ConcentrationCircles[P][I].Obj, True, False, False);
         end;
       end;
+end;
+
+
+procedure RefreshRelief;
+var
+  ax, aY: Integer;
+begin
+  for aX := MIN_X to MAX_X do
+  for aY := MIN_Y to MAX_Y do
+    if States.GameTime = Tiles[aX][aY].ReliefRefreshTime then
+      Actions.MapTileHeightSet(aX, aY, Tiles[aX][aY].Relief);
 end;
 
 
@@ -7473,7 +7507,7 @@ end;
 
 procedure CheckStatus;
 var
-  aX, aY, aD, I1: Integer;
+  I1: Integer;
 begin
   for I1 := 0 to 7 do
   begin
@@ -7707,6 +7741,8 @@ end;
 
 
 procedure CheckTileRoadObjects(P: Integer);
+var
+  aRelief: Integer;
 begin
   for K := 0 to TilesRoadLength[P] - 1 do
   begin
@@ -7737,6 +7773,15 @@ begin
         and (TilesRoadObjects[P][K] = WARRIOR_OBJECT5) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], WARRIOR_OBJECT5);
 
+        if (TilesRoadObjects[P][K] = BARB_OBJECT)
+        and (States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]) = Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief) then
+        begin
+          aRelief := States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
+          if aRelief < 0 then
+            aRelief := -1 * aRelief;
+          Actions.MapTileHeightSet(TilesRoadX[P][K], TilesRoadY[P][K], aRelief);
+        end;
+
         if (Roads[TilesRoadX[P][K]][TilesRoadY[P][K]].Owner <> - 1)
         and (States.GameTime mod 3 = 0) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], BOWMAN_MINE);  
@@ -7744,6 +7789,9 @@ begin
         if States.GameTime = ClearTilesRoadTimes[P][K] then
         begin
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], 255);
+
+          if States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]) <> Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief then
+            Actions.MapTileHeightSet(TilesRoadX[P][K], TilesRoadY[P][K], Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief);
 
           if TilesRoadObjects[P][K] = BOWMAN_MINE then
           begin
@@ -9443,6 +9491,8 @@ var
 begin
 
   CheckRuneTime;
+
+  RefreshRelief;
 
   GoOutFromRune;
 
