@@ -217,6 +217,8 @@ const
 
   SCOUT_OBJECT = 8;
   SCOUT_OBJECT2 = 7;
+  SCOUT_OBJECT3 = 211;
+  SCOUT_OBJECT4 = 213;
 
 //Runes
 
@@ -317,6 +319,7 @@ type
     HeroImmortalTime: Integer;
     HeroChosen: Boolean;
     HP: Integer;
+    HPDelay: Integer;
     RoadSkillDelay: Integer;
     FieldSkillDelay: Integer;
     WineSkillDelay: Integer;
@@ -391,6 +394,8 @@ type
     Stone: Integer;
     TempStone: Integer;
     StoneRogue: Boolean;
+    SetUnit: Integer;
+    UnitKillDelay: Integer;
   end;
 
 
@@ -435,7 +440,7 @@ var
   TeamInfo: array[0..1] of ANSIString;
   ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime: array[0..11] of Integer;
   RuneTime: Integer;
-  M, M2: array[0..7] of Integer;
+  M, M2, M3: array[0..7] of Integer;
   ZomboHero: array[0..7] of array[0..3] of Integer;
   DeathX, DeathY: Integer;
   AISoldiers: array of Integer;
@@ -694,6 +699,7 @@ begin
       HeroImmortal := False;
       HeroChosen := False;
       HP := START_HP;
+      HPDelay := 0;
       TribuneY := 2;
       RoadSkillDelay := 0;
       FieldSkillDelay := 0;
@@ -710,6 +716,7 @@ begin
       VagaX := 0;
       VagaY := 0;
       VagaAppearTime := 0;
+      VagaAppearTimeBack := 0
       VagaDir := 0;
       RegenDelay := 0;
       ClearPikeObjTime := 0;
@@ -765,6 +772,8 @@ begin
       MindX2 := 0;
       MindY2 := 0;
       MindDir2 := 0;
+      SetUnit := 0;
+      UnitKillDelay := 0;
     end;
   end;
 
@@ -5656,58 +5665,149 @@ begin
       end;
 
       U := States.UnitAt(X, Y);
+      O := States.UnitOwner(U);
+      Players[P].SetUnit := U;
+      M3[P] := O;
 
-      if U > 0 then
+      if (U > 0)
+      and ((InRange(O, 8, 11)
+      and (Players[O].PlayersTeam <> Players[P].PlayersTeam))
+      or ((InRange(O, 0, 7))
+      and (U = States.GroupMember(Players[O].Hero, 0))
+      and (not Players[O].HeroPrisoned)
+      and (not Players[O].HeroImmortal)
+      and ((Players[P].PlayersTeam <> Players[O].PlayersTeam)
+      or ((P = O) and (Players[P].HP >= 2))))) then
       begin
-        O := States.UnitOwner(U);
+        TilesFieldLength[P] := TilesFieldLength[P] + 17;
+        SetLength(TilesFieldX[P], TilesFieldLength[P]);
+        SetLength(TilesFieldY[P], TilesFieldLength[P]);
+        SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
+        SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
+        SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
+
+        TilesFieldX[P][Length(TilesFieldX[P]) - 16] := X2;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 15] := X2 + 1;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 14] := X2 + 1;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 13] := X2 + 1;
+
+        TilesFieldY[P][Length(TilesFieldY[P]) - 16] := Y2 - 1;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 15] := Y2 - 1;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 14] := Y2;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 13] := Y2 + 1;
+
+        TilesFieldX[P][Length(TilesFieldX[P]) - 12] := X2;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 11] := X2 - 1;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 10] := X2 - 1;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 9] := X2 - 1;
+
+        TilesFieldY[P][Length(TilesFieldY[P]) - 12] := Y2 + 1;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 11] := Y2 + 1;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 10] := Y2;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 9] := Y2 - 1;
+           
+        TilesFieldX[P][Length(TilesFieldX[P]) - 8] := X2;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 7] := X2 + 1;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 6] := X2 + 1;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 5] := X2 + 1;
+
+        TilesFieldY[P][Length(TilesFieldY[P]) - 8] := Y2 - 1;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 7] := Y2 - 1;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 6] := Y2;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 5] := Y2 + 1;
+
+        TilesFieldX[P][Length(TilesFieldX[P]) - 4] := X2;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 3] := X2 - 1;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 2] := X2 - 1;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 1] := X2 - 1;
+
+        TilesFieldY[P][Length(TilesFieldY[P]) - 4] := Y2 + 1;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 3] := Y2 + 1;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 2] := Y2;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 1] := Y2 - 1;
+
+        for I := 1 to 16 do
+          TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := SCOUT_OBJECT3;
+
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 8] := States.GameTime + 3;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 7] := States.GameTime + 5;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 6] := States.GameTime + 7;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 5] := States.GameTime + 9;
+    
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 8] := States.GameTime + 1;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 7] := States.GameTime + 3;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 6] := States.GameTime + 5;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 5] := States.GameTime + 7;
+
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 3;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 6;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 7;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 9;
+    
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 4] := States.GameTime + 1;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 3] := States.GameTime + 3;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 2] := States.GameTime + 5;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 7;
+
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 16] := States.GameTime + 11;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 15] := States.GameTime + 13;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 14] := States.GameTime + 15;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 13] := States.GameTime + 17;
+    
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 16] := States.GameTime + 9;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 15] := States.GameTime + 11;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 14] := States.GameTime + 13;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 13] := States.GameTime + 15;
+
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 12] := States.GameTime + 11;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 11] := States.GameTime + 13;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 10] := States.GameTime + 15;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 9] := States.GameTime + 17;
+    
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 12] := States.GameTime + 9;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 11] := States.GameTime + 11;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 10] := States.GameTime + 13;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 9] := States.GameTime + 15;
+
+        for I := 1 to 17 do
+          if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
+          or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_MINE)
+          or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
+          or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+          ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
+
+        Players[P].LastUsedSkill := sVampire;
+        Players[P].FieldSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+
         if (Players[P].PlayersTeam = Players[O].PlayersTeam)
         and (P <> O) then
           Exit;
-        if (InRange(O, 0, 7)) then
-          if (U = States.GroupMember(Players[O].Hero, 0))
+          if (InRange(O, 0, 7))
+          and (U = States.GroupMember(Players[O].Hero, 0))
           and (not Players[O].HeroPrisoned)
           and (not Players[O].HeroImmortal)
           and ((Players[P].PlayersTeam <> Players[O].PlayersTeam)
           or ((P = O) and (Players[P].HP >= 2))) then
           begin
-            TilesFieldLength[P] := TilesFieldLength[P] + 1;
-            SetLength(TilesFieldX[P], TilesFieldLength[P]);
-            SetLength(TilesFieldY[P], TilesFieldLength[P]);
-            SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
-            SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
-            SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
-           
-            TilesFieldX[P][Length(TilesFieldX[P]) - 1] := hX;
-            TilesFieldY[P][Length(TilesFieldY[P]) - 1] := hY;
+            TilesFieldX[P][Length(TilesFieldX[P]) - 17] := hX;
+            TilesFieldY[P][Length(TilesFieldY[P]) - 17] := hY;
 
-            ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 175;
-            SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 1;
-            TilesFieldObjects[P][Length(TilesFieldObjects[P]) - 1] := SCOUT_OBJECT2;
+            ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 17] := States.GameTime + 195;
+            SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 17] := States.GameTime + 18;
+            TilesFieldObjects[P][Length(TilesFieldObjects[P]) - 17] := SCOUT_OBJECT2;
 
-            if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 1], TilesFieldY[P][Length(TilesFieldY[P]) - 1]) = BARB_OBJECT3)
-            or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 1], TilesFieldY[P][Length(TilesFieldY[P]) - 1]) = BOWMAN_MINE)
-            or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 1], TilesFieldY[P][Length(TilesFieldY[P]) - 1]) = BOWMAN_OBJECT5)
-            or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 1], TilesFieldY[P][Length(TilesFieldY[P]) - 1]), SWORD_OBJECT, VAGA_OBJECT6)) then
-              ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEANUP_TIME;
+            if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 17], TilesFieldY[P][Length(TilesFieldY[P]) - 17]) = BARB_OBJECT3)
+            or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 17], TilesFieldY[P][Length(TilesFieldY[P]) - 17]) = BOWMAN_MINE)
+            or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 17], TilesFieldY[P][Length(TilesFieldY[P]) - 17]) = BOWMAN_OBJECT5)
+            or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 17], TilesFieldY[P][Length(TilesFieldY[P]) - 17]), SWORD_OBJECT, VAGA_OBJECT6)) then
+              ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 17] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 17] + CLEANUP_TIME;
 
-            if (not Players[O].MindStunned) and (not Players[O].CaptureMind) then
-              Players[O].HP := Players[O].HP - 1;
-            if Players[O].CaptureMind then
-              Players[M[P]].HP := Players[M[P]].HP - 1;
-            if Players[O].MindStunned then
-              Players[P].HP := Players[P].HP - 1;
-              
-            Players[P].LastUsedSkill := sVampire;
-            Players[P].FieldSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+            Players[P].HPDelay := States.GameTime + 18;
           end;
 
         if (InRange(O, 8, 11))
         and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
-        begin
-          Actions.UnitKill(U, False);
-          Players[P].LastUsedSkill := sVampire;
-          Players[P].FieldSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-        end;
+          Players[P].UnitKillDelay := States.GameTime + 18;
       end;
     end;
   end;
@@ -6625,7 +6725,8 @@ begin
   or (aObj = KNIGHT_OBJECT4)
   or (aObj = ROGUE_OBJECT)
   or (aObj = ROGUE_OBJECT2)
-  or (aObj = ROGUE_OBJECT4) then
+  or (aObj = ROGUE_OBJECT4)
+  or (aObj = SCOUT_OBJECT3) then
   begin
     T := Players[P].HeroType;
     if (not States.PlayerDefeated(P))
@@ -6838,7 +6939,8 @@ begin
       or (aObj = KNIGHT_OBJECT4)
       or (aObj = ROGUE_OBJECT)
       or (aObj = ROGUE_OBJECT2)
-      or (aObj = ROGUE_OBJECT4) then
+      or (aObj = ROGUE_OBJECT4)
+      or (aObj = SCOUT_OBJECT3) then
         Actions.UnitKill(AIUnits[K], False);
 
       if aObj = BOWMAN_MINE then
@@ -7489,6 +7591,19 @@ begin
         Actions.GroupOrderHalt(Players[I1].Hero);
       end;
     end;
+    
+    if States.GameTime = Players[I1].HPDelay then
+    begin
+      if (not Players[M3[I1]].MindStunned) and (not Players[M3[I1]].CaptureMind) then
+        Players[M3[I1]].HP := Players[M3[I1]].HP - 1;
+      if Players[M3[I1]].CaptureMind then
+        Players[M[I1]].HP := Players[M[I1]].HP - 1;
+      if Players[M3[I1]].MindStunned then
+        Players[I1].HP := Players[I1].HP - 1;
+    end;
+
+    if States.GameTime = Players[I1].UnitKillDelay then  
+      Actions.UnitKill(Players[I1].SetUnit, False);
 
     if States.GameTime = Players[I1].MindAppearTime then
     begin
