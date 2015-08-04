@@ -757,6 +757,14 @@ begin
       TempStolenSkillTime := 0;
       TempStone := 0;
       TempPlayersTeam := -1;
+      MindAppearTime := 0;
+      MindAppearTimeBack := 0;
+      MindX := 0;
+      MindY := 0;
+      MindDir := 0;
+      MindX2 := 0;
+      MindY2 := 0;
+      MindDir2 := 0;
     end;
   end;
 
@@ -812,96 +820,101 @@ begin
         if (States.UnitPositionX(States.GroupMember(Players[I].Hero, 0)) = RUNE_X)
         and (States.UnitPositionY(States.GroupMember(Players[I].Hero, 0)) = RUNE_Y) then
           if States.GroupIdle(Players[I].Hero) then
+          begin
 
-          case States.KaMRandomI(4) of
+            Actions.GroupOrderHalt(Players[I].Hero);
 
-            0: begin
+            case States.KaMRandomI(4) of
 
-                 if (States.UnitAt(RUNE_X, RUNE_Y - 1) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y - 2, 0)
+              0: begin
 
-                 else
+                   if (States.UnitAt(RUNE_X, RUNE_Y - 1) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y - 2, 0)
 
-                 if (States.UnitAt(RUNE_X, RUNE_Y + 1) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y + 2, 4)
+                   else
 
-                 else
+                   if (States.UnitAt(RUNE_X, RUNE_Y + 1) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y + 2, 4)
 
-                 if (States.UnitAt(RUNE_X - 1, RUNE_Y) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X - 2, RUNE_Y, 6)
+                   else
 
-                 else
+                   if (States.UnitAt(RUNE_X - 1, RUNE_Y) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X - 2, RUNE_Y, 6)
 
-                 if (States.UnitAt(RUNE_X + 1, RUNE_Y) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X + 2, RUNE_Y, 2);
+                   else
 
-               end;
+                   if (States.UnitAt(RUNE_X + 1, RUNE_Y) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X + 2, RUNE_Y, 2);
 
-            1: begin
+                 end;
 
-                 if (States.UnitAt(RUNE_X, RUNE_Y + 1) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y + 2, 4)
+              1: begin
 
-                 else
+                   if (States.UnitAt(RUNE_X, RUNE_Y + 1) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y + 2, 4)
 
-                 if (States.UnitAt(RUNE_X, RUNE_Y - 1) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y - 2, 0)
+                   else
 
-                 else
+                   if (States.UnitAt(RUNE_X, RUNE_Y - 1) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y - 2, 0)
 
-                 if (States.UnitAt(RUNE_X - 1, RUNE_Y) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X - 2, RUNE_Y, 6)
+                   else
 
-                 else
+                   if (States.UnitAt(RUNE_X - 1, RUNE_Y) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X - 2, RUNE_Y, 6)
 
-                 if (States.UnitAt(RUNE_X + 1, RUNE_Y) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X + 2, RUNE_Y, 2);
+                   else
 
-               end;
+                   if (States.UnitAt(RUNE_X + 1, RUNE_Y) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X + 2, RUNE_Y, 2);
 
-            2: begin
+                 end;
 
-                 if (States.UnitAt(RUNE_X - 1, RUNE_Y) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X - 2, RUNE_Y, 6)
+              2: begin
 
-                 else
+                   if (States.UnitAt(RUNE_X - 1, RUNE_Y) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X - 2, RUNE_Y, 6)
 
-                 if (States.UnitAt(RUNE_X, RUNE_Y - 1) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y - 2, 0)
+                   else
 
-                 else
+                   if (States.UnitAt(RUNE_X, RUNE_Y - 1) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y - 2, 0)
 
-                 if (States.UnitAt(RUNE_X, RUNE_Y + 1) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y + 2, 4)
+                   else
 
-                 else
+                   if (States.UnitAt(RUNE_X, RUNE_Y + 1) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y + 2, 4)
 
-                 if (States.UnitAt(RUNE_X + 1, RUNE_Y) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X + 2, RUNE_Y, 2);
+                   else
 
-               end;
+                   if (States.UnitAt(RUNE_X + 1, RUNE_Y) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X + 2, RUNE_Y, 2);
 
-            3: begin
+                 end;
 
-                 if (States.UnitAt(RUNE_X + 1, RUNE_Y) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X + 2, RUNE_Y, 2)
+              3: begin
 
-                 else
+                   if (States.UnitAt(RUNE_X + 1, RUNE_Y) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X + 2, RUNE_Y, 2)
 
-                 if (States.UnitAt(RUNE_X, RUNE_Y - 1) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y - 2, 0)
+                   else
 
-                 else
+                   if (States.UnitAt(RUNE_X, RUNE_Y - 1) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y - 2, 0)
 
-                 if (States.UnitAt(RUNE_X, RUNE_Y + 1) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y + 2, 4)
+                   else
 
-                 else
+                   if (States.UnitAt(RUNE_X, RUNE_Y + 1) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y + 2, 4)
 
-                 if (States.UnitAt(RUNE_X - 1, RUNE_Y) = -1) then
-                   Actions.GroupOrderWalk(Players[I].Hero, RUNE_X - 2, RUNE_Y, 6);
+                   else
 
-               end;
+                   if (States.UnitAt(RUNE_X - 1, RUNE_Y) = -1) then
+                     Actions.GroupOrderWalk(Players[I].Hero, RUNE_X - 2, RUNE_Y, 6);
+
+                 end;
+
+            end;
 
           end;
   end;
