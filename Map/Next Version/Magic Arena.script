@@ -5787,7 +5787,7 @@ begin
         SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 10] := States.GameTime + 13;
         SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 9] := States.GameTime + 15;
 
-        for I := 1 to 17 do
+        for I := 1 to 16 do
           if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
           or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_MINE)
           or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
@@ -7796,6 +7796,8 @@ begin
       Players[M[I1]].HeroType := Players[I1].HeroMindType;
       Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
 
+      Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
+      Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
       Actions.GroupBlockOrders(Players[M[I1]].Hero, True);
       Actions.GroupOrderHalt(Players[M[I1]].Hero);  
       Players[I1].HeroImmortal := True;
@@ -7805,6 +7807,10 @@ begin
       Players[I1].StolenSkillTime := Players[M[I1]].StolenSkillTime;
       Players[I1].StolenSkillName := Players[M[I1]].StolenSkillName;
       Players[I1].Stone := Players[M[I1]].Stone;
+      Players[I1].ReCharge := Players[M[I1]].ReCharge;
+      Players[I1].ReChargeTime := Players[M[I1]].ReChargeTime;
+      Players[I1].Preparing := Players[M[I1]].Preparing;
+      Players[I1].PreparingTime := Players[M[I1]].PreparingTime;
       Players[I1].RoadSkillDelay := Players[M[I1]].RoadSkillDelay;
       Players[I1].FieldSkillDelay := Players[M[I1]].FieldSkillDelay;
       Players[I1].WineSkillDelay := Players[M[I1]].WineSkillDelay;
@@ -7875,7 +7881,11 @@ begin
         Players[I1].ReCharge := Players[I1].TempReCharge;
         Players[M[I1]].ReChargeTime := Players[I1].ReChargeTime;
         Players[I1].ReChargeTime := Players[I1].TempReChargeTime;
+        Players[M[I1]].Preparing := Players[I1].Preparing;
+        Players[M[I1]].PreparingTime := Players[I1].PreparingTime;
         Players[I1].PlayersTeam := Players[I1].TempPlayersTeam;
+        Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
+        Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
       end;
     end;
   end;
