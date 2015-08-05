@@ -7970,6 +7970,8 @@ end;
 
 
 procedure CheckTileFieldObjects(P: Integer);
+var
+  aRelief: Integer;
 begin
   for K := 0 to TilesFieldLength[P] - 1 do
   begin
@@ -8008,6 +8010,9 @@ begin
         begin
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], 255);
 
+          if TileOnBattlefield(TilesFieldX[8][K], TilesFieldY[8][K]) then
+            Actions.MapTileHeightSet(TilesFieldX[8][K], TilesFieldY[8][K], Tiles[TilesFieldX[8][K]][TilesFieldY[8][K]].Relief);
+
           if TilesFieldObjects[P][K] = BOWMAN_MINE then
           begin
             if InRange(Roads[TilesFieldX[P][K]][TilesFieldY[P][K]].Owner, 8, 11) then
@@ -8017,8 +8022,18 @@ begin
         end;
 
         if States.GameTime = SetTilesFieldTimes[P][K] then
+        begin
           if CanPlaceObject(TilesFieldX[P][K], TilesFieldY[P][K]) then
             Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], TilesFieldObjects[P][K]);
+          if P = 8 then
+          begin
+            aRelief := States.MapTileHeight(TilesFieldX[8][K], TilesFieldY[8][K]) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
+            if aRelief < 0 then
+              aRelief := -1 * aRelief;
+            if TileOnBattlefield(TilesFieldX[8][K], TilesFieldY[8][K]) then
+              Actions.MapTileHeightSet(TilesFieldX[8][K], TilesFieldY[8][K], aRelief);
+          end;
+        end;
       end;
     end;
 end;
