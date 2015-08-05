@@ -7790,6 +7790,8 @@ begin
       Players[I1].HeroType := Players[M[I1]].HeroType
       Players[I1].Hero := Actions.GiveGroup(I1, Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
       Players[I1].TempHeroType := Players[M[I1]].TempHeroType;
+      Players[I1].HeroStunned := Players[M[I1]].HeroStunned;
+      Players[I1].HeroStunnedTime := Players[M[I1]].HeroStunnedTime;
  
       Players[M[I1]].HeroStunned := True;
       Players[M[I1]].MindStunned := True;
@@ -7811,6 +7813,8 @@ begin
       Players[I1].ReChargeTime := Players[M[I1]].ReChargeTime;
       Players[I1].Preparing := Players[M[I1]].Preparing;
       Players[I1].PreparingTime := Players[M[I1]].PreparingTime;
+      Players[I1].HeroInFear := Players[M[I1]].HeroInFear;
+      Players[I1].HeroInFearTime := Players[M[I1]].HeroInFearTime;
       Players[I1].RoadSkillDelay := Players[M[I1]].RoadSkillDelay;
       Players[I1].FieldSkillDelay := Players[M[I1]].FieldSkillDelay;
       Players[I1].WineSkillDelay := Players[M[I1]].WineSkillDelay;
@@ -7883,6 +7887,10 @@ begin
         Players[I1].ReChargeTime := Players[I1].TempReChargeTime;
         Players[M[I1]].Preparing := Players[I1].Preparing;
         Players[M[I1]].PreparingTime := Players[I1].PreparingTime;
+        Players[M[I1]].HeroInFear := Players[I1].HeroInFear;
+        Players[M[I1]].HeroInFearTime := Players[I1].HeroInFearTime;
+        Players[M[I1]].HeroStunned := Players[I1].HeroStunned;
+        Players[M[I1]].HeroStunnedTime := Players[I1].HeroStunnedTime;
         Players[I1].PlayersTeam := Players[I1].TempPlayersTeam;
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
