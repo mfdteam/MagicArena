@@ -7933,15 +7933,6 @@ begin
         and (TilesRoadObjects[P][K] = WARRIOR_OBJECT5) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], WARRIOR_OBJECT5);
 
-        if (TilesRoadObjects[P][K] = BARB_OBJECT)
-        and (States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]) = Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief) then
-        begin
-          aRelief := States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]) + 3 * (States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR));
-          if aRelief < 0 then
-            aRelief := -1 * aRelief;
-          Actions.MapTileHeightSet(TilesRoadX[P][K], TilesRoadY[P][K], aRelief);
-        end;
-
         if (Roads[TilesRoadX[P][K]][TilesRoadY[P][K]].Owner <> - 1)
         and (States.GameTime mod 3 = 0) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], BOWMAN_MINE);  
@@ -7950,8 +7941,7 @@ begin
         begin
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], 255);
 
-          if States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]) <> Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief then
-            Actions.MapTileHeightSet(TilesRoadX[P][K], TilesRoadY[P][K], Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief);
+          Actions.MapTileHeightSet(TilesRoadX[P][K], TilesRoadY[P][K], Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief);
 
           if TilesRoadObjects[P][K] = BOWMAN_MINE then
           begin
@@ -7959,6 +7949,16 @@ begin
               Actions.PlanRemove(Roads[TilesRoadX[P][K]][TilesRoadY[P][K]].Owner, TilesRoadX[P][K], TilesRoadY[P][K]);
             Roads[TilesRoadX[P][K]][TilesRoadY[P][K]].Owner := -1;
           end;
+        end;
+
+        if (TilesRoadObjects[P][K] = BARB_OBJECT)
+        and (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K]))
+        and (States.GameTime mod 5 = 0) then
+        begin
+          aRelief := States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR) - 4;
+          if aRelief < 0 then
+            aRelief := -1 * aRelief;
+          Actions.MapTileHeightSet(TilesRoadX[P][K], TilesRoadY[P][K], aRelief);
         end;
 
         if States.GameTime = SetTilesRoadTimes[P][K] then
