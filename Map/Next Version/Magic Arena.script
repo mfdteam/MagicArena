@@ -8010,8 +8010,9 @@ begin
         begin
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], 255);
 
-          if TileOnBattlefield(TilesFieldX[8][K], TilesFieldY[8][K]) then
-            Actions.MapTileHeightSet(TilesFieldX[8][K], TilesFieldY[8][K], Tiles[TilesFieldX[8][K]][TilesFieldY[8][K]].Relief);
+          if P = 8 then
+            if TileOnBattlefield(TilesFieldX[8][K], TilesFieldY[8][K]) then
+              Actions.MapTileHeightSet(TilesFieldX[8][K], TilesFieldY[8][K], Tiles[TilesFieldX[8][K]][TilesFieldY[8][K]].Relief);
 
           if TilesFieldObjects[P][K] = BOWMAN_MINE then
           begin
