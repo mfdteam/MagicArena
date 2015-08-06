@@ -846,10 +846,11 @@ begin
       if States.GroupMember(Players[I].Hero, 0) > 0 then
         if (States.UnitPositionX(States.GroupMember(Players[I].Hero, 0)) = RUNE_X)
         and (States.UnitPositionY(States.GroupMember(Players[I].Hero, 0)) = RUNE_Y) then
+        begin
+          Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
+          Actions.GroupOrderHalt(Players[I].Hero);
           if States.GroupIdle(Players[I].Hero) then
           begin
-
-            Actions.GroupOrderHalt(Players[I].Hero);
 
             case States.KaMRandomI(4) of
 
@@ -944,6 +945,7 @@ begin
             end;
 
           end;
+        end;
   end;
 end;
 
