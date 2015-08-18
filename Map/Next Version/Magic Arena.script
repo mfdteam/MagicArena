@@ -7474,6 +7474,8 @@ end;
 
 
 procedure CheckConcentrationCircles(P: Integer);
+var
+  aRelief, PosX, PosY: Integer;
 begin
   if States.PlayerEnabled(P) then
     if ConcentrationCirclesLength[P] > 0 then
@@ -7482,7 +7484,27 @@ begin
         if TileOnBattlefield(ConcentrationCircles[P][I].X, ConcentrationCircles[P][I].Y) then
         begin
           if (States.GameTime = ConcentrationCircles[P][I].AddTime) then
-            SetCircle(P, ConcentrationCircles[P][I].X, ConcentrationCircles[P][I].Y, ConcentrationCircles[P][I].Radius, ConcentrationCircles[P][I].Obj, True, False);
+          begin
+            SetCircle(P, ConcentrationCircles[P][I].X, ConcentrationCircles[P][I].Y, ConcentrationCircles[P][I].Radius, ConcentrationCircles[P][I].Obj, False, False);
+
+            for PosX := ConcentrationCircles[P][I].X - ConcentrationCircles[P][I].Radius to ConcentrationCircles[P][I].X + ConcentrationCircles[P][I].Radius do
+            for PosY := ConcentrationCircles[P][I].Y - ConcentrationCircles[P][I].Radius to ConcentrationCircles[P][I].Y + ConcentrationCircles[P][I].Radius do
+            begin
+              aRelief := States.MapTileHeight(PosX, PosY) + States.KaMRandomI(RELIEF_CHANGE_FACTOR - 4) - States.KaMRandomI(RELIEF_CHANGE_FACTOR - 4);
+              if aRelief < 0 then
+                aRelief := -1 * aRelief;
+              if (((ConcentrationCircles[P][I].X - PosX) * (ConcentrationCircles[P][I].X - PosX) + (ConcentrationCircles[P][I].Y - PosY) * (ConcentrationCircles[P][I].Y - PosY)) <= ConcentrationCircles[P][I].Radius * ConcentrationCircles[P][I].Radius) then
+                if TileOnBattlefield(PosX, PosY) then
+                  Actions.MapTileHeightSet(PosX, PosY, aRelief);
+            end;
+
+            if I = ConcentrationCirclesLength[P] - 1 then
+              for PosX := ConcentrationCircles[P][I].X - ConcentrationCircles[P][I].Radius to ConcentrationCircles[P][I].X + ConcentrationCircles[P][I].Radius do
+              for PosY := ConcentrationCircles[P][I].Y - ConcentrationCircles[P][I].Radius to ConcentrationCircles[P][I].Y + ConcentrationCircles[P][I].Radius do
+                if (((ConcentrationCircles[P][I].X - PosX) * (ConcentrationCircles[P][I].X - PosX) + (ConcentrationCircles[P][I].Y - PosY) * (ConcentrationCircles[P][I].Y - PosY)) <= ConcentrationCircles[P][I].Radius * ConcentrationCircles[P][I].Radius) then
+                  if TileOnBattlefield(PosX, PosY) then
+                    Actions.MapTileHeightSet(PosX, PosY, Tiles[PosX][PosY].Relief);
+          end;
         end;
       end;
 end;
