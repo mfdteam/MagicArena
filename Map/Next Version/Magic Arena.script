@@ -282,6 +282,7 @@ const
   ZOMBIE_ATTACK_FACTOR = 5;
   HEAL_CHECK_RADIUS = 4;
   HEAL_CHECK_TIME = 15;
+  RUNE_STAYING_TIME = 20;
   DEBUG_MODE = True;
 
 //Battlefield
@@ -399,6 +400,7 @@ type
     StoneRogue: Boolean;
     SetUnit: Integer;
     UnitKillDelay: Integer;
+    StayingOnRuneTime: Integer;
   end;
 
 
@@ -792,6 +794,7 @@ begin
       MindDir2 := 0;
       SetUnit := 0;
       UnitKillDelay := 0;
+      StayingOnRuneTime := 0;
     end;
   end;
 
@@ -839,18 +842,14 @@ end;
 
 
 procedure GoOutFromRune;
-begin
+begin  
   for I := 0 to 7 do
   begin
     if Players[I].Hero > 0 then
       if States.GroupMember(Players[I].Hero, 0) > 0 then
         if (States.UnitPositionX(States.GroupMember(Players[I].Hero, 0)) = RUNE_X)
         and (States.UnitPositionY(States.GroupMember(Players[I].Hero, 0)) = RUNE_Y) then
-        begin
-          Actions.GroupOrderWalk(Players[I].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
-          Actions.GroupOrderHalt(Players[I].Hero);
-          if States.GroupIdle(Players[I].Hero) then
-          begin
+          if States.GameTime = Players[I].StayingOnRuneTime then
 
             case States.KaMRandomI(4) of
 
@@ -941,10 +940,6 @@ begin
                      Actions.GroupOrderWalk(Players[I].Hero, RUNE_X - 2, RUNE_Y, 6);
 
                  end;
-
-            end;
-
-          end;
         end;
   end;
 end;
@@ -6709,6 +6704,16 @@ begin
   and (States.PlayerIsAI(P))
   and (Roads[aX][aY].Owner = 9) then
     Exit;
+
+  if (aX = RUNE_X)
+  and (aY = RUNE_Y)
+  and (Players[P].StayingOnRuneTime = 0) then
+    Players[P].StayingOnRuneTime := States.GameTime + RUNE_STAYING_TIME;
+
+  if (aX <> RUNE_X)
+  and (aY <> RUNE_Y)
+  and (Players[P].StayingOnRuneTime <> 0) then
+    Players[P].StayingOnRuneTime := 0;  
 
   if (aObj = LANCE_OBJECT)
   or (aObj = LANCE_OBJECT2)
