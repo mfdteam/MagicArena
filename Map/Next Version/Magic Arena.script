@@ -5702,7 +5702,7 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 19 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
+               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SpurtX[P][Desync - 1] := X2;
                SpurtY[P][Desync - 1] := Y1;
                SpurtDir[P][Desync - 1] := 0;
@@ -5723,7 +5723,7 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 19 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
+               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SpurtX[P][Desync - 1] := X1;
                SpurtY[P][Desync - 1] := Y2;
                SpurtDir[P][Desync - 1] := 2;
@@ -5744,7 +5744,7 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 19 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
+               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SpurtX[P][Desync - 1] := X2;
                SpurtY[P][Desync - 1] := Y1;
                SpurtDir[P][Desync - 1] := 4;
@@ -5765,7 +5765,7 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 19 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
+               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SpurtX[P][Desync - 1] := X1;
                SpurtY[P][Desync - 1] := Y2;
                SpurtDir[P][Desync - 1] := 6;
@@ -7907,6 +7907,8 @@ begin
   for K := 0 to 7 do
     if States.PlayerEnabled(K) then
       Actions.FogRevealAll(K);
+
+  Actions.ShowMsg(-1, '<$62>');
 
 end;
 
