@@ -1308,6 +1308,63 @@ begin
 end;
 
 
+function RoadSkillInfo(P, UT: Integer): ANSIString;
+begin
+  case UT of
+    15: Result := '<$307>';
+    16: Result := '<$304>';
+    17: Result := '<$305>';
+    18: Result := '<$303>';
+    19: Result := '<$301>';
+    20: Result := '<$306>';
+    21: Result := '<$311>';
+    22: Result := '<$309>';
+    23: Result := '<$302>';
+    26: Result := '<$308>';
+    27: Result := '<$313>';
+    25: Result := '<$310>';
+  end;
+end;
+
+
+function FieldSkillInfo(P, UT: Integer): ANSIString;
+begin
+  case UT of
+    15: Result := '<$407>';
+    16: Result := '<$404>';
+    17: Result := '<$405>';
+    18: Result := '<$403>';
+    19: Result := '<$401>';
+    20: Result := '<$406>';
+    21: Result := '<$411>';
+    22: Result := '<$409>';
+    23: Result := '<$402>';
+    26: Result := '<$408>';
+    27: Result := '<$413>';
+    25: Result := '<$410>';
+  end;
+end;
+
+
+function WineSkillInfo(P, UT: Integer): ANSIString;
+begin
+  case UT of
+    15: Result := '<$507>';
+    16: Result := '<$504>';
+    17: Result := '<$505>';
+    18: Result := '<$503>';
+    19: Result := '<$501>';
+    20: Result := '<$506>';
+    21: Result := '<$511>';
+    22: Result := '<$509>';
+    23: Result := '<$502>';
+    26: Result := '<$508>';
+    27: Result := '<$513>';
+    25: Result := '<$510>';
+  end;
+end;
+
+
 function HeroDescription(P, UT: Integer): ANSIString;
 begin
   case UT of
@@ -1412,6 +1469,23 @@ begin
     end;
   end;
 
+end;
+
+
+procedure OnHousePlanPlaced(P, X, Y, HT: Integer);
+begin
+  Actions.PlanRemove(P, X, Y);
+  if Players[P].Hero < 0 then
+    Exit;
+  if Players[P].HeroType <= 0 then
+    Exit;
+  if not TileOnBattlefield(X, Y) then
+    Exit;
+  if HT <> 13 then
+    Exit;
+  Actions.ShowMsg(P, RoadSkillInfo(P, Players[P].HeroType));
+  Actions.ShowMsg(P, FieldSkillInfo(P, Players[P].HeroType));
+  Actions.ShowMsg(P, WineSkillInfo(P, Players[P].HeroType));
 end;
 
 
