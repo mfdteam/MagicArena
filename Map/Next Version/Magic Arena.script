@@ -444,15 +444,15 @@ var
   ClearTilesWineTimes, SetTilesWineTimes, TilesWineX, TilesWineY, TilesWineObjects: array[0..11] of array of Integer;
   RageCircles, TotemCircles, ConcentrationCircles, ViseCircles, ExpCircles, GravityCircles,
   FireworksCircles1, FireworksCircles2, FireworksCircles3, FireworksCircles4, 
-  FireworksCircles5, VagaCircles, KnightCircles, RogueCircles: array[0..11] of array of aCircle;
+  FireworksCircles5, VagaCircles, KnightCircles, RogueCircles, StolenRogueCircles: array[0..11] of array of aCircle;
   TilesRoadLength, TilesFieldLength, TilesWineLength: array[0..11] of Integer;
   RageCirclesLength, TotemCirclesLength, ConcentrationCirclesLength, ViseCirclesLength, ExpCirclesLength,
   GravityCirclesLength, FireworksCircles1Length, FireworksCircles2Length, FireworksCircles3Length, 
-  FireworksCircles4Length, FireworksCircles5Length, VagaCirclesLength, KnightCirclesLength, RogueCirclesLength: array[0..11] of Integer;
+  FireworksCircles4Length, FireworksCircles5Length, VagaCirclesLength, KnightCirclesLength, RogueCirclesLength, StolenRogueCirclesLength: array[0..11] of Integer;
   TimeToClearRageArray, TimeToClearTotemArray, TimeToClearConcentrationArray,
   TimeToClearViseArray, TimeToClearExpArray, TimeToClearGravityArray, TimeToClearFireworks1Array,
   TimeToClearFireworks2Array, TimeToClearFireworks3Array, TimeToClearFireworks4Array, TimeToClearFireworks5Array,
-  TimeToClearVagaArray, TimeToClearKnightArray, TimeToClearRogueArray: array[0..11] of Integer;
+  TimeToClearVagaArray, TimeToClearKnightArray, TimeToClearRogueArray, TimeToClearStolenRogueArray: array[0..11] of Integer;
   PikeObjects, ShieldObjects: array[0..7] of Integer;
   Roads: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aRoad;
   Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
@@ -683,14 +683,15 @@ begin
     FireworksCircles4Length[I] := 0;
     FireworksCircles5Length[I] := 0;
     VagaCirclesLength[I] := 0;
-    ClearRoadTilesArrayTime[I] := -1;
-    TilesRoadLength[I] := 0;
-    ClearFieldTilesArrayTime[I] := -1;
-    TilesFieldLength[I] := 0;
-    ClearWineTilesArrayTime[I] := -1;
-    TilesWineLength[I] := 0;
     KnightCirclesLength[I] := 0;
     RogueCirclesLength[I] := 0;
+    StolenRogueCirclesLength[I] := 0;
+    TilesRoadLength[I] := 0;
+    TilesFieldLength[I] := 0;
+    TilesWineLength[I] := 0;
+    ClearRoadTilesArrayTime[I] := -1;
+    ClearFieldTilesArrayTime[I] := -1;
+    ClearWineTilesArrayTime[I] := -1;
   end;
 
   for I := 8 to 9 do
@@ -6133,7 +6134,7 @@ end;
 //ROGUE
 
 
-procedure MentalBurst(P, X, Y, Dir: Integer);
+procedure MentalBurst(P, X, Y, Dir: Integer; aStolen: Boolean);
 var
   X2, Y2, Direction, Desync: Integer;
 begin
@@ -6178,8 +6179,16 @@ begin
     and (not TileOnBattlefield(X2 - MENTAL_DISTANCE, Y2)) then
       Exit;
 
-    RogueCirclesLength[P] := RogueCirclesLength[P] + MENTAL_CYCLES * MENTAL_RADIUS;
-    SetLength(RogueCircles[P], RogueCirclesLength[P]);
+    if not aStolen then
+    begin
+      RogueCirclesLength[P] := RogueCirclesLength[P] + MENTAL_CYCLES * MENTAL_RADIUS;
+      SetLength(RogueCircles[P], RogueCirclesLength[P]);
+    end;
+    if aStolen then
+    begin
+      StolenRogueCirclesLength[P] := StolenRogueCirclesLength[P] + MENTAL_CYCLES * MENTAL_RADIUS;
+      SetLength(StolenRogueCircles[P], StolenRogueCirclesLength[P]);
+    end;
     TilesRoadLength[P] := TilesRoadLength[P] + 5;
     SetLength(TilesRoadX[P], TilesRoadLength[P]);
     SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -6218,92 +6227,183 @@ begin
         or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
           ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
-    for I := RogueCirclesLength[P] downto RogueCirclesLength[P] - MENTAL_CYCLES * MENTAL_RADIUS + 1 do
+    if not aStolen then
     begin
-      RogueCircles[P][RogueCirclesLength[P] - I].Obj := ROGUE_OBJECT;
+      for I := RogueCirclesLength[P] downto RogueCirclesLength[P] - MENTAL_CYCLES * MENTAL_RADIUS + 1 do
+      begin
+        RogueCircles[P][RogueCirclesLength[P] - I].Obj := ROGUE_OBJECT;
 
-      case Direction of 
+        case Direction of 
       
-      0,1: begin
-             RogueCircles[P][RogueCirclesLength[P] - I].X := X2;
-             RogueCircles[P][RogueCirclesLength[P] - I].Y := Y2 - MENTAL_DISTANCE;
-             TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2;    
-             TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2 - MENTAL_DISTANCE;
-             SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
-             ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
-             TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
-             TimeToClearRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-             Players[P].LastUsedSkill := sMentalBurst;
-             Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-             ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
-             if Players[P].StolenSkill = sMentalBurst then
-               if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
-                 Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
-           end;
+        0,1: begin
+               RogueCircles[P][RogueCirclesLength[P] - I].X := X2;
+               RogueCircles[P][RogueCirclesLength[P] - I].Y := Y2 - MENTAL_DISTANCE;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2;    
+               TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2 - MENTAL_DISTANCE;
+               SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
+               TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
+               TimeToClearRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+               if Players[P].StolenSkill = sMentalBurst then
+                 if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
+                   Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
+             end;
 
-      2,3: begin
-             RogueCircles[P][RogueCirclesLength[P] - I].X := X2 + MENTAL_DISTANCE;
-             RogueCircles[P][RogueCirclesLength[P] - I].Y := Y2;
-             TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2 + MENTAL_DISTANCE;    
-             TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2;
-             SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
-             ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
-             TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
-             TimeToClearRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-             Players[P].LastUsedSkill := sMentalBurst;
-             Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-             ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
-             if Players[P].StolenSkill = sMentalBurst then
-               if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
-                 Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
-           end;
+        2,3: begin
+               RogueCircles[P][RogueCirclesLength[P] - I].X := X2 + MENTAL_DISTANCE;
+               RogueCircles[P][RogueCirclesLength[P] - I].Y := Y2;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2 + MENTAL_DISTANCE;    
+               TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2;
+               SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
+               TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
+               TimeToClearRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+               if Players[P].StolenSkill = sMentalBurst then
+                 if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
+                   Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
+             end;
 
-      4,5: begin
-             RogueCircles[P][RogueCirclesLength[P] - I].X := X2;
-             RogueCircles[P][RogueCirclesLength[P] - I].Y := Y2 + MENTAL_DISTANCE;
-             TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2;    
-             TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2 + MENTAL_DISTANCE;
-             SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
-             ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
-             TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
-             TimeToClearRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-             Players[P].LastUsedSkill := sMentalBurst;
-             Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-             ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
-             if Players[P].StolenSkill = sMentalBurst then
-               if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
-                 Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
-           end;
+        4,5: begin
+               RogueCircles[P][RogueCirclesLength[P] - I].X := X2;
+               RogueCircles[P][RogueCirclesLength[P] - I].Y := Y2 + MENTAL_DISTANCE;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2;    
+               TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2 + MENTAL_DISTANCE;
+               SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
+               TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
+               TimeToClearRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+               if Players[P].StolenSkill = sMentalBurst then
+                 if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
+                   Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
+             end;
 
-      6,7: begin
-             RogueCircles[P][RogueCirclesLength[P] - I].X := X2 - MENTAL_DISTANCE;
-             RogueCircles[P][RogueCirclesLength[P] - I].Y := Y2;
-             TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2 - MENTAL_DISTANCE;    
-             TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2;
-             SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
-             ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
-             TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
-             TimeToClearRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-             Players[P].LastUsedSkill := sMentalBurst;
-             Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-             ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
-             if Players[P].StolenSkill = sMentalBurst then
-               if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
-                 Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
-           end;
+        6,7: begin
+               RogueCircles[P][RogueCirclesLength[P] - I].X := X2 - MENTAL_DISTANCE;
+               RogueCircles[P][RogueCirclesLength[P] - I].Y := Y2;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2 - MENTAL_DISTANCE;    
+               TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2;
+               SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
+               TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
+               TimeToClearRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+               if Players[P].StolenSkill = sMentalBurst then
+                 if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
+                   Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
+             end;
 
       end;
 
-    RogueCircles[P][RogueCirclesLength[P] - I].AddTime := States.GameTime + 20 + Round(ROGUE_ROAD_SPEED * (RogueCirclesLength[P] - I));
-    if I mod MENTAL_RADIUS > 0 then
-      RogueCircles[P][RogueCirclesLength[P] - I].Radius := MENTAL_RADIUS + 1 - I mod MENTAL_RADIUS
-    else
-      RogueCircles[P][RogueCirclesLength[P] - I].Radius := 1;
-    end;
+      RogueCircles[P][RogueCirclesLength[P] - I].AddTime := States.GameTime + 20 + Round(ROGUE_ROAD_SPEED * (RogueCirclesLength[P] - I));
+      if I mod MENTAL_RADIUS > 0 then
+        RogueCircles[P][RogueCirclesLength[P] - I].Radius := MENTAL_RADIUS + 1 - I mod MENTAL_RADIUS
+      else
+        RogueCircles[P][RogueCirclesLength[P] - I].Radius := 1;
+      end;
         
-    for I := 0 to RogueCirclesLength[P] - 1 do 
-      if I mod MENTAL_RADIUS = 1 then
-        RogueCircles[P][RogueCirclesLength[P] - I].Obj := 255;
+      for I := 0 to RogueCirclesLength[P] - 1 do 
+        if I mod MENTAL_RADIUS = 1 then
+          RogueCircles[P][RogueCirclesLength[P] - I].Obj := 255;
+
+    end;
+
+    if aStolen then
+    begin
+      for I := StolenRogueCirclesLength[P] downto StolenRogueCirclesLength[P] - MENTAL_CYCLES * MENTAL_RADIUS + 1 do
+      begin
+        StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].Obj := ROGUE_OBJECT;
+
+        case Direction of 
+      
+        0,1: begin
+               StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].X := X2;
+               StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].Y := Y2 - MENTAL_DISTANCE;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2;    
+               TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2 - MENTAL_DISTANCE;
+               SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
+               TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
+               TimeToClearStolenRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+               if Players[P].RoadSkillDelay < ROGUE_MENTAL_DELAY then
+                 Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
+             end;
+
+        2,3: begin
+               StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].X := X2 + MENTAL_DISTANCE;
+               StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].Y := Y2;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2 + MENTAL_DISTANCE;    
+               TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2;
+               SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
+               TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
+               TimeToClearStolenRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+               if Players[P].RoadSkillDelay < ROGUE_MENTAL_DELAY then
+                 Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
+             end;
+
+        4,5: begin
+               StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].X := X2;
+               StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].Y := Y2 + MENTAL_DISTANCE;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2;    
+               TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2 + MENTAL_DISTANCE;
+               SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
+               TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
+               TimeToClearStolenRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+               if Players[P].RoadSkillDelay < ROGUE_MENTAL_DELAY then
+                 Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
+             end;
+
+        6,7: begin
+               StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].X := X2 - MENTAL_DISTANCE;
+               StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].Y := Y2;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X2 - MENTAL_DISTANCE;    
+               TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y2;
+               SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 19;
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 25;
+               TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := ROGUE_OBJECT4;
+               TimeToClearStolenRogueArray[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+               ClearRoadTilesArrayTime[P] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+               if Players[P].RoadSkillDelay < ROGUE_MENTAL_DELAY then
+                 Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
+             end;
+
+      end;
+
+      StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].AddTime := States.GameTime + 20 + Round(ROGUE_ROAD_SPEED * (StolenRogueCirclesLength[P] - I));
+      if I mod MENTAL_RADIUS > 0 then
+        StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].Radius := MENTAL_RADIUS + 1 - I mod MENTAL_RADIUS
+      else
+        StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].Radius := 1;
+      end;
+        
+      for I := 0 to StolenRogueCirclesLength[P] - 1 do 
+        if I mod MENTAL_RADIUS = 1 then
+          StolenRogueCircles[P][StolenRogueCirclesLength[P] - I].Obj := 255;
+
+    end;
 
     if (States.PlayerIsAI(P))
     and (Players[P].HP > 0) then
@@ -6468,7 +6568,7 @@ begin
         if Players[P].StolenSkill <> sNone then
           Players[P].StolenSkillTime := STOLEN_SKILL_TIME;
 
-        ClearFieldTilesArrayTime[P] := States.GameTime + Round(WARRIOR_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
+        ClearFieldTilesArrayTime[P] := States.GameTime + Round(ROGUE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
 
       end;
     end;
@@ -6713,14 +6813,7 @@ begin
 
       sRagingSpurt: RagingSpurt(P, X, Y, -1);
 
-      sMentalBurst: begin
-                      TempRoadSkillDelay := Players[P].RoadSkillDelay;
-                      MentalBurst(P, X, Y, -1);
-                      Players[P].RoadSkillDelay := TempRoadSkillDelay;
-                      Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-                      if Players[P].RoadSkillDelay < ROGUE_MENTAL_DELAY then
-                        Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
-                    end;
+      sMentalBurst: MentalBurst(P, X, Y, -1, True);
 
       sSteal: if (U > 0)
               and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
@@ -6821,7 +6914,7 @@ begin
       21: Stones(P, X, Y);
       22: RopesOfDeath(P, X, Y);
       23: CrackingEarth(P, X, Y, -1);
-      25: MentalBurst(P, X, Y, -1);
+      25: MentalBurst(P, X, Y, -1, False);
       26: FierySnake(P, X, Y, -1);
       27: Disorientation(P, X, Y);
     end;
@@ -7637,6 +7730,43 @@ begin
               for PosX := RogueCircles[P][I].X - RogueCircles[P][I].Radius to RogueCircles[P][I].X + RogueCircles[P][I].Radius do
               for PosY := RogueCircles[P][I].Y - RogueCircles[P][I].Radius to RogueCircles[P][I].Y + RogueCircles[P][I].Radius do
                 if (((RogueCircles[P][I].X - PosX) * (RogueCircles[P][I].X - PosX) + (RogueCircles[P][I].Y - PosY) * (RogueCircles[P][I].Y - PosY)) <= RogueCircles[P][I].Radius * RogueCircles[P][I].Radius) then
+                  if TileOnBattlefield(PosX, PosY) then
+                    Actions.MapTileHeightSet(PosX, PosY, Tiles[PosX][PosY].Relief);
+          end;
+        end;
+      end;
+end;
+
+
+procedure CheckStolenRogueCircles(P: Integer);
+var
+  aRelief, PosX, PosY: Integer;
+begin
+  if States.PlayerEnabled(P) then
+    if StolenRogueCirclesLength[P] > 0 then
+      for I := 0 to StolenRogueCirclesLength[P] - 1 do
+      begin
+        if TileOnBattlefield(StolenRogueCircles[P][I].X, StolenRogueCircles[P][I].Y) then
+        begin
+          if (States.GameTime = StolenRogueCircles[P][I].AddTime) then
+          begin
+            SetCircle(P, StolenRogueCircles[P][I].X, StolenRogueCircles[P][I].Y, StolenRogueCircles[P][I].Radius, StolenRogueCircles[P][I].Obj, False, False);
+
+            for PosX := StolenRogueCircles[P][I].X - StolenRogueCircles[P][I].Radius to StolenRogueCircles[P][I].X + StolenRogueCircles[P][I].Radius do
+            for PosY := StolenRogueCircles[P][I].Y - StolenRogueCircles[P][I].Radius to StolenRogueCircles[P][I].Y + StolenRogueCircles[P][I].Radius do
+            begin
+              aRelief := States.MapTileHeight(PosX, PosY) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
+              if aRelief < 0 then
+                aRelief := -1 * aRelief;
+              if (((StolenRogueCircles[P][I].X - PosX) * (StolenRogueCircles[P][I].X - PosX) + (StolenRogueCircles[P][I].Y - PosY) * (StolenRogueCircles[P][I].Y - PosY)) <= StolenRogueCircles[P][I].Radius * StolenRogueCircles[P][I].Radius) then
+                if TileOnBattlefield(PosX, PosY) then
+                  Actions.MapTileHeightSet(PosX, PosY, aRelief);
+            end;
+
+            if I = StolenRogueCirclesLength[P] - 1 then
+              for PosX := StolenRogueCircles[P][I].X - StolenRogueCircles[P][I].Radius to StolenRogueCircles[P][I].X + StolenRogueCircles[P][I].Radius do
+              for PosY := StolenRogueCircles[P][I].Y - StolenRogueCircles[P][I].Radius to StolenRogueCircles[P][I].Y + StolenRogueCircles[P][I].Radius do
+                if (((StolenRogueCircles[P][I].X - PosX) * (StolenRogueCircles[P][I].X - PosX) + (StolenRogueCircles[P][I].Y - PosY) * (StolenRogueCircles[P][I].Y - PosY)) <= StolenRogueCircles[P][I].Radius * StolenRogueCircles[P][I].Radius) then
                   if TileOnBattlefield(PosX, PosY) then
                     Actions.MapTileHeightSet(PosX, PosY, Tiles[PosX][PosY].Relief);
           end;
@@ -8488,6 +8618,12 @@ begin
     begin
       RogueCirclesLength[I] := 0;
       SetLength(RogueCircles[I], 0);
+    end;
+
+    if States.GameTime = TimeToClearStolenRogueArray[I] then
+    begin
+      StolenRogueCirclesLength[I] := 0;
+      SetLength(StolenRogueCircles[I], 0);
     end;
 
   end;
@@ -9949,7 +10085,7 @@ end;
 
 procedure OnTick;
 var
-  N: array[0..16] of Integer;
+  N: array[0..17] of Integer;
   S: Integer;
 begin
 
@@ -10035,8 +10171,11 @@ begin
   for N[12] := 0 to 7 do
     CheckKnightCircles(N[12]);
 
-  for N[12] := 0 to 7 do
-    CheckRogueCircles(N[12]);
+  for N[16] := 0 to 7 do
+    CheckRogueCircles(N[16]);
+
+  for N[17] := 0 to 7 do
+    CheckStolenRogueCircles(N[17]);
 
   if States.GameTime > CHOOSE_HERO_TIMER then
   begin
