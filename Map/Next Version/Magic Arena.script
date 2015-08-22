@@ -995,7 +995,7 @@ begin
   begin
 
   if Players[P].StolenSkillTime > 0 then
-    Result := '|[$56BAC2]<$59>[] ([$EBAEBA]' + Players[P].StolenSkillName + '[]) [$56BAC2]<$60>[] ' + IntToStr(Players[P].StolenSkillTime/10) + '[$56BAC2]. |<$61>[]'
+    Result := '|[$56BAC2]<$59>[] |([$EBAEBA]' + Players[P].StolenSkillName + '[]) [$56BAC2]<$60>[] ' + IntToStr(Players[P].StolenSkillTime/10) + '[$56BAC2]. |<$61>[]'
 
   else
 
