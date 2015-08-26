@@ -2956,7 +2956,7 @@ begin
       Players[P].Hero := -1;
     end;
 
-    ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
+    ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 13] + CLEAR_ARRAY_FACTOR;
 
   end;
 
@@ -3941,7 +3941,7 @@ begin
 
       Players[P].RoadSkillDelay := Round(VAGA_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
-      ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
+      ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 9] + CLEAR_ARRAY_FACTOR;
 
     end;
 
@@ -4086,7 +4086,7 @@ begin
 
       Players[P].WineSkillDelay := Round(VAGA_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
-      ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
+      ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 13] + CLEAR_ARRAY_FACTOR;
 
     end;
 
