@@ -7944,7 +7944,7 @@ begin
                   and (not Players[O].HeroImmortal) then
                   begin
                     Actions.GroupKillAll(Players[O].Hero, True);
-                    Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX, Players[P].GravityY, D, 1, 1);
+                    Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
                     Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
                     Break;
                     Exit;
@@ -7953,7 +7953,7 @@ begin
                     if (InRange(O, 8, 11)) then 
                     begin
                       Actions.GroupKillAll(States.UnitsGroup(U), True);
-                      G := Actions.GiveGroup(O, UT, Players[P].GravityX, Players[P].GravityY, D, 1, 1);
+                      G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
                       Actions.GroupHungerSet(G, RUNE_ZOMBIE_LIFE);
                       Break;
                       Exit;
