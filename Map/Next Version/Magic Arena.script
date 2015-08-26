@@ -21,7 +21,7 @@ const
   SWORD_WINE_DELAY = 250;
 
   PIKE_ROAD_DELAY = 160;
-  PIKE_FIELD_DELAY = 100;
+  PIKE_FIELD_DELAY = 150;
   PIKE_WINE_DELAY = 300;
 
   BOWMAN_ROAD_DELAY = 100;
@@ -3278,7 +3278,7 @@ begin
 
     Players[P].RoadSkillDelay := Round(PIKE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
-    TimeToClearViseArray[P] := ViseCircles[P][ViseCirclesLength[P] - 1].AddTime + CLEAR_ARRAY_FACTOR;
+    TimeToClearViseArray[P] := ViseCircles[P][0].AddTime + CLEAR_ARRAY_FACTOR;
 
     ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
 
@@ -4143,7 +4143,7 @@ begin
 
     Players[P].RoadSkillDelay := Round(AXE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
-    TimeToClearGravityArray[P] := GravityCircles[P][GravityCirclesLength[P] - I].AddTime + CLEAR_ARRAY_FACTOR;
+    TimeToClearGravityArray[P] := GravityCircles[P][0].AddTime + CLEAR_ARRAY_FACTOR;
 
     end;
 
@@ -5729,13 +5729,11 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     Players[P].HeroStunnedTime := States.GameTime + SPURT_TIME + 5;
+    Actions.GroupOrderHalt(Players[P].Hero);
     Actions.GroupBlockOrders(Players[P].Hero, True);
     Players[P].HeroStunned := True;
-    if not Players[P].HeroImmortal then
-    begin
-      Players[P].HeroImmortalTime := States.GameTime + SPURT_TIME + 5;
-      Players[P].HeroImmortal := True;
-    end;
+    Players[P].HeroImmortalTime := States.GameTime + SPURT_TIME + 5;
+    Players[P].HeroImmortal := True;
     Players[P].Preparing := True;
     Players[P].PreparingTime := States.GameTime + SPURT_TIME + 5;
 
@@ -5898,12 +5896,12 @@ begin
       Players[P].Hero := -1;
     end;}
 
-    Players[P].KnightX := X2;
+    {Players[P].KnightX := X2;
     Players[P].KnightY := Y2;
     Players[P].KnightDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     Players[P].KnightAppearTime := States.GameTime + DELAY_OF_TURNING;
     Players[P].TempHeroType := Players[P].HeroType;
-    Actions.GroupKillAll(Players[P].Hero, True);
+    Actions.GroupKillAll(Players[P].Hero, True);}
 
     Players[P].LastUsedSkill := sRagingSpurt;
 
@@ -8213,7 +8211,7 @@ begin
       end;
     end;
 
-    if States.GameTime = Players[I1].KnightAppearTime then  
+    {if States.GameTime = Players[I1].KnightAppearTime then  
     begin
       if Players[I1].Hero <> -1 then   
       begin
@@ -8221,7 +8219,7 @@ begin
         Players[I1].HeroType := Players[I1].TempHeroType;
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
       end;
-    end;
+    end;}
 
     if (States.PlayerEnabled(I1))
     and (Players[I1].Hero > 0) then
@@ -8499,7 +8497,7 @@ begin
         and (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K]))
         and (States.GameTime mod 5 = 0) then
         begin
-          aRelief := States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR) - 4;
+          aRelief := Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
           if aRelief < 0 then
             aRelief := -1 * aRelief;
           Actions.MapTileHeightSet(TilesRoadX[P][K], TilesRoadY[P][K], aRelief);
