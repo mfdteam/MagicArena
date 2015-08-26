@@ -4375,7 +4375,7 @@ begin
       TimeToClearFireworks4Array[P] := FireworksCircles4[P][FireworksCircles4Length[P] - 1].AddTime + CLEAR_ARRAY_FACTOR;
       TimeToClearFireworks5Array[P] := FireworksCircles5[P][FireworksCircles5Length[P] - 1].AddTime + CLEAR_ARRAY_FACTOR;
 
-      ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
+      ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 15] + CLEAR_ARRAY_FACTOR;
 
     end;
 
