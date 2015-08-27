@@ -389,6 +389,8 @@ type
     TempStolenSkillName: ANSIString;
     TempStolenSkillTime: Integer;
     TempHeroType: Integer;
+    MindTime: Integer;
+    MindTime2: Integer;
     CaptureMind: Boolean;
     CaptureMindTime: Integer;
     MindStunned: Boolean;
@@ -789,6 +791,8 @@ begin
       TempHeroType := -1;
       StolenSkillTime := 0;
       Stone := MAX_SCOUT_STONES;
+      MindTime := 0;
+      MindTime2 := 0;
       CaptureMind := False;
       CaptureMindTime := 0;
       MindStunned := False;
@@ -6167,6 +6171,185 @@ begin
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
+        TilesWineLength[P] := TilesWineLength[P] + 32;
+        SetLength(TilesWineX[P], TilesWineLength[P]);
+        SetLength(TilesWineY[P], TilesWineLength[P]);
+        SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
+        SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
+        SetLength(TilesWineObjects[P], TilesWineLength[P]);
+
+        TilesWineX[P][Length(TilesWineX[P]) - 32] := X;
+        TilesWineX[P][Length(TilesWineX[P]) - 31] := X + 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 30] := X + 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 29] := X + 1;
+
+        TilesWineY[P][Length(TilesWineY[P]) - 32] := Y - 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 31] := Y - 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 30] := Y;
+        TilesWineY[P][Length(TilesWineY[P]) - 29] := Y + 1;
+
+        TilesWineX[P][Length(TilesWineX[P]) - 28] := X;
+        TilesWineX[P][Length(TilesWineX[P]) - 27] := X - 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 26] := X - 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 25] := X - 1;
+
+        TilesWineY[P][Length(TilesWineY[P]) - 28] := Y + 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 27] := Y + 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 26] := Y;
+        TilesWineY[P][Length(TilesWineY[P]) - 25] := Y - 1;
+           
+        TilesWineX[P][Length(TilesWineX[P]) - 24] := X;
+        TilesWineX[P][Length(TilesWineX[P]) - 23] := X + 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 22] := X + 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 21] := X + 1;
+
+        TilesWineY[P][Length(TilesWineY[P]) - 24] := Y - 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 23] := Y - 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 22] := Y;
+        TilesWineY[P][Length(TilesWineY[P]) - 21] := Y + 1;
+
+        TilesWineX[P][Length(TilesWineX[P]) - 20] := X;
+        TilesWineX[P][Length(TilesWineX[P]) - 19] := X - 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 18] := X - 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 17] := X - 1;
+
+        TilesWineY[P][Length(TilesWineY[P]) - 20] := Y + 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 19] := Y + 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 18] := Y;
+        TilesWineY[P][Length(TilesWineY[P]) - 17] := Y - 1;
+
+        TilesWineX[P][Length(TilesWineX[P]) - 16] := X2;
+        TilesWineX[P][Length(TilesWineX[P]) - 15] := X2 + 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 14] := X2 + 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 13] := X2 + 1;
+
+        TilesWineY[P][Length(TilesWineY[P]) - 16] := Y2 - 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 15] := Y2 - 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 14] := Y2;
+        TilesWineY[P][Length(TilesWineY[P]) - 13] := Y2 + 1;
+
+        TilesWineX[P][Length(TilesWineX[P]) - 12] := X2;
+        TilesWineX[P][Length(TilesWineX[P]) - 11] := X2 - 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 10] := X2 - 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 9] := X2 - 1;
+
+        TilesWineY[P][Length(TilesWineY[P]) - 12] := Y2 + 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 11] := Y2 + 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 10] := Y2;
+        TilesWineY[P][Length(TilesWineY[P]) - 9] := Y2 - 1;
+           
+        TilesWineX[P][Length(TilesWineX[P]) - 8] := X2;
+        TilesWineX[P][Length(TilesWineX[P]) - 7] := X2 + 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 6] := X2 + 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 5] := X2 + 1;
+
+        TilesWineY[P][Length(TilesWineY[P]) - 8] := Y2 - 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 7] := Y2 - 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 6] := Y2;
+        TilesWineY[P][Length(TilesWineY[P]) - 5] := Y2 + 1;
+
+        TilesWineX[P][Length(TilesWineX[P]) - 4] := X2;
+        TilesWineX[P][Length(TilesWineX[P]) - 3] := X2 - 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 2] := X2 - 1;
+        TilesWineX[P][Length(TilesWineX[P]) - 1] := X2 - 1;
+
+        TilesWineY[P][Length(TilesWineY[P]) - 4] := Y2 + 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 3] := Y2 + 1;
+        TilesWineY[P][Length(TilesWineY[P]) - 2] := Y2;
+        TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2 - 1;
+
+        for I := 1 to 16 do
+          TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := SCOUT_OBJECT4;
+        for I := 17 to 32 do
+          TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := SCOUT_OBJECT4;
+
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 32] := States.GameTime + 16;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 31] := States.GameTime + 19;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 30] := States.GameTime + 22;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 29] := States.GameTime + 25;
+    
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 32] := States.GameTime + 13;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 31] := States.GameTime + 16;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 30] := States.GameTime + 19;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 29] := States.GameTime + 22;
+
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 28] := States.GameTime + 16;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 27] := States.GameTime + 19;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 26] := States.GameTime + 22;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 25] := States.GameTime + 25;
+    
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 28] := States.GameTime + 13;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 27] := States.GameTime + 16;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 26] := States.GameTime + 19;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 25] := States.GameTime + 22;
+
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 24] := States.GameTime + 4;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 23] := States.GameTime + 7;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 22] := States.GameTime + 10;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 21] := States.GameTime + 13;
+    
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 24] := States.GameTime + 1;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 23] := States.GameTime + 4;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 22] := States.GameTime + 7;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 21] := States.GameTime + 10;
+
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 20] := States.GameTime + 4;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 19] := States.GameTime + 7;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 18] := States.GameTime + 10;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 17] := States.GameTime + 13;
+    
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 20] := States.GameTime + 1;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 19] := States.GameTime + 4;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 18] := States.GameTime + 7;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 17] := States.GameTime + 10;
+
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 16] := States.GameTime + 16;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 15] := States.GameTime + 19;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 14] := States.GameTime + 22;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 13] := States.GameTime + 25;
+    
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 16] := States.GameTime + 13;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 15] := States.GameTime + 16;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 14] := States.GameTime + 19;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 13] := States.GameTime + 22;
+
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 12] := States.GameTime + 16;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 11] := States.GameTime + 19;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 10] := States.GameTime + 22;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 9] := States.GameTime + 25;
+    
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 12] := States.GameTime + 13;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 11] := States.GameTime + 16;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 10] := States.GameTime + 19;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 9] := States.GameTime + 22;
+
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 4;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 7;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 10;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 13;
+    
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 1;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 4;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 7;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 10;
+
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 4;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 7;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 10;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 13;
+    
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 1;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 4;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 7;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 10;
+
+        for I := 1 to 32 do
+          if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
+          or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_MINE)
+          or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
+          or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+          ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
+
         M[P] := O;
         M2[O] := P;
 
@@ -6177,25 +6360,16 @@ begin
         Players[P].MindY2 := Y2;
         Players[P].MindDir2 := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
 
-        Players[P].TempPlayersTeam := Players[P].PlayersTeam;
-        Players[P].HeroMindType := Players[P].HeroType;
-        Players[O].HeroMindType := Players[O].HeroType;
-        Players[P].TempHeroMindType := Players[P].TempHeroType;
-        Players[P].TempStolenSkill := Players[P].StolenSkill;
-        Players[P].TempStolenSkillTime := Players[P].StolenSkillTime;
-        Players[P].TempStolenSkillName := Players[P].StolenSkillName;
-        Players[P].TempStone := Players[P].Stone;
-        Players[P].TempReCharge := Players[P].ReCharge;
-        Players[P].TempReChargeTime := Players[P].ReChargeTime;
-
         Actions.GroupKillAll(Players[P].Hero, True);
         Actions.GroupKillAll(Players[O].Hero, True);
-    
-        Players[P].MindAppearTime := States.GameTime + DELAY_OF_TURNING;
+
+        Players[P].MindTime := States.GameTime + DELAY_OF_TURNING;
+        Players[P].WineSkillDelay := 20;
       end;
     end;
   end;
 end;
+
 
 
 //ROGUE
@@ -8328,8 +8502,43 @@ begin
     if States.GameTime = Players[I1].UnitKillDelay then  
       Actions.UnitKill(Players[I1].SetUnit, False);
 
+     if States.GameTime = Players[I1].MindTime then
+    begin
+      Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
+      Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
+      Actions.GroupBlockOrders(Players[I1].Hero, True);
+      Actions.GroupOrderHalt(Players[I1].Hero); 
+      Actions.GroupBlockOrders(Players[M[I1]].Hero, True);
+      Actions.GroupOrderHalt(Players[M[I1]].Hero);  
+      Players[I1].MindTime2 := States.GameTime + 25;
+      Players[M[I1]].MindStunned := True;
+      Players[I1].CaptureMind := True;
+      Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME; 
+      Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME;
+    end;
+
+    if States.GameTime = Players[I1].MindTime2 then
+    begin
+      Players[I1].TempPlayersTeam := Players[I1].PlayersTeam;
+      Players[I1].HeroMindType := Players[I1].HeroType;
+      Players[M[I1]].HeroMindType := Players[M[I1]].HeroType;
+      Players[I1].TempHeroMindType := Players[I1].TempHeroType;
+      Players[I1].TempStolenSkill := Players[I1].StolenSkill;
+      Players[I1].TempStolenSkillTime := Players[I1].StolenSkillTime;
+      Players[I1].TempStolenSkillName := Players[I1].StolenSkillName;
+      Players[I1].TempStone := Players[I1].Stone;
+      Players[I1].TempReCharge := Players[I1].ReCharge;
+      Players[I1].TempReChargeTime := Players[I1].ReChargeTime;
+
+      Actions.GroupKillAll(Players[I1].Hero, True);
+      Actions.GroupKillAll(Players[M[I1]].Hero, True);
+
+      Players[I1].MindAppearTime := States.GameTime + DELAY_OF_TURNING;
+    end;
+
     if States.GameTime = Players[I1].MindAppearTime then
     begin
+  
       if Players[M[I1]].HeroType = 27 then
       begin
         Players[I1].WerewolfTime := Players[M[I1]].WerewolfTime;
@@ -8337,7 +8546,6 @@ begin
         Players[M[I1]].HeroMindType := 15;
       end;
 
-      Players[I1].CaptureMind := True;
       Players[I1].HeroType := Players[M[I1]].HeroType
       Players[I1].Hero := Actions.GiveGroup(I1, Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
       Players[I1].TempHeroType := Players[M[I1]].TempHeroType;
@@ -8345,7 +8553,6 @@ begin
       Players[I1].HeroStunnedTime := Players[M[I1]].HeroStunnedTime;
  
       Players[M[I1]].HeroStunned := True;
-      Players[M[I1]].MindStunned := True;
       Players[M[I1]].HeroType := Players[I1].HeroMindType;
       Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
 
@@ -8373,9 +8580,7 @@ begin
         Players[I1].PlayersTeam := 1;
       if Players[M[I1]].PlayersTeam = 1 then
         Players[I1].PlayersTeam := 0;
- 
-      Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME; 
-      Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME; 
+  
       Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
       Players[I1].HeroImmortalTime := States.GameTime + CAPTURE_MIND_TIME;
     end;
@@ -8392,14 +8597,13 @@ begin
       Actions.GroupKillAll(Players[M[I1]].Hero, True);
       Players[I1].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
     end;
-   
 
     if States.GameTime = Players[I1].MindAppearTimeBack then
     begin
       if Players[M[I1]].HP = 0 then 
       begin
         Players[I1].MindX2 := Players[I1].MindX;
-        Players[I1].MindY := Players[I1].MindY;
+        Players[I1].MindY2 := Players[I1].MindY;
       end;
       Players[I1].CaptureMind := False;
       Players[M[I1]].MindStunned := False;
