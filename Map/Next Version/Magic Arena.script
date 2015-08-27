@@ -7309,6 +7309,14 @@ begin
     Players[P].FieldSkillDelay := 0;
     if Players[P].HeroType <> 25 then
       Players[P].WineSkillDelay := 0;
+    if Players[P].HeroType = 23 then
+      Players[P].WineSkillDelay := ROGUE_TOTEM_DELAY;
+    if Players[P].HeroType = 15 then
+      Players[P].FieldSkillDelay := ROGUE_FIREWORKS_DELAY;
+    if Players[P].HeroType = 17 then
+      Players[P].WineSkillDelay := ROGUE_REVENGE_DELAY;
+    if Players[P].HeroType = 25 then
+      Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
     Actions.MapTileObjectSet(aX, aY, 255);
   end;
 
