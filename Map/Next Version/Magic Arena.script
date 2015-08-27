@@ -7023,6 +7023,14 @@ begin
 
   if not TileOnBattlefield(X, Y) then
     Exit;
+
+  if (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = RUNE_X)
+  and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y1) then
+    Exit;
+
+  if (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = RUNE_X)
+  and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
+    Exit;
   
 //Use skills
 
@@ -7063,6 +7071,14 @@ begin
   if not TileOnBattlefield(X, Y) then
     Exit;
 
+  if (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = RUNE_X)
+  and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y1) then
+    Exit;
+
+  if (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = RUNE_X)
+  and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
+    Exit;
+
 //Use skills
 
   if (Players[P].Hero > 0)
@@ -7100,6 +7116,14 @@ begin
     Exit;
 
   if not TileOnBattlefield(X, Y) then
+    Exit;
+
+  if (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = RUNE_X)
+  and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y1) then
+    Exit;
+
+  if (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = RUNE_X)
+  and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
     Exit;
 
 //Use skills
