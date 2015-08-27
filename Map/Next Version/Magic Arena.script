@@ -9259,8 +9259,7 @@ begin
     ZombieSummon(P, aX + States.KaMRandomI(5) - States.KaMRandomI(5), aY + States.KaMRandomI(5) - States.KaMRandomI(5));
   end;
 
-  if (States.GameTime mod 10 = 0)
-  and (Players[I].WineSkillDelay = 0)
+  if (Players[I].WineSkillDelay = 0)
   and (Players[P].Hero > 0) then
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
