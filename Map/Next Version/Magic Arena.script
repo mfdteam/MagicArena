@@ -288,6 +288,8 @@ const
   CLEAR_ARRAY_FACTOR = 2;
   DEBUG_MODE = True;
   CHANGE_RELIEF = True;
+  MOVEMENT_DISTANCE = 3;
+  moVEMENT_FACTOR = 2;
 
 //Battlefield
 
@@ -474,6 +476,7 @@ var
   AISoldiers: array of Integer;
   SpurtTimes, SpurtX, SpurtY, SpurtDir: array[0..11] of array[0..SPURT_LENGTH - 1] of Integer;
   RUNE_Y: Integer;
+  OldX, OldY, NewX, NewY: array[0..11] of Integer;
 
 
 function InRange(Value, Min, Max: Integer): Boolean;
@@ -8911,6 +8914,34 @@ begin
 end;
 
 
+function GroupIsMoving(G: Integer): Boolean;
+var
+  O: Integer;
+begin
+  if G <= 0 then
+    Exit;
+  if States.GroupMember(G, 0) <= 0 then
+    Exit;
+
+  O := States.GroupOwner(G);
+
+  if States.GameTime mod MOVEMENT_FACTOR = 0 then
+  begin
+    NewX[O] := States.UnitPositionX(States.GroupMember(G, 0));
+    NewY[O] := States.UnitPositionY(States.GroupMember(G, 0));
+  end;
+
+  if States.GameTime mod MOVEMENT_FACTOR = 0 then
+  begin
+    OldX[O] := States.UnitPositionX(States.GroupMember(G, 0));
+    OldY[O] := States.UnitPositionY(States.GroupMember(G, 0));
+  end;
+
+  Result := (OldX[O] div MOVEMENT_DISTANCE <> NewX[O] div MOVEMENT_DISTANCE) or (OldY[O] div MOVEMENT_DISTANCE <> NewY[O] div MOVEMENT_DISTANCE);
+
+end;
+
+
 //AI
 
 
@@ -9363,7 +9394,7 @@ begin
           sX := X;
           sY := Y;
 
-          if not States.GroupIdle(States.UnitsGroup(U)) then
+          if GroupIsMoving(States.UnitsGroup(U)) then
           begin
             case States.UnitDirection(U) of
               0: begin
@@ -9511,7 +9542,7 @@ begin
           sX := X;
           sY := Y;
 
-          if not States.GroupIdle(States.UnitsGroup(U)) then
+          if GroupIsMoving(States.UnitsGroup(U)) then
           begin
             case States.UnitDirection(U) of
 
