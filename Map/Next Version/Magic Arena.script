@@ -8581,8 +8581,8 @@ begin
       if Players[M[I1]].PlayersTeam = 1 then
         Players[I1].PlayersTeam := 0;
   
-      Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
-      Players[I1].HeroImmortalTime := States.GameTime + CAPTURE_MIND_TIME;
+      Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME - 27;
+      Players[I1].HeroImmortalTime := States.GameTime + CAPTURE_MIND_TIME - 27;
     end;
 
     if States.GameTime = Players[I1].CaptureMindTime then
