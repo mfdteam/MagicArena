@@ -585,6 +585,7 @@ begin
     4: Players[P].HeroType := 26;
   end;
 
+  Players[P].TempHeroType := Players[P].HeroType;
   Players[P].HeroChosen := True;
 
   if InRange(P, 0, 3) then
@@ -1517,6 +1518,7 @@ begin
         if States.PlayerIsAI(I) then
         begin
           Players[I].HeroType := States.UnitType(States.UnitAt(X, Y));
+          Players[I].TempHeroType := Players[I].HeroType;
           Players[I].HeroChosen := True;
         end;
 
@@ -2288,10 +2290,12 @@ begin
     and (Abs(Y2 - Y) <= TELEPORT_RADIUS) then
     begin
       Players[P].LastUsedSkill := sTeleport;
-      Players[P].FieldSkillDelay := Round(LANCE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+      if States.PlayerIsAI(P) then 
+        Players[P].TempHeroType := Players[P].HeroType;
       Actions.GroupKillAll(Players[P].Hero, True);
       Players[P].Hero := Actions.GiveGroup(P, Players[P].TempHeroType, X, Y, NewDir, 1, 1);
       Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+      Players[P].FieldSkillDelay := Round(LANCE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
     end;
   end;
 
@@ -7525,7 +7529,8 @@ begin
 
   for I := 0 to 7 do
     if States.PlayerEnabled(I) then
-      if Players[I].HP = 0 then
+      if (Players[I].HP = 0)
+      and (Players[I].Hero > 0) then
       begin
         if (States.UnitPositionX(States.GroupMember(Players[I].Hero, 0)) <> Players[I].TribuneX)
         and (States.UnitPositionY(States.GroupMember(Players[I].Hero, 0)) <> Players[I].TribuneY) then
@@ -9746,7 +9751,6 @@ procedure AILance(P: Integer);
 var
   aX, aY, O, U, X, Y, uX, uY, aX1, aX2, aY1, aY2: Integer;
 begin
-
   if (States.KaMRandomI(10) > 5)
   and (Players[P].RoadSkillDelay = 0)
   and (Players[P].Hero > 0)
@@ -9794,37 +9798,19 @@ begin
       end;
     end;
 
-  if (States.KaMRandomI(10) > 7)
-  and (States.KaMRandom < 0.25)
-  and (Players[P].FieldSkillDelay = 0)
+  if (Players[P].FieldSkillDelay = 0)
+  and (States.KaMRandomI(10 + P) > 4 + P)
   and (Players[P].Hero > 0)
   and not (Players[P].CastingSkill) then
     if States.GroupMember(Players[P].Hero, 0) > 0 then
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := aX - TELEPORT_RADIUS + 2 to aX + TELEPORT_RADIUS - 2 do
-      for Y := aY - TELEPORT_RADIUS + 2 to aY + TELEPORT_RADIUS - 2 do
-      begin
-        U := States.UnitAt(X, Y);
-        if U > 0 then
-        begin
-          O := States.UnitOwner(U);
-          if (P <> O)
-          and (U <> States.GroupMember(Players[P].Hero, 0))
-          and (CanUseSkillAgainstUnit(P, U))
-          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          and (States.KaMRandom > 0.1) then
-          begin
-            case states.KaMRandomI(4) of
-              0: Teleport(P, X + 1, Y);
-              1: Teleport(P, X - 1, Y);
-              2: Teleport(P, X, Y + 1);
-              3: Teleport(P, X, Y - 1);
-            end;
-          end;
-        end;
-      end;
+      X := aX + States.KaMRandomI(TELEPORT_RADIUS) - States.KaMRandomI(TELEPORT_RADIUS);
+      Y := aY + States.KaMRandomI(TELEPORT_RADIUS) - States.KaMRandomI(TELEPORT_RADIUS);
+      if not TileIsDangerous(X, Y) then
+        Teleport(P, X, Y);
+      Exit;
     end;
 
   if (States.KaMRandomI(10) > 7)
