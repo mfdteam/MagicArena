@@ -8489,14 +8489,22 @@ begin
           Actions.GroupOrderHalt(Players[I1].Hero);
         end;
       end;
+
+      if States.GameTime = Players[I1].HPDelay - 1 then
+        if Players[I1].HP <= 0 then
+          TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 5] := 255;
     
       if States.GameTime = Players[I1].HPDelay then
       begin
-        if (not Players[M3[I1]].MindStunned) and (not Players[M3[I1]].CaptureMind) then
+        if (not Players[M3[I1]].MindStunned)
+        and (not Players[M3[I1]].CaptureMind)
+        and (Players[M3[I1]].HP > 0) then
           Players[M3[I1]].HP := Players[M3[I1]].HP - 1;
-        if Players[M3[I1]].CaptureMind then
+        if (Players[M3[I1]].CaptureMind)
+        and (Players[M3[I1]].HP > 0) then
           Players[M[I1]].HP := Players[M[I1]].HP - 1;
-        if Players[M3[I1]].MindStunned then
+        if (Players[M3[I1]].MindStunned)
+        and (Players[I1].HP > 0) then
           Players[I1].HP := Players[I1].HP - 1;
       end;
 
