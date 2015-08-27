@@ -878,7 +878,7 @@ begin
       if States.GroupMember(Players[I].Hero, 0) > 0 then
         if (States.UnitPositionX(States.GroupMember(Players[I].Hero, 0)) = RUNE_X)
         and (States.UnitPositionY(States.GroupMember(Players[I].Hero, 0)) = RUNE_Y) then
-          if States.GameTime = Players[I].StayingOnRuneTime then
+          if InRange(States.GameTime, Players[I].StayingOnRuneTime, Players[I].StayingOnRuneTime + 5) then
 
             case States.KaMRandomI(4) of
 
