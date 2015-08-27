@@ -9384,8 +9384,8 @@ begin
       E := 0;
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - TOTEM_ADD_RADIUS + 2) to (aX + TOTEM_ADD_RADIUS - 2) do
-      for Y := (aY - TOTEM_ADD_RADIUS + 2) to (aY + TOTEM_ADD_RADIUS - 2) do
+      for X := (aX - TOTEM_ADD_RADIUS) to (aX + TOTEM_ADD_RADIUS) do
+      for Y := (aY - TOTEM_ADD_RADIUS) to (aY + TOTEM_ADD_RADIUS) do
       begin
         U := States.UnitAt(X, Y);
         if (U > 0) then
@@ -9532,8 +9532,8 @@ begin
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - BOMB_RADIUS + 3) to (aX + BOMB_RADIUS - 3) do
-      for Y := (aY - BOMB_RADIUS + 3) to (aY + BOMB_RADIUS - 3) do
+      for X := (aX - BOMB_RADIUS) to (aX + BOMB_RADIUS) do
+      for Y := (aY - BOMB_RADIUS) to (aY + BOMB_RADIUS) do
       begin
         U := States.UnitAt(X, Y);
         if (U > 0) then
