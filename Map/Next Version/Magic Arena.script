@@ -823,7 +823,7 @@ begin
       KnightAppearTime := 0;
       KnightX := 0;
       KnightY := 0;
-      KnightDir := 0;
+      KnightDir := 0; 
     end;
   end;
 
@@ -8491,7 +8491,7 @@ begin
       end;
 
       if States.GameTime = Players[I1].HPDelay - 1 then
-        if Players[I1].HP <= 0 then
+        if Players[M3[I1]].HP <= 0 then
           TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 5] := 255;
     
       if States.GameTime = Players[I1].HPDelay then
