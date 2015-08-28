@@ -290,6 +290,8 @@ const
   CHANGE_RELIEF = False;
   MOVEMENT_DISTANCE = 3;
   MOVEMENT_FACTOR = 2;
+  VAMPIRE_HEALBUSH_START_TIME = 18;
+  VAMPIRE_HEALBUSH_END_TIME = 195;
 
 //Battlefield
 
@@ -6118,8 +6120,8 @@ begin
             TilesFieldX[P][Length(TilesFieldX[P]) - 5] := hX;
             TilesFieldY[P][Length(TilesFieldY[P]) - 5] := hY;
 
-            ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 5] := States.GameTime + 195;
-            SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 5] := States.GameTime + 18;
+            ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 5] := States.GameTime + VAMPIRE_HEALBUSH_END_TIME;
+            SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 5] := States.GameTime + VAMPIRE_HEALBUSH_START_TIME;
             TilesFieldObjects[P][Length(TilesFieldObjects[P]) - 5] := SCOUT_OBJECT2;
 
             if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 5], TilesFieldY[P][Length(TilesFieldY[P]) - 5]) = BARB_OBJECT3)
@@ -6128,12 +6130,12 @@ begin
             or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 5], TilesFieldY[P][Length(TilesFieldY[P]) - 5]), SWORD_OBJECT, VAGA_OBJECT6)) then
               ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 5] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 5] + CLEANUP_TIME;
 
-            Players[P].HPDelay := States.GameTime + 18;
+            Players[P].HPDelay := States.GameTime + VAMPIRE_HEALBUSH_START_TIME;
           end;
 
         if (InRange(O, 8, 11))
         and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
-          Players[P].UnitKillDelay := States.GameTime + 18;
+          Players[P].UnitKillDelay := States.GameTime + VAMPIRE_HEALBUSH_START_TIME;
       end;
     end;
   end;
