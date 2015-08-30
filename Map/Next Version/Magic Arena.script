@@ -825,7 +825,7 @@ begin
       KnightAppearTime := 0;
       KnightX := 0;
       KnightY := 0;
-      KnightDir := 0; 
+      KnightDir := 0;
     end;
   end;
 
@@ -9406,6 +9406,8 @@ function AICanUseSkills(P, UT: Integer): Boolean;
 begin
   Result := False;
   if not InRange(UT, 15, 27) then
+    Exit;
+  if Players[P].Hero <= 0 then
     Exit;
   if States.PlayerEnabled(P) then
     if States.PlayerIsAI(P) then
