@@ -419,6 +419,7 @@ type
     KnightX: Integer;
     KnightY: Integer;
     KnightDir: Integer;
+    TempHero: Integer;
   end;
 
 
@@ -826,6 +827,7 @@ begin
       KnightX := 0;
       KnightY := 0;
       KnightDir := 0;
+      TempHero := -1;
     end;
   end;
 
@@ -3373,7 +3375,9 @@ begin
     Players[P].PikeDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     Players[P].PikeAppearTime := States.GameTime + DELAY_OF_TURNING;
     Players[P].TempHeroType := Players[P].HeroType;
+    Players[P].TempHero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].TribuneX, Players[P].TribuneY, 1, 1, 1);
     Actions.GroupKillAll(Players[P].Hero, True);
+    Players[P].Hero := Players[P].TempHero;
 
     TilesWineLength[P] := TilesWineLength[P] + 72;
     SetLength(TilesWineX[P], TilesWineLength[P]);
@@ -8400,6 +8404,8 @@ begin
       begin
         if Players[I1].Hero <> -1 then   
         begin
+          Players[I1].TempHero := Players[I1].Hero;
+          Actions.GroupKillAll(Players[I1].Hero, True);
           Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].TempHeroType, Players[I1].PikeX, Players[I1].PikeY, Players[I1].PikeDir, 1, 1);
           Players[I1].HeroType := Players[I1].TempHeroType;
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
