@@ -4423,7 +4423,9 @@ begin
       Players[P].WineSkillDelay := 0;
       Players[P].RoadSkillDelay := 0;
       Players[P].FieldSkillDelay := 0;
+      Players[P].TempHero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].TribuneX, Players[P].TribuneY, 1, 1, 1);
       Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Players[P].TempHero;
       Players[P].VagaX := X2;
       Players[P].VagaY := Y2;
       Players[P].VagaDir := NewDir;
@@ -8373,6 +8375,8 @@ begin
 
       if States.GameTime = Players[I1].VagaAppearTime then
       begin
+        Players[I1].TempHero := Players[I1].Hero;
+        Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(I1, 27, Players[I1].VagaX, Players[I1].VagaY, Players[I1].VagaDir, 1, 1);
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         Players[I1].WerewolfTime := States.GameTime + WEREWOLF_TIME;
@@ -8383,7 +8387,9 @@ begin
         Players[I1].VagaX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].VagaY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].VagaDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
+        Players[I1].TempHero := Players[I1].Hero
         Actions.GroupKillAll(Players[I1].Hero, True);
+        Players[I1].Hero := Players[I1].TempHero;
         Players[I1].VagaAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
       end;
 
