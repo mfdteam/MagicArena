@@ -329,7 +329,7 @@ type
     HeroImmortalTime: Integer;
     HeroChosen: Boolean;
     HP: Integer;
-    HPDelay: Integer;
+    VampireDelay: Integer;
     RoadSkillDelay: Integer;
     FieldSkillDelay: Integer;
     WineSkillDelay: Integer;
@@ -475,7 +475,8 @@ var
   TeamInfo: array[0..1] of ANSIString;
   ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime: array[0..11] of Integer;
   RuneTime: Integer;
-  M, M2, M3: array[0..7] of Integer;
+  M, M2, M3, hX, hY: array[0..7] of Integer;
+  Scan: Integer;
   ZomboHero: array[0..7] of array[0..3] of Integer;
   DeathX, DeathY: Integer;
   AISoldiers: array of Integer;
@@ -739,7 +740,7 @@ begin
       HeroImmortal := False;
       HeroChosen := False;
       HP := START_HP;
-      HPDelay := 0;
+      VampireDelay := 0;
       TribuneY := 2;
       RoadSkillDelay := 0;
       FieldSkillDelay := 0;
@@ -6016,7 +6017,7 @@ end;
 
 procedure Vampire(P, X, Y: Integer);
 var
-  X2, Y2, U, O, hX, hY, Scan: Integer;
+  X2, Y2, U, O: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -6033,27 +6034,14 @@ begin
   if (TileOnBattlefield(X, Y))
   and (Players[P].Hero > 0) then
   begin
-    Scan := 0;
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     if (Abs(X2 - X) <= VAMPIRE_RADIUS)
     and (Abs(Y2 - Y) <= VAMPIRE_RADIUS) then
     begin
 
-      hX := MIN_X - 1;
-      hY := MIN_Y - 1;
-
-      while (States.UnitAt(hX, hY) > 0)
-      or (InRange(States.MapTileObject(hX, hY), 0, 251))
-      or (not TileOnBattlefield(hX, hY))
-      or (not CanPlaceObject(hX, hY)) do
-      begin
-        hX := X + States.KaMRandomI(3) - States.KaMRandomI(3);
-        hY := Y + States.KaMRandomI(3) - States.KaMRandomI(3);
-        Scan := Scan + 1;
-        if Scan = 100 then
-          Exit;
-      end;
+      hX[P] := MIN_X - 1;
+      hY[P] := MIN_Y - 1;
 
       U := States.UnitAt(X, Y);
       O := States.UnitOwner(U);
@@ -6092,14 +6080,14 @@ begin
           TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := SCOUT_OBJECT3;
     
         ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 11;
-        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 12;
-        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 13;
-        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 14;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 13;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 15;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 17;
     
         SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 4] := States.GameTime + 1;
-        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 3] := States.GameTime + 2;
-        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 2] := States.GameTime + 3;
-        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 4;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 3] := States.GameTime + 3;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 2] := States.GameTime + 5;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 7;
 
         for I := 1 to 4 do
           if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
@@ -6122,22 +6110,7 @@ begin
           and (not Players[O].HeroImmortal)
           and ((Players[P].PlayersTeam <> Players[O].PlayersTeam)
           or ((P = O) and (Players[P].HP >= 2))) then
-          begin
-            TilesFieldX[P][Length(TilesFieldX[P]) - 5] := hX;
-            TilesFieldY[P][Length(TilesFieldY[P]) - 5] := hY;
-
-            ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 5] := States.GameTime + VAMPIRE_HEALBUSH_END_TIME;
-            SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 5] := States.GameTime + VAMPIRE_HEALBUSH_START_TIME;
-            TilesFieldObjects[P][Length(TilesFieldObjects[P]) - 5] := SCOUT_OBJECT2;
-
-            if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 5], TilesFieldY[P][Length(TilesFieldY[P]) - 5]) = BARB_OBJECT3)
-            or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 5], TilesFieldY[P][Length(TilesFieldY[P]) - 5]) = BOWMAN_MINE)
-            or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 5], TilesFieldY[P][Length(TilesFieldY[P]) - 5]) = BOWMAN_OBJECT5)
-            or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - 5], TilesFieldY[P][Length(TilesFieldY[P]) - 5]), SWORD_OBJECT, VAGA_OBJECT6)) then
-              ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 5] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 5] + CLEANUP_TIME;
-
-            Players[P].HPDelay := States.GameTime + VAMPIRE_HEALBUSH_START_TIME;
-          end;
+            Players[P].VampireDelay := States.GameTime + VAMPIRE_HEALBUSH_START_TIME;
 
         if (InRange(O, 8, 11))
         and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
@@ -8515,11 +8488,11 @@ begin
         end;
       end;
 
-      if States.GameTime = Players[I1].HPDelay - 1 then
+      if States.GameTime = Players[I1].VampireDelay - 1 then
         if Players[M3[I1]].HP <= 0 then
           TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 5] := 255;
-    
-      if States.GameTime = Players[I1].HPDelay then
+
+      if States.GameTime = Players[I1].VampireDelay then
       begin
         if (not Players[M3[I1]].MindStunned)
         and (not Players[M3[I1]].CaptureMind)
@@ -8531,6 +8504,32 @@ begin
         if (Players[M3[I1]].MindStunned)
         and (Players[I1].HP > 0) then
           Players[I1].HP := Players[I1].HP - 1;
+
+        Scan := 0;
+        while (States.UnitAt(hX[I1], hY[I1]) > 0)
+        or (InRange(States.MapTileObject(hX[I1], hY[I1]), 0, 251))
+        or (not TileOnBattlefield(hX[I1], hY[I1]))
+        or (not CanPlaceObject(hX[I1], hY[I1])) do
+        begin
+          hX[I1] := States.UnitPositionX(States.GroupMember(Players[M3[I1]].Hero, 0)) + States.KaMRandomI(3) - States.KaMRandomI(3);
+          hY[I1] := States.UnitPositionY(States.GroupMember(Players[M3[I1]].Hero, 0)) + States.KaMRandomI(3) - States.KaMRandomI(3);
+          Scan := Scan + 1;
+          if Scan = 100 then
+          Exit;
+        end;
+
+        TilesFieldX[I1][Length(TilesFieldX[I1]) - 1] := hX[I1];
+        TilesFieldY[I1][Length(TilesFieldY[I1]) - 1] := hY[I1];
+
+        ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := States.GameTime + VAMPIRE_HEALBUSH_END_TIME;
+        SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - 1] := States.GameTime + 1;
+        TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 1] := SCOUT_OBJECT2;
+
+        if (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]) = BARB_OBJECT3)
+        or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]) = BOWMAN_MINE)
+        or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]) = BOWMAN_OBJECT5)
+        or (InRange(States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]), SWORD_OBJECT, VAGA_OBJECT6)) then
+        ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] + CLEANUP_TIME;
       end;
 
       if States.GameTime = Players[I1].UnitKillDelay then  
