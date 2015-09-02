@@ -8226,7 +8226,7 @@ procedure OnPlayerDefeated(P: Integer);
 begin
   if (InRange(P, 0, 7)) then
   begin
-    Actions.GroupKillAll(Players[P].Hero, True);
+    Actions.GroupKillAll(Players[P].Hero, not Players[P].KilledByVampire);
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].TribuneX, Players[P].TribuneY, 4, 1, 1);
     Actions.CinematicStart(P);
     Actions.CinematicPanTo(P, Players[P].TribuneX, Players[P].TribuneY, 0);
