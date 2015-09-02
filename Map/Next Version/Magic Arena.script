@@ -423,6 +423,7 @@ type
     TempHero: Integer;
     TempX: Integer;
     TempY: Integer;
+    KilledByVampire: Boolean;
   end;
 
 
@@ -830,6 +831,7 @@ begin
       TempHero := -1;
       TempX := 2 + 2 * I;
       TempY := 2;
+      KilledByVampire := False;
     end;
   end;
 
@@ -6043,6 +6045,9 @@ begin
       Players[P].SetUnit := U;
       M3[P] := O;
 
+      if Players[O].HP = 1 then
+        Players[O].KilledByVampire := True;
+
       if (U > 0)
       and ((InRange(O, 8, 11)
       and (Players[O].PlayersTeam <> Players[P].PlayersTeam))
@@ -6110,6 +6115,7 @@ begin
         if (InRange(O, 8, 11))
         and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
           Players[P].UnitKillDelay := States.GameTime + VAMPIRE_HEALBUSH_START_TIME;
+
       end;
     end;
   end;
@@ -8282,7 +8288,7 @@ begin
     if Players[O].HP = 0 then
     begin
       Actions.FogRevealAll(O);
-      Actions.GroupKillAll(Players[O].Hero, True);
+      Actions.GroupKillAll(Players[O].Hero, not Players[O].KilledByVampire);
       Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[O].TribuneX, Players[O].TribuneY, 4, 1, 1);
       Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
       Actions.CinematicStart(O);
