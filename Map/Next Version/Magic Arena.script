@@ -8294,16 +8294,10 @@ begin
 end;
 
 
-procedure SetHeroes;
+procedure RandomChoice;
 begin
-
-  for J := 0 to Length(AISoldiers) - 1 do
-    Actions.GroupKillAll(AISoldiers[J], True);
-
   for I := 0 to 7 do
-  begin
     if (States.PlayerEnabled(I)) then
-    begin
       if (not Players[I].HeroChosen)
       and (Players[I].Hero = -1) then
       begin
@@ -8319,6 +8313,18 @@ begin
         Players[I].HeroChosen := True;
         Players[I].TempHeroType := Players[I].HeroType;
       end;
+end;
+
+
+procedure SetHeroes;
+begin
+
+  for J := 0 to Length(AISoldiers) - 1 do
+    Actions.GroupKillAll(AISoldiers[J], True);
+
+  for I := 0 to 7 do
+    if Players[I].HeroChosen then
+    begin
       Players[I].Hero := Actions.GiveGroup(I, Players[I].HeroType, Players[I].SpawnX, Players[I].SpawnY, Players[I].Direction, 1, 1);
       Actions.GroupHungerSet(Players[I].Hero, States.UnitMaxHunger);
       Players[I].HeroImmortal := True;
@@ -8327,7 +8333,6 @@ begin
       Actions.CinematicPanTo(I, Players[I].SpawnX, Players[I].SpawnY, 0);
       Actions.CinematicEnd(I);
     end;
-  end;
 
   for K := 0 to 7 do
     if States.PlayerEnabled(K) then
@@ -10582,12 +10587,16 @@ begin
 
   if States.GameTime = CHOOSE_HERO_TIMER then
   begin
+    RandomChoice;
     for I := 0 to 7 do
       if States.PlayerEnabled(I) then
          Players[I].TempHero := Actions.GiveGroup(I, Players[I].HeroType, 18, 14, 4, 1, 1);
     for K := 0 to 7 do
       if Players[K].TempHero > 0 then
+      begin
         Actions.GroupOrderWalk(Players[K].TempHero, 30, 18, 6);
+        Actions.GroupBlockOrders(Players[K].TempHero, True);
+      end;
   end;
 
   if States.GameTime > GAME_START_TIME then
