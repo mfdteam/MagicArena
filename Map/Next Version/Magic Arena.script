@@ -224,8 +224,8 @@ const
 //Runes
 
   RUNE_X = 35;
-  RUNE_Y1 = 24;
-  RUNE_Y2 = 47;
+  RUNE_Y1 = 63;
+  RUNE_Y2 = 86;
   RUNE_TIMER = 1200;
   RUNE_ZOMBIE_LIFE = 1800;
   RUNE_REGEN_OBJ = 7;
@@ -298,8 +298,8 @@ const
   SPECTATORS = False;
   MIN_X = 12;
   MAX_X = 59;
-  MIN_Y = 12;
-  MAX_Y = 59;
+  MIN_Y = 51;
+  MAX_Y = 98;
 
 type
 
@@ -482,6 +482,7 @@ var
   SpurtTimes, SpurtX, SpurtY, SpurtDir: array[0..11] of array[0..SPURT_LENGTH - 1] of Integer;
   RUNE_Y: Integer;
   OldX, OldY, NewX, NewY: array[0..11] of Integer;
+  TempHeroes: array[0..11] of Integer;
 
 
 function InRange(Value, Min, Max: Integer): Boolean;
@@ -532,9 +533,9 @@ begin
       Actions.UnitKill(Units[K], True);
   end;
 
-  Actions.UnitKill(States.UnitAt(3, 2), True);
-  Actions.UnitKill(States.UnitAt(5, 2), True);
-  Actions.UnitKill(States.UnitAt(7, 2), True);
+  Actions.UnitKill(States.UnitAt(26, 9), True);
+  Actions.UnitKill(States.UnitAt(26, 11), True);
+  Actions.UnitKill(States.UnitAt(26, 13), True);
 
 end;
 
@@ -722,13 +723,9 @@ begin
     if States.PlayerEnabled(I) then
       Actions.FogCoverAll(I);
 
-  for I := 0 to 3 do
+  for I := 0 to 7 do
     if States.PlayerEnabled(I) then
-      Actions.FogRevealRect(I, 1, 1, 10, 10);
-
-  for I := 4 to 7 do
-    if States.PlayerEnabled(I) then
-      Actions.FogRevealRect(I, 60, 1, 70, 10);
+      Actions.FogRevealRect(I, 4, 4, 30, 30);
 
   for I := 0 to 7 do
   begin
@@ -740,7 +737,6 @@ begin
       HeroChosen := False;
       HP := START_HP;
       VampireDelay := 0;
-      TribuneY := 2;
       RoadSkillDelay := 0;
       FieldSkillDelay := 0;
       WineSkillDelay := 0;
@@ -835,9 +831,10 @@ begin
     with Players[I] do
     begin
       SpawnX := 19;
-      SpawnY := 19 + I * 11;
+      SpawnY := 58 + I * 11;
       Direction := 2;
-      TribuneX := 3 + 2 * I;
+      TribuneY := 3;
+      TribuneX := 43 + 2 * I;
       ZombiePlayer := 10;
       RoadPlayer := 8;
       PlayersTeam := 0;
@@ -849,9 +846,10 @@ begin
     with Players[I] do
     begin
       SpawnX := 52;
-      SpawnY := 19 + ((I - 4) * 11);
+      SpawnY := 58 + ((I - 4) * 11);
       Direction := 6;
-      TribuneX := 62 + ((I - 4) * 2);
+      TribuneY := 26;
+      TribuneX := 55 + ((I - 4) * 2);
       ZombiePlayer := 11;
       RoadPlayer := 9;
       PlayersTeam := 1;
@@ -987,6 +985,8 @@ begin
       RUNE_Y := RUNE_Y1
     else
       RUNE_Y := RUNE_Y2;
+    Actions.MapTileObjectSet(RUNE_X, RUNE_Y1, 255);
+    Actions.MapTileObjectSet(RUNE_X, RUNE_Y2, 255);
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y1, RUNE_BLOCK_OBJ);
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y2, RUNE_BLOCK_OBJ);
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RuneType);
@@ -7104,6 +7104,7 @@ begin
     Players[P].HeroType := States.UnitType(States.UnitAt(X, Y));
     Players[P].TempHeroType := Players[P].HeroType;
     Players[P].HeroChosen := True;
+    Actions.GiveUnit(8, 13, 13, 14, 4);
     Actions.ShowMsg(P, HeroDescription(P, Players[P].HeroType));
     if InRange(P, 0, 3) then
       TeamChoice[0] := TeamChoice[0] + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$32> ' + States.UnitTypeName(Players[P].HeroType);
@@ -8279,6 +8280,7 @@ begin
     Actions.CinematicEnd(O);
     if Players[O].HP = 0 then
     begin
+      Actions.FogRevealAll(O);
       Actions.GroupKillAll(Players[O].Hero, True);
       Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[O].TribuneX, Players[O].TribuneY, 4, 1, 1);
       Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
@@ -8327,7 +8329,10 @@ begin
 
   for K := 0 to 7 do
     if States.PlayerEnabled(K) then
-      Actions.FogRevealAll(K);
+    begin
+      Actions.FogCoverAll(K);
+      Actions.FogRevealRect(K, 1, 39, 70, 109);
+    end;
 
   Actions.ShowMsg(-1, '<$62>');
 
@@ -8468,7 +8473,7 @@ begin
         begin
           if States.KaMRandom < STORM_CHANCE then
             Actions.GroupOrderStorm(Players[I1].Hero);
-          Actions.GroupOrderWalk(Players[I1].Hero, States.KaMRandomI(48) + 12, States.KaMRandomI(48) + 12, States.KaMRandomI(8));
+          Actions.GroupOrderWalk(Players[I1].Hero, States.KaMRandomI(48) + 12, States.KaMRandomI(48) + 51, States.KaMRandomI(8));
         end;
       end;
 
@@ -9076,7 +9081,7 @@ var
  aX, aY: Integer;
 begin
   aX := States.KaMRandomI(46) + 13;
-  aY := States.KaMRandomI(46) + 13;
+  aY := States.KaMRandomI(46) + 52;
   if (CanUseWineFieldSkill(aX, aY))
   and (not TileHasTreesAround(aX, aY))
   and (States.MapTileObject(aX, aY) <> BARB_OBJECT3)
@@ -9324,11 +9329,11 @@ begin
   if States.GameTime mod 80 = 0 then
     if (Players[P].Hero > 0)
     and (not Players[P].CastingSkill) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
+      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 51, States.KaMRandomI(8));
 
   if Players[P].Hero > 0 then
     if (Abs(Players[P].SkillTime - States.GameTime) = 1) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 12, States.KaMRandomI(8));
+      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 51, States.KaMRandomI(8));
 
 end;
 
@@ -10478,7 +10483,7 @@ end;
 procedure OnTick;
 var
   N: array[0..17] of Integer;
-  S: Integer;
+  S: Integer;  
 begin
 
   CheckRuneTime;
@@ -10569,8 +10574,21 @@ begin
   for N[17] := 0 to 7 do
     CheckStolenRogueCircles(N[17]);
 
-  if States.GameTime > CHOOSE_HERO_TIMER then
+  if States.GameTime = CHOOSE_HERO_TIMER then
   begin
+    for I := 0 to 7 do
+      if States.PlayerEnabled(I) then
+         TempHeroes[I] := Actions.GiveGroup(8, Players[I].HeroType, 18, 14, 4, 1, 1);
+    for K := 0 to 7 do
+      if TempHeroes[K] > 0 then
+        Actions.GroupOrderWalk(TempHeroes[K], 30, 18, 6);
+  end;
+
+  if States.GameTime > CHOOSE_HERO_TIMER + 40 then
+  begin
+    for I := 0 to 7 do
+      if TempHeroes[I] > 0 then
+        Actions.GroupKillAll(TempHeroes[I], True);
     TeamInfo[0] := '';
     TeamInfo[1] := '';
     for I := 0 to 3 do
@@ -10612,7 +10630,7 @@ begin
 
   CheckStatus;
 
-  if States.GameTime < CHOOSE_HERO_TIMER then
+  if States.GameTime < CHOOSE_HERO_TIMER + 40 then
   begin
     Actions.OverlayTextSet(-1, '<$38>: ' + IntToStr((CHOOSE_HERO_TIMER - States.GameTime) / 10) + ' (<$40>)|');
     for I := 0 to 3 do
@@ -10624,10 +10642,10 @@ begin
         Actions.OverlayTextAppend(I, TeamChoice[1]);
   end;
 
-  if States.GameTime = CHOOSE_HERO_TIMER then
+  if States.GameTime = CHOOSE_HERO_TIMER + 40 then
     SetHeroes;
 
-  if States.GameTime > CHOOSE_HERO_TIMER then
+  if States.GameTime > CHOOSE_HERO_TIMER + 40 then
     CheckVictoryDefeat;
 
   if States.GameTime mod ZOMBIE_STORM_TIME = 0 then
