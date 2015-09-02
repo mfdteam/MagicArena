@@ -249,6 +249,7 @@ const
   START_HP = 10;
   MAX_HP = 12;
   CHOOSE_HERO_TIMER = 350;
+  GAME_START_TIME = 450;
   ZOMBIE_STORM_TIME = 100;
   STORM_CHANCE = 0;
   DEL_MINE_TIME = 1500;
@@ -419,6 +420,7 @@ type
     KnightX: Integer;
     KnightY: Integer;
     KnightDir: Integer;
+    TempHero: Integer;
   end;
 
 
@@ -482,7 +484,6 @@ var
   SpurtTimes, SpurtX, SpurtY, SpurtDir: array[0..11] of array[0..SPURT_LENGTH - 1] of Integer;
   RUNE_Y: Integer;
   OldX, OldY, NewX, NewY: array[0..11] of Integer;
-  TempHeroes: array[0..11] of Integer;
 
 
 function InRange(Value, Min, Max: Integer): Boolean;
@@ -823,6 +824,7 @@ begin
       KnightX := 0;
       KnightY := 0;
       KnightDir := 0;
+      TempHero := -1;
     end;
   end;
 
@@ -8353,6 +8355,7 @@ begin
         Players[I1].Hero := Actions.GiveGroup(I1, 27, Players[I1].VagaX, Players[I1].VagaY, Players[I1].VagaDir, 1, 1);
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         Players[I1].WerewolfTime := States.GameTime + WEREWOLF_TIME;
+        Actions.FogCoverRect(I1, 1, 1, 70, 39);
       end;
 
       if States.GameTime = Players[I1].WerewolfTime then
@@ -8363,6 +8366,7 @@ begin
         Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].TribuneX, Players[I1].TribuneY, 4, 1, 1);
         Players[I1].VagaAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
+        Actions.FogCoverRect(I1, 1, 1, 70, 39);
       end;
 
       if States.GameTime = Players[I1].VagaAppearTimeBack then  
@@ -8376,6 +8380,7 @@ begin
           Players[I1].RoadSkillDelay := 0;
           Players[I1].FieldSkillDelay := 0;
           Players[I1].WineSkillDelay := AXE_WINE_DELAY * (1 - Round(RECHARGE_FACTOR * Byte(Players[I1].ReCharge))) - WEREWOLF_TIME;
+          Actions.FogCoverRect(I1, 1, 1, 70, 39);
         end;
       end;
 
@@ -8387,6 +8392,7 @@ begin
           Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].TempHeroType, Players[I1].PikeX, Players[I1].PikeY, Players[I1].PikeDir, 1, 1);
           Players[I1].HeroType := Players[I1].TempHeroType;
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
+          Actions.FogCoverRect(I1, 1, 1, 70, 39);
         end;
       end;
 
@@ -10578,17 +10584,17 @@ begin
   begin
     for I := 0 to 7 do
       if States.PlayerEnabled(I) then
-         TempHeroes[I] := Actions.GiveGroup(8, Players[I].HeroType, 18, 14, 4, 1, 1);
+         Players[I].TempHero := Actions.GiveGroup(I, Players[I].HeroType, 18, 14, 4, 1, 1);
     for K := 0 to 7 do
-      if TempHeroes[K] > 0 then
-        Actions.GroupOrderWalk(TempHeroes[K], 30, 18, 6);
+      if Players[K].TempHero > 0 then
+        Actions.GroupOrderWalk(Players[K].TempHero, 30, 18, 6);
   end;
 
-  if States.GameTime > CHOOSE_HERO_TIMER + 40 then
+  if States.GameTime > GAME_START_TIME then
   begin
     for I := 0 to 7 do
-      if TempHeroes[I] > 0 then
-        Actions.GroupKillAll(TempHeroes[I], True);
+      if Players[I].TempHero > 0 then
+        Actions.GroupKillAll(Players[I].TempHero, True);
     TeamInfo[0] := '';
     TeamInfo[1] := '';
     for I := 0 to 3 do
@@ -10630,7 +10636,7 @@ begin
 
   CheckStatus;
 
-  if States.GameTime < CHOOSE_HERO_TIMER + 40 then
+  if States.GameTime < CHOOSE_HERO_TIMER then
   begin
     Actions.OverlayTextSet(-1, '<$38>: ' + IntToStr((CHOOSE_HERO_TIMER - States.GameTime) / 10) + ' (<$40>)|');
     for I := 0 to 3 do
@@ -10642,10 +10648,10 @@ begin
         Actions.OverlayTextAppend(I, TeamChoice[1]);
   end;
 
-  if States.GameTime = CHOOSE_HERO_TIMER + 40 then
+  if States.GameTime = GAME_START_TIME then
     SetHeroes;
 
-  if States.GameTime > CHOOSE_HERO_TIMER + 40 then
+  if States.GameTime > GAME_START_TIME then
     CheckVictoryDefeat;
 
   if States.GameTime mod ZOMBIE_STORM_TIME = 0 then
