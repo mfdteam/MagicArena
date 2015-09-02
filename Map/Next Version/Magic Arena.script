@@ -249,7 +249,7 @@ const
   START_HP = 10;
   MAX_HP = 12;
   CHOOSE_HERO_TIMER = 350;
-  GAME_START_TIME = 450;
+  GAME_START_TIME = 440;
   ZOMBIE_STORM_TIME = 100;
   STORM_CHANCE = 0;
   DEL_MINE_TIME = 1500;
@@ -599,6 +599,7 @@ begin
 
   Players[P].TempHeroType := Players[P].HeroType;
   Players[P].HeroChosen := True;
+  Actions.GiveUnit(8, 13, 13, 14, 4);
 
   if InRange(P, 0, 3) then
     TeamChoice[0] := TeamChoice[0] + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$32> ' + States.UnitTypeName(Players[P].HeroType);
@@ -1536,6 +1537,7 @@ begin
         begin
           Players[I].HeroType := States.UnitType(States.UnitAt(X, Y));
           Players[I].HeroChosen := True;
+          Actions.GiveUnit(8, 13, 13, 14, 4);
         end;
 end;
 
@@ -8583,7 +8585,7 @@ begin
         Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         Actions.GroupKillAll(Players[M[I1]].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
+        Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
         Players[I1].MindAppearTime := States.GameTime + DELAY_OF_TURNING;
         Actions.FogCoverAll(I1);
         Actions.FogRevealRect(I1, 1, 39, 70, 109);
