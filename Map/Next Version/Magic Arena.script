@@ -1535,7 +1535,8 @@ begin
   and (InRange(Y, 17, 18)) then
     for I := 0 to 7 do
       if States.PlayerEnabled(I) then
-        if States.PlayerIsAI(I) then
+        if (States.PlayerIsAI(I))
+        and (not Players[I].HeroChosen) then
         begin
           Players[I].HeroType := States.UnitType(States.UnitAt(X, Y));
           Players[I].HeroChosen := True;
@@ -1577,7 +1578,14 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     TilesRoadLength[P] := TilesRoadLength[P] + 4;
     SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -1807,7 +1815,14 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     TilesRoadLength[P] := TilesRoadLength[P] + 4;
     SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -2151,7 +2166,14 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     TilesRoadLength[P] := TilesRoadLength[P] + 4;
     SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -2340,7 +2362,14 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     TilesWineLength[P] := TilesWineLength[P] + 32;
     SetLength(TilesWineX[P], TilesWineLength[P]);
@@ -2722,7 +2751,14 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     TilesRoadLength[P] := TilesRoadLength[P] + 4;
     SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -3005,7 +3041,14 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     TilesWineLength[P] := TilesWineLength[P] + 8;
     SetLength(TilesWineX[P], TilesWineLength[P]);
@@ -3191,7 +3234,14 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     ViseCirclesLength[P] := ViseCirclesLength[P] + VISE_CYCLES * VISE_RADIUS;
     SetLength(ViseCircles[P], ViseCirclesLength[P]);
@@ -4467,7 +4517,14 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     if not (CanPlaceMine(P, X2, Y2)) then
       Exit;
@@ -4827,7 +4884,14 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     ExpCirclesLength[P] := ExpCirclesLength[P] + EXP_CYCLES * EXP_RADIUS;
     SetLength(ExpCircles[P], ExpCirclesLength[P]);
@@ -5055,7 +5119,14 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     TilesRoadLength[P] := TilesRoadLength[P] + 4;
     SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -5755,7 +5826,14 @@ begin
     Players[P].PreparingTime := States.GameTime + SPURT_TIME + 5;
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     TilesWineLength[P] := TilesWineLength[P] + 8;
     SetLength(TilesWineX[P], TilesWineLength[P]);
@@ -6391,7 +6469,14 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     if (InRange(Direction, 0, 1))
     and (not TileOnBattlefield(X2, Y2 - MENTAL_DISTANCE)) then
@@ -6844,7 +6929,14 @@ begin
       O := States.UnitOwner(U);
 
     if not States.PlayerIsAI(P) then
+    begin
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Direction mod 2 = 1 then
+        case States.KaMRandomI(100) of
+          0..49:  Direction := Direction + 1;
+          50..99: Direction := Direction - 1;
+        end;
+    end;
 
     case Players[P].StolenSkill of
 
@@ -7075,16 +7167,16 @@ begin
                end;
 
       sVampire: if (U > 0)
-             and (Abs(X - X2) <= VAMPIRE_RADIUS)
-             and (Abs(Y - Y2) <= VAMPIRE_RADIUS)
-             and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-             or (P = O) then
-             begin
-               TempFieldSkillDelay := Players[P].FieldSkillDelay;
-               Vampire(P, X, Y);
-               Players[P].FieldSkillDelay := TempFieldSkillDelay;
-               Players[P].WineSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-             end;
+                and (Abs(X - X2) <= VAMPIRE_RADIUS)
+                and (Abs(Y - Y2) <= VAMPIRE_RADIUS)
+                and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+                or (P = O) then
+                begin
+                  TempFieldSkillDelay := Players[P].FieldSkillDelay;
+                  Vampire(P, X, Y);
+                  Players[P].FieldSkillDelay := TempFieldSkillDelay;
+                  Players[P].WineSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                end;
 
       sMind: if (U > 0)
              and (Abs(X - X2) <= MIND_RADIUS)
