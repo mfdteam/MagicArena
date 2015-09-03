@@ -8368,7 +8368,7 @@ begin
     if Players[O].HP > 0 then
     begin 
       Players[O].Hero := -1;
-      Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[O].SpawnX, Players[O].SpawnY, 4, 1, 1);
+      Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[O].SpawnX, Players[O].SpawnY, Players[O].Direction, 1, 1);
       if not (Players[O].CaptureMind)
       and not (Players[O].MindStunned) then
         Players[States.UnitOwner(aID)].HP := Players[States.UnitOwner(aID)].HP - 1;
