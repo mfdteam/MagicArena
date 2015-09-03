@@ -6116,7 +6116,7 @@ begin
         and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
           Players[P].UnitKillDelay := States.GameTime + VAMPIRE_HEALBUSH_START_TIME;
 
-        ClearFieldTilesArrayTime[P] := States.GameTime + VAMPIRE_HEALBUSH_END_TIME + CLEAR_ARRAY_FACTOR;
+        ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
 
       end;
     end;
@@ -6352,7 +6352,7 @@ begin
         Players[P].MindTime := States.GameTime + DELAY_OF_TURNING;
         Players[P].WineSkillDelay := 20;
 
-        ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
+        ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 9] + CLEAR_ARRAY_FACTOR;
 
       end;
     end;
