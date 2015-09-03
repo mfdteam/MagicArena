@@ -8364,6 +8364,10 @@ begin
     if Players[I1].Hero > 0 then
     begin
 
+      if (Players[I1].HeroStunned)
+      and not (States.GroupIdle(Players[I1].Hero)) then
+        Actions.GroupOrderHalt(Players[I1].Hero);
+
       if States.GameTime = Players[I1].VagaAppearTime then
       begin
         Actions.GroupKillAll(Players[I1].Hero, True);
