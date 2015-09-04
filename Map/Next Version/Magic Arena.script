@@ -10610,6 +10610,14 @@ var
   S: Integer;  
 begin
 
+  if States.GameTime = GAME_START_TIME + 3 then
+    for K := 0 to 7 do
+      if States.PlayerEnabled(K) then
+      begin
+        Actions.FogCoverAll(K);
+        Actions.FogRevealRect(K, 1, 39, 70, 109);
+      end;
+
   CheckRuneTime;
 
   GoOutFromRune;
