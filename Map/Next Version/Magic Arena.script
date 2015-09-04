@@ -301,6 +301,8 @@ const
   MAX_X = 59;
   MIN_Y = 51;
   MAX_Y = 98;
+  CENTERSCREEN_X = 17;
+  CENTERSCREEN_Y = 17;
 
 type
 
@@ -608,6 +610,18 @@ begin
   if InRange(P, 4, 7) then
     TeamChoice[1] := TeamChoice[1] + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$32> ' + States.UnitTypeName(Players[P].HeroType);
 
+end;
+
+
+procedure SetScreen;
+begin
+  for I := 0 to 7 do
+    if States.PlayerEnabled(I) then
+    begin
+      Actions.CinematicStart(I);
+      Actions.CinematicPanTo(I, CENTERSCREEN_X, CENTERSCREEN_Y, 0);
+      Actions.CinematicEnd(I);
+    end;
 end;
 
 
@@ -10617,6 +10631,9 @@ begin
         Actions.FogCoverAll(K);
         Actions.FogRevealRect(K, 1, 39, 70, 109);
       end;
+
+  if States.GameTime = 1 then
+    SetScreen;
 
   CheckRuneTime;
 
