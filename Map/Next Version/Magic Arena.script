@@ -3319,7 +3319,8 @@ begin
 
   if (Players[P].Hero > 0)
   and (Players[P].HP >= 2)
-  and (TileOnBattlefield(X, Y)) then
+  and (TileOnBattlefield(X, Y))
+  and not (Players[P].CaptureMind) then
   begin
     NewDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
@@ -3330,15 +3331,32 @@ begin
       Players[P].LastUsedSkill := sSacrificialTeleport;
       Players[P].FieldSkillDelay := Round(PIKE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Actions.GroupKillAll(Players[P].Hero, False);
-      if not Players[P].CaptureMind then
-        Players[P].HP := Players[P].HP - 1;
-      if Players[P].CaptureMind then
-        Players[M[P]].HP := Players[M[P]].HP - 1;  
+      Players[P].HP := Players[P].HP - 1;  
       Players[P].Hero := Actions.GiveGroup(P, Players[P].TempHeroType, X, Y, NewDir, 1, 1);
       Actions.GroupHungerset(Players[P].Hero, States.UnitMaxHunger);
     end;
   end;
 
+  if (Players[M[P]].Hero > 0)
+  and (Players[M[P]].HP >= 2)
+  and (TileOnBattlefield(X, Y))
+  and (Players[P].CaptureMind) then
+  begin
+    NewDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    if (Abs(X2 - X) <= SACRIFICIAL_RADIUS)
+    and (Abs(Y2 - Y) <= SACRIFICIAL_RADIUS) then
+    begin
+      Players[P].LastUsedSkill := sSacrificialTeleport;
+      Players[P].FieldSkillDelay := Round(PIKE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+      Actions.GroupKillAll(Players[P].Hero, False);
+      Players[M[P]].HP := Players[M[P]].HP - 1;  
+      Players[P].Hero := Actions.GiveGroup(P, Players[P].TempHeroType, X, Y, NewDir, 1, 1);
+      Actions.GroupHungerset(Players[P].Hero, States.UnitMaxHunger);
+    end;
+  end;
+  
 end;
 
 
