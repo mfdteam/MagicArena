@@ -1019,6 +1019,18 @@ begin
 end;
 
 
+function HPColor(P: Integer): ANSIString;
+begin
+  case Players[P].HP of
+    9..20: Result := '[$00FF00]';
+    7..8:  Result := '[$32CD9B]';
+    5..6:  Result := '[$00FFFF]';
+    3..4:  Result := '[$008CFF]';
+    0..2:  Result := '[$0050FF]';
+  end;
+end;
+
+
 function RogueStatus(P: Integer): ANSIString;
 begin
 
@@ -1076,7 +1088,8 @@ end;
 
 function StunnedStatus(P: Integer): ANSIString;
 begin
-  if Players[P].HeroStunned then
+  if Players[P].HeroStunned
+  and not (Players[P].MindStunned) then
     Result := '|[$19A5DF]<$2>[] (' + IntToStr((Players[P].HeroStunnedTime - States.GameTime)/10) + ')'
 
   else
@@ -1102,7 +1115,8 @@ end;
 
 function ImmortalStatus(P: Integer): ANSIString;
 begin
-  if Players[P].HeroImmortal then
+  if (Players[P].HeroImmortal)
+  and not (Players[P].CaptureMind) then
     Result := '|[$1515DF]<$5>[] (' + IntToStr((Players[P].HeroImmortalTime - States.GameTime)/10) + ')'
 
   else
@@ -1173,7 +1187,7 @@ end;
 function MindStatus(P: Integer): ANSIString;
 begin
   if Players[P].CaptureMind then
-    Result := '|[$51AFEE]<$104>[](' + IntToStr((Players[P].CaptureMindTime - States.GameTime)/10) + ')'
+    Result := '|[$11FF11]<$104>[] ' + '[$' + States.PlayerColorText(M[P]) + ']' + States.PlayerName(M[P]) + '[$FFFFFF]; <$39>: ' + HPColor(M[P]) + IntToStr(Players[M[P]].HP) + '[$FFFFFF] (' + IntToStr((Players[P].CaptureMindTime - States.GameTime)/10) + ')' 
 
   else
 
@@ -1184,7 +1198,7 @@ end;
 function MindStunnedStatus(P: Integer): ANSIString;
 begin
   if Players[P].MindStunned then
-    Result := '|[$51AFEE]<$103>[](' + IntToStr((Players[P].StunnedMindTime - States.GameTime)/10) + ')'
+    Result := '|[$0050FF]<$103>[] (' + IntToStr((Players[P].StunnedMindTime - States.GameTime)/10) + ')'
 
   else
 
@@ -1197,18 +1211,6 @@ begin
   Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) + PrisonedStatus(P) + WerewolfStatus(P)
   + RegenStatus(P) + DDStatus(P) {+ IllusionStatus(P)} + SilenceStatus(P) + PreparingStatus(P)
   + ReChargeStatus(P) + RogueStatus(P) + MindStatus(P) + MindStunnedStatus(P);
-end;
-
-
-function HPColor(P: Integer): ANSIString;
-begin
-  case Players[P].HP of
-    9..20: Result := '[$00FF00]';
-    7..8:  Result := '[$32CD9B]';
-    5..6:  Result := '[$00FFFF]';
-    3..4:  Result := '[$008CFF]';
-    0..2:  Result := '[$0050FF]';
-  end;
 end;
 
 
