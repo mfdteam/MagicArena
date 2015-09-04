@@ -8642,6 +8642,8 @@ begin
         Players[I1].CaptureMind := True;
         Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME; 
         Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME;
+        Players[M[I1]].HeroStunned := True;
+        Players[M[I1]].HeroStunnedTime := States.GameTime + 25;
         Actions.FogCoverAll(I1);
         Actions.FogRevealRect(I1, 1, 39, 70, 109);
         Actions.FogCoverAll(M[I1]);
