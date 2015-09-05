@@ -1306,7 +1306,7 @@ begin
     18: Result := '[$00A5FF]<$11>[]';
     19: Result := '[$4782FF]<$12>[]';
     20: Result := '[$B8B8B8]<$13>[]';
-    21: Result := '[$FFFFFF]<$99> []<$100> []' + IntToStr(Players[P].Stone) + ')[]';
+    21: Result := '[$AAAAAA]<$99> []<$100> []' + IntToStr(Players[P].Stone) + ')[]';
     22: Result := '[$634BBA]<$50>[]';
     23: Result := '[$499AEE]<$14>[]';
     26: Result := '[$0022FF]<$46>[]';
@@ -1325,7 +1325,7 @@ begin
     18: Result := '[$0045FF]<$19>[]';
     19: Result := '[$FFFF97]<$20>[]';
     20: Result := '[$00008B]<$21>[]';
-    21: Result := '[$FFFFFF]<$101>[]';
+    21: Result := '[$BA5555]<$101>[]';
     22: Result := '[$902F9D]<$51>[]';
     23: Result := '[$4040FF]<$22>[]';
     26: Result := '[$528AAF]<$47>[]';
@@ -1344,7 +1344,7 @@ begin
     18: Result := '[$D30094]<$27>[]';
     19: Result := '[$00C7FF]<$28>[]';
     20: Result := '[$006400]<$29>[]';
-    21: Result := '[$FFFFFF]<$102>[]';
+    21: Result := '[$AAFFAA]<$102>[]';
     22: Result := '[$2580CE]<$52>[]';
     23: Result := '[$EE677A]<$30>[]';
     26: Result := '[$1707A6]<$48>[]';
