@@ -8636,6 +8636,7 @@ begin
         or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]) = BOWMAN_OBJECT5)
         or (InRange(States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]), SWORD_OBJECT, VAGA_OBJECT6)) then
         ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] + CLEANUP_TIME;
+        ClearFieldTilesArrayTime[I1] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] + CLEAR_ARRAY_FACTOR;
       end;
 
       if States.GameTime = Players[I1].UnitKillDelay then  
