@@ -8524,13 +8524,16 @@ begin
         Players[I1].HeroSilentTime := States.GameTime + SILENCE_TIME + 20;
       end;
 
-      if States.GameTime = Players[I1].HeroSilentTime then
+      if (States.GameTime >= Players[I1].HeroSilentTime)
+      and (Players[I1].HeroSilent) then
         Players[I1].HeroSilent := False;
 
-      if States.GameTime = Players[I1].ReChargeTime then
+      if (States.GameTime >= Players[I1].ReChargeTime)
+      and (Players[I1].ReCharge) then
         Players[I1].ReCharge := False;
 
-      if States.GameTime = Players[I1].PreparingTime then
+      if (States.GameTime = Players[I1].PreparingTime)
+      and (Players[I1].Preparing) then
         Players[I1].Preparing := False;
 
       if States.GameTime = Players[I1].ArmorStartTime then
@@ -8551,10 +8554,12 @@ begin
       if States.GameTime = Players[I1].SkillTime then
         Players[I1].CastingSkill := False;
 
-      if States.GameTime = Players[I1].HeroImmortalTime then
+      if (States.GameTime >= Players[I1].HeroImmortalTime)
+      and (Players[I1].HeroImmortal) then
         Players[I1].HeroImmortal := False;
 
-      if States.GameTime = Players[I1].HeroPrisonedTime then
+      if (States.GameTime >= Players[I1].HeroPrisonedTime)
+      and (Players[I1].HeroPrisoned) then
         Players[I1].HeroPrisoned := False;
 
       if (ZomboHero[I1][0] = -1)
@@ -8563,7 +8568,8 @@ begin
       and (ZomboHero[I1][3] = -1) then
         Players[I1].InIllusion := False;
 
-      if States.GameTime = Players[I1].HeroStunnedTime then
+      if (States.GameTime >= Players[I1].HeroStunnedTime)
+      and (Players[I1].HeroStunned) then
       begin
         Players[I1].HeroStunned := False;
         if Players[I1].Hero > 0 then
@@ -8584,7 +8590,8 @@ begin
         end;
       end;
 
-      if States.GameTime = Players[I1].HeroInFearTime then
+      if (States.GameTime >= Players[I1].HeroInFearTime)
+      and (Players[I1].HeroInFear) then
       begin
         Players[I1].HeroInFear := False;
         if Players[I1].Hero > 0 then
