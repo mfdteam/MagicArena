@@ -4827,7 +4827,7 @@ begin
 
         Players[P].FieldSkillDelay := Round(BOWMAN_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
-        ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
+        ClearFieldTilesArrayTime[P] := States.GameTime + PRISON_TIME + CLEAR_ARRAY_FACTOR;
 
       end;
 
