@@ -10644,8 +10644,8 @@ begin
 
   GoOutFromRune;
 
-  if States.GameTime mod ZOMBIE_ATTACK_FACTOR = 0 then
-    ZombieAttack;
+  //if States.GameTime mod ZOMBIE_ATTACK_FACTOR = 0 then
+    //ZombieAttack;
 
   if States.GameTime mod 10 = 0 then
     CheckImmortal;
