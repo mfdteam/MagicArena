@@ -303,6 +303,7 @@ const
   MAX_Y = 98;
   CENTERSCREEN_X = 17;
   CENTERSCREEN_Y = 17;
+  TEMP_PLAYER = 11;
 
 type
 
@@ -3413,7 +3414,7 @@ begin
     Players[P].PikeAppearTime := States.GameTime + DELAY_OF_TURNING;
     Players[P].TempHeroType := Players[P].HeroType;
     Actions.GroupKillAll(Players[P].Hero, True);
-    Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+    Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
 
     TilesWineLength[P] := TilesWineLength[P] + 72;
     SetLength(TilesWineX[P], TilesWineLength[P]);
@@ -4460,7 +4461,7 @@ begin
       Players[P].RoadSkillDelay := 0;
       Players[P].FieldSkillDelay := 0;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       Players[P].VagaX := X2;
       Players[P].VagaY := Y2;
       Players[P].VagaDir := NewDir;
@@ -6382,9 +6383,9 @@ begin
         Players[P].MindDir2 := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
 
         Actions.GroupKillAll(Players[P].Hero, True);
-        Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+        Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
         Actions.GroupKillAll(Players[O].Hero, True);
-        Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[O].TempX, Players[O].TempY, 4, 1, 1);
+        Players[O].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[O].HeroType, Players[O].TempX, Players[O].TempY, 4, 1, 1);
 
         Players[P].MindTime := States.GameTime + DELAY_OF_TURNING;
         Players[P].WineSkillDelay := 20;
@@ -8462,7 +8463,7 @@ begin
         Players[I1].VagaY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].VagaDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
         Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+        Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         Players[I1].VagaAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
         Actions.FogCoverAll(I1);
         Actions.FogRevealRect(I1, 1, 39, 70, 109);
@@ -8686,9 +8687,9 @@ begin
         Players[I1].TempReChargeTime := Players[I1].ReChargeTime;
 
         Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+        Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         Actions.GroupKillAll(Players[M[I1]].Hero, True);
-        Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
+        Players[M[I1]].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
         Players[I1].MindAppearTime := States.GameTime + DELAY_OF_TURNING;
         Actions.FogCoverAll(I1);
         Actions.FogRevealRect(I1, 1, 39, 70, 109);
@@ -8762,7 +8763,7 @@ begin
           Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
           Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
           Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+          Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         end;
         if Players[M[I1]].Hero > 0 then
         begin
@@ -8770,7 +8771,7 @@ begin
           Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
           Players[I1].MindDir2 := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
           Actions.GroupKillAll(Players[M[I1]].Hero, True);
-          Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
+          Players[M[I1]].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
         end;
         Players[I1].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
       end;
@@ -10632,7 +10633,7 @@ var
   S: Integer;  
 begin
 
-  if States.GameTime = GAME_START_TIME + 3 then
+  if InRange(States.GameTime, GAME_START_TIME + 3, GAME_START_TIME + 10) then
     for K := 0 to 7 do
       if States.PlayerEnabled(K) then
       begin
