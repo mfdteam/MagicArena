@@ -8390,14 +8390,10 @@ begin
       if (not Players[I].HeroChosen)
       and (Players[I].Hero = -1) then
       begin
-        Players[I].HeroType := States.KaMRandomI(6) + 15;
-        if States.KaMRandomI(10) = 5 then
-          Players[I].HeroType := 23;
+        Players[I].HeroType := States.KaMRandomI(6) + 18;
         if States.KaMRandomI(5) = 3 then
           Players[I].HeroType := 26;
-        if States.KaMRandomI(20) < 6 then
-          Players[I].HeroType := 22;
-        if States.KaMRandomI(15) < 8 then
+        if States.KaMRandomI(15) = 8 then
           Players[I].HeroType := 25;
         Players[I].HeroChosen := True;
         Players[I].TempHeroType := Players[I].HeroType;
