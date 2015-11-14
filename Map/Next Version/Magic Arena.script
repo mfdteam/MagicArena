@@ -226,7 +226,7 @@ const
   RUNE_X = 35;
   RUNE_Y1 = 63;
   RUNE_Y2 = 86;
-  RUNE_TIMER = 1200;
+  RUNE_TIMER = 900;
   RUNE_ZOMBIE_LIFE = 1800;
   RUNE_REGEN_OBJ = 7;
   RUNE_DOUBLE_OBJ = 124;
@@ -2928,6 +2928,10 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
+    if (Abs(X2 - X) > BOMB_RADIUS)
+    or (Abs(Y2 - Y) > BOMB_RADIUS) then
+      Exit;
+
     if (Abs(X2 - X) <= BOMB_RADIUS)
     and (Abs(Y2 - Y) <= BOMB_RADIUS) then
     begin
@@ -4772,6 +4776,10 @@ begin
 
       if (InRange(O, 0, 7))
       and (Players[O].HeroImmortal) then
+        Exit;
+
+      if (InRange(O, 0, 7))
+      and (Players[O].HeroPrisoned) then
         Exit;
 
       if (U <> - 1) then
