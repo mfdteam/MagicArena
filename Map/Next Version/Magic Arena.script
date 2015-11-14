@@ -495,6 +495,7 @@ var
   SpurtTimes, SpurtX, SpurtY, SpurtDir: array[0..11] of array[0..SPURT_LENGTH - 1] of Integer;
   RUNE_Y: Integer;
   OldX, OldY, NewX, NewY: array[0..11] of Integer;
+  ClearPrisonTime: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of Integer;
 
 
 function InRange(Value, Min, Max: Integer): Boolean;
@@ -596,6 +597,16 @@ begin
 end;
 
 
+procedure SavePrisonInfo;
+var
+  aX, aY: Integer;
+begin
+  for aX := MIN_X to MAX_X do
+  for aY := MIN_Y to MAX_Y do
+    ClearPrisonTime[aX][aY] := -1;
+end;
+
+
 procedure AIHeroChoice(P: Integer);
 begin
   case States.KaMRandomI(5) of
@@ -661,6 +672,8 @@ begin
   ShieldObjects[5] := SHIELD_OBJECT6;
   ShieldObjects[6] := SHIELD_OBJECT7;
   ShieldObjects[7] := SHIELD_OBJECT8;
+
+  SavePrisonInfo;
 
   for I := 0 to 11 do
   for K := 0 to 11 do
@@ -4883,7 +4896,8 @@ begin
             and (not States.IsRoadAt(6, TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I])) 
             and (not States.IsRoadAt(7, TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I])) then
             begin
-              ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := States.GameTime + PRISON_TIME;
+              ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := States.GameTime + PRISON_TIME + 2;
+              ClearPrisonTime[TilesFieldX[P][Length(TilesFieldX[P]) - 1]][TilesFieldY[P][Length(TilesFieldY[P]) - 1]] := States.GameTime + PRISON_TIME + 2;
               SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - I] := States.GameTime + 2;
               TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := BOWMAN_OBJECT5;
               if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
@@ -8979,11 +8993,15 @@ begin
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (TilesRoadObjects[P][K] = BOWMAN_OBJECT5)
         and (Roads[TilesRoadX[P][K]][TilesRoadY[P][K]].Owner = -1)
-        and (States.GameTime mod 3 = 0) then
+        and (States.GameTime mod 5 = 0) then
+        begin
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], BOWMAN_OBJECT5);
+          ClearPrisonTime[TilesRoadX[P][K]][TilesRoadY[P][K]] := ClearTilesRoadTimes[P][K];
+        end;
 
-        if (InRange(States.GameTime, ClearTilesRoadTimes[P][K] - 1, ClearTilesRoadTimes[P][K]))
+        if (InRange(States.GameTime, ClearTilesRoadTimes[P][K], 1 + ClearTilesRoadTimes[P][K]))
         and (TilesRoadObjects[P][K] = BOWMAN_OBJECT5) then
+        //and (States.MapTileObject(TilesRoadX[P][K], TilesRoadY[P][K]) = BOWMAN_OBJECT5) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], 255);
 
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
@@ -9050,11 +9068,15 @@ begin
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (TilesFieldObjects[P][K] = BOWMAN_OBJECT5)
         and (Roads[TilesFieldX[P][K]][TilesFieldY[P][K]].Owner = -1)
-        and (States.GameTime mod 3 = 0) then
+        and (States.GameTime mod 5 = 0) then
+        begin
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], BOWMAN_OBJECT5);
+          ClearPrisonTime[TilesFieldX[P][K]][TilesFieldY[P][K]] := ClearTilesFieldTimes[P][K];
+        end;
 
-        if (InRange(States.GameTime, ClearTilesFieldTimes[P][K] - 1, ClearTilesFieldTimes[P][K]))
+        if (InRange(States.GameTime, ClearTilesFieldTimes[P][K], 1 + ClearTilesFieldTimes[P][K]))
         and (TilesFieldObjects[P][K] = BOWMAN_OBJECT5) then
+        //and (States.MapTileObject(TilesFieldX[P][K], TilesFieldY[P][K]) = BOWMAN_OBJECT5) then
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], 255);
 
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
@@ -9121,11 +9143,15 @@ begin
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (TilesWineObjects[P][K] = BOWMAN_OBJECT5)
         and (Roads[TilesWineX[P][K]][TilesWineY[P][K]].Owner = -1)
-        and (States.GameTime mod 3 = 0) then
+        and (States.GameTime mod 5 = 0) then
+        begin
           Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], BOWMAN_OBJECT5);
+          ClearPrisonTime[TilesWineX[P][K]][TilesWineY[P][K]] := ClearTilesWineTimes[P][K];
+        end;
 
-        if (InRange(States.GameTime, ClearTilesWineTimes[P][K] - 1, ClearTilesWineTimes[P][K]))
+        if (InRange(States.GameTime, ClearTilesWineTimes[P][K], 1 + ClearTilesWineTimes[P][K]))
         and (TilesWineObjects[P][K] = BOWMAN_OBJECT5) then
+        //and (States.MapTileObject(TilesWineX[P][K], TilesWineY[P][K]) = BOWMAN_OBJECT5) then
           Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], 255);
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
@@ -9312,6 +9338,18 @@ begin
   for aX := MIN_X to MAX_X do
   for aY := MIN_Y to MAX_Y do
     if States.MapTileObject(aX, aY) = PikeObjects[P] then
+      Actions.MapTileObjectSet(aX, aY, 255);
+end;
+
+
+procedure ClearPrison;
+var
+  aX, aY: Integer;
+begin
+  for aX := MIN_X to MAX_X do
+  for aY := MIN_Y to MAX_Y do
+    if (States.MapTileObject(aX, aY) = BOWMAN_OBJECT5)
+    and (States.GameTime > ClearPrisonTime[aX][aY]) then
       Actions.MapTileObjectSet(aX, aY, 255);
 end;
 
@@ -10945,6 +10983,9 @@ begin
     AIStorm;
 
   ClearArrays;
+
+  if States.GameTime mod 3 = 0 then
+    ClearPrison;
 
   if States.GameTime mod PLANT_TREES_TIME = 0 then
     PlantTrees;
