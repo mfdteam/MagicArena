@@ -87,7 +87,6 @@ const
   GRAVITY_RADIUS = 5;
   FIREWORKS1_RADIUS = 5;
   FIREWORKS2_RADIUS = 4;
-  VAGA_WAVE_RADIUS = 4;
   SILENCE_RADIUS = 8;
   DEAFENING_RADIUS = 4;
   MENTAL_RADIUS = 4;
@@ -100,7 +99,6 @@ const
   GRAVITY_CYCLES = 1;
   FIREWORKS1_CYCLES = 1;
   FIREWORKS2_CYCLES = 1;
-  VAGA_WAVE_CYCLES = 1;
   DEAFENING_CYCLES = 1;
   SPURT_LENGTH = 12;
   MENTAL_CYCLES = 1;
@@ -189,6 +187,8 @@ const
   VAGA_OBJECT4 = 60;
   VAGA_OBJECT5 = 6;
   VAGA_OBJECT6 = 73;
+  VAGA_OBJECT7 = 195;
+  VAGA_OBJECT8 = 59;
 
   SHIELD_OBJECT = 182;
   SHIELD_OBJECT2 = 183;
@@ -272,6 +272,9 @@ const
   STOLEN_SKILL_TIME = 1200;
   CAPTURE_MIND_TIME = 200;
   MAX_SCOUT_STONES = 8;
+  TRACK_TIME = 100;
+  TRACK_DELAY = 20;
+  TRACK_FACTOR = 3;
 
 //Game mechanics
 
@@ -293,7 +296,7 @@ const
   MOVEMENT_FACTOR = 2;
   VAMPIRE_HEALBUSH_START_TIME = 18;
   VAMPIRE_HEALBUSH_END_TIME = 195;
-  MAX_CIRCLES_AT_ONCE = 10;
+  MAX_CIRCLES_AT_ONCE = 5;
 
 //Battlefield
 
@@ -315,7 +318,7 @@ type
             sAccurateShot, sSuddenDeath, sSniperShot,
             sMine, sPrison, sRevengeFromNowhere,
             sGravity, sDeadlyFireworks, sWerewolf,
-            sDisorientation, sVagaWave, sRegen,
+            sDisorientation, sTrack, sRegen,
             sViseOfDeath, sSacrificialTeleport, sConcentration,
             sFierySnake, sSturdyArmor, sCircleOfSilence,
             sRopesOfDeath, sDeafeningClatter, sRagingSpurt,
@@ -429,6 +432,9 @@ type
     TempY: Integer;
     KilledByVampire: Boolean;
     SkillDirection: Integer;
+    TrackStartTime: Integer;
+    TrackStopTime: Integer;
+    SettingTrack: Boolean;
   end;
 
 
@@ -466,20 +472,22 @@ var
   ClearTilesRoadTimes, SetTilesRoadTimes, TilesRoadX, TilesRoadY, TilesRoadObjects,
   ClearTilesFieldTimes, SetTilesFieldTimes, TilesFieldX, TilesFieldY, TilesFieldObjects,
   ClearTilesWineTimes, SetTilesWineTimes, TilesWineX, TilesWineY, TilesWineObjects: array[0..11] of array of Integer;
-  RageCircles, TotemCircles, ConcentrationCircles, ViseCircles, ExpCircles, GravityCircles,
+  RageCircles, TotemCircles, ConcentrationCircles, ViseCircles, ExpCircles,
   FireworksCircles1, FireworksCircles2, FireworksCircles3, FireworksCircles4, 
-  FireworksCircles5, VagaCircles, KnightCircles, RogueCircles, StolenRogueCircles: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of array of aCircle;
-  RageCirclesCounter, TotemCirclesCounter, ConcentrationCirclesCounter, ViseCirclesCounter, ExpCirclesCounter, GravityCirclesCounter,
+  FireworksCircles5, KnightCircles, RogueCircles, StolenRogueCircles: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of array of aCircle;
+  GravityCircles: array[0..11] of array of aCircle;
+  RageCirclesCounter, TotemCirclesCounter, ConcentrationCirclesCounter, ViseCirclesCounter, ExpCirclesCounter,
   FireworksCircles1Counter, FireworksCircles2Counter, FireworksCircles3Counter, FireworksCircles4Counter, 
-  FireworksCircles5Counter, VagaCirclesCounter, KnightCirclesCounter, RogueCirclesCounter, StolenRogueCirclesCounter: array[0..11] of Integer;
+  FireworksCircles5Counter, KnightCirclesCounter, RogueCirclesCounter, StolenRogueCirclesCounter: array[0..11] of Integer;
   TilesRoadLength, TilesFieldLength, TilesWineLength: array[0..11] of Integer;
   RageCirclesLength, TotemCirclesLength, ConcentrationCirclesLength, ViseCirclesLength, ExpCirclesLength,
-  GravityCirclesLength, FireworksCircles1Length, FireworksCircles2Length, FireworksCircles3Length, 
-  FireworksCircles4Length, FireworksCircles5Length, VagaCirclesLength, KnightCirclesLength, RogueCirclesLength, StolenRogueCirclesLength: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
+  FireworksCircles1Length, FireworksCircles2Length, FireworksCircles3Length, 
+  FireworksCircles4Length, FireworksCircles5Length, KnightCirclesLength, RogueCirclesLength, StolenRogueCirclesLength: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
+  GravityCirclesLength, TimeToClearGravityArray: array[0..11] of Integer;
   TimeToClearRageArray, TimeToClearTotemArray, TimeToClearConcentrationArray,
-  TimeToClearViseArray, TimeToClearExpArray, TimeToClearGravityArray, TimeToClearFireworks1Array,
+  TimeToClearViseArray, TimeToClearExpArray, TimeToClearFireworks1Array,
   TimeToClearFireworks2Array, TimeToClearFireworks3Array, TimeToClearFireworks4Array, TimeToClearFireworks5Array,
-  TimeToClearVagaArray, TimeToClearKnightArray, TimeToClearRogueArray, TimeToClearStolenRogueArray: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
+  TimeToClearKnightArray, TimeToClearRogueArray, TimeToClearStolenRogueArray: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
   PikeObjects, ShieldObjects: array[0..7] of Integer;
   Roads: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aRoad;
   Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
@@ -737,13 +745,11 @@ begin
     ConcentrationCirclesLength[I][K] := 0;
     ViseCirclesLength[I][K] := 0;
     ExpCirclesLength[I][K] := 0;
-    GravityCirclesLength[I][K] := 0;
     FireworksCircles1Length[I][K] := 0;
     FireworksCircles2Length[I][K] := 0;
     FireworksCircles3Length[I][K] := 0;
     FireworksCircles4Length[I][K] := 0;
     FireworksCircles5Length[I][K] := 0;
-    VagaCirclesLength[I][K] := 0;
     KnightCirclesLength[I][K] := 0;
     RogueCirclesLength[I][K] := 0;
     StolenRogueCirclesLength[I][K] := 0;
@@ -762,13 +768,11 @@ begin
     ConcentrationCirclesCounter[I] := -1;
     ViseCirclesCounter[I] := -1;
     ExpCirclesCounter[I] := -1;
-    GravityCirclesCounter[I] := -1;
     FireworksCircles1Counter[I] := -1;
     FireworksCircles2Counter[I] := -1;
     FireworksCircles3Counter[I] := -1;
     FireworksCircles4Counter[I] := -1;
     FireworksCircles5Counter[I] := -1;
-    VagaCirclesCounter[I] := -1;
     KnightCirclesCounter[I] := -1;
     RogueCirclesCounter[I] := -1;
     StolenRogueCirclesCounter[I] := -1;
@@ -890,6 +894,9 @@ begin
       TempY := 2;
       KilledByVampire := False;
       SkillDirection := -1;
+      TrackStartTime := 0;
+      TrackStopTime := 0;
+      SettingTrack := False;
     end;
   end;
 
@@ -4061,7 +4068,45 @@ begin
 end;
 
 
-procedure VagaWave(P, X, Y: Integer);
+function FieryTrackX(P: Integer): Integer;
+var
+  aX, aD: Integer;
+begin
+  aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+  aD := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+  case aD of
+    0: Result := aX;
+    1: Result := aX - 1;
+    2: Result := aX - 1;
+    3: Result := aX - 1;
+    4: Result := aX;
+    5: Result := aX + 1;
+    6: Result := aX + 1;
+    7: Result := aX + 1;
+  end;
+end;
+
+
+function FieryTrackY(P: Integer): Integer;
+var
+  aY, aD: Integer;
+begin
+  aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+  aD := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+  case aD of
+    0: Result := aY + 1;
+    1: Result := aY + 1;
+    2: Result := aY;
+    3: Result := aY - 1;
+    4: Result := aY - 1;
+    5: Result := aY - 1;
+    6: Result := aY;
+    7: Result := aY + 1;
+  end;
+end;
+
+
+procedure FieryTrack(P, X, Y: Integer);
 var
   X2, Y2: Integer;
 begin
@@ -4076,31 +4121,58 @@ begin
   begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    VagaCirclesCounter[P] := VagaCirclesCounter[P] + 1;
-    if VagaCirclesCounter[P] = MAX_CIRCLES_AT_ONCE then
-      VagaCirclesCounter[P] := 0;
-    VagaCirclesLength[P][VagaCirclesCounter[P]] := VagaCirclesLength[P][VagaCirclesCounter[P]] + VAGA_WAVE_CYCLES * VAGA_WAVE_RADIUS;
-    SetLength(VagaCircles[P][VagaCirclesCounter[P]], VagaCirclesLength[P][VagaCirclesCounter[P]]);
-    for I := VagaCirclesLength[P][VagaCirclesCounter[P]] downto VagaCirclesLength[P][VagaCirclesCounter[P]] - VAGA_WAVE_CYCLES * VAGA_WAVE_RADIUS + 1 do
-    begin
-      VagaCircles[P][VagaCirclesCounter[P]][VagaCirclesLength[P][VagaCirclesCounter[P]] - I].Obj := VAGA_OBJECT2;
-      VagaCircles[P][VagaCirclesCounter[P]][VagaCirclesLength[P][VagaCirclesCounter[P]] - I].X := X2;
-      VagaCircles[P][VagaCirclesCounter[P]][VagaCirclesLength[P][VagaCirclesCounter[P]] - I].Y := Y2;
-      VagaCircles[P][VagaCirclesCounter[P]][VagaCirclesLength[P][VagaCirclesCounter[P]] - I].AddTime := States.GameTime + Round(VAGA_FIELD_SPEED * (VagaCirclesLength[P][VagaCirclesCounter[P]] - I));
-      if I mod VAGA_WAVE_RADIUS > 0 then
-        VagaCircles[P][VagaCirclesCounter[P]][VagaCirclesLength[P][VagaCirclesCounter[P]] - I].Radius := VAGA_WAVE_RADIUS + 2 - I mod VAGA_WAVE_RADIUS
-      else
-        VagaCircles[P][VagaCirclesCounter[P]][VagaCirclesLength[P][VagaCirclesCounter[P]] - I].Radius := 1;
-    end;        
-    for I := 0 to VagaCirclesLength[P][VagaCirclesCounter[P]] - 1 do 
-      if I mod VAGA_WAVE_RADIUS = 1 then
-        VagaCircles[P][VagaCirclesCounter[P]][VagaCirclesLength[P][VagaCirclesCounter[P]] - I].Obj := 255;
+    TilesFieldLength[P] := TilesFieldLength[P] + 4;
+    SetLength(TilesFieldX[P], TilesFieldLength[P]);
+    SetLength(TilesFieldY[P], TilesFieldLength[P]);
+    SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
+    SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
+    SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
+  
+    TilesFieldX[P][Length(TilesFieldX[P]) - 4] := X2;
+    TilesFieldX[P][Length(TilesFieldX[P]) - 3] := X2;
+    TilesFieldX[P][Length(TilesFieldX[P]) - 2] := X2 - 1;
+    TilesFieldX[P][Length(TilesFieldX[P]) - 1] := X2 + 1;
+    
+    TilesFieldY[P][Length(TilesFieldY[P]) - 4] := Y2 + 1;
+    TilesFieldY[P][Length(TilesFieldY[P]) - 3] := Y2 - 1;
+    TilesFieldY[P][Length(TilesFieldY[P]) - 2] := Y2;
+    TilesFieldY[P][Length(TilesFieldY[P]) - 1] := Y2;
 
-    Players[P].LastUsedSkill := sVagaWave;
+    for I := 1 to 4 do
+      TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := VAGA_OBJECT7;
+    
+    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 11;
+    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 12;
+    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 13;
+    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 14;
+    
+    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 4] := States.GameTime + 1;
+    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 3] := States.GameTime + 2;
+    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 2] := States.GameTime + 3;
+    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 4;
+
+    for I := 1 to 4 do
+      if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
+        if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
+        or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_MINE)
+        or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
+        or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+          ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
+
+    {if States.PlayerIsAI(P) then
+    begin
+      Players[P].CastingSkill := True;
+      Players[P].SkillTime := States.GameTime + 20;
+      Actions.GroupOrderHalt(Players[P].Hero);
+    end;}
+
+    Players[P].TrackStartTime := States.GameTime + TRACK_DELAY;
+
+    Players[P].StolenSkill := sTrack;
 
     Players[P].FieldSkillDelay := Round(VAGA_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
-    TimeToClearVagaArray[P][VagaCirclesCounter[P]] := VagaCircles[P][VagaCirclesCounter[P]][VagaCirclesLength[P][VagaCirclesCounter[P]] - 1].AddTime + CLEAR_ARRAY_FACTOR;
+    ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR + TRACK_TIME + TRACK_DELAY + 5;
 
   end;
 
@@ -4240,27 +4312,24 @@ begin
     begin
       Players[P].GravityX := X;
       Players[P].GravityY := Y;
-      GravityCirclesCounter[P] := GravityCirclesCounter[P] + 1;
-      if GravityCirclesCounter[P] = MAX_CIRCLES_AT_ONCE then
-        GravityCirclesCounter[P] := 0;
-      GravityCirclesLength[P][GravityCirclesCounter[P]] := GravityCirclesLength[P][GravityCirclesCounter[P]] + GRAVITY_CYCLES * GRAVITY_RADIUS;
-      SetLength(GravityCircles[P][GravityCirclesCounter[P]], GravityCirclesLength[P][GravityCirclesCounter[P]]);
-      for I := GravityCirclesLength[P][GravityCirclesCounter[P]] downto GravityCirclesLength[P][GravityCirclesCounter[P]] - GRAVITY_CYCLES * GRAVITY_RADIUS + 1 do
+      GravityCirclesLength[P] := GravityCirclesLength[P] + GRAVITY_CYCLES * GRAVITY_RADIUS;
+      SetLength(GravityCircles[P], GravityCirclesLength[P]);
+      for I := GravityCirclesLength[P] downto GravityCirclesLength[P] - GRAVITY_CYCLES * GRAVITY_RADIUS + 1 do
       begin
-        GravityCircles[P][GravityCirclesCounter[P]][GravityCirclesLength[P][GravityCirclesCounter[P]] - I].Obj := AXE_OBJECT;
-        GravityCircles[P][GravityCirclesCounter[P]][GravityCirclesLength[P][GravityCirclesCounter[P]] - I].X := X;
-        GravityCircles[P][GravityCirclesCounter[P]][GravityCirclesLength[P][GravityCirclesCounter[P]] - I].Y := Y;
-        GravityCircles[P][GravityCirclesCounter[P]][GravityCirclesLength[P][GravityCirclesCounter[P]] - I].AddTime := States.GameTime + Round(AXE_ROAD_SPEED * I);
-        GravityCircles[P][GravityCirclesCounter[P]][GravityCirclesLength[P][GravityCirclesCounter[P]] - I].Radius := GRAVITY_RADIUS - I mod GRAVITY_RADIUS;
+        GravityCircles[P][GravityCirclesLength[P] - I].Obj := AXE_OBJECT;
+        GravityCircles[P][GravityCirclesLength[P] - I].X := X;
+        GravityCircles[P][GravityCirclesLength[P] - I].Y := Y;
+        GravityCircles[P][GravityCirclesLength[P] - I].AddTime := States.GameTime + Round(AXE_ROAD_SPEED * I);
+        GravityCircles[P][GravityCirclesLength[P] - I].Radius := GRAVITY_RADIUS - I mod GRAVITY_RADIUS;
         if I mod GRAVITY_RADIUS = 0 then
-          GravityCircles[P][GravityCirclesCounter[P]][GravityCirclesLength[P][GravityCirclesCounter[P]] - I].Radius := 0;
+          GravityCircles[P][GravityCirclesLength[P] - I].Radius := 0;
       end;
 
     Players[P].LastUsedSkill := sGravity;
 
     Players[P].RoadSkillDelay := Round(AXE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
-    TimeToClearGravityArray[P][GravityCirclesCounter[P]] := GravityCircles[P][GravityCirclesCounter[P]][0].AddTime + CLEAR_ARRAY_FACTOR;
+    TimeToClearGravityArray[P] := GravityCircles[P][0].AddTime + CLEAR_ARRAY_FACTOR;
 
     end;
 
@@ -6886,7 +6955,7 @@ begin
           sWerewolf: Players[P].StolenSkillName := '<$24>';
 
           sDisorientation: Players[P].StolenSkillName := '<$15>';
-          sVagaWave: Players[P].StolenSkillName := '<$23>';
+          sTrack: Players[P].StolenSkillName := '<$23>';
           sRegen: Players[P].StolenSkillName := '<$31>';
 
           sViseOfDeath: Players[P].StolenSkillName := '<$13>';
@@ -7097,12 +7166,12 @@ begin
                          Players[P].WineSkillDelay := Round(VAGA_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                        end;
 
-      sVagaWave: begin
-                   TempFieldSkillDelay := Players[P].FieldSkillDelay;
-                   VagaWave(P, X, Y);
-                   Players[P].FieldSkillDelay := TempFieldSkillDelay;
-                   Players[P].WineSkillDelay := Round(VAGA_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-                 end;
+      sTrack: begin
+                TempFieldSkillDelay := Players[P].FieldSkillDelay;
+                FieryTrack(P, X, Y);
+                Players[P].FieldSkillDelay := TempFieldSkillDelay;
+                Players[P].WineSkillDelay := Round(VAGA_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+              end;
 
       sRegen: if (Abs(X - X2) <= REGEN_RADIUS)
               and (Abs(Y - Y2) <= REGEN_RADIUS) then
@@ -7375,7 +7444,7 @@ begin
       23: WaveOfRage(P, X, Y);
       25: StealSkill(P, X, Y);
       26: SturdyArmor(P, X, Y);
-      27: VagaWave(P, X, Y);
+      27: FieryTrack(P, X, Y);
     end;
   end;
 
@@ -7527,7 +7596,8 @@ begin
   or (aObj = ROGUE_OBJECT)
   or (aObj = ROGUE_OBJECT2)
   or (aObj = ROGUE_OBJECT4)
-  or (aObj = SCOUT_OBJECT3) then
+  or (aObj = SCOUT_OBJECT3)
+  or (aObj = VAGA_OBJECT8) then
   begin
     T := Players[P].HeroType;
     if (not States.PlayerDefeated(P))
@@ -7749,7 +7819,8 @@ begin
       or (aObj = ROGUE_OBJECT)
       or (aObj = ROGUE_OBJECT2)
       or (aObj = ROGUE_OBJECT4)
-      or (aObj = SCOUT_OBJECT3) then
+      or (aObj = SCOUT_OBJECT3)
+      or (aObj = VAGA_OBJECT8) then
         Actions.UnitKill(AIUnits[K], False);
 
       if aObj = BOWMAN_MINE then
@@ -7801,6 +7872,7 @@ begin
               or (aObj = AXE_OBJECT2)
               or (aObj = AXE_OBJECT3)
               or (aObj = VAGA_OBJECT2)
+              or (aObj = VAGA_OBJECT8)
               or (aObj = WARRIOR_OBJECT3)
               or (aObj = WARRIOR_OBJECT)
               or (aObj = WARRIOR_OBJECT2)
@@ -7898,24 +7970,6 @@ begin
           begin
             if (States.GameTime = RageCircles[P][K][I].AddTime) then
               SetCircle(P, RageCircles[P][K][I].X, RageCircles[P][K][I].Y, RageCircles[P][K][I].Radius, RageCircles[P][K][I].Obj, True, False);
-          end;
-        end;
-    end;
-end;
-
-
-procedure CheckVagaCircles(P: Integer);
-begin
-  if States.PlayerEnabled(P) then
-    for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-    begin
-      if VagaCirclesLength[P][K] > 0 then
-        for I := 0 to VagaCirclesLength[P][K] - 1 do
-        begin
-          if TileOnBattlefield(VagaCircles[P][K][I].X, VagaCircles[P][K][I].Y) then
-          begin
-            if (States.GameTime = VagaCircles[P][K][I].AddTime) then
-              SetCircle(P, VagaCircles[P][K][I].X, VagaCircles[P][K][I].Y, VagaCircles[P][K][I].Radius, VagaCircles[P][K][I].Obj, True, False);
           end;
         end;
     end;
@@ -8312,55 +8366,52 @@ var
   X, Y, O, U, G, D, UT, CC: Integer;
 begin
   if States.PlayerEnabled(P) then
-    for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-    begin
-      if GravityCirclesLength[P][K] > 0 then
-        for CC := 0 to GravityCirclesLength[P][K] - 1 do
+    if GravityCirclesLength[P] > 0 then
+      for CC := 0 to GravityCirclesLength[P] - 1 do
+      begin
+        if TileOnBattlefield(GravityCircles[P][CC].X, GravityCircles[P][CC].Y) then
         begin
-          if TileOnBattlefield(GravityCircles[P][K][CC].X, GravityCircles[P][K][CC].Y) then
+          if (States.GameTime = GravityCircles[P][CC].AddTime) then
           begin
-            if (States.GameTime = GravityCircles[P][K][CC].AddTime) then
+            SetCircle(P, GravityCircles[P][CC].X, GravityCircles[P][CC].Y, GRAVITY_RADIUS, 255, False, True);
+            SetCircle(P, GravityCircles[P][CC].X, GravityCircles[P][CC].Y, GravityCircles[P][CC].Radius, GravityCircles[P][CC].Obj, False, True);
+            for X := GravityCircles[P][CC].X - GravityCircles[P][CC].Radius - 1 to GravityCircles[P][CC].X + GravityCircles[P][CC].Radius + 1 do
+            for Y := GravityCircles[P][CC].Y - GravityCircles[P][CC].Radius - 1 to GravityCircles[P][CC].Y + GravityCircles[P][CC].Radius + 1 do
             begin
-              SetCircle(P, GravityCircles[P][K][CC].X, GravityCircles[P][K][CC].Y, GRAVITY_RADIUS, 255, False, True);
-              SetCircle(P, GravityCircles[P][K][CC].X, GravityCircles[P][K][CC].Y, GravityCircles[P][K][CC].Radius, GravityCircles[P][K][CC].Obj, False, True);
-              for X := GravityCircles[P][K][CC].X - GravityCircles[P][K][CC].Radius - 1 to GravityCircles[P][K][CC].X + GravityCircles[P][K][CC].Radius + 1 do
-              for Y := GravityCircles[P][K][CC].Y - GravityCircles[P][K][CC].Radius - 1 to GravityCircles[P][K][CC].Y + GravityCircles[P][K][CC].Radius + 1 do
+              if (((X - GravityCircles[P][CC].X) * (X - GravityCircles[P][CC].X) + (Y - GravityCircles[P][CC].Y) * (Y - GravityCircles[P][CC].Y)) <= GravityCircles[P][CC].Radius * GravityCircles[P][CC].Radius) then
               begin
-                if (((X - GravityCircles[P][K][CC].X) * (X - GravityCircles[P][K][CC].X) + (Y - GravityCircles[P][K][CC].Y) * (Y - GravityCircles[P][K][CC].Y)) <= GravityCircles[P][K][CC].Radius * GravityCircles[P][K][CC].Radius) then
+                U := States.UnitAt(X, Y);
+                if U <> -1 then
                 begin
-                  U := States.UnitAt(X, Y);
-                  if U <> -1 then
+                  O := States.UnitOwner(U);
+                  UT := States.UnitType(U);
+                  D := States.UnitDirection(U);
+                  if (InRange(O, 0, 7))
+                  and (not Players[O].HeroImmortal) then
                   begin
-                    O := States.UnitOwner(U);
-                    UT := States.UnitType(U);
-                    D := States.UnitDirection(U);
-                    if (InRange(O, 0, 7))
-                    and (not Players[O].HeroImmortal) then
+                    Actions.GroupKillAll(Players[O].Hero, True);
+                    Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
+                    Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
+                    Break;
+                    Exit;
+                  end
+                  else
+                    if (InRange(O, 8, 11)) then 
                     begin
-                      Actions.GroupKillAll(Players[O].Hero, True);
-                      Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
-                      Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
+                      Actions.GroupKillAll(States.UnitsGroup(U), True);
+                      G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
+                      Actions.GroupHungerSet(G, RUNE_ZOMBIE_LIFE);
                       Break;
                       Exit;
-                    end
-                    else
-                    if (InRange(O, 8, 11)) then 
-                      begin
-                        Actions.GroupKillAll(States.UnitsGroup(U), True);
-                        G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
-                        Actions.GroupHungerSet(G, RUNE_ZOMBIE_LIFE);
-                        Break;
-                        Exit;
-                      end;
-                    if not InRange (O, 0, 11) then
-                      Exit;
-                  end;
+                    end;
+                  if not InRange (O, 0, 11) then
+                    Exit;
                 end;
               end;
             end;
           end;
         end;
-    end;
+      end;
 end;
 
 
@@ -8671,6 +8722,33 @@ begin
       begin
         Players[I1].HeroSilent := True;
         Players[I1].HeroSilentTime := States.GameTime + SILENCE_TIME + 20;
+      end;
+
+      if States.GameTime = Players[I1].TrackStartTime then
+      begin
+        Players[I1].SettingTrack := True;
+        Players[I1].TrackStopTime := States.GameTime + TRACK_TIME;
+      end;
+
+      if States.GameTime = Players[I1].TrackStopTime then
+      begin
+        Players[I1].SettingTrack := False;
+      end;
+
+      if (Players[I1].SettingTrack)
+      and ((States.GameTime - Players[I1].TrackStopTime) mod TRACK_FACTOR = 0) then
+      begin
+        TilesFieldLength[I1] := TilesFieldLength[I1] + 1;
+        SetLength(TilesFieldX[I1], TilesFieldLength[I1]);
+        SetLength(TilesFieldY[I1], TilesFieldLength[I1]);
+        SetLength(ClearTilesFieldTimes[I1], TilesFieldLength[I1]);
+        SetLength(SetTilesFieldTimes[I1], TilesFieldLength[I1]);
+        SetLength(TilesFieldObjects[I1], TilesFieldLength[I1]);  
+        TilesFieldX[I1][Length(TilesFieldX[I1]) - 1] := FieryTrackX(I1);    
+        TilesFieldY[I1][Length(TilesFieldY[I1]) - 1] := FieryTrackY(I1);
+        TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 1] := VAGA_OBJECT8;    
+        ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := Players[I1].TrackStopTime + 3;    
+        SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - 1] := States.GameTime + 1;
       end;
 
       if (States.GameTime >= Players[I1].HeroSilentTime)
@@ -9234,6 +9312,12 @@ begin
       SetLength(TilesWineObjects[I], TilesWineLength[I]);
     end;
 
+    if States.GameTime = TimeToClearGravityArray[I] then
+    begin
+      GravityCirclesLength[I] := 0;
+      SetLength(GravityCircles[I], 0);
+    end;
+
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
     begin
 
@@ -9247,12 +9331,6 @@ begin
       begin
         RageCirclesLength[I][K] := 0;
         SetLength(RageCircles[I][K], 0);
-      end;
-
-      if States.GameTime = TimeToClearVagaArray[I][K] then
-      begin
-        VagaCirclesLength[I][K] := 0;
-        SetLength(VagaCircles[I][K], 0);
       end;
 
       if States.GameTime = TimeToClearTotemArray[I][K] then
@@ -9271,12 +9349,6 @@ begin
       begin
         ExpCirclesLength[I][K] := 0;
         SetLength(ExpCircles[I][K], 0);
-      end;
-
-      if States.GameTime = TimeToClearGravityArray[I][K] then
-      begin
-        GravityCirclesLength[I][K] := 0;
-        SetLength(GravityCircles[I][K], 0);
       end;
 
       if States.GameTime = TimeToClearFireworks1Array[I][K] then
@@ -10896,9 +10968,6 @@ begin
 
   for N[10] := 0 to 7 do
     CheckFireworks5Circles(N[10]);
-
-  for N[11] := 0 to 7 do
-    CheckVagaCircles(N[11]);
 
   for N[12] := 0 to 7 do
     CheckKnightCircles(N[12]);
