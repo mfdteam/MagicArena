@@ -705,6 +705,10 @@ begin
       Actions.PlayerAllianceChange(10, I, False, False);
     end;
 
+  for I := 4 to 7 do
+    if States.PlayerEnabled(I) then
+      Actions.PlayerAllianceChange(I, 8, True, True);
+
   KillUnneeded;
 
   AutoFeed;
@@ -8550,6 +8554,10 @@ begin
 
   for J := 0 to Length(AISoldiers) - 1 do
     Actions.GroupKillAll(AISoldiers[J], True);
+
+  for I := 4 to 7 do
+    if States.PlayerEnabled(I) then
+      Actions.PlayerAllianceChange(I, 8, True, False);
 
   for I := 0 to 7 do
     if Players[I].HeroChosen then
