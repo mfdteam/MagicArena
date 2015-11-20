@@ -67,7 +67,7 @@ const
   IN_FEAR_RADIUS = 5;
   BOMB_RADIUS = 8;
   ROCKET_USAGE_RADIUS = 50;
-  MIN_ROCKET_USAGE_RADIUS = 10;
+  MIN_ROCKET_USAGE_RADIUS = 0;
   PRISON_USAGE_RADIUS = 8;
   PRISON_RADIUS = 3;
   GRAVITY_RADIUS1 = 5;
@@ -280,7 +280,6 @@ const
   TRACK_TIME = 100;
   TRACK_DELAY = 20;
   TRACK_FACTOR = 3;
-  DIAGONAL_FACTOR = 10;
 
 //Game mechanics
 
@@ -4761,32 +4760,7 @@ begin
 
     if (X > X1)
     and (Y > Y1)
-    and (DX > DIAGONAL_FACTOR)
-    and (DY > DIAGONAL_FACTOR) then
-    begin
-      for aX := X1 + 1 to X do
-      for aY := Y1 + 1 to Y do
-        if (aY = Y1 + ((aX - X1) * (Y - Y1) / (X - X1)))
-        and (TileOnBattlefield(aX, aY)) then
-        begin
-          Desync := Desync + 1;
-          TilesRoadLength[P] := TilesRoadLength[P] + 1;
-          SetLength(TilesRoadX[P], TilesRoadLength[P]);
-          SetLength(TilesRoadY[P], TilesRoadLength[P]);
-          SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
-          SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
-          SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-          TilesRoadX[P][Length(TilesRoadX[P]) - 1] := aX;
-          TilesRoadY[P][Length(TilesRoadY[P]) - 1] := aY;
-          ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/BOWMAN_ROAD_SPEED);
-          SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 4 + Round(DESYNC_FACTOR * Desync/BOWMAN_ROAD_SPEED);
-          TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := BOWMAN_OBJECT6;
-        end;
-    end;
-
-    if (X > X1)
-    and (Y > Y1)
-    and (InRange(DX, 1, DIAGONAL_FACTOR)) then
+    and (DX < DY) then
     begin
       for aX := X1 + 1 to X1 + DX do
       for aY := Y1 + 1 to Y1 + DX do
@@ -4828,7 +4802,7 @@ begin
 
     if (X > X1)
     and (Y > Y1)
-    and (InRange(DY, 1, DIAGONAL_FACTOR)) then
+    and (DX >= DY) then
     begin
       for aX := X1 + 1 to X1 + DY do
       for aY := Y1 + 1 to Y1 + DY do
@@ -4870,32 +4844,7 @@ begin
 
     if (X > X1)
     and (Y < Y1)
-    and (DX > DIAGONAL_FACTOR)
-    and (DY > DIAGONAL_FACTOR) then
-    begin
-      for aX := X1 + 1 to X do
-      for aY := Y1 - 1 downto Y do
-        if (aY = Y1 + ((aX - X1) * (Y - Y1) / (X - X1)))
-        and (TileOnBattlefield(aX, aY)) then
-        begin
-          Desync := Desync + 1;
-          TilesRoadLength[P] := TilesRoadLength[P] + 1;
-          SetLength(TilesRoadX[P], TilesRoadLength[P]);
-          SetLength(TilesRoadY[P], TilesRoadLength[P]);
-          SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
-          SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
-          SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-          TilesRoadX[P][Length(TilesRoadX[P]) - 1] := aX;
-          TilesRoadY[P][Length(TilesRoadY[P]) - 1] := aY;
-          ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/BOWMAN_ROAD_SPEED);
-          SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 4 + Round(DESYNC_FACTOR * Desync/BOWMAN_ROAD_SPEED);
-          TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := BOWMAN_OBJECT6;
-        end;
-    end;
-
-    if (X > X1)
-    and (Y < Y1)
-    and (InRange(DX, 1, DIAGONAL_FACTOR)) then
+    and (DX < DY) then
     begin
       for aX := X1 + 1 to X1 + DX do
       for aY := Y1 - 1 downto Y1 - DX do
@@ -4937,7 +4886,7 @@ begin
 
     if (X > X1)
     and (Y < Y1)
-    and (InRange(DY, 1, DIAGONAL_FACTOR)) then
+    and (DX >= DY) then
     begin
       for aX := X1 + 1 to X1 + DY do
       for aY := Y1 - 1 downto Y1 - DY do
@@ -4979,32 +4928,7 @@ begin
 
     if (X < X1)
     and (Y < Y1)
-    and (DX > DIAGONAL_FACTOR)
-    and (DY > DIAGONAL_FACTOR) then
-    begin
-      for aX := X1 - 1 downto X do
-      for aY := Y1 - 1 downto Y do
-        if (aY = Y1 + ((aX - X1) * (Y - Y1) / (X - X1)))
-        and (TileOnBattlefield(aX, aY)) then
-        begin
-          Desync := Desync + 1;
-          TilesRoadLength[P] := TilesRoadLength[P] + 1;
-          SetLength(TilesRoadX[P], TilesRoadLength[P]);
-          SetLength(TilesRoadY[P], TilesRoadLength[P]);
-          SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
-          SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
-          SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-          TilesRoadX[P][Length(TilesRoadX[P]) - 1] := aX;
-          TilesRoadY[P][Length(TilesRoadY[P]) - 1] := aY;
-          ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/BOWMAN_ROAD_SPEED);
-          SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 4 + Round(DESYNC_FACTOR * Desync/BOWMAN_ROAD_SPEED);
-          TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := BOWMAN_OBJECT6;
-        end;
-    end;
-
-    if (X < X1)
-    and (Y < Y1)
-    and (InRange(DX, 1, DIAGONAL_FACTOR)) then
+    and (DX < DY) then
     begin
       for aX := X1 - 1 downto X1 - DX do
       for aY := Y1 - 1 downto Y1 - DX do
@@ -5046,7 +4970,7 @@ begin
 
     if (X < X1)
     and (Y < Y1)
-    and (InRange(DY, 1, DIAGONAL_FACTOR)) then
+    and (DX >= DY) then
     begin
       for aX := X1 - 1 downto X1 - DY do
       for aY := Y1 - 1 downto Y1 - DY do
@@ -5088,32 +5012,7 @@ begin
 
     if (X < X1)
     and (Y > Y1)
-    and (DX > DIAGONAL_FACTOR)
-    and (DY > DIAGONAL_FACTOR) then
-    begin
-      for aX := X1 - 1 downto X do
-      for aY := Y1 + 1 to Y do
-        if (aY = Y1 + ((aX - X1) * (Y - Y1) / (X - X1)))
-        and (TileOnBattlefield(aX, aY)) then
-        begin
-          Desync := Desync + 1;
-          TilesRoadLength[P] := TilesRoadLength[P] + 1;
-          SetLength(TilesRoadX[P], TilesRoadLength[P]);
-          SetLength(TilesRoadY[P], TilesRoadLength[P]);
-          SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
-          SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
-          SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-          TilesRoadX[P][Length(TilesRoadX[P]) - 1] := aX;
-          TilesRoadY[P][Length(TilesRoadY[P]) - 1] := aY;
-          ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/BOWMAN_ROAD_SPEED);
-          SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 4 + Round(DESYNC_FACTOR * Desync/BOWMAN_ROAD_SPEED);
-          TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := BOWMAN_OBJECT6;
-        end;
-    end;
-
-    if (X < X1)
-    and (Y > Y1)
-    and (InRange(DX, 1, DIAGONAL_FACTOR)) then
+    and (DX < DY) then
     begin
       for aX := X1 - 1 downto X1 - DX do
       for aY := Y1 + 1 to Y1 + DX do
@@ -5155,7 +5054,7 @@ begin
 
     if (X < X1)
     and (Y > Y1)
-    and (InRange(DY, 1, DIAGONAL_FACTOR)) then
+    and (DX >= DY) then
     begin
       for aX := X1 - 1 downto X1 - DY do
       for aY := Y1 + 1 to Y1 + DY do
