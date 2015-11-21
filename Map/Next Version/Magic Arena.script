@@ -7973,9 +7973,9 @@ end;
 procedure CheckTilesForAI;
 var
   AIUnits: array of Integer;
-  aObj: Integer;
-  aX, aY: Integer;
+  aObj, aX, aY: Integer;
 begin
+  aObj := -1;
   for I := 9 to 11 do
   begin
     AIUnits := States.PlayerGetAllUnits(I);
