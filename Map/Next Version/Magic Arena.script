@@ -4083,15 +4083,15 @@ begin
     SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
     SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
   
-    TilesRoadX[P][Length(TilesRoadX[P]) - 4] := X2 + 1;
-    TilesRoadX[P][Length(TilesRoadX[P]) - 3] := X2 - 1;
-    TilesRoadX[P][Length(TilesRoadX[P]) - 2] := X2 - 1;
-    TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + 1;
+    TilesFieldX[P][Length(TilesFieldX[P]) - 4] := X2 + 1;
+    TilesFieldX[P][Length(TilesFieldX[P]) - 3] := X2 - 1;
+    TilesFieldX[P][Length(TilesFieldX[P]) - 2] := X2 - 1;
+    TilesFieldX[P][Length(TilesFieldX[P]) - 1] := X2 + 1;
     
-    TilesRoadY[P][Length(TilesRoadY[P]) - 4] := Y2 + 1;
-    TilesRoadY[P][Length(TilesRoadY[P]) - 3] := Y2 - 1;
-    TilesRoadY[P][Length(TilesRoadY[P]) - 2] := Y2 + 1;
-    TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
+    TilesFieldY[P][Length(TilesFieldY[P]) - 4] := Y2 + 1;
+    TilesFieldY[P][Length(TilesFieldY[P]) - 3] := Y2 - 1;
+    TilesFieldY[P][Length(TilesFieldY[P]) - 2] := Y2 + 1;
+    TilesFieldY[P][Length(TilesFieldY[P]) - 1] := Y2 - 1;
 
     for I := 1 to 4 do
       TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := VAGA_OBJECT7;
@@ -9213,6 +9213,8 @@ begin
           Players[I1].PlayersTeam := Players[I1].TempPlayersTeam;
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
           Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
+          Players[M[I1]].HeroImmortal := True;
+          Players[M[I1]].HeroImmortalTime := States.GameTime + 20;
         end;
       end;
     end;
