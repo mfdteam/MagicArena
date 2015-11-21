@@ -7740,6 +7740,7 @@ procedure CheckTiles(P: Integer);
 var
   T, aX, aY, aObj: Integer;
 begin
+  aObj := -1;
   if Players[P].Hero <= 0 then
     Exit;
   if States.GroupMember(Players[P].Hero, 0) <= 0 then
@@ -7758,6 +7759,8 @@ begin
   or (States.MapTileType(aX, aY) = 152) then
     aObj := States.MapTileObject(aX, aY);
   if aObj = PikeObjects[P] then
+    Exit;
+  if aObj = -1 then
     Exit;
 
   if (aX = RUNE_X)
@@ -7817,10 +7820,10 @@ begin
     begin
       if Players[P].HP > 0 then
       begin 
-      Actions.GroupKillAll(Players[P].Hero, False);
-      Players[P].Hero := Actions.GiveGroup(P, T, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
-      if not (Players[P].CaptureMind)
-      and not (Players[P].MindStunned) then
+        Actions.GroupKillAll(Players[P].Hero, False);
+        Players[P].Hero := Actions.GiveGroup(P, T, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
+        if not (Players[P].CaptureMind)
+        and not (Players[P].MindStunned) then
           Players[P].HP := Players[P].HP - 1;
         if Players[P].CaptureMind then
           Players[M[P]].HP := Players[M[P]].HP - 1;
@@ -8681,16 +8684,7 @@ begin
   if aID < 0 then
     Exit;
 
-  if States.GameTime < GAME_START_TIME + 5 then
-    Exit;
-
   O := States.UnitOwner(aID);
-
-  if Players[O].Hero <= 0 then
-    Exit;
-
-  if States.MapTileObject(States.UnitPositionX(States.GroupMember(Players[O].Hero, 0)), States.unitPositionY(States.GroupMember(Players[O].Hero, 0))) = BOWMAN_MINE then
-    Actions.PlayWAV(O, 'Wtf', 1);
 
   for I := 0 to 7 do
   for K := 0 to 3 do
