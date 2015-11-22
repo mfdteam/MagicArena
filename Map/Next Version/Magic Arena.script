@@ -1448,7 +1448,7 @@ end;
 
 function PlayerInfo(P: Integer): ANSIString;
 begin
-  if Players[I].ReChoice then
+  if Players[P].ReChoice then
     Result := ' [$BECADA]<$66>[]; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP)
   else
     Result := ' <$42>: ' + States.UnitTypeName(Players[P].HeroType) + '; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP);
