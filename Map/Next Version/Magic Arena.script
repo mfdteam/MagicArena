@@ -1719,6 +1719,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sSpikedEarth;
@@ -1946,7 +1947,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sCrackingEarth;
@@ -2131,7 +2132,7 @@ begin
         Players[P].SkillCastX := X2;
         Players[P].SkillCastY := Y2;
         Actions.GroupKillAll(Players[P].Hero, True);
-        Players[P].Hero := -1;
+        Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       end;
 
       Players[P].LastUsedSkill := sTotem;
@@ -2296,7 +2297,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sFieryLance;
@@ -2707,7 +2708,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := s10kSpears;
@@ -2870,7 +2871,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sAccurateShot;
@@ -3001,7 +3002,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 13] + CLEAR_ARRAY_FACTOR;
@@ -3180,7 +3181,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sSniperShot;
@@ -3322,7 +3323,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sViseOfDeath;
@@ -5201,7 +5202,7 @@ begin
       Players[P].SkillCastX := X1;
       Players[P].SkillCastY := Y1;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sPrison;
@@ -5427,7 +5428,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
   end;
@@ -5730,7 +5731,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sFierySnake;
@@ -5955,7 +5956,7 @@ begin
       Players[P].SkillCastX := X1;
       Players[P].SkillCastY := Y1;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sCircleOfSilence;
@@ -6334,7 +6335,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;}
 
     {Players[P].KnightX := X2;
@@ -7078,7 +7079,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := -1;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
   end;
@@ -9676,30 +9677,13 @@ begin
   and (Players[P].HP > 0)
   and (States.PlayerIsAI(P)) then
   begin
+    Actions.GroupKillAll(Players[P].Hero, True);
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SkillCastX, Players[P].SkillCastY, Players[P].SkillCastDir, 1, 1);
     Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
     if (Players[P].HeroStunned)
     or (Players[P].HeroInFear) then
       Actions.GroupBlockOrders(Players[P].Hero, True);
    end;
-end;
-
-
-procedure RepeatRespawn(P: Integer);
-var
-  G: array of Integer;
-begin
-  if (InRange(States.GameTime, Players[P].SkillCastRespawnTime + 1, Players[P].SkillCastRespawnTime + 3))
-  and (Players[P].Hero = -1)
-  and (States.PlayerIsAI(P)) then
-  begin
-    RespawnUnit(P);
-    G := States.PlayerGetAllGroups(P);
-      if Length(G) > 0 then
-        for K := 0 to Length(G) - 1 do
-          if G[K] <> Players[P].Hero then
-            Actions.GroupKillAll(G[K], True);
-  end;
 end;
 
 
@@ -11175,9 +11159,6 @@ begin
 
       if States.GameTime = Players[I].SkillCastRespawnTime then
         RespawnUnit(I);
-
-      if States.PlayerEnabled(I) then
-        RepeatRespawn(I);
 
       CheckRespawn(I);
 
