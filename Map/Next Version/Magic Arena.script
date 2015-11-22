@@ -1446,6 +1446,15 @@ begin
 end;
 
 
+function PlayerInfo(P: Integer): ANSIString;
+begin
+  if Players[I].ReChoice then
+    Result := ' [$BECADA]<$66>[]; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP)
+  else
+    Result := ' <$42>: ' + States.UnitTypeName(Players[P].HeroType) + '; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP);
+end;
+
+
 procedure SetCircle(P, X, Y, R, aObj: Integer; aDef, aSaveCracking: Boolean);
 var
   X1, X2, Y1, Y2, PosX, PosY: Integer;
@@ -11135,10 +11144,10 @@ begin
     TeamInfo[1] := '';
     for I := 0 to 3 do
       if States.PlayerEnabled(I) then
-        TeamInfo[0] := TeamInfo[0] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]: <$42>: ' + States.UnitTypeName(Players[I].HeroType) + '; <$39>: ' + HPColor(I) + IntToStr(Players[I].HP);
+        TeamInfo[0] := TeamInfo[0] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]:' + PlayerInfo(I);
     for I := 4 to 7 do
       if States.PlayerEnabled(I) then
-        TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]: <$42>: ' + States.UnitTypeName(Players[I].HeroType) + '; <$39>: ' + HPColor(I) + IntToStr(Players[I].HP);
+        TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]:' + PlayerInfo(I);
   end;
 
   for I := 0 to 3 do
