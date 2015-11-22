@@ -302,6 +302,7 @@ const
   VAMPIRE_HEALBUSH_START_TIME = 18;
   VAMPIRE_HEALBUSH_END_TIME = 195;
   MAX_CIRCLES_AT_ONCE = 5;
+  RECHOICE_TIME = 150;
 
 //Battlefield
 
@@ -440,6 +441,9 @@ type
     TrackStartTime: Integer;
     TrackStopTime: Integer;
     SettingTrack: Boolean;
+    ReChoice: Boolean;
+    ReChoiceTime: Integer;
+    ReChoiceAllowed: Boolean;
   end;
 
 
@@ -887,6 +891,9 @@ begin
       TrackStartTime := 0;
       TrackStopTime := 0;
       SettingTrack := False;
+      ReChoice := False;
+      ReChoiceTime := 0;
+      ReChoiceAllowed := True;
     end;
   end;
 
@@ -1527,6 +1534,35 @@ begin
 end;
 
 
+procedure StartReChoice(P: Integer);
+begin
+  Actions.GroupKillAll(Players[P].Hero, True);
+  Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+  Actions.FogCoverAll(P);
+  Actions.FogRevealRect(P, 4, 4, 30, 30);
+  Players[P].ReChoice := True;
+  Players[P].ReChoiceTime := States.GameTime + RECHOICE_TIME;
+  Actions.CinematicStart(P);
+  Actions.CinematicPanTo(P, CENTERSCREEN_X, CENTERSCREEN_Y, 0);
+  Actions.CinematicEnd(P);
+  Players[P].ReChoiceAllowed := False;
+end;
+
+
+procedure EndReChoice(P: Integer);
+begin
+  Actions.GroupKillAll(Players[P].Hero, True);
+  Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
+  Players[P].ReChoice := False;
+  Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+  Actions.FogCoverAll(P);
+  Actions.FogRevealRect(P, 1, 39, 70, 109);
+  Actions.CinematicStart(P);
+  Actions.CinematicPanTo(P, Players[P].SpawnX, Players[P].SpawnY, 0);
+  Actions.CinematicEnd(P);
+end;
+
+
 procedure OnHousePlanPlaced(P, X, Y, HT: Integer);
 begin
   Actions.PlanRemove(P, X, Y);
@@ -1536,11 +1572,26 @@ begin
     Exit;
   if not TileOnBattlefield(X, Y) then
     Exit;
-  if HT <> 13 then
+  if (HT <> 13)
+  and (HT <> 21) then
     Exit;
-  Actions.ShowMsg(P, RoadSkillInfo(P, Players[P].HeroType));
-  Actions.ShowMsg(P, FieldSkillInfo(P, Players[P].HeroType));
-  Actions.ShowMsg(P, WineSkillInfo(P, Players[P].HeroType));
+  if HT = 13 then
+  begin
+    Actions.ShowMsg(P, RoadSkillInfo(P, Players[P].HeroType));
+    Actions.ShowMsg(P, FieldSkillInfo(P, Players[P].HeroType));
+    Actions.ShowMsg(P, WineSkillInfo(P, Players[P].HeroType));
+  end;
+  if (HT = 21)
+  and (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = Players[P].SpawnX)
+  and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = Players[P].SpawnY)
+  and (Players[P].ReChoiceAllowed)
+  and (not Players[P].MindStunned) then
+  and (not Players[P].CaptureMind)
+  and (Players[P].HP > 0)
+    StartReChoice(P);
+  if (HT = 21)
+  and (not Players[P].ReChoiceAllowed) then
+    Actions.ShowMsg(P, '<$65>');
 end;
 
 
@@ -7543,10 +7594,11 @@ begin
 
 //Choose Hero
 
-  if (not Players[P].HeroChosen)
+  if ((not Players[P].HeroChosen)
   and (Players[P].Hero = -1)
   and (States.UnitAt(X, Y) > 0)
-  and (InRange(States.UnitType(States.UnitAt(X, Y)), 14, 27)) then
+  and (InRange(States.UnitType(States.UnitAt(X, Y)), 14, 27)))
+  or (Players[P].ReChoice) then
   begin
     Players[P].HeroType := States.UnitType(States.UnitAt(X, Y));
     Players[P].TempHeroType := Players[P].HeroType;
@@ -7558,6 +7610,9 @@ begin
     if InRange(P, 4, 7) then
       TeamChoice[1] := TeamChoice[1] + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$32> ' + States.UnitTypeName(Players[P].HeroType);
   end;
+
+  if Players[P].ReChoice then
+    EndReChoice(P);
 
   if Players[P].HP <= 0 then
     Exit;
@@ -8759,7 +8814,8 @@ procedure SetHeroes;
 begin
 
   for J := 0 to Length(AISoldiers) - 1 do
-    Actions.GroupKillAll(AISoldiers[J], True);
+    if States.GroupOwner(AISoldiers[J]) <> 8 then
+      Actions.GroupKillAll(AISoldiers[J], True);
 
   for I := 4 to 7 do
     if States.PlayerEnabled(I) then
@@ -8786,6 +8842,8 @@ begin
 
   Actions.ShowMsg(-1, '<$62>');
 
+  Actions.ShowMsg(-1, '<$63>');
+
 end;
 
 
@@ -8796,6 +8854,10 @@ begin
   for I1 := 0 to 7 do
     if Players[I1].Hero > 0 then
     begin
+
+      if (States.GameTime = Players[I1].ReChoiceTime)
+      and (Players[I1].ReChoice) then
+        EndReChoice(I1);
 
       if (Players[I1].HeroStunned)
       and not (States.GroupIdle(Players[I1].Hero)) then
@@ -11082,7 +11144,8 @@ begin
   for I := 0 to 3 do
     if (States.PlayerEnabled(I))
     and (Players[I].HeroChosen)
-    and (States.GameTime > CHOOSE_HERO_TIMER) then
+    and (States.GameTime > CHOOSE_HERO_TIMER)
+    and (not Players[I].ReChoice) then
     begin
       Actions.OverlayTextSet(I, '<$33> [$ADAF67]' + States.UnitTypeName(Players[I].HeroType) + '[]!'
       + '||<$35>: ' + RoadSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].RoadSkillDelay/10)
@@ -11095,7 +11158,8 @@ begin
   for I := 4 to 7 do
     if (States.PlayerEnabled(I))
     and (Players[I].HeroChosen)
-    and (States.GameTime > CHOOSE_HERO_TIMER) then
+    and (States.GameTime > CHOOSE_HERO_TIMER)
+    and (not Players[I].ReChoice) then
     begin
       Actions.OverlayTextSet(I, '<$33> [$ADAF67]' + States.UnitTypeName(Players[I].HeroType) + '[]!'
       + '||<$35>: ' + RoadSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].RoadSkillDelay/10)
@@ -11104,6 +11168,10 @@ begin
       + '|<$39>: ' + HPColor(I) + IntToStr(Players[I].HP) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + '|'
       + StatusText(I) + '|||<$41>:|' + TeamInfo[1]);
     end;
+
+  for I := 0 to 7 do
+    if Players[I].ReChoice then
+      Actions.OverlayTextSet(I, '<$64> ' + IntToStr((Players[I].ReChoiceTime - States.GameTime)/10));
 
   if States.GameTime mod 12000 = 0 then
     AutoFeed;
