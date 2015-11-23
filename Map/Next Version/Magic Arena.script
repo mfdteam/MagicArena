@@ -612,12 +612,13 @@ end;
 
 procedure AIHeroChoice(P: Integer);
 begin
-  case States.KaMRandomI(5) of
+  case States.KaMRandomI(6) of
     0: Players[P].HeroType := 16;
     1: Players[P].HeroType := 23;
     2: Players[P].HeroType := 18;
     3: Players[P].HeroType := 19;
     4: Players[P].HeroType := 26;
+    5: Players[P].HeroType := 17;
   end;
 
   Players[P].TempHeroType := Players[P].HeroType;
@@ -4638,9 +4639,9 @@ end;
 //BOWMAN
 
 
-procedure LaunchRocket(P, X, Y, Dir: Integer);
+procedure LaunchRocket(P, X, Y: Integer);
 var
-  X1, Y1, aX, aY, Desync, Direction, DX, DY: Integer;
+  X1, Y1, aX, aY, Desync, DX, DY: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4665,7 +4666,6 @@ begin
       Players[P].CastingSkill := True;
       Players[P].SkillTime := States.GameTime + 18;
       Actions.GroupOrderHalt(Players[P].Hero);
-      Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     end;
 
     if (Abs(X - X1) > ROCKET_USAGE_RADIUS)
@@ -5158,6 +5158,17 @@ begin
     ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := SetTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] + 33;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := SetTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] + 3;
     TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := BOWMAN_ROCKET;
+
+    if (States.PlayerIsAI(P))
+    and (Players[P].HP > 0) then
+    begin
+      Actions.GroupOrderWalk(Players[P].Hero, X1, Y1, States.KaMRandomI(8));
+      Players[P].SkillCastRespawnTime := States.GameTime + SKILL_RESPAWN_TIME;
+      Players[P].SkillCastX := X1;
+      Players[P].SkillCastY := Y1;
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+    end;
 
     Players[P].LastUsedSkill := sRocket;
 
@@ -7477,7 +7488,7 @@ begin
                and (Abs(Y - Y2) > MIN_ROCKET_USAGE_RADIUS) then
                begin
                  TempRoadSkillDelay := Players[P].RoadSkillDelay;
-                 LaunchRocket(P, X, Y, -1);
+                 LaunchRocket(P, X, Y);
                  Players[P].RoadSkillDelay := TempRoadSkillDelay;
                  Players[P].WineSkillDelay := Round(BOWMAN_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                end;
@@ -7655,7 +7666,7 @@ begin
     case Players[P].HeroType of
       15: Gravity(P, X, Y);
       16: SpikedEarth(P, X, Y, -1);
-      17: LaunchRocket(P, X, Y, -1);
+      17: LaunchRocket(P, X, Y);
       18: AccurateShot(P, X, Y, -1);
       19: FieryLance(P, X, Y, -1);
       20: ViseOfDeath(P, X, Y, -1);
@@ -10876,20 +10887,87 @@ end;
 
 procedure AIBowman(P: Integer);
 var
-  X, Y, aX, aY, aX1, aY1, aX2, aY2, uX, uY, U, O: Integer;
+  X, Y, aX, aY, aX1, aY1, aX2, aY2, uX, uY, U, O, sX, sY: Integer;
 begin
 
-  if (States.KaMRandomI(10) > 5)
-  and (States.KaMRandom < 0.150)
-  and (Players[P].RoadSkillDelay = 0)
+  if (Players[P].RoadSkillDelay = 0)
   and (Players[P].Hero > 0)
-  and not (Players[P].CastingSkill) then
+  and (States.GameTime mod 50 = 0) then
     if States.GroupMember(Players[P].Hero, 0) > 0 then
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      LaunchRocket(P, aX, aY, States.UnitDirection(States.GroupMember(Players[P].Hero, 0)));
-      Exit;
+      for X := (aX - 20) to (aX + 20) do
+      for Y := (aY - 20) to (aY + 20) do
+      begin
+        if TileOnBattlefield(X, Y) then
+          U := States.UnitAt(X, Y);
+        if (U > 0) then
+        begin
+
+          sX := X;
+          sY := Y;
+
+          if GroupIsMoving(States.UnitsGroup(U)) then
+          begin
+            case States.UnitDirection(U) of
+
+              0: begin
+                   sX := X;
+                   sY := Y - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              1: begin
+                   sX := X + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              2: begin
+                   sX := X + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y;
+                 end;
+
+              3: begin
+                   sX := X + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              4: begin
+                   sX := X;
+                   sY := Y + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              5: begin
+                   sX := X - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+              6: begin
+                   sX := X - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y;
+                 end;
+
+              7: begin
+                   sX := X - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 end;
+
+            end;
+          end;
+
+          if CanUseSkillAgainstUnit(P, U) then
+          begin
+            O := States.UnitOwner(U);
+            if (P <> O)
+            and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+            and (States.KaMRandom > 0.1) then 
+            begin
+              LaunchRocket(P, sX, sY);
+              Exit;
+            end;
+          end;
+        end;
+      end;
     end;
 
   if (States.KaMRandomI(10) > 8)
@@ -11226,8 +11304,10 @@ begin
       if States.GameTime = Players[I].ClearPikeObjTime then
         ClearPikeObj(I);
 
-      if States.GameTime = Players[I].SkillCastRespawnTime then
-        RespawnUnit(I);
+      if States.GameTime >= Players[I].SkillCastRespawnTime then
+        if Players[I].Hero > 0 then
+          if States.GroupOwner(Players[I].Hero) = TEMP_PLAYER then
+            RespawnUnit(I);
 
       CheckRespawn(I);
 
@@ -11264,10 +11344,10 @@ begin
           if AICanUseSkills(I, 26) then
             AIWarrior(I);
 
-      {if Players[I].Hero > 0 then
+      if Players[I].Hero > 0 then
         if States.GroupMember(Players[I].Hero, 0) > 0 then
           if AICanUseSkills(I, 17) then
-            AIBowman(I);}
+            AIBowman(I);
 
     end;
 
