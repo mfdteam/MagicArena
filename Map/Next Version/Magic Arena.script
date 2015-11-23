@@ -10914,42 +10914,42 @@ begin
 
               0: begin
                    sX := X;
-                   sY := Y - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
                  end;
 
               1: begin
-                   sX := X + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                   sY := Y - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sX := X + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
                  end;
 
               2: begin
-                   sX := X + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sX := X + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
                    sY := Y;
                  end;
 
               3: begin
-                   sX := X + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                   sY := Y + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sX := X + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
                  end;
 
               4: begin
                    sX := X;
-                   sY := Y + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
                  end;
 
               5: begin
-                   sX := X - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                   sY := Y + 2 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sX := X - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
                  end;
 
               6: begin
-                   sX := X - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sX := X - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
                    sY := Y;
                  end;
 
               7: begin
-                   sX := X - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                   sY := Y - 2 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sX := X - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                   sY := Y - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
                  end;
 
             end;
@@ -10977,8 +10977,8 @@ begin
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - PRISON_RADIUS + 1) to (aX + PRISON_RADIUS - 1) do
-      for Y := (aY - PRISON_RADIUS + 1) to (aY + PRISON_RADIUS - 1) do
+      for X := (aX - PRISON_USAGE_RADIUS) to (aX + PRISON_USAGE_RADIUS) do
+      for Y := (aY - PRISON_USAGE_RADIUS) to (aY + PRISON_USAGE_RADIUS) do
       begin
         U := States.UnitAt(X, Y);
         if (U > 0)
@@ -10987,7 +10987,8 @@ begin
           O := States.UnitOwner(U);
           if (P <> O)
           and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          and (not Players[O].HeroImmortal)
+          and (Abs(X - aX) > 3)
+          and (Abs(Y - aY) > 3)
           and (States.KaMRandom > 0.1) then 
           begin
             Prison(P, X, Y);
