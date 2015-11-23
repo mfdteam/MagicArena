@@ -1317,7 +1317,7 @@ begin
     18: Result := '[$00A5FF]<$11>[]';
     19: Result := '[$4782FF]<$12>[]';
     20: Result := '[$B8B8B8]<$13>[]';
-    21: Result := '[$AAAAAA]<$99> []<$100> []' + IntToStr(Players[P].Stone) + ')[]';
+    21: Result := '[$AAAAAA]<$99> [](<$100> []' + IntToStr(Players[P].Stone) + ')[]';
     22: Result := '[$634BBA]<$50>[]';
     23: Result := '[$499AEE]<$14>[]';
     26: Result := '[$0022FF]<$46>[]';
@@ -3065,7 +3065,7 @@ begin
       Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
-    ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 13] + CLEAR_ARRAY_FACTOR;
+    ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 13] + CLEAR_ARRAY_FACTOR + 2;
 
   end;
 
