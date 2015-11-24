@@ -1,4 +1,4 @@
-//Script version 2.00 (05 sep 2015)
+//Script version 2.27 (24 nov 2015)
 
 const
 
@@ -10900,7 +10900,8 @@ begin
       for X := (aX - 20) to (aX + 20) do
       for Y := (aY - 20) to (aY + 20) do
       begin
-        if TileOnBattlefield(X, Y) then
+        if (TileOnBattlefield(X, Y))
+        and (not States.IsRoadAt(8, X, Y)) then
           U := States.UnitAt(X, Y);
         if (U > 0) then
         begin
