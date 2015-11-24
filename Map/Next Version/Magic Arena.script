@@ -8865,7 +8865,10 @@ var
 begin
   for I1 := 0 to 7 do
     if Players[I1].Hero > 0 then
-    begin
+    begin 
+
+      if Players[I1].HP <= 0 then
+        Players[I1].HP := 0;
 
       if (States.GameTime = Players[I1].ReChoiceTime)
       and (Players[I1].ReChoice) then
