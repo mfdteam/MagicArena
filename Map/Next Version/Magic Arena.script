@@ -302,6 +302,7 @@ const
   VAMPIRE_HEALBUSH_END_TIME = 195;
   MAX_CIRCLES_AT_ONCE = 5;
   RECHOICE_TIME = 150;
+  SET_SCREEN_RADIUS = 8;
 
 //Battlefield
 
@@ -7905,9 +7906,13 @@ begin
       Players[P].HeroImmortal := True;
       Players[P].HeroImmortalTime := States.GameTime + IMMORTAL_TIME;
       Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
-      Actions.CinematicStart(P);
-      Actions.CinematicPanTo(P, Players[P].SpawnX, Players[P].SpawnY, 0);
-      Actions.CinematicEnd(P);
+      if (Abs(aX - Players[P].SpawnX) >= SET_SCREEN_RADIUS)
+      and (Abs(aY - Players[P].SpawnY) >= SET_SCREEN_RADIUS) then
+      begin
+        Actions.CinematicStart(P);
+        Actions.CinematicPanTo(P, Players[P].SpawnX, Players[P].SpawnY, 0);
+        Actions.CinematicEnd(P);
+      end;
     end;
   end;
 
@@ -8747,12 +8752,14 @@ end;
 
 procedure OnUnitDied(aID, aKiller: Integer);
 var
-  O: Integer;
+  O, aX, aY: Integer;
 begin
   if aID < 0 then
     Exit;
 
   O := States.UnitOwner(aID);
+  aX := States.UnitPositionX(aID);
+  aY := States.UnitPositionY(aID);
 
   for I := 0 to 7 do
   for K := 0 to 3 do
@@ -8787,9 +8794,13 @@ begin
     or (Players[O].HeroInFear) then
       Actions.GroupBlockOrders(Players[O].Hero, True);
     Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
-    Actions.CinematicStart(O);
-    Actions.CinematicPanTo(O, Players[O].SpawnX, Players[O].SpawnY, 0);
-    Actions.CinematicEnd(O);
+    if (Abs(aX - Players[O].SpawnX) >= SET_SCREEN_RADIUS)
+    and (Abs(aY - Players[O].SpawnY) >= SET_SCREEN_RADIUS) then
+    begin
+      Actions.CinematicStart(O);
+      Actions.CinematicPanTo(O, Players[O].SpawnX, Players[O].SpawnY, 0);
+      Actions.CinematicEnd(O);
+    end;
     if Players[O].HP = 0 then
     begin
       Actions.FogRevealAll(O);
