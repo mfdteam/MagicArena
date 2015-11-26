@@ -9891,8 +9891,14 @@ begin
     and (not Players[P].CastingSkill) then
       Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 51, States.KaMRandomI(8));
 
+end;
+
+
+procedure AIWalkAfterSkill(P: Integer);
+begin
+
   if Players[P].Hero > 0 then
-    if (Abs(Players[P].SkillTime - States.GameTime) = 1) then
+    if States.GameTime = Players[P].SkillTime then
       Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 51, States.KaMRandomI(8));
 
 end;
@@ -10648,7 +10654,10 @@ begin
       X := aX + States.KaMRandomI(TELEPORT_RADIUS) - States.KaMRandomI(TELEPORT_RADIUS);
       Y := aY + States.KaMRandomI(TELEPORT_RADIUS) - States.KaMRandomI(TELEPORT_RADIUS);
       if not TileIsDangerous(X, Y) then
+      begin
         Teleport(P, X, Y);
+        Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 51, States.KaMRandomI(8));
+      end;
       Exit;
     end;
 
@@ -11326,6 +11335,8 @@ begin
             RespawnUnit(I);
 
       CheckRespawn(I);
+
+      AIWalkAfterSkill(I);
 
       for S := 0 to (SPURT_LENGTH - 1) do
         CheckSpurt(I, S);
