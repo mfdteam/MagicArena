@@ -1416,10 +1416,10 @@ begin
     26: Result := '[$1707A6]<$48>[]';
     27: Result := '[$00FC7C]<$31>[]';
     25: begin
-        if Result = '<$99>' then
+        if Players[P].StolenSkillName = '<$99>' then
           Result := '[$FFFFFF]<$99> []<$100> []' + IntToStr(Players[P].Stone) + ')[]';
-        if Result <> '<$99>' then
-          Result := '[$AE209F]' + Result + '[]';
+        if Players[P].StolenSkillName <> '<$99>' then
+          Result := '[$AE209F]' + Players[P].StolenSkillName + '[]';
         end;
   end;
 end;
