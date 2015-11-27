@@ -293,7 +293,7 @@ const
   HEAL_CHECK_RADIUS = 4;
   HEAL_CHECK_TIME = 15;
   RUNE_STAYING_TIME = 20;
-  CLEAR_ARRAY_FACTOR = 2;
+  CLEAR_ARRAY_FACTOR = 5;
   DEBUG_MODE = False;
   CHANGE_RELIEF = False;
   MOVEMENT_DISTANCE = 3;
@@ -9341,7 +9341,8 @@ begin
         and (TilesRoadObjects[P][K] = WARRIOR_OBJECT5) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], WARRIOR_OBJECT5);
 
-        if States.GameTime = ClearTilesRoadTimes[P][K] then
+        if (InRange(States.GameTime, ClearTilesRoadTimes[P][K], CLEAR_ARRAY_FACTOR - 1 + ClearTilesRoadTimes[P][K]))
+        and (States.MapTileObject(TilesRoadX[P][K], TilesRoadY[P][K]) <> 255) then
         begin
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], 255);
 
@@ -9400,7 +9401,8 @@ begin
         and (TilesFieldObjects[P][K] = WARRIOR_OBJECT5) then
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], WARRIOR_OBJECT5);
 
-        if States.GameTime = ClearTilesFieldTimes[P][K] then
+        if (InRange(States.GameTime, ClearTilesFieldTimes[P][K], CLEAR_ARRAY_FACTOR - 1 + ClearTilesFieldTimes[P][K]))
+        and (States.MapTileObject(TilesFieldX[P][K], TilesFieldY[P][K]) <> 255) then
         begin
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], 255);
 
@@ -9458,7 +9460,8 @@ begin
         and (TilesWineObjects[P][K] = WARRIOR_OBJECT5) then
           Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], WARRIOR_OBJECT5);
 
-        if States.GameTime = ClearTilesWineTimes[P][K] then
+        if (InRange(States.GameTime, ClearTilesWineTimes[P][K], CLEAR_ARRAY_FACTOR - 1 + ClearTilesWineTimes[P][K]))
+        and (States.MapTileObject(TilesWineX[P][K], TilesWineY[P][K]) <> 255) then
           Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], 255);
 
         if States.GameTime = SetTilesWineTimes[P][K] then
@@ -9899,6 +9902,18 @@ begin
 
   if Players[P].Hero > 0 then
     if States.GameTime = Players[P].SkillTime then
+      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 51, States.KaMRandomI(8));
+
+end;
+
+
+procedure AIWalkIdle(P: Integer);
+begin
+
+  if Players[P].Hero > 0 then
+    if (States.GroupIdle(Players[P].Hero))
+    and (not Players[P].CastingSkill)
+    and (States.PlayerIsAI(P)) then
       Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 51, States.KaMRandomI(8));
 
 end;
@@ -11337,6 +11352,8 @@ begin
       CheckRespawn(I);
 
       AIWalkAfterSkill(I);
+
+      AIWalkIdle(I);
 
       for S := 0 to (SPURT_LENGTH - 1) do
         CheckSpurt(I, S);
