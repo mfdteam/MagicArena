@@ -458,14 +458,6 @@ type
 
 
 type
-  aRoad = Record
-    X: Integer;
-    Y: Integer;
-    Owner: Integer;
-  end;
-
-
-type
   aTile = Record
     X: Integer;
     Y: Integer;
@@ -497,7 +489,6 @@ var
   TimeToClearFireworks2Array, TimeToClearFireworks3Array, TimeToClearFireworks4Array, TimeToClearFireworks5Array,
   TimeToClearKnightArray, TimeToClearRogueArray, TimeToClearStolenRogueArray: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
   PikeObjects, ShieldObjects: array[0..7] of Integer;
-  Roads: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aRoad;
   Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
   TeamChoice: array[0..1] of ANSIString;
   TeamInfo: array[0..1] of ANSIString;
@@ -581,20 +572,6 @@ begin
 end;
 
 
-procedure CheckRoadsInfo;
-var
-  aX, aY: Integer;
-begin
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
-  begin
-    Roads[aX][aY].X := aX;
-    Roads[aX][aY].Y := aY;
-    Roads[aX][aY].Owner := -1;
-  end;
-end;
-
-
 procedure CheckTilesInfo;
 var
   aX, aY: Integer;
@@ -655,8 +632,6 @@ begin
     RUNE_Y := RUNE_Y1
   else
     RUNE_Y := RUNE_Y2;
-
-  CheckRoadsInfo;
 
   CheckTilesInfo;
 
