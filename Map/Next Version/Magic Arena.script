@@ -1131,6 +1131,19 @@ begin
 end;
 
 
+function KillsColor(P: Integer): ANSIString;
+begin
+  case Players[P].Kills of
+    20..24:  Result := '[$0045FF]';
+    15..19:  Result := '[$00A5FF]';
+    10..14:  Result := '[$00D7FF]';
+    5..9:    Result := '[$00FFFF]';
+    0..4:    Result := '[$FFFFFF]'
+    else     Result := '[$0000FF]';
+  end;
+end;
+
+
 function GameplayStatus(P: Integer): ANSIString;
 begin
   if Players[P].PlayerStatusTime - States.GameTime > 0 then
@@ -1558,9 +1571,9 @@ end;
 function PlayerInfo(P: Integer): ANSIString;
 begin
   if Players[P].ReChoice then
-    Result := ' [$BECADA]<$66>[]; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP) + '[]; <$79>: ' + InttoStr(Players[P].Kills)
+    Result := ' [$BECADA]<$66>[]; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP) + '[]; <$79>: ' + KillsColor(P) + InttoStr(Players[P].Kills) + '[]'
   else
-    Result := ' <$42>: ' + States.UnitTypeName(Players[P].HeroType) + '; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP) + '[]; <$79>: ' + IntToStr(Players[P].Kills);
+    Result := ' <$42>: ' + States.UnitTypeName(Players[P].HeroType) + '; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP) + '[]; <$79>: ' + KillsColor(P) + IntToStr(Players[P].Kills) + '[]';
 end;
 
 
@@ -11751,12 +11764,15 @@ begin
         Actions.GroupKillAll(Players[I].TempHero, True);
     TeamInfo[0] := '';
     TeamInfo[1] := '';
-    for I := 0 to 3 do
+
+    for I := 0 to Length(SortedPlayersLeft) - 1 do
       if States.PlayerEnabled(I) then
-        TeamInfo[0] := TeamInfo[0] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]:' + PlayerInfo(I);
-    for I := 4 to 7 do
+        TeamInfo[0] := TeamInfo[0] + '|[$' + States.PlayerColorText(SortedPlayersLeft[I]) + ']' + States.PlayerName(SortedPlayersLeft[I]) + '[]:' + PlayerInfo(SortedPlayersLeft[I]);
+
+    for I := 0 to Length(SortedPlayersRight) - 1 do
       if States.PlayerEnabled(I) then
-        TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]:' + PlayerInfo(I);
+        TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(SortedPlayersRight[I]) + ']' + States.PlayerName(SortedPlayersRight[I]) + '[]:' + PlayerInfo(SortedPlayersRight[I]);
+
   end;
 
   for I := 0 to 3 do
