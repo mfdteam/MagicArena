@@ -239,8 +239,9 @@ const
   RUNE_IMMORTAL_OBJ = 63;
   RUNE_RECHARGE_OBJ = 88;
   RUNE_IMMORTAL_ANIMATION = 4;
+  RUNE_DOUBLE_ANIMATION = 11;
   RUNE_BLOCK_OBJ = 61;
-  RUNE_DOUBLE_TIME = 150;
+  RUNE_DOUBLE_TIME = 300;
   RUNE_IMMORTAL_TIME = 200;
   RUNE_ILLUSION_TIME = 1800;
   RUNE_RECHARGE_TIME = 600;
@@ -302,7 +303,7 @@ const
   VAMPIRE_HEALBUSH_END_TIME = 195;
   MAX_CIRCLES_AT_ONCE = 5;
   RECHOICE_TIME = 150;
-  SET_SCREEN_RADIUS = 8;
+  SET_SCREEN_RADIUS = 5;
   GAMEPLAY_STATUS_TIME = 75;
 
 //Battlefield
@@ -10119,6 +10120,29 @@ begin
 end;
 
 
+procedure CheckDoubleDamage;
+var
+  aX, aY, aU, aO: Integer;
+begin
+  for aX := MIN_X to MAX_X do
+  for aY := MIN_Y to MAX_Y do
+  begin
+    if States.MapTileObject(aX, aY) = RUNE_DOUBLE_ANIMATION then
+      Actions.MapTileObjectSet(aX, aY, 255);
+    aU := States.UnitAt(aX, aY);
+    if (aU <> - 1) then
+    begin
+      aO := States.UnitOwner(aU);
+      if (InRange(aO, 0, 7))
+      and (aU = States.GroupMember(Players[aO].Hero, 0))
+      and (States.MapTileObject(aX, aY) = 255) then
+        if Players[aO].DD then
+          Actions.MapTileObjectSet(aX, aY, RUNE_DOUBLE_ANIMATION);
+    end;
+  end;
+end;
+
+
 procedure CheckRespawn(P: Integer);
 begin
   if (States.PlayerEnabled(P))
@@ -11567,7 +11591,10 @@ begin
     //ZombieAttack;
 
   if States.GameTime mod 10 = 0 then
+  begin
     CheckImmortal;
+    CheckDoubleDamage;
+  end;
 
   if States.MapTileObject(RUNE_X, RUNE_Y) = 255 then
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RUNE_BLOCK_OBJ);
