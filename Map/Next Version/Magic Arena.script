@@ -1969,6 +1969,11 @@ begin
     begin
       Zombie := Actions.GiveGroup(Players[P].ZombiePlayer, 14, X, Y, States.KaMRandomI(8), 1, 1);
       Actions.GroupHungerSet(Zombie, RUNE_ZOMBIE_LIFE);
+      if Players[P].DD then
+      begin
+        Zombie := Actions.GiveGroup(Players[P].ZombiePlayer, 14, X, Y + 1, States.KaMRandomI(8), 1, 1);
+        Actions.GroupHungerSet(Zombie, RUNE_ZOMBIE_LIFE);
+      end;
       Players[P].FieldSkillDelay := Round(SWORD_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Players[P].LastUsedSkill := sZombieSummon;
     end;
