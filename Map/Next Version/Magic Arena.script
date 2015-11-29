@@ -597,6 +597,21 @@ begin
 end;
 
 
+procedure ClearSkillInfo;
+var
+  aX, aY: Integer;
+begin
+  for aX := MIN_X to MAX_X do
+  for aY := MIN_Y to MAX_Y do
+    if (States.MapTileObject(aX, aY) = 255)
+    and (Tiles[aX][aY].Skill <> sNone) then
+    begin
+      Tiles[aX][aY].Owner := -1;
+      Tiles[aX][aY].Skill := sNone;
+    end;
+end;
+
+
 procedure AIHeroChoice(P: Integer);
 begin
   case States.KaMRandomI(6) of
@@ -11671,6 +11686,9 @@ begin
     CheckImmortal;
     CheckDoubleDamage;
   end;
+
+  if States.GameTime mod 600 = 0 then
+    ClearSkillInfo;
 
   if States.MapTileObject(RUNE_X, RUNE_Y) = 255 then
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RUNE_BLOCK_OBJ);
