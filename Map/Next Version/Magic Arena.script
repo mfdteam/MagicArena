@@ -9511,11 +9511,17 @@ begin
         SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - 1] := States.GameTime + 1;
         TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 1] := SCOUT_OBJECT2;
 
+        if TileOnBattlefield(hX[I1], hY[I1]) then
+        begin
+          Tiles[hX[I1]][hY[I1]].Owner := I1;
+          Tiles[hX[I1]][hY[I1]].Skill := sVampire;
+        end;
+
         if (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]) = BOWMAN_OBJECT5)
         or (InRange(States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]), SWORD_OBJECT, VAGA_OBJECT6)) then
-        ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] + CLEANUP_TIME;
+          ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] + CLEANUP_TIME;
         ClearFieldTilesArrayTime[I1] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] + CLEAR_ARRAY_FACTOR;
       end;
 
