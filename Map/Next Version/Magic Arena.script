@@ -508,6 +508,7 @@ var
   SpurtTimes, SpurtX, SpurtY, SpurtDir: array[0..11] of array[0..SPURT_LENGTH - 1] of Integer;
   RUNE_Y: Integer;
   OldX, OldY, NewX, NewY: array[0..11] of Integer;
+  PlayersLeft, SortedPlayersLeft, PlayersRight, SortedPlayersRight: array of Integer;
 
 
 function InRange(Value, Min, Max: Integer): Boolean;
@@ -631,8 +632,60 @@ begin
 end;
 
 
+procedure SortScoresLeft;
+var
+  Temp: Integer;
+begin
+  if Length(PlayersLeft) <= 0 then
+    Exit;
+
+  for I := Length(PlayersLeft) - 1 downto 1 do
+    if Players[SortedPlayersLeft[I]].Kills > Players[SortedPlayersLeft[I - 1]].Kills then
+      begin
+        Temp := SortedPlayersLeft[I - 1];
+        SortedPlayersLeft[I - 1] := SortedPlayersLeft[I];
+        SortedPlayersLeft[I] := Temp;
+      end;
+end;
+
+
+procedure SortScoresRight;
+var
+  Temp: Integer;
+begin
+  if Length(PlayersRight) <= 0 then
+    Exit;
+
+  for I := Length(PlayersRight) - 1 downto 1 do
+    if Players[SortedPlayersRight[I]].Kills > Players[SortedPlayersRight[I - 1]].Kills then
+      begin
+        Temp := SortedPlayersRight[I - 1];
+        SortedPlayersRight[I - 1] := SortedPlayersRight[I];
+        SortedPlayersRight[I] := Temp;
+      end;
+end;
+
+
 procedure OnMissionStart;
 begin
+
+  for I := 0 to 3 do
+    if States.PlayerEnabled(I) then
+    begin
+      SetLength(PlayersLeft, Length(PlayersLeft) + 1);
+      PlayersLeft[Length(PlayersLeft) - 1] := I;
+      SetLength(SortedPlayersLeft, Length(SortedPlayersLeft) + 1);
+      SortedPlayersLeft[Length(SortedPlayersLeft) - 1] := I;
+    end;
+
+  for I := 4 to 7 do
+    if States.PlayerEnabled(I) then
+    begin
+      SetLength(PlayersRight, Length(PlayersRight) + 1);
+      PlayersRight[Length(PlayersRight) - 1] := I;
+      SetLength(SortedPlayersRight, Length(SortedPlayersRight) + 1);
+      SortedPlayersRight[Length(SortedPlayersRight) - 1] := I;
+    end;
 
   AISoldiers := States.PlayerGetAllGroups(8);
 
@@ -9157,6 +9210,12 @@ begin
   if aID < 0 then
     Exit;
 
+  if States.GameTime > GAME_START_TIME then
+  begin
+    SortScoresLeft;
+    SortScoresRight;
+  end;
+
   O := States.UnitOwner(aID);
   aX := States.UnitPositionX(aID);
   aY := States.UnitPositionY(aID);
@@ -9431,6 +9490,10 @@ begin
       if (States.GameTime >= Players[I1].HeroImmortalTime)
       and (Players[I1].HeroImmortal) then
         Players[I1].HeroImmortal := False;
+
+      if (States.GameTime >= Players[I1].DDTime)
+      and (Players[I1].DD) then
+        Players[I1].DD := False;
 
       if (States.GameTime >= Players[I1].HeroPrisonedTime)
       and (Players[I1].HeroPrisoned) then
