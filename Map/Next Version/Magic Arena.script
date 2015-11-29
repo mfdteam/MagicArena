@@ -305,6 +305,7 @@ const
   RECHOICE_TIME = 150;
   SET_SCREEN_RADIUS = 5;
   GAMEPLAY_STATUS_TIME = 75;
+  AI_RUNE_CHECK_TIME = 25;
 
 //Battlefield
 
@@ -10411,7 +10412,18 @@ begin
   and (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_REGEN_OBJ))
   or ((Players[P].HP < MAX_HP)
   and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_REGEN_OBJ)) then
+  begin
     Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
+    if (States.KaMRandom < 0.75) then
+    begin
+      if Players[P].RoadSkillDelay <= 5 then
+        Players[P].RoadSkillDelay := Players[P].RoadSkillDelay + States.KaMRandomI(100);
+      if Players[P].FieldSkillDelay = 0 then
+        Players[P].FieldSkillDelay := Players[P].FieldSkillDelay + States.KaMRandomI(100);
+      if Players[P].WineSkillDelay = 0 then
+        Players[P].WineSkillDelay := Players[P].WineSkillDelay + States.KaMRandomI(100);
+    end;
+  end;
 end;
 
 
@@ -10630,7 +10642,7 @@ begin
 
   AIWalk(P);
 
-  if States.GameTime mod 100 = 0 then
+  if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
     AITakeRune(P);
 
   if States.GameTime mod HEAL_CHECK_TIME = 0 then
@@ -10814,7 +10826,7 @@ begin
 
   AIWalk(P);
 
-  if States.GameTime mod 100 = 0 then
+  if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
     AITakeRune(P);
 
   if States.GameTime mod HEAL_CHECK_TIME = 0 then
@@ -11041,7 +11053,7 @@ begin
 
   AIWalk(P);
 
-  if States.GameTime mod 100 = 0 then
+  if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
     AITakeRune(P);
 
   if States.GameTime mod HEAL_CHECK_TIME = 0 then
@@ -11126,7 +11138,7 @@ begin
 
   AIWalk(P);
 
-  if States.GameTime mod 100 = 0 then
+  if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
     AITakeRune(P);
 
   if States.GameTime mod HEAL_CHECK_TIME = 0 then
@@ -11289,7 +11301,7 @@ begin
 
   AIWalk(P);
 
-  if States.GameTime mod 100 = 0 then
+  if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
     AITakeRune(P);
 
   if States.GameTime mod HEAL_CHECK_TIME = 0 then
@@ -11443,7 +11455,7 @@ begin
 
   AIWalk(P);
 
-  if States.GameTime mod 100 = 0 then
+  if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
     AITakeRune(P);
 
   if States.GameTime mod HEAL_CHECK_TIME = 0 then
@@ -11651,7 +11663,7 @@ begin
 
   AIWalk(P);
 
-  if States.GameTime mod 100 = 0 then
+  if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
     AITakeRune(P);
 
   if States.GameTime mod HEAL_CHECK_TIME = 0 then
