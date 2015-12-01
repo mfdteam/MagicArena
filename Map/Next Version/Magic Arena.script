@@ -284,7 +284,8 @@ const
 //Game mechanics
 
   DESYNC_FACTOR = 1;
-  RELIEF_CHANGE_FACTOR = 12;
+  RELIEF_CHANGE_FACTOR = 9;
+  RELIEF_REGEN_TIME = 300;
   CLEANUP_TIME = 20;
   PLANT_TREES_TIME = 25;
   PLANT_TREES_FACTOR = 0.8;
@@ -296,7 +297,7 @@ const
   RUNE_STAYING_TIME = 20;
   CLEAR_ARRAY_FACTOR = 5;
   DEBUG_MODE = True;
-  CHANGE_RELIEF = False;
+  CHANGE_RELIEF = True;
   MOVEMENT_DISTANCE = 3;
   MOVEMENT_FACTOR = 2;
   VAMPIRE_HEALBUSH_START_TIME = 18;
@@ -596,6 +597,23 @@ begin
     Tiles[aX][aY].ReliefRefreshTime := 0;
     Tiles[aX][aY].Skill := sNone;
   end;
+end;
+
+
+procedure RegenRelief;
+var
+  aX, aY: Integer;
+begin
+
+  if not CHANGE_RELIEF then
+    Exit;
+
+  for aX := MIN_X to MAX_X do
+  for aY := MIN_Y to MAX_Y do
+    if (States.MapTileHeight(aX, aY) <> Tiles[aX][aY].Relief)
+    and (States.GameTime > Tiles[aX][aY].ReliefRefreshTime) then
+      Actions.MapTileHeightSet(aX, aY, Tiles[aX][aY].Relief);
+
 end;
 
 
@@ -11797,6 +11815,9 @@ begin
     CheckImmortal;
     CheckDoubleDamage;
   end;
+
+  if States.GameTime mod RELIEF_REGEN_TIME = 0 then
+    RegenRelief;
 
   if States.MapTileObject(RUNE_X, RUNE_Y) = 255 then
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RUNE_BLOCK_OBJ);
