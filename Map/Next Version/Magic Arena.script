@@ -6780,18 +6780,6 @@ begin
              end;
         end;
 
-    {if (States.PlayerIsAI(P))
-    and (Players[P].HP > 0) then
-    begin
-      Actions.GroupOrderWalk(Players[P].Hero, X2, Y2, Dir);
-      Players[P].SkillCastRespawnTime := States.GameTime + SKILL_RESPAWN_TIME;
-      Players[P].SkillCastDir := Dir;
-      Players[P].SkillCastX := X2;
-      Players[P].SkillCastY := Y2;
-      Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
-    end;}
-
     {Players[P].KnightX := X2;
     Players[P].KnightY := Y2;
     Players[P].KnightDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
@@ -10508,57 +10496,6 @@ begin
 end;
 
 
-procedure ZombieAttack;
-var
-  G, G1: array of Integer;
-  Target, Target1, C, C1: Integer;
-begin
-  C := 0;
-  C1 := 0;
-
-  Target := 8;
-  Target1 := 8;
-
-  while (Target > 7)
-  or (not States.PlayerEnabled(Target))
-  or (Players[Target].HP <= 0)
-  or (Players[Target].Hero < 0) do
-  begin
-    Target := States.KaMRandomI(4);
-    C := C + 1;
-    if C >= 20 then
-      Exit;
-  end;
-
-  while (Target1 > 7)
-  or (not States.PlayerEnabled(Target1))
-  or (Players[Target1].HP <= 0)
-  or (Players[Target1].Hero < 0) do
-  begin
-    Target1 := States.KaMRandomI(4) + 4;
-    C1 := C1 + 1;
-    if C1 >= 20 then
-      Exit;
-  end;
-
-  G := States.PlayerGetAllGroups(11);
-  G1 := States.PlayerGetAllGroups(10);
-
-  if Length(G) > 0 then
-    for I := 0 to Length(G) - 1 do
-      if (States.GroupIdle(G[I]))
-      and (Players[Target].Hero > 0) then
-        Actions.GroupOrderAttackUnit(G[I], States.GroupMember(Players[Target].Hero, 0));
-
-  if Length(G1) > 0 then
-    for K := 0 to Length(G1) - 1 do
-      if (States.GroupIdle(G1[K]))
-      and (Players[Target1].Hero > 0) then
-        Actions.GroupOrderAttackUnit(G1[K], States.GroupMember(Players[Target1].Hero, 0));
-
-end;
-
-
 function AICanUseSkills(P, UT: Integer): Boolean;
 begin
   Result := False;
@@ -11806,9 +11743,6 @@ begin
   CheckRuneTime;
 
   GoOutFromRune;
-
-  //if States.GameTime mod ZOMBIE_ATTACK_FACTOR = 0 then
-    //ZombieAttack;
 
   if States.GameTime mod 10 = 0 then
   begin
