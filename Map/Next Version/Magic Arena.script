@@ -318,8 +318,8 @@ const
   CENTERSCREEN_Y = 17;
   TEMP_PLAYER = 11;
 
-type
 
+type
   aSkill = (sNone,
             sFieryLance, sTeleport, s10kSpears,
             sCrackingEarth, sWaveOfRage, sTotem,
@@ -333,6 +333,7 @@ type
             sRopesOfDeath, sDeafeningClatter, sRagingSpurt,
             sMentalBurst, sSteal, sUniversal, 
             sStones, sVampire, sMind);
+
 
 type
   aPlayer = Record
@@ -615,13 +616,14 @@ end;
 
 procedure AIHeroChoice(P: Integer);
 begin
-  case States.KaMRandomI(6) of
+  case States.KaMRandomI(7) of
     0: Players[P].HeroType := 16;
     1: Players[P].HeroType := 23;
     2: Players[P].HeroType := 18;
     3: Players[P].HeroType := 19;
     4: Players[P].HeroType := 26;
     5: Players[P].HeroType := 17;
+    6: Players[P].HeroType := 22;
   end;
 
   Players[P].TempHeroType := Players[P].HeroType;
@@ -6422,6 +6424,13 @@ begin
     if (Abs(X2 - X) <= ROPE_RADIUS)
     and (Abs(Y2 - Y) <= ROPE_RADIUS) then
     begin
+      if States.PlayerIsAI(P) then
+      begin
+        Players[P].CastingSkill := True;
+        Players[P].SkillTime := States.GameTime + 20;
+        Actions.GroupOrderHalt(Players[P].Hero);
+        Actions.GroupOrderWalk(Players[P].Hero, X2, Y2, D);
+      end;
       U := States.UnitAt(X, Y);
       if U <> - 1 then
         O := States.UnitOwner(U);
@@ -6593,8 +6602,8 @@ begin
 
     if States.PlayerIsAI(P) then
     begin
-      //Players[P].CastingSkill := True;
-      //Players[P].SkillTime := States.GameTime + 80;
+      Players[P].CastingSkill := True;
+      Players[P].SkillTime := States.GameTime + 35;
       Actions.GroupOrderHalt(Players[P].Hero);
       Direction := Dir;
     end;
@@ -11674,6 +11683,94 @@ begin
 end;
 
 
+procedure AIKnight(P: Integer);
+var
+  X, Y, aX, aY, uX, uY, U, O, A, E, D: Integer;
+begin
+
+  if (Players[P].RoadSkillDelay = 0)
+  and (Players[P].WineSkillDelay = 0)
+  and (Players[P].Hero > 0)
+  and (States.GameTime mod 50 = 0) then
+    if States.GroupMember(Players[P].Hero, 0) > 0 then
+    begin
+      D := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if D mod 2 = 1 then
+        Exit;
+      Actions.GroupOrderHalt(Players[P].Hero);
+      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+      for X := (aX - ROPE_RADIUS) to (aX + ROPE_RADIUS) do
+      for Y := (aY - ROPE_RADIUS) to (aY + ROPE_RADIUS) do
+      begin
+        if (TileOnBattlefield(X, Y))
+        and (not States.IsRoadAt(8, X, Y)) then
+          U := States.UnitAt(X, Y);
+        if (U > 0) then
+        begin
+          if CanUseSkillAgainstUnit(P, U) then
+          begin
+            O := States.UnitOwner(U);
+            if (P <> O)
+            and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+            and (States.KaMRandom > 0.1) then 
+            begin
+              uX := States.UnitPositionX(U);
+              uY := States.UnitPositionY(U);
+              RopesOfDeath(P, uX, uY);
+              RagingSpurt(P, X, Y, D);
+              Exit;
+            end;
+          end;
+        end;
+      end;
+    end;
+
+  if (States.KaMRandomI(10) > 8)
+  and (Players[P].FieldSkillDelay = 0)
+  and (Players[P].Hero > 0) then
+    if States.GroupMember(Players[P].Hero, 0) > 0 then
+    begin
+      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+      for X := (aX - DEAFENING_RADIUS) to (aX + DEAFENING_RADIUS) do
+      for Y := (aY - DEAFENING_RADIUS) to (aY + DEAFENING_RADIUS) do
+      begin
+        U := States.UnitAt(X, Y);
+        if (U > 0)
+        and (CanUseWineFieldSkill(X, Y)) then
+        begin
+          O := States.UnitOwner(U);
+          if Players[P].PlayersTeam <> Players[O].PlayersTeam then
+            E := E + 1;
+          if Players[P].PlayersTeam = Players[O].PlayersTeam then
+            A := A + 1;
+          if (P <> O)
+          and (InRange(O, 0, 7))
+          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+          and (States.KaMRandom > 0.1)
+          and (E > A) then 
+          begin
+            DeafeningClatter(P, X, Y);
+            Exit;
+          end;
+        end;
+      end;
+    end;
+
+  AIWalk(P);
+
+  if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
+    AITakeRune(P);
+
+  if States.GameTime mod HEAL_CHECK_TIME = 0 then
+    AITakeHealingBush(P);
+
+  Exit;
+
+end;
+
+
 procedure OnTick;
 var
   N: array[0..17] of Integer;
@@ -11942,6 +12039,11 @@ begin
         if States.GroupMember(Players[I].Hero, 0) > 0 then
           if AICanUseSkills(I, 17) then
             AIBowman(I);
+
+      if Players[I].Hero > 0 then
+        if States.GroupMember(Players[I].Hero, 0) > 0 then
+          if AICanUseSkills(I, 22) then
+            AIKnight(I);
 
     end;
 
