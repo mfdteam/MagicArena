@@ -295,7 +295,7 @@ const
   HEAL_CHECK_TIME = 15;
   RUNE_STAYING_TIME = 20;
   CLEAR_ARRAY_FACTOR = 5;
-  DEBUG_MODE = False;
+  DEBUG_MODE = True;
   CHANGE_RELIEF = False;
   MOVEMENT_DISTANCE = 3;
   MOVEMENT_FACTOR = 2;
@@ -596,21 +596,6 @@ begin
     Tiles[aX][aY].ReliefRefreshTime := 0;
     Tiles[aX][aY].Skill := sNone;
   end;
-end;
-
-
-procedure ClearSkillInfo;
-var
-  aX, aY: Integer;
-begin
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
-    if (States.MapTileObject(aX, aY) = 255)
-    and (Tiles[aX][aY].Skill <> sNone) then
-    begin
-      Tiles[aX][aY].Owner := -1;
-      Tiles[aX][aY].Skill := sNone;
-    end;
 end;
 
 
@@ -1622,6 +1607,8 @@ begin
         Actions.MapTileObjectSet(PosX, PosY, aObj);
         Tiles[PosX][PosY].Owner := P;
         Tiles[PosX][PosY].Skill := fSkill;
+        if aObj = 255 then
+          Tiles[PosX][PosY].Skill := sNone;
       end;
       if not aSaveCracking then
         if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
@@ -9857,6 +9844,9 @@ begin
         and (TilesRoadObjects[P][K] = WARRIOR_OBJECT5) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], WARRIOR_OBJECT5);
 
+        if States.GameTime = ClearTilesRoadTimes[P][K] + 1 then
+          Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Skill := sNone;
+
         if (InRange(States.GameTime, ClearTilesRoadTimes[P][K], CLEAR_ARRAY_FACTOR - 1 + ClearTilesRoadTimes[P][K]))
         and (States.MapTileObject(TilesRoadX[P][K], TilesRoadY[P][K]) <> 255) then
         begin
@@ -9916,6 +9906,9 @@ begin
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (TilesFieldObjects[P][K] = WARRIOR_OBJECT5) then
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], WARRIOR_OBJECT5);
+
+        if States.GameTime = ClearTilesFieldTimes[P][K] + 1 then
+          Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].Skill := sNone;
 
         if (InRange(States.GameTime, ClearTilesFieldTimes[P][K], CLEAR_ARRAY_FACTOR - 1 + ClearTilesFieldTimes[P][K]))
         and (States.MapTileObject(TilesFieldX[P][K], TilesFieldY[P][K]) <> 255) then
@@ -9983,6 +9976,10 @@ begin
         if States.GameTime = SetTilesWineTimes[P][K] then
           if CanPlaceObject(TilesWineX[P][K], TilesWineY[P][K]) then
             Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], TilesWineObjects[P][K]);
+
+        if States.GameTime = ClearTilesWineTimes[P][K] + 1 then
+          Tiles[TilesWineX[P][K]][TilesWineY[P][K]].Skill := sNone;
+
       end;
     end;
 end;
@@ -11800,9 +11797,6 @@ begin
     CheckImmortal;
     CheckDoubleDamage;
   end;
-
-  if States.GameTime mod 600 = 0 then
-    ClearSkillInfo;
 
   if States.MapTileObject(RUNE_X, RUNE_Y) = 255 then
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RUNE_BLOCK_OBJ);
