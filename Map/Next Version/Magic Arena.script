@@ -257,7 +257,7 @@ const
   CHOOSE_HERO_TIMER = 350;
   GAME_START_TIME = 440;
   ZOMBIE_STORM_TIME = 100;
-  STORM_CHANCE = 0;
+  STORM_CHANCE = 0.7;
   PRISON_TIME = 60;
   CIRCLE_DEF_TIME = 6;
   WEREWOLF_TIME = 450;
@@ -291,7 +291,7 @@ const
   PLANT_TREES_FACTOR = 0.8;
   AVOID_FACTOR = 3;
   RECHARGE_FACTOR = 0.25;
-  ZOMBIE_ATTACK_FACTOR = 5;
+  ZOMBIE_STORM_FACTOR = 20;
   HEAL_CHECK_RADIUS = 4;
   HEAL_CHECK_TIME = 15;
   RUNE_STAYING_TIME = 20;
@@ -307,6 +307,7 @@ const
   SET_SCREEN_RADIUS = 5;
   GAMEPLAY_STATUS_TIME = 75;
   AI_RUNE_CHECK_TIME = 25;
+  STORM_CHECK_RADIUS = 6;
 
 //Battlefield
 
@@ -9557,8 +9558,6 @@ begin
       begin
         if Players[I1].Hero > 0 then
         begin
-          if States.KaMRandom < STORM_CHANCE then
-            Actions.GroupOrderStorm(Players[I1].Hero);
           Actions.GroupOrderWalk(Players[I1].Hero, States.KaMRandomI(48) + 12, States.KaMRandomI(48) + 51, States.KaMRandomI(8));
         end;
       end;
@@ -10137,20 +10136,6 @@ begin
 end;
 
 
-procedure AIStorm;
-var
-  Zombies: array of Integer;
-begin
-  for I := 9 to 11 do
-  begin
-    Zombies := States.PlayerGetAllGroups(I);
-    for K := 0 to Length(Zombies) - 1 do
-      if States.KaMRandom < STORM_CHANCE then
-        Actions.GroupOrderStorm(Zombies[K]);
-  end;
-end;
-
-
 function ObjectIsTree(aX, aY: Integer): Boolean;
 begin
   if TileOnBattlefield(aX, aY) then
@@ -10495,6 +10480,86 @@ begin
         Actions.GroupOrderWalk(Players[P].Hero, X, Y, States.KaMRandomI(8));
 end;
 
+
+procedure ZombieStormLeft;
+var
+  GR: array of Integer;
+  X1, X2, Y1, Y2, D1, D2, H, Z, DX, DY: Integer;
+begin
+  GR := States.PlayerGetAllGroups(11);
+  if Length(PlayersLeft) > 0 then
+    for I := 0 to Length(PlayersLeft) - 1 do
+    begin
+      H := Players[PlayersLeft[I]].Hero;
+      if H > 0 then
+      begin
+        X1 := States.UnitPositionX(States.GroupMember(Players[PlayersLeft[I]].Hero, 0));
+        Y1 := States.UnitPositionY(States.GroupMember(Players[PlayersLeft[I]].Hero, 0));
+        D1 := States.UnitDirection(States.GroupMember(Players[PlayersLeft[I]].Hero, 0));
+      end;
+      if Length(GR) > 0 then
+        for K := 0 to Length(GR) - 1 do
+        begin
+          Z := GR[States.KaMRandomI(Length(GR))];
+          if Z > 0 then
+          begin
+            X2 := States.UnitPositionX(States.GroupMember(Z, 0));
+            Y2 := States.UnitPositionY(States.GroupMember(Z, 0));
+            D2 := States.UnitDirection(States.GroupMember(Z, 0));
+          end;
+          DX := (X1 - X2) * (X1 - X2);
+          DY := (Y1 - Y2) * (Y1 - Y2);
+          if (DX + DY <= (STORM_CHECK_RADIUS * STORM_CHECK_RADIUS))
+          and ((D1 = D2)
+          or (Abs(D1 - D2) = 4))
+          and (Z > 0) then
+            if (States.GroupType(Z) = 0)
+            and (States.KaMRandom < STORM_CHANCE) then
+              Actions.GroupOrderStorm(Z);
+        end;
+     end;
+end;
+
+
+procedure ZombieStormRight;
+var
+  GL: array of Integer;
+  X1, X2, Y1, Y2, D1, D2, H, Z, DX, DY: Integer;
+begin
+  GL := States.PlayerGetAllGroups(10);
+  if Length(PlayersRight) > 0 then
+    for I := 0 to Length(PlayersRight) - 1 do
+    begin
+      H := Players[PlayersRight[I]].Hero;
+      if H > 0 then
+      begin
+        X1 := States.UnitPositionX(States.GroupMember(Players[PlayersRight[I]].Hero, 0));
+        Y1 := States.UnitPositionY(States.GroupMember(Players[PlayersRight[I]].Hero, 0));
+        D1 := States.UnitDirection(States.GroupMember(Players[PlayersRight[I]].Hero, 0));
+      end;
+      if Length(GL) > 0 then
+        for K := 0 to Length(GL) - 1 do
+        begin
+          Z := GL[K];
+          if Z > 0 then
+          begin
+            X2 := States.UnitPositionX(States.GroupMember(Z, 0));
+            Y2 := States.UnitPositionY(States.GroupMember(Z, 0));
+            D2 := States.UnitDirection(States.GroupMember(Z, 0));
+          end;
+          DX := (X1 - X2) * (X1 - X2);
+          DY := (Y1 - Y2) * (Y1 - Y2);
+          if (DX + DY <= (STORM_CHECK_RADIUS * STORM_CHECK_RADIUS))
+          and ((D1 = D2)
+          or (Abs(D1 - D2) = 4))
+          and (Z > 0) then
+            if (States.GroupType(Z) = 0)
+            and (States.KaMRandom < STORM_CHANCE) then
+              Actions.GroupOrderStorm(Z);
+        end;
+     end;
+end;
+    
 
 function AICanUseSkills(P, UT: Integer): Boolean;
 begin
@@ -11750,6 +11815,12 @@ begin
     CheckDoubleDamage;
   end;
 
+  if States.GameTime mod ZOMBIE_STORM_FACTOR = 0 then
+  begin
+    ZombieStormLeft;
+    ZombieStormRight;
+  end;
+
   if States.GameTime mod RELIEF_REGEN_TIME = 0 then
     RegenRelief;
 
@@ -11910,9 +11981,6 @@ begin
 
   if States.GameTime > GAME_START_TIME then
     CheckVictoryDefeat;
-
-  if States.GameTime mod ZOMBIE_STORM_TIME = 0 then
-    AIStorm;
 
   ClearArrays;
 
