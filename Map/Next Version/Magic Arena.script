@@ -10500,7 +10500,7 @@ begin
       if Length(GR) > 0 then
         for K := 0 to Length(GR) - 1 do
         begin
-          Z := GR[States.KaMRandomI(Length(GR))];
+          Z := GR[K];
           if Z > 0 then
           begin
             X2 := States.UnitPositionX(States.GroupMember(Z, 0));
@@ -10559,7 +10559,7 @@ begin
         end;
      end;
 end;
-    
+
 
 function AICanUseSkills(P, UT: Integer): Boolean;
 begin
