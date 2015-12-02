@@ -10506,6 +10506,8 @@ begin
             X2 := States.UnitPositionX(States.GroupMember(Z, 0));
             Y2 := States.UnitPositionY(States.GroupMember(Z, 0));
             D2 := States.UnitDirection(States.GroupMember(Z, 0));
+            if States.GroupIdle(Z) then
+              Actions.GroupOrderWalk(Z, 25, 75, States.KaMRandomI(8));
           end;
           DX := (X1 - X2) * (X1 - X2);
           DY := (Y1 - Y2) * (Y1 - Y2);
@@ -10546,6 +10548,8 @@ begin
             X2 := States.UnitPositionX(States.GroupMember(Z, 0));
             Y2 := States.UnitPositionY(States.GroupMember(Z, 0));
             D2 := States.UnitDirection(States.GroupMember(Z, 0));
+            if States.GroupIdle(Z) then
+              Actions.GroupOrderWalk(Z, 45, 75, States.KaMRandomI(8));
           end;
           DX := (X1 - X2) * (X1 - X2);
           DY := (Y1 - Y2) * (Y1 - Y2);
