@@ -42,7 +42,7 @@ const
 
   KNIGHT_ROAD_DELAY = 130;
   KNIGHT_FIELD_DELAY = 150;
-  KNIGHT_WINE_DELAY = 200;
+  KNIGHT_WINE_DELAY = 180;
 
   ROGUE_ROAD_DELAY = 60;
   ROGUE_FIELD_DELAY = 100;
@@ -1440,13 +1440,13 @@ begin
 
     sMentalBurst: Result := '<$55>';
     sSteal: Result := '<$56>';
-    sUniversal: Result := '<$57>';
+    sUniversal: Result := '';//'<$57>';
 
     sStones: Result := '<$99>';
     sVampire: Result := '<$101>';
     sMind: Result := '<$102>';
 
-    sNone: Result := '<$58>';
+    sNone: Result := '';//'<$58>';
 
   end;
 end;
@@ -7656,8 +7656,8 @@ begin
 
         Players[P].StolenSkill := Players[O].LastUsedSkill;
 
-        Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[O].PlayerStatus := '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$78> ' + SkillName(Players[P].StolenSkill);
+        //Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+        //Players[O].PlayerStatus := '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$78> ' + SkillName(Players[P].StolenSkill);
 
         case Players[P].StolenSkill of
 
@@ -8335,8 +8335,11 @@ begin
         Players[P].Hero := Actions.GiveGroup(P, T, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
-          Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-          Players[P].PlayerStatus := '<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+          if SkillName(Tiles[aX][aY].Skill) <> '' then
+          begin
+            Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+            Players[P].PlayerStatus := '<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+          end;
           if (P <> Tiles[aX][aY].Owner)
           and (Players[P].PlayersTeam <> Players[Tiles[aX][aY].Owner].PlayersTeam) then
             Players[Tiles[aX][aY].Owner].Kills := Players[Tiles[aX][aY].Owner].Kills + 1 + Byte(Players[Tiles[aX][aY].Owner].DD);
@@ -8375,9 +8378,12 @@ begin
           Players[P].HP := Players[P].HP + 1;
           Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
           if InRange(Tiles[aX][aY].Owner, 0, 7) then
-          begin 
-            Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-            Players[P].PlayerStatus := '<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+          begin
+            if SkillName(Tiles[aX][aY].Skill) <> '' then
+            begin
+              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[P].PlayerStatus := '<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+            end;
           end;
           Actions.MapTileObjectSet(aX, aY, 255);
         end;
@@ -8388,9 +8394,12 @@ begin
           Players[M[P]].HP := Players[M[P]].HP + 1;
           Players[M[P]].RegenDelay := States.GameTime + REGEN_DELAY;
           if InRange(Tiles[aX][aY].Owner, 0, 7) then
-          begin 
-            Players[M[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-            Players[M[P]].PlayerStatus := '<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+          begin
+            if SkillName(Tiles[aX][aY].Skill) <> '' then
+            begin
+              Players[M[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[M[P]].PlayerStatus := '<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+            end;
           end;
           Actions.MapTileObjectSet(aX, aY, 255);
         end;
@@ -8401,9 +8410,12 @@ begin
           Players[M2[P]].HP := Players[M2[P]].HP + 1;
           Players[M2[P]].RegenDelay := States.GameTime + REGEN_DELAY;
           if InRange(Tiles[aX][aY].Owner, 0, 7) then
-          begin 
-            Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-            Players[M2[P]].PlayerStatus := '<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+          begin
+            if SkillName(Tiles[aX][aY].Skill) <> '' then
+            begin
+              Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[M2[P]].PlayerStatus := '<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+            end;
           end;
           Actions.MapTileObjectSet(aX, aY, 255);
         end;
@@ -9849,7 +9861,7 @@ begin
         and (TilesRoadObjects[P][K] = WARRIOR_OBJECT5) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], WARRIOR_OBJECT5);
 
-        if States.GameTime = ClearTilesRoadTimes[P][K] + 1 then
+        if States.GameTime = ClearTilesRoadTimes[P][K] + CLEAR_ARRAY_FACTOR - 1 then
           Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Skill := sNone;
 
         if (InRange(States.GameTime, ClearTilesRoadTimes[P][K], CLEAR_ARRAY_FACTOR - 1 + ClearTilesRoadTimes[P][K]))
@@ -9912,7 +9924,7 @@ begin
         and (TilesFieldObjects[P][K] = WARRIOR_OBJECT5) then
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], WARRIOR_OBJECT5);
 
-        if States.GameTime = ClearTilesFieldTimes[P][K] + 1 then
+        if States.GameTime = ClearTilesFieldTimes[P][K] + CLEAR_ARRAY_FACTOR - 1 then
           Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].Skill := sNone;
 
         if (InRange(States.GameTime, ClearTilesFieldTimes[P][K], CLEAR_ARRAY_FACTOR - 1 + ClearTilesFieldTimes[P][K]))
@@ -9982,7 +9994,7 @@ begin
           if CanPlaceObject(TilesWineX[P][K], TilesWineY[P][K]) then
             Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], TilesWineObjects[P][K]);
 
-        if States.GameTime = ClearTilesWineTimes[P][K] + 1 then
+        if States.GameTime = ClearTilesWineTimes[P][K] + CLEAR_ARRAY_FACTOR - 1 then
           Tiles[TilesWineX[P][K]][TilesWineY[P][K]].Skill := sNone;
 
       end;
@@ -11724,17 +11736,16 @@ begin
       for X := (aX - ROPE_RADIUS) to (aX + ROPE_RADIUS) do
       for Y := (aY - ROPE_RADIUS) to (aY + ROPE_RADIUS) do
       begin
-        if (TileOnBattlefield(X, Y))
-        and (not States.IsRoadAt(8, X, Y)) then
-          U := States.UnitAt(X, Y);
+        if TileOnBattlefield(X, Y) then
+          if not States.IsRoadAt(8, X, Y) then
+            U := States.UnitAt(X, Y);
         if (U > 0) then
         begin
           if CanUseSkillAgainstUnit(P, U) then
           begin
             O := States.UnitOwner(U);
             if (P <> O)
-            and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-            and (States.KaMRandom > 0.1) then 
+            and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then 
             begin
               uX := States.UnitPositionX(U);
               uY := States.UnitPositionY(U);
