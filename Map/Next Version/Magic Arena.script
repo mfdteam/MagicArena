@@ -1185,6 +1185,15 @@ begin
 end;
 
 
+function ReChoiceColor(P: Integer): ANSIString;
+begin
+  if Players[P].ReChoiceAllowed then
+    Result := '[$00FF00]'
+  else
+    Result := '[$0000FF]';
+end;
+
+
 function GameplayStatus(P: Integer): ANSIString;
 begin
   if Players[P].PlayerStatusTime - States.GameTime > 0 then
@@ -11887,11 +11896,11 @@ begin
 
     for I := 0 to Length(SortedPlayersLeft) - 1 do
       if States.PlayerEnabled(I) then
-        TeamInfo[0] := TeamInfo[0] + '|[$' + States.PlayerColorText(SortedPlayersLeft[I]) + ']' + States.PlayerName(SortedPlayersLeft[I]) + '[]:' + PlayerInfo(SortedPlayersLeft[I]);
+        TeamInfo[0] := TeamInfo[0] + '|' + ReChoiceColor(I) + '{R} []' + '[$' + States.PlayerColorText(SortedPlayersLeft[I]) + ']' + States.PlayerName(SortedPlayersLeft[I]) + '[]:' + PlayerInfo(SortedPlayersLeft[I]);
 
     for I := 0 to Length(SortedPlayersRight) - 1 do
       if States.PlayerEnabled(I) then
-        TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(SortedPlayersRight[I]) + ']' + States.PlayerName(SortedPlayersRight[I]) + '[]:' + PlayerInfo(SortedPlayersRight[I]);
+        TeamInfo[1] := TeamInfo[1] + '|' + ReChoiceColor(I) + '{R} []' + '[$' + States.PlayerColorText(SortedPlayersRight[I]) + ']' + States.PlayerName(SortedPlayersRight[I]) + '[]:' + PlayerInfo(SortedPlayersRight[I]);
 
   end;
 
