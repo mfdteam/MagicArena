@@ -274,7 +274,7 @@ const
   ROPE_DELAY = 14;
   DEAFENING_TIME = 50;
   SPURT_TIME = 35;
-  SPURT_AI_FACTOR = 3;
+  SPURT_AI_FACTOR = 8;
   STOLEN_SKILL_TIME = 1200;
   CAPTURE_MIND_TIME = 200;
   MAX_SCOUT_STONES = 8;
@@ -6573,7 +6573,7 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
-    Players[P].HeroStunnedTime := States.GameTime + SPURT_TIME + 5;
+    Players[P].HeroStunnedTime := States.GameTime + SPURT_TIME + 5 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
     Actions.GroupOrderHalt(Players[P].Hero);
     Actions.GroupBlockOrders(Players[P].Hero, True);
     Players[P].HeroStunned := True;
@@ -6620,20 +6620,20 @@ begin
     ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 17 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
     ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 19 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
 
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 2;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 4;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 6;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 8;    
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 2 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 4 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 6 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 8 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));    
   
     ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 21 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
     ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 23 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
     ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 25 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
     ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 27 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
     
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 10;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 12;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 14;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 16;
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 10 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 12 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 14 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 16 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
 
     for I := 1 to 8 do
       if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
@@ -11702,7 +11702,8 @@ begin
           begin
             O := States.UnitOwner(U);
             if (States.UnitType(U) = 19)
-            and (Players[O].FieldSkillDelay = 0) then
+            and (Players[O].FieldSkillDelay = 0)
+            and (not Players[O].HeroStunned) then
               Exit;
             if (P <> O)
             and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
