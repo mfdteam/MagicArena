@@ -9830,7 +9830,11 @@ begin
 
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (TilesRoadObjects[P][K] = KNIGHT_OBJECT4) then
+        begin
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], KNIGHT_OBJECT4);
+          Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Skill := sRagingSpurt;
+          Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Owner := P;
+        end;
 
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (TilesRoadObjects[P][K] = ROGUE_OBJECT4) then
@@ -9897,7 +9901,11 @@ begin
 
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (TilesFieldObjects[P][K] = KNIGHT_OBJECT4) then
+        begin
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], KNIGHT_OBJECT4);
+          Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].Skill := sRagingSpurt;
+          Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].Owner := P;
+        end;
 
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (TilesFieldObjects[P][K] = ROGUE_OBJECT4) then
@@ -9963,7 +9971,11 @@ begin
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (TilesWineObjects[P][K] = KNIGHT_OBJECT4) then
+        begin
           Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], KNIGHT_OBJECT4);
+          Tiles[TilesWineX[P][K]][TilesWineY[P][K]].Skill := sRagingSpurt;
+          Tiles[TilesWineX[P][K]][TilesWineY[P][K]].Owner := P;
+        end;
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (TilesWineObjects[P][K] = ROGUE_OBJECT4) then
