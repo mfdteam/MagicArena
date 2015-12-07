@@ -281,6 +281,7 @@ const
   TRACK_TIME = 100;
   TRACK_DELAY = 20;
   TRACK_FACTOR = 3;
+  GRAVITY_MOVE_TIME = 60;
 
 //Game mechanics
 
@@ -455,6 +456,8 @@ type
     PlayerStatus: ANSIString;
     PlayerStatusTime: Integer;
     Kills: Integer;
+    MovedByGravity: Boolean;
+    GravityTime: Integer;
   end;
 
 
@@ -987,6 +990,8 @@ begin
       Kills := 0;
       PlayerStatus := '';
       PlayerStatusTime := 0;
+      MovedByGravity := False;
+      GravityTime := 0;
     end;
   end;
 
@@ -8346,7 +8351,8 @@ begin
 
   if aObj = VAGA_OBJECT then
   begin
-    if (not Players[P].MindStunned) and (not Players[P].CaptureMind) then
+    if (not Players[P].MindStunned)
+    and (not Players[P].CaptureMind) then
       if States.GameTime > Players[P].RegenDelay then
         if Players[P].HP < MAX_HP then
         begin
@@ -8465,7 +8471,8 @@ begin
         Actions.GroupBlockOrders(Players[P].Hero, True);
         Actions.GroupOrderHalt(Players[P].Hero);
       end;
-      if InRange(Tiles[aX][aY].Owner, 0, 7) then
+      if InRange(Tiles[aX][aY].Owner, 0, 7)
+      and (not Players[P].HeroStunned) then
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
@@ -8485,7 +8492,8 @@ begin
         Actions.GroupBlockOrders(Players[P].Hero, True);
         Actions.GroupOrderHalt(Players[P].Hero);
       end;
-      if InRange(Tiles[aX][aY].Owner, 0, 7) then
+      if InRange(Tiles[aX][aY].Owner, 0, 7)
+      and (not Players[P].HeroStunned) then
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
@@ -8505,6 +8513,8 @@ begin
         Actions.GroupBlockOrders(Players[P].Hero, True);
         Actions.GroupOrderHalt(Players[P].Hero);
       end;
+      if InRange(Tiles[aX][aY].Owner, 0, 7)
+      and (not Players[P].HeroStunned) then
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
@@ -9141,8 +9151,13 @@ begin
                     Actions.GroupKillAll(Players[O].Hero, True);
                     Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
                     Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
-                    Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-                    Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sGravity);
+                    if not Players[O].MovedByGravity then
+                    begin
+                      Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+                      Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sGravity);
+                      Players[O].MovedByGravity := True;
+                      Players[O].GravityTime := States.GameTime + GRAVITY_MOVE_TIME;
+                    end;
                     Break;
                     Exit;
                   end
@@ -9509,6 +9524,10 @@ begin
         Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Owner := I1;
         Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Skill := sTrack;
       end;
+
+      if (States.GameTime >= Players[I1].GravityTime)
+      and (Players[I1].MovedByGravity) then
+        Players[I1].MovedByGravity := False;
 
       if (States.GameTime >= Players[I1].HeroSilentTime)
       and (Players[I1].HeroSilent) then
