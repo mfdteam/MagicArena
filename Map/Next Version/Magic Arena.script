@@ -9459,7 +9459,8 @@ begin
       if (Players[I1].SettingTrack)
       and ((States.GameTime - Players[I1].TrackStopTime) mod TRACK_FACTOR = 0)
       and (States.GroupOwner(Players[I1].Hero) = I1)
-      and (Players[I1].Hero > 0) then
+      and (Players[I1].Hero > 0)
+      and (Players[I1].HP > 0) then
       begin
         TilesFieldLength[I1] := TilesFieldLength[I1] + 1;
         SetLength(TilesFieldX[I1], TilesFieldLength[I1]);
