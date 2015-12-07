@@ -28,7 +28,7 @@ const
   BOWMAN_FIELD_DELAY = 140;
   BOWMAN_WINE_DELAY = 250;
 
-  AXE_ROAD_DELAY = 180;
+  AXE_ROAD_DELAY = 150;
   AXE_FIELD_DELAY = 200;
   AXE_WINE_DELAY = 1350;
 
@@ -279,7 +279,7 @@ const
   CAPTURE_MIND_TIME = 200;
   MAX_SCOUT_STONES = 8;
   TRACK_TIME = 100;
-  TRACK_DELAY = 20;
+  TRACK_DELAY = 3;
   TRACK_FACTOR = 3;
   GRAVITY_MOVE_TIME = 60;
 
@@ -4400,8 +4400,6 @@ end;
 
 
 procedure FieryTrack(P, X, Y: Integer);
-var
-  X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4412,68 +4410,9 @@ begin
   if (TileOnBattlefield(X, Y))
   and (Players[P].Hero > 0) then
   begin
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    TilesFieldLength[P] := TilesFieldLength[P] + 4;
-    SetLength(TilesFieldX[P], TilesFieldLength[P]);
-    SetLength(TilesFieldY[P], TilesFieldLength[P]);
-    SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
-    SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
-    SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
-  
-    TilesFieldX[P][Length(TilesFieldX[P]) - 4] := X2 + 1;
-    TilesFieldX[P][Length(TilesFieldX[P]) - 3] := X2 - 1;
-    TilesFieldX[P][Length(TilesFieldX[P]) - 2] := X2 - 1;
-    TilesFieldX[P][Length(TilesFieldX[P]) - 1] := X2 + 1;
-    
-    TilesFieldY[P][Length(TilesFieldY[P]) - 4] := Y2 + 1;
-    TilesFieldY[P][Length(TilesFieldY[P]) - 3] := Y2 - 1;
-    TilesFieldY[P][Length(TilesFieldY[P]) - 2] := Y2 + 1;
-    TilesFieldY[P][Length(TilesFieldY[P]) - 1] := Y2 - 1;
-
-    for I := 1 to 4 do
-    begin
-      TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := VAGA_OBJECT7;
-      if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
-      begin
-        Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Owner := P;
-        Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Skill := sTrack;
-      end;
-    end;
-    
-    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 11;
-    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 12;
-    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 13;
-    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 14;
-    
-    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 4] := States.GameTime + 1;
-    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 3] := States.GameTime + 2;
-    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 2] := States.GameTime + 3;
-    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 4;
-
-    for I := 1 to 4 do
-      if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
-        if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
-        or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
-        or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
-        or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
-          ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
-
-    {if States.PlayerIsAI(P) then
-    begin
-      Players[P].CastingSkill := True;
-      Players[P].SkillTime := States.GameTime + 20;
-      Actions.GroupOrderHalt(Players[P].Hero);
-    end;}
-
     Players[P].TrackStartTime := States.GameTime + TRACK_DELAY;
-
-    Players[P].StolenSkill := sTrack;
-
+    Players[P].LastUsedSkill := sTrack;
     Players[P].FieldSkillDelay := Round(VAGA_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-
-    ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR + TRACK_TIME + TRACK_DELAY + 5;
-
   end;
 
 end;
