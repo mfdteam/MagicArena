@@ -459,6 +459,14 @@ type
 
 
 type
+  aZombie = Record
+    Owner: Integer;
+    ID: Integer;
+    Hunger: Integer;
+  end;
+
+
+type
   aCircle = Record
     AddTime: Integer;
     X: Integer;
@@ -515,6 +523,8 @@ var
   RUNE_Y: Integer;
   OldX, OldY, NewX, NewY: array[0..11] of Integer;
   PlayersLeft, SortedPlayersLeft, PlayersRight, SortedPlayersRight: array of Integer;
+  Zombies: array of aZombie;
+  LastAttacker: Integer;
 
 
 function InRange(Value, Min, Max: Integer): Boolean;
@@ -735,6 +745,8 @@ begin
     RUNE_Y := RUNE_Y2;
 
   CheckTilesInfo;
+
+  LastAttacker := -1;
 
   PikeObjects[0] := PIKE_OBJECT;
   PikeObjects[1] := PIKE_OBJECT2;
@@ -2008,10 +2020,16 @@ begin
     and (Abs(Y2 - Y) <= MILIZOMBIE_RADIUS) then
     begin
       Zombie := Actions.GiveGroup(Players[P].ZombiePlayer, 14, X, Y, States.KaMRandomI(8), 1, 1);
+      SetLength(Zombies, Length(Zombies) + 1);
+      Zombies[Length(Zombies) - 1].Owner := P;
+      Zombies[Length(Zombies) - 1].ID := States.GroupMember(Zombie, 0);
       Actions.GroupHungerSet(Zombie, RUNE_ZOMBIE_LIFE);
       if Players[P].DD then
       begin
         Zombie := Actions.GiveGroup(Players[P].ZombiePlayer, 14, X, Y + 1, States.KaMRandomI(8), 1, 1);
+        SetLength(Zombies, Length(Zombies) + 1);
+        Zombies[Length(Zombies) - 1].Owner := P;
+        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Zombie, 0);
         Actions.GroupHungerSet(Zombie, RUNE_ZOMBIE_LIFE);
       end;
       Players[P].FieldSkillDelay := Round(SWORD_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
@@ -8408,6 +8426,9 @@ begin
     for I := 0 to 3 do
     begin
       ZomboHero[P][I] := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
+      SetLength(Zombies, Length(Zombies) + 1);
+      Zombies[Length(Zombies) - 1].Owner := P;
+      Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
       Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
       Actions.MapTileObjectSet(aX, aY, 255);
     end;
@@ -9090,7 +9111,7 @@ end;
 
 procedure CheckGravityCircles(P: Integer);
 var
-  X, Y, O, U, G, D, UT, CC: Integer;
+  X, Y, O, U, G, D, UT, CC, OT: Integer;
 begin
   if States.PlayerEnabled(P) then
     if GravityCirclesLength[P] > 0 then
@@ -9127,8 +9148,14 @@ begin
                   else
                     if (InRange(O, 8, 11)) then 
                     begin
+                      for I := 0 to Length(Zombies) - 1 do
+                        if U = Zombies[I].ID then
+                          OT := Zombies[I].Owner;
                       Actions.GroupKillAll(States.UnitsGroup(U), True);
                       G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
+                      SetLength(Zombies, Length(Zombies) + 1);
+                      Zombies[Length(Zombies) - 1].Owner := OT;
+                      Zombies[Length(Zombies) - 1].ID := States.GroupMember(G, 0);
                       Actions.GroupHungerSet(G, RUNE_ZOMBIE_LIFE);
                       Break;
                       Exit;
@@ -9208,6 +9235,14 @@ begin
 end;
 
 
+procedure OnUnitWounded(aID, aAttacker: Integer);
+begin
+  for I := 0 to Length(Zombies) - 1 do
+    if aAttacker = Zombies[I].ID then
+      LastAttacker := Zombies[I].Owner;
+end;
+
+
 procedure OnUnitDied(aID, aKiller: Integer);
 var
   O, aX, aY: Integer;
@@ -9235,6 +9270,8 @@ begin
   and (InRange(States.UnitOwner(aID), 0, 7))
   and (aID = States.GroupMember(Players[O].Hero, 0)) then
   begin
+    if LastAttacker <> - 1 then
+      Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
     Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
     Players[O].PlayerStatus := '<$75>'; 
     Players[O].RespawnCheckTime := States.GameTime + 10;
