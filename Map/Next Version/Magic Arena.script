@@ -9232,9 +9232,9 @@ begin
       Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
     Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
     if LastAttackerUnitType = 14 then
-      Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$75>';
+      Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$75> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
     if InRange(LastAttackerUnitType, 15, 27) then
-      Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$76>';
+      Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$76> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
     Players[O].RespawnCheckTime := States.GameTime + 10;
     if Players[O].HP > 0 then
     begin 
