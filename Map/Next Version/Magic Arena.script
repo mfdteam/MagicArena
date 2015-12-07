@@ -2069,7 +2069,7 @@ begin
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
         Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[O].PlayerStatus := '<$74> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sFear);
+        Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$74> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sFear);
         Players[O].HeroInFear := True;
         Players[O].HeroInFearTime := States.GameTime + IN_FEAR_TIME;
         if Players[O].Hero > 0 then
@@ -6209,7 +6209,7 @@ begin
 
         Players[O].ArmorStartTime := States.GameTime + ARMOR_DELAY;
         Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[O].PlayerStatus := '<$70> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sSturdyArmor);
+        Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$70> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sSturdyArmor);
         Players[P].LastUsedSkill := sSturdyArmor;
         Players[P].FieldSkillDelay := Round(WARRIOR_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
         ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
@@ -6356,7 +6356,7 @@ begin
           begin
             Players[O].HeroSilentStartTime := States.GameTime + 1;
             Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-            Players[O].PlayerStatus := '<$73> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sCircleOfSilence);
+            Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$73> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sCircleOfSilence);
           end;
         end;
       end;
@@ -6462,7 +6462,7 @@ begin
         Players[O].RopeTime := States.GameTime + ROPE_DELAY;
         Players[O].RopeAttacker := P;
         Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[O].PlayerStatus := '<$72> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sRopesOfDeath);
+        Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sRopesOfDeath);
         Players[O].RopeUnitDir := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
         case D of
 
@@ -6966,7 +6966,7 @@ begin
         begin
           Players[P].VampireDelay := States.GameTime + VAMPIRE_HEALBUSH_START_TIME;
           Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-          Players[O].PlayerStatus := '<$77> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sVampire);
+          Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$77> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sVampire);
         end;
 
         if (InRange(O, 8, 11))
@@ -7633,7 +7633,7 @@ begin
         Players[P].StolenSkill := Players[O].LastUsedSkill;
 
         //Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        //Players[O].PlayerStatus := '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$78> ' + SkillName(Players[P].StolenSkill);
+        //Players[O].PlayerStatus := Players[O].PlayerStatus + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$78> ' + SkillName(Players[P].StolenSkill);
 
         case Players[P].StolenSkill of
 
@@ -8314,7 +8314,7 @@ begin
           if SkillName(Tiles[aX][aY].Skill) <> '' then
           begin
             Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-            Players[P].PlayerStatus := '<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+            Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
           end;
           if (P <> Tiles[aX][aY].Owner)
           and (Players[P].PlayersTeam <> Players[Tiles[aX][aY].Owner].PlayersTeam) then
@@ -8357,7 +8357,7 @@ begin
             if SkillName(Tiles[aX][aY].Skill) <> '' then
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[P].PlayerStatus := '<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+              Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
             end;
           end;
           Actions.MapTileObjectSet(aX, aY, 255);
@@ -8373,7 +8373,7 @@ begin
             if SkillName(Tiles[aX][aY].Skill) <> '' then
             begin
               Players[M[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[M[P]].PlayerStatus := '<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+              Players[M[P]].PlayerStatus := Players[M[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
             end;
           end;
           Actions.MapTileObjectSet(aX, aY, 255);
@@ -8389,7 +8389,7 @@ begin
             if SkillName(Tiles[aX][aY].Skill) <> '' then
             begin
               Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[M2[P]].PlayerStatus := '<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+              Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
             end;
           end;
           Actions.MapTileObjectSet(aX, aY, 255);
@@ -8415,7 +8415,7 @@ begin
       if InRange(Tiles[aX][aY].Owner, 0, 7) then
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[P].PlayerStatus := '<$70> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$70> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
       end;
       Actions.MapTileObjectSet(aX, aY, 255);
     end;
@@ -8468,7 +8468,7 @@ begin
       if InRange(Tiles[aX][aY].Owner, 0, 7) then
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[P].PlayerStatus := '<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
       end;
       Players[P].HeroStunnedTime := States.GameTime + STUNNED_TIME;
       Players[P].HeroStunned := True;
@@ -8488,7 +8488,7 @@ begin
       if InRange(Tiles[aX][aY].Owner, 0, 7) then
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[P].PlayerStatus := '<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
       end;
       Players[P].HeroStunnedTime := States.GameTime + SHOCK_TIME;
       Players[P].HeroStunned := True;
@@ -8507,7 +8507,7 @@ begin
       end;
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[P].PlayerStatus := '<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
       end;
       Players[P].HeroStunnedTime := States.GameTime + DEAFENING_TIME;
       Players[P].HeroStunned := True;
@@ -9142,7 +9142,7 @@ begin
                     Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
                     Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
                     Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-                    Players[O].PlayerStatus := '<$72> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sGravity);
+                    Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sGravity);
                     Break;
                     Exit;
                   end
@@ -9278,9 +9278,9 @@ begin
       Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
     Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
     if LastAttackerUnitType = 14 then
-      Players[O].PlayerStatus := '<$75>';
+      Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$75>';
     if InRange(LastAttackerUnitType, 15, 27) then
-      Players[O].PlayerStatus := '<$76>';
+      Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$76>';
     Players[O].RespawnCheckTime := States.GameTime + 10;
     if Players[O].HP > 0 then
     begin 
@@ -9389,6 +9389,9 @@ begin
 
       if Players[I1].HP < 0 then
         Players[I1].HP := 0;
+
+      if States.GameTime = Players[I1].PlayerStatusTime then
+        Players[I1].PlayerStatus := '';
 
       if (States.GameTime = Players[I1].ReChoiceTime)
       and (Players[I1].ReChoice) then
