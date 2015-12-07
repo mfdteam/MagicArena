@@ -9829,6 +9829,10 @@ begin
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], BARB_OBJECT3);
 
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
+        and (TilesRoadObjects[P][K] = KNIGHT_OBJECT4) then
+          Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], KNIGHT_OBJECT4);
+
+        if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (TilesRoadObjects[P][K] = ROGUE_OBJECT4) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], ROGUE_OBJECT4);
 
@@ -9892,6 +9896,10 @@ begin
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], BARB_OBJECT3);
 
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
+        and (TilesFieldObjects[P][K] = KNIGHT_OBJECT4) then
+          Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], KNIGHT_OBJECT4);
+
+        if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (TilesFieldObjects[P][K] = ROGUE_OBJECT4) then
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], ROGUE_OBJECT4);
 
@@ -9952,6 +9960,10 @@ begin
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (TilesWineObjects[P][K] = BARB_OBJECT3) then
           Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], BARB_OBJECT3);
+
+        if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
+        and (TilesWineObjects[P][K] = KNIGHT_OBJECT4) then
+          Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], KNIGHT_OBJECT4);
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (TilesWineObjects[P][K] = ROGUE_OBJECT4) then
