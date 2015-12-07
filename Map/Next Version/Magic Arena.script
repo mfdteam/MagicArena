@@ -524,7 +524,7 @@ var
   OldX, OldY, NewX, NewY: array[0..11] of Integer;
   PlayersLeft, SortedPlayersLeft, PlayersRight, SortedPlayersRight: array of Integer;
   Zombies: array of aZombie;
-  LastAttacker: Integer;
+  LastAttacker, LastAttackerUnitType: Integer;
 
 
 function InRange(Value, Min, Max: Integer): Boolean;
@@ -747,6 +747,7 @@ begin
   CheckTilesInfo;
 
   LastAttacker := -1;
+  LastAttackerUnitType := -1;
 
   PikeObjects[0] := PIKE_OBJECT;
   PikeObjects[1] := PIKE_OBJECT2;
@@ -9239,7 +9240,10 @@ procedure OnUnitWounded(aID, aAttacker: Integer);
 begin
   for I := 0 to Length(Zombies) - 1 do
     if aAttacker = Zombies[I].ID then
+    begin
       LastAttacker := Zombies[I].Owner;
+      LastAttackerUnitType := States.UnitType(aAttacker);
+    end;
 end;
 
 
@@ -9273,7 +9277,10 @@ begin
     if LastAttacker <> - 1 then
       Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
     Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-    Players[O].PlayerStatus := '<$75>'; 
+    if LastAttackerUnitType = 14 then
+      Players[O].PlayerStatus := '<$75>';
+    if InRange(LastAttackerUnitType, 15, 27) then
+      Players[O].PlayerStatus := '<$76>';
     Players[O].RespawnCheckTime := States.GameTime + 10;
     if Players[O].HP > 0 then
     begin 
