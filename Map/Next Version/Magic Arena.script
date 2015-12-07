@@ -9361,8 +9361,11 @@ begin
         Players[I1].Hero := Actions.GiveGroup(I1, 27, Players[I1].VagaX, Players[I1].VagaY, Players[I1].VagaDir, 1, 1);
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         Players[I1].WerewolfTime := States.GameTime + WEREWOLF_TIME;
-        Actions.FogCoverAll(I1);
-        Actions.FogRevealRect(I1, 1, 39, 70, 109);
+        if Players[I1].HP > 0 then
+        begin
+          Actions.FogCoverAll(I1);
+          Actions.FogRevealRect(I1, 1, 39, 70, 109);
+        end;
       end;
 
       if States.GameTime = Players[I1].WerewolfTime then
@@ -9373,8 +9376,11 @@ begin
         Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         Players[I1].VagaAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
-        Actions.FogCoverAll(I1);
-        Actions.FogRevealRect(I1, 1, 39, 70, 109);
+        if Players[I1].HP > 0 then
+        begin
+          Actions.FogCoverAll(I1);
+          Actions.FogRevealRect(I1, 1, 39, 70, 109);
+        end;
       end;
 
       if States.GameTime = Players[I1].VagaAppearTimeBack then  
@@ -9388,8 +9394,11 @@ begin
           Players[I1].RoadSkillDelay := 0;
           Players[I1].FieldSkillDelay := 0;
           Players[I1].WineSkillDelay := AXE_WINE_DELAY * (1 - Round(RECHARGE_FACTOR * Byte(Players[I1].ReCharge))) - WEREWOLF_TIME;
-          Actions.FogCoverAll(I1);
-          Actions.FogRevealRect(I1, 1, 39, 70, 109);
+          if Players[I1].HP > 0 then
+          begin
+            Actions.FogCoverAll(I1);
+            Actions.FogRevealRect(I1, 1, 39, 70, 109);
+          end;
         end;
       end;
 
@@ -9401,8 +9410,11 @@ begin
           Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].TempHeroType, Players[I1].PikeX, Players[I1].PikeY, Players[I1].PikeDir, 1, 1);
           Players[I1].HeroType := Players[I1].TempHeroType;
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-          Actions.FogCoverAll(I1);
-          Actions.FogRevealRect(I1, 1, 39, 70, 109);
+          if Players[I1].HP > 0 then
+          begin
+            Actions.FogCoverAll(I1);
+            Actions.FogRevealRect(I1, 1, 39, 70, 109);
+          end;
         end;
       end;
 
