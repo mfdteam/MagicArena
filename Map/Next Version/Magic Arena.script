@@ -515,7 +515,7 @@ var
   PikeObjects, ShieldObjects: array[0..7] of Integer;
   Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
   TeamChoice: array[0..1] of ANSIString;
-  TeamInfo: array[0..1] of ANSIString;
+  TeamInfo, Scores: array[0..1] of ANSIString;
   ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime: array[0..11] of Integer;
   RuneTime: Integer;
   M, M2, M3, hX, hY: array[0..7] of Integer;
@@ -1639,9 +1639,9 @@ end;
 function PlayerInfo(P: Integer): ANSIString;
 begin
   if Players[P].ReChoice then
-    Result := ' [$BECADA]<$66>[]; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP) + '[]; <$79>: ' + KillsColor(P) + InttoStr(Players[P].Kills) + '[]'
+    Result := ' [$BECADA]<$66>[]; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP) + '[]'
   else
-    Result := ' <$42>: ' + States.UnitTypeName(Players[P].HeroType) + '; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP) + '[]; <$79>: ' + KillsColor(P) + IntToStr(Players[P].Kills) + '[]';
+    Result := ' <$42>: ' + States.UnitTypeName(Players[P].HeroType) + '; <$39>: ' + HPColor(P) + IntToStr(Players[P].HP) + '[]';
 end;
 
 
@@ -11938,14 +11938,22 @@ begin
         Actions.GroupKillAll(Players[I].TempHero, True);
     TeamInfo[0] := '';
     TeamInfo[1] := '';
+    Scores[0] := '';
+    Scores[1] := '';
+
+    for I := 0 to 3 do
+      if States.PlayerEnabled(I) then
+        TeamInfo[0] := TeamInfo[0] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]' + ReChoiceColor(I) + ' {R} []' + ':' + PlayerInfo(I);
+
+    for I := 4 to 7 do
+      if States.PlayerEnabled(I) then
+        TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]' + ReChoiceColor(I) + ' {R} []' + ':' + PlayerInfo(I);
 
     for I := 0 to Length(SortedPlayersLeft) - 1 do
-      if States.PlayerEnabled(I) then
-        TeamInfo[0] := TeamInfo[0] + '|[$' + States.PlayerColorText(SortedPlayersLeft[I]) + ']' + States.PlayerName(SortedPlayersLeft[I]) + '[]' + ReChoiceColor(SortedPlayersLeft[I]) + ' {R} []' + ':' + PlayerInfo(SortedPlayersLeft[I]);
+      Scores[0] := Scores[0] + '|[$' + States.PlayerColorText(SortedPlayersLeft[I]) + ']' + States.PlayerName(SortedPlayersLeft[I]) + '[]: ' + KillsColor(SortedPlayersLeft[I]) + IntToStr(Players[SortedPlayersLeft[I]].Kills) + '[]';
 
     for I := 0 to Length(SortedPlayersRight) - 1 do
-      if States.PlayerEnabled(I) then
-        TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(SortedPlayersRight[I]) + ']' + States.PlayerName(SortedPlayersRight[I]) + '[]' + ReChoiceColor(SortedPlayersRight[I]) + ' {R} []' + ':' + PlayerInfo(SortedPlayersRight[I]);
+      Scores[1] := Scores[1] + '|[$' + States.PlayerColorText(SortedPlayersRight[I]) + ']' + States.PlayerName(SortedPlayersRight[I]) + '[]: ' + KillsColor(SortedPlayersRight[I]) + IntToStr(Players[SortedPlayersRight[I]].Kills) + '[]';
 
   end;
 
@@ -11960,7 +11968,7 @@ begin
       + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10)
       + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].WineSkillDelay/10)
       + '|<$39>: ' + HPColor(I) + IntToStr(Players[I].HP) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + '|'
-      + StatusText(I) + '|||<$41>:|' + TeamInfo[0]);
+      + StatusText(I) + '|||<$41>:|' + TeamInfo[0] + '|||<$79>:|' + Scores[0]);
     end;
 
   for I := 4 to 7 do
@@ -11974,7 +11982,7 @@ begin
       + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10)
       + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].WineSkillDelay/10)
       + '|<$39>: ' + HPColor(I) + IntToStr(Players[I].HP) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + '|'
-      + StatusText(I) + '|||<$41>:|' + TeamInfo[1]);
+      + StatusText(I) + '|||<$41>:|' + TeamInfo[1] + '|||<$79>:|' + Scores[1]);
     end;
 
   for I := 0 to 7 do
