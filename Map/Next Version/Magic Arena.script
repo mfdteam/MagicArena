@@ -11717,7 +11717,7 @@ end;
 
 procedure AIKnight(P: Integer);
 var
-  X, Y, aX, aY, uX, uY, U, O, A, E, D: Integer;
+  X, Y, aX, aY, uX, uY, U, O, A, E, D, aX1, aX2, aY1, aY2: Integer;
 begin
 
   if (Players[P].RoadSkillDelay = 0)
@@ -11755,6 +11755,93 @@ begin
               uY := States.UnitPositionY(U);
               RopesOfDeath(P, uX, uY);
               RagingSpurt(P, X, Y, D);
+              Exit;
+            end;
+          end;
+        end;
+      end;
+    end;
+
+  if (States.KaMRandomI(10) > 4)
+  and (Players[P].WineSkillDelay = 0)
+  and (States.GameTime mod 60 = 0)
+  and (Players[P].Hero > 0)
+  and (States.GameTime > CHOOSE_HERO_TIMER + 100)
+  and not (Players[P].CastingSkill) then
+    if States.GroupMember(Players[P].Hero, 0) > 0 then
+    begin
+      D := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if D mod 2 = 1 then
+        Exit;
+      Actions.GroupOrderHalt(Players[P].Hero);
+      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+
+      case D of
+
+        0: begin
+             aX1 := aX;
+             aX2 := aX;
+             aY1 := aY - SPURT_LENGTH + 1;
+             aY2 := aY - 1;
+           end;
+
+        4: begin
+             aX1 := aX;
+             aX2 := aX;
+             aY1 := aY + 1;
+             aY2 := aY + SPURT_LENGTH - 1;
+           end;
+
+        2: begin
+             aX1 := aX + 1;
+             aX2 := aX + SPURT_LENGTH - 1;
+             aY1 := aY;
+             aY2 := aY;
+           end;
+
+        6: begin
+             aX1 := aX - SPURT_LENGTH + 1;
+             aX2 := aX - 1;
+             aY1 := aY;
+             aY2 := aY;
+           end;
+
+      end;
+
+      for X := aX1 to aX2 do
+      for Y := aY1 to aY2 do
+      begin
+        if TileOnBattlefield(X, Y) then
+          U := States.UnitAt(X, Y);
+        if U > 0 then
+        begin
+          O := States.UnitOwner(U);
+          if (P <> O)
+          and (CanUseSkillAgainstUnit(P, U))
+          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+          and (States.KaMRandom > 0.1) then 
+          begin
+            uX := States.UnitPositionX(U);
+            uY := States.UnitPositionY(U);
+            if ((uX = aX) and (uY < (aY - 1)) and (D = 0)) then
+            begin
+              RagingSpurt(P, aX, aY, 0);
+              Exit;
+            end;
+            if ((uX = aX) and (uY > (aY + 1)) and (D = 4)) then
+            begin
+              RagingSpurt(P, aX, aY, 4);
+              Exit;
+            end;
+            if ((uX < (aX - 1)) and (uY = aY) and (D = 6)) then
+            begin
+              RagingSpurt(P, aX, aY, 6);
+              Exit;
+            end;
+            if ((uX > (aX + 1)) and (uY = aY) and (D = 2)) then
+            begin
+              RagingSpurt(P, aX, aY, 2);
               Exit;
             end;
           end;
