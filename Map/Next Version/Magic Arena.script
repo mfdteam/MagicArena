@@ -642,11 +642,13 @@ begin
 
   for aX := MIN_X to MAX_X do
   for aY := MIN_Y to MAX_Y do
+  begin
     aObj := States.MapTileObject(aX, aY);
     if (aObj <> 255)
     and (not InRange(aObj, 149, 172))
     and (States.GameTime > Tiles[aX][aY].ObjectRefreshTime) then
       Actions.MapTileObjectSet(aX, aY, 255);
+  end;
 
 end;
 
@@ -1710,15 +1712,15 @@ begin
         and (not InRange(States.MapTileObject(PosX, PosY), SHIELD_OBJECT, SHIELD_OBJECT8)) then
         begin
           Actions.MapTileObjectSet(PosX, PosY, aObj);
-        if (Tiles[PosX][PosY].Owner <> P)
-        and (Tiles[PosX][PosY].Skill = sNone) then
-        begin
-          Tiles[PosX][PosY].Owner := P;
-          Tiles[PosX][PosY].Skill := fSkill;
-        end;
-        if aObj = 255 then
-          if Tiles[PosX][PosY].Skill = fSkill then
-            Tiles[PosX][PosY].Skill := sNone;
+          if (Tiles[PosX][PosY].Owner <> P)
+          and (Tiles[PosX][PosY].Skill = sNone) then
+          begin
+            Tiles[PosX][PosY].Owner := P;
+            Tiles[PosX][PosY].Skill := fSkill;
+          end;
+          if aObj = 255 then
+            if Tiles[PosX][PosY].Skill = fSkill then
+              Tiles[PosX][PosY].Skill := sNone;
         end;
         if not aSaveCracking then
           if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
