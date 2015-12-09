@@ -29,7 +29,7 @@ const
   BOWMAN_WINE_DELAY = 250;
 
   AXE_ROAD_DELAY = 150;
-  AXE_FIELD_DELAY = 200;
+  AXE_FIELD_DELAY = 180;
   AXE_WINE_DELAY = 1350;
 
   VAGA_ROAD_DELAY = 90;
@@ -1670,7 +1670,8 @@ begin
       and (States.MapTileObject(PosX, PosY) <> WARRIOR_OBJECT5)
       and (States.MapTileObject(PosX, PosY) <> ROGUE_OBJECT4)
       and (States.MapTileObject(PosX, PosY) <> KNIGHT_OBJECT4)
-      and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6)) then
+      and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6))
+      and (fSkill <> sDeadlyFireworks) then
       begin
         Actions.MapTileObjectSet(PosX, PosY, aObj);
         Tiles[PosX][PosY].Owner := P;
@@ -1681,6 +1682,38 @@ begin
       if not aSaveCracking then
         if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
           Actions.MapTileObjectSet(PosX, PosY, aObj);
+  end;
+
+  if fSkill = sDeadlyFireworks then
+  begin
+    for PosX := X1 to X2 do
+    for PosY := Y1 to Y2 do
+    begin
+      if (((X - PosX) * (X - PosX) + (Y - PosY) * (Y - PosY)) <= R * R) then
+        if TileOnBattlefield(PosX, PosY)
+        and (PosX > 0)
+        and (PosY > 0)
+        and (States.MapTileObject(PosX, PosY) <> BARB_OBJECT3)
+        and (States.MapTileObject(PosX, PosY) <> SWORD_OBJECT)
+        and (States.MapTileObject(PosX, PosY) <> BARB_OBJECT)
+        and (States.MapTileObject(PosX, PosY) <> BOWMAN_ROCKET)
+        and (States.MapTileObject(PosX, PosY) <> BOWMAN_OBJECT5)
+        and (States.MapTileObject(PosX, PosY) <> WARRIOR_OBJECT5)
+        and (States.MapTileObject(PosX, PosY) <> ROGUE_OBJECT4)
+        and (States.MapTileObject(PosX, PosY) <> KNIGHT_OBJECT4)
+        and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6))
+        and (not InRange(States.MapTileObject(PosX, PosY), SHIELD_OBJECT, SHIELD_OBJECT8)) then
+        begin
+          Actions.MapTileObjectSet(PosX, PosY, aObj);
+          Tiles[PosX][PosY].Owner := P;
+          Tiles[PosX][PosY].Skill := fSkill;
+          if aObj = 255 then
+            Tiles[PosX][PosY].Skill := sNone;
+        end;
+        if not aSaveCracking then
+          if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
+            Actions.MapTileObjectSet(PosX, PosY, aObj);
+    end;
   end;
 
   if aDef then
