@@ -646,6 +646,7 @@ begin
     aObj := States.MapTileObject(aX, aY);
     if (aObj <> 255)
     and (not InRange(aObj, 149, 172))
+    and (TileOnBattlefield(aX, aY))
     and (States.GameTime > Tiles[aX][aY].ObjectRefreshTime) then
       Actions.MapTileObjectSet(aX, aY, 255);
   end;
