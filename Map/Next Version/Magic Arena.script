@@ -11358,7 +11358,8 @@ begin
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
       X := aX + States.KaMRandomI(TELEPORT_RADIUS) - States.KaMRandomI(TELEPORT_RADIUS);
       Y := aY + States.KaMRandomI(TELEPORT_RADIUS) - States.KaMRandomI(TELEPORT_RADIUS);
-      if not TileIsDangerous(X, Y) then
+      if (not TileIsDangerous(X, Y))
+      and (Tiles[X][Y].Skill = sNone) then
       begin
         Teleport(P, X, Y);
         Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 51, States.KaMRandomI(8));
