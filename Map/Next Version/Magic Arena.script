@@ -11872,6 +11872,8 @@ begin
             begin
               uX := States.UnitPositionX(U);
               uY := States.UnitPositionY(U);
+              if States.KaMRandom < 0.6 then
+                DeafeningClatter(P, uX, uY);
               RopesOfDeath(P, uX, uY);
               RagingSpurt(P, X, Y, D);
               Exit;
@@ -11968,7 +11970,7 @@ begin
       end;
     end;
 
-  if (States.KaMRandomI(10) > 8)
+  if (States.KaMRandom > 0.6)
   and (Players[P].FieldSkillDelay = 0)
   and (Players[P].Hero > 0) then
     if States.GroupMember(Players[P].Hero, 0) > 0 then
