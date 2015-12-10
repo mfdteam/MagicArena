@@ -54,7 +54,7 @@ const
   ROGUE_MENTAL_DELAY = 0;
 
   SCOUT_ROAD_DELAY = 100;
-  SCOUT_FIELD_DELAY = 200;
+  SCOUT_FIELD_DELAY = 170;
   SCOUT_WINE_DELAY = 350;
 
 //Skills parameters
@@ -283,7 +283,7 @@ const
   TRACK_DELAY = 3;
   TRACK_FACTOR = 3;
   GRAVITY_MOVE_TIME = 60;
-  SILENCE_SCOUT_TIME = 60;
+  SILENCE_SCOUT_TIME = 50;
 
 //Game mechanics
 
