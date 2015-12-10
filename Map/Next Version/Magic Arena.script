@@ -226,6 +226,9 @@ const
   SCOUT_OBJECT2 = 7;
   SCOUT_OBJECT3 = 211;
   SCOUT_OBJECT4 = 213;
+  SCOUT_OBJECT5 = 19;
+  SCOUT_OBJECT6 = 126;
+  SCOUT_OBJECT7 = 112;
 
 //Runes
 
@@ -284,6 +287,7 @@ const
   TRACK_FACTOR = 3;
   GRAVITY_MOVE_TIME = 60;
   SILENCE_SCOUT_TIME = 50;
+  SILENCE_SCOUT_DELAY = 12;
 
 //Game mechanics
 
@@ -463,6 +467,8 @@ type
     Kills: Integer;
     MovedByGravity: Boolean;
     GravityTime: Integer;
+    ScoutSilenceGiver: Integer;
+    ScoutSilenceStartTime: Integer;
   end;
 
 
@@ -1004,6 +1010,8 @@ begin
       PlayerStatusTime := 0;
       MovedByGravity := False;
       GravityTime := 0;
+      ScoutSilenceStartTime := 0;
+      ScoutSilenceGiver := -1;
     end;
   end;
 
@@ -6944,12 +6952,49 @@ begin
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
-        Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$73> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sSilence);
-        Players[O].HeroSilent := True;
-        Players[O].HeroSilentTime := States.GameTime + SILENCE_SCOUT_TIME;
+        TilesFieldLength[P] := TilesFieldLength[P] + 4;
+        SetLength(TilesFieldX[P], TilesFieldLength[P]);
+        SetLength(TilesFieldY[P], TilesFieldLength[P]);
+        SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
+        SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
+        SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
+  
+        TilesFieldX[P][Length(TilesFieldX[P]) - 4] := X2;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 3] := X2;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 2] := X2 - 1;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 1] := X2 + 1;
+    
+        TilesFieldY[P][Length(TilesFieldY[P]) - 4] := Y2 + 1;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 3] := Y2 - 1;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 2] := Y2;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 1] := Y2;
+
+        for I := 1 to 4 do
+          TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := SCOUT_OBJECT7;
+    
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 8;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 9;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 10;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 11;
+    
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 4] := States.GameTime + 1;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 3] := States.GameTime + 2;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 2] := States.GameTime + 3;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 4;
+
+        for I := 1 to 4 do
+          if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
+            if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
+             or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
+             or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
+             or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+               ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
+
+        Players[O].ScoutSilenceStartTime := States.GameTime + SILENCE_SCOUT_DELAY;
+        Players[O].ScoutSilenceGiver := P;
         Players[P].LastUsedSkill := sSilence;
         Players[P].FieldSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+        ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
       end;
     end;
   end;
@@ -9674,6 +9719,14 @@ begin
         Players[I1].HeroImmortalTime := States.GameTime + ARMOR_TIME;
         Players[I1].PlayerStatusTime := States.GameTime + ARMOR_TIME + 5;
         Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$70> ' + '[$' + States.PlayerColorText(Players[I1].ArmorGiver) + ']' + States.PlayerName(Players[I1].ArmorGiver) + '[]<$71> ' + SkillName(sSturdyArmor);
+      end;
+
+      if States.GameTime = Players[I1].ScoutSilenceStartTime then
+      begin
+        Players[I1].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+        Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$73> ' + '[$' + States.PlayerColorText(Players[I1].ScoutSilenceGiver) + ']' + States.PlayerName(Players[I1].ScoutSilenceGiver) + '[]<$71> ' + SkillName(sSilence);
+        Players[I1].HeroSilent := True;
+        Players[I1].HeroSilentTime := States.GameTime + SILENCE_SCOUT_TIME;
       end;
 
       if States.GameTime = Players[I1].RopeTime then
