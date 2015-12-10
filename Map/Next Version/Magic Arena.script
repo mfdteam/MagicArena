@@ -363,6 +363,7 @@ type
     HeroStunned: Boolean;
     HeroInFearTime: Integer;
     HeroInFear: Boolean;
+    HeroFearGiver: Integer;
     ZombiePlayer: Integer;
     RoadPlayer: Integer;
     DefenceTime: Integer;
@@ -904,6 +905,7 @@ begin
       HeroStunned := False;
       HeroInFearTime := 0;
       HeroInFear := False;
+      HeroFearGiver := -1;
       DefenceTime := 0;
       HeroPrisoned := False;
       HeroPrisonedTime := 0;
@@ -2131,6 +2133,7 @@ begin
         Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$74> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sFear);
         Players[O].HeroInFear := True;
+        Players[O].HeroFearGiver := P;
         Players[O].HeroInFearTime := States.GameTime + IN_FEAR_TIME;
         if Players[O].Hero > 0 then
           Actions.GroupBlockOrders(Players[O].Hero, True);
@@ -8371,6 +8374,9 @@ begin
           if (P <> Tiles[aX][aY].Owner)
           and (Players[P].PlayersTeam <> Players[Tiles[aX][aY].Owner].PlayersTeam) then
             Players[Tiles[aX][aY].Owner].Kills := Players[Tiles[aX][aY].Owner].Kills + 1 + Byte(Players[Tiles[aX][aY].Owner].DD);
+          if (Players[P].HeroInFear)
+          and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+            Players[Players[P].HeroFearGiver].Kills := Players[Players[P].HeroFearGiver].Kills + 1 + Byte(Players[Tiles[aX][aY].Owner].DD);
         end;
         if not (Players[P].CaptureMind)
         and not (Players[P].MindStunned) then
