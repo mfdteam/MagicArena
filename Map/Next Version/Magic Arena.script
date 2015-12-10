@@ -81,6 +81,7 @@ const
   STONES_RADIUS = 7;
   VAMPIRE_RADIUS = 5;
   MIND_RADIUS = 4;
+  SILENCE_SCOUT_RADIUS = 5;
 
   RAGE_RADIUS = 5;
   TOTEM_RADIUS = 4;
@@ -282,6 +283,7 @@ const
   TRACK_DELAY = 3;
   TRACK_FACTOR = 3;
   GRAVITY_MOVE_TIME = 60;
+  SILENCE_SCOUT_TIME = 60;
 
 //Game mechanics
 
@@ -337,7 +339,8 @@ type
             sFierySnake, sSturdyArmor, sCircleOfSilence,
             sRopesOfDeath, sDeafeningClatter, sRagingSpurt,
             sMentalBurst, sSteal, sUniversal, 
-            sStones, sVampire, sMind);
+            sStones, sVampire, sMind,
+                     sSilence);
 
 
 type
@@ -1501,6 +1504,8 @@ begin
     sVampire: Result := '<$101>';
     sMind: Result := '<$102>';
 
+    sSilence: Result := '<$81>';
+
     sNone: Result := '';
 
   end;
@@ -1535,7 +1540,8 @@ begin
     18: Result := '[$0045FF]<$19>[]';
     19: Result := '[$FFFF97]<$20>[]';
     20: Result := '[$00008B]<$21>[]';
-    21: Result := '[$BA5555]<$101>[]';
+    //21: Result := '[$BA5555]<$101>[]';
+    21: Result := '[$BA5555]<$81>[]';
     22: Result := '[$902F9D]<$51>[]';
     23: Result := '[$4040FF]<$22>[]';
     26: Result := '[$528AAF]<$47>[]';
@@ -6911,6 +6917,46 @@ begin
 end;
 
 
+procedure Silence(P, X, Y: Integer);
+var
+ X2, Y2, U, O: Integer;
+begin
+  if Players[P].Hero <= 0 then
+    Exit;
+
+  if States.GroupMember(Players[P].Hero, 0) <= 0 then
+    Exit;
+
+  if (TileOnBattlefield(X, Y))
+  and (Players[P].Hero > 0) then
+  begin
+    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    if (Abs(X2 - X) <= SILENCE_SCOUT_RADIUS)
+    and (Abs(Y2 - Y) <= SILENCE_SCOUT_RADIUS) then
+    begin
+      U := States.UnitAt(X, Y);
+      if U <> - 1 then
+        O := States.UnitOwner(U);
+      if (U <> - 1)
+      and (U = States.GroupMember(Players[O].Hero, 0))
+      and (not Players[O].HeroInFear)
+      and (O <> P)
+      and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
+      begin
+        Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+        Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$73> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sSilence);
+        Players[O].HeroSilent := True;
+        Players[O].HeroSilentTime := States.GameTime + SILENCE_SCOUT_TIME;
+        Players[P].LastUsedSkill := sSilence;
+        Players[P].FieldSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+      end;
+    end;
+  end;
+
+end;
+
+
 procedure Vampire(P, X, Y: Integer);
 var
   X2, Y2, U, O: Integer;
@@ -7740,6 +7786,8 @@ begin
           sVampire: Players[P].StolenSkillName := '<$101>';
           sMind: Players[P].StolenSkillName := '<$102>';
 
+          sSilence: Players[P].StolenSkillName := '<$81>';
+
           sNone: Players[P].StolenSkillName := '<$58>';
 
         end;
@@ -8046,6 +8094,18 @@ begin
                  end;
                end;
 
+      sSilence: if (U > 0)
+                and (InRange(O, 0, 7))
+                and (Abs(X - X2) <= SILENCE_SCOUT_RADIUS)
+                and (Abs(Y - Y2) <= SILENCE_SCOUT_RADIUS)
+                and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
+                begin
+                  TempFieldSkillDelay := Players[P].FieldSkillDelay;
+                  Silence(P, X, Y);
+                  Players[P].FieldSkillDelay := TempFieldSkillDelay;
+                  Players[P].WineSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                end;
+
       sVampire: if (U > 0)
                 and (Abs(X - X2) <= VAMPIRE_RADIUS)
                 and (Abs(Y - Y2) <= VAMPIRE_RADIUS)
@@ -8205,7 +8265,8 @@ begin
       18: SuddenDeath(P, X, Y);
       19: Teleport(P, X, Y);
       20: SacrificialTeleport(P, X, Y);
-      21: Vampire(P, X, Y);
+      //21: Vampire(P, X, Y);
+      21: Silence(P, X, Y);
       22: DeafeningClatter(P, X, Y);
       23: WaveOfRage(P, X, Y);
       25: StealSkill(P, X, Y);
