@@ -7366,6 +7366,8 @@ begin
       if (U <> - 1)
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroInFear)
+      and (not Players[O].HeroStunned)
+      and (not Players[O].HeroSilent)
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
