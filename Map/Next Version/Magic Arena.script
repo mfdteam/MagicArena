@@ -335,7 +335,7 @@ const
   TRIPLE_KILL_CHECK_TIME = 120;
   RAMPAGE_CHECK_TIME = 180;
   MAX_TIME_BETWEEN_KILLS = 60;
-  KILLS_REFRESH_TIME = 10;
+  KILLS_REFRESH_TIME = 50;
 
 
 type
@@ -8783,7 +8783,7 @@ begin
             Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] := States.GameTime;
             if Length(Players[Tiles[aX][aY].Owner].KillTimes) >= 4 then
               if (Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] - Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
-              and (not Players[Tiles[aX][aY].Owner].Rampage) then
+              {and (not Players[Tiles[aX][aY].Owner].Rampage)} then
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
                 Players[Tiles[aX][aY].Owner].Rampage := True;
@@ -8818,7 +8818,7 @@ begin
             Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] := States.GameTime;
             if Length(Players[Players[P].HeroFearGiver].KillTimes) >= 4 then
               if (Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] - Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
-              and (not Players[Players[P].HeroFearGiver].Rampage) then
+              {and (not Players[Players[P].HeroFearGiver].Rampage)} then
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
                 Players[Players[P].HeroFearGiver].Rampage := True;
@@ -9802,11 +9802,13 @@ begin
   end;
 
   if States.GameTime > GAME_START_TIME + 10 then
-    if not FirstBlood then
-    begin
-      Actions.PlayWAV(-1, 'FirstBlood', 1);
-      FirstBlood := True;
-    end;
+    for I := 0 to 7 do
+      if Players[I].Kills > 0 then
+        if not FirstBlood then
+        begin
+          Actions.PlayWAV(-1, 'FirstBlood', 1);
+          FirstBlood := True;
+        end;
 
   O := States.UnitOwner(aID);
   aX := States.UnitPositionX(aID);
@@ -9836,7 +9838,7 @@ begin
       Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] := States.GameTime;
         if Length(Players[LastAttacker].KillTimes) >= 4 then
           if (Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] - Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
-          and (not Players[LastAttacker].Rampage) then
+          {and (not Players[LastAttacker].Rampage)} then
           begin
             Actions.PlayWAV(-1, 'Rampage', 1);
             Players[LastAttacker].Rampage := True;
@@ -9999,6 +10001,7 @@ begin
         Players[I1].DoubleKill := False;
         Players[I1].TripleKill := False;
         Players[I1].Rampage := False;
+        SetLength(Players[I1].KillTimes, 0);
       end;
 
       if States.GameTime = Players[I1].WerewolfTime then
@@ -11049,6 +11052,7 @@ begin
   if Players[P].Hero > 0 then
     if (States.GroupIdle(Players[P].Hero))
     and (not Players[P].CastingSkill)
+    and (Players[P].HeroType <> 15)
     and (States.PlayerIsAI(P)) then
       Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 51, States.KaMRandomI(8));
 
