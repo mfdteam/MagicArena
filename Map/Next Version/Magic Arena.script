@@ -1163,6 +1163,7 @@ begin
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y1, RUNE_BLOCK_OBJ);
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y2, RUNE_BLOCK_OBJ);
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RuneType);
+    Actions.PlayWAV(-1, 'Rune', 1);
     RuneTime := RUNE_TIMER;
   end;
 end;
