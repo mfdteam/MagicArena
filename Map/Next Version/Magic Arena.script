@@ -284,7 +284,6 @@ const
   SPURT_AI_FACTOR = 8;
   STOLEN_SKILL_TIME = 1200;
   CAPTURE_MIND_TIME = 200;
-  MAX_SCOUT_STONES = 8;
   TRACK_TIME = 100;
   TRACK_DELAY = 3;
   TRACK_FACTOR = 3;
@@ -311,8 +310,6 @@ const
   CHANGE_RELIEF = True;
   MOVEMENT_DISTANCE = 3;
   MOVEMENT_FACTOR = 2;
-  VAMPIRE_HEALBUSH_START_TIME = 18;
-  VAMPIRE_HEALBUSH_END_TIME = 195;
   MAX_CIRCLES_AT_ONCE = 4;
   RECHOICE_TIME = 150;
   SET_SCREEN_RADIUS = 5;
@@ -361,7 +358,6 @@ type
     HeroImmortalTime: Integer;
     HeroChosen: Boolean;
     HP: Integer;
-    VampireDelay: Integer;
     RoadSkillDelay: Integer;
     FieldSkillDelay: Integer;
     WineSkillDelay: Integer;
@@ -900,7 +896,6 @@ begin
       HeroImmortal := False;
       HeroChosen := False;
       HP := START_HP;
-      VampireDelay := 0;
       RoadSkillDelay := 0;
       FieldSkillDelay := 0;
       WineSkillDelay := 0;
@@ -6842,7 +6837,7 @@ end;
 
 procedure Boomerang(P, X, Y, D: Integer);
 var
-  X1, Y1, X2, Y2, aX, aY, Desync, Direction: Integer;
+  X1, Y1, X2, Y2, DX1, DY1, DX2, DY2, Desync, Direction: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -6909,6 +6904,24 @@ begin
     if not States.PlayerIsAI(P) then
       Direction := Players[P].SkillDirection;
 
+    case States.KaMRandomI(100) of
+
+      0..49:  begin
+                DX1 := X2 - 1;
+                DY1 := Y2 - 1;
+                DX2 := X2 + 1;
+                DY2 := Y2 + 1;
+              end;
+
+      50..99: begin
+                DX1 := X2 + 1;
+                DY1 := Y2 + 1;
+                DX2 := X2 - 1;
+                DY2 := Y2 - 1;
+              end;
+
+    end;
+
     case Direction of
 
       0,1: begin
@@ -6933,7 +6946,7 @@ begin
              end;
 
              for Y1 := Y2 - 2 downto Y2 - BOOMERANG_LENGTH + 1 do
-               if TileOnBattlefield(X2 - 1, Y1) then
+               if TileOnBattlefield(DX1, Y1) then
                begin
                  Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -6942,7 +6955,7 @@ begin
                  SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-                 TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 - 1;
+                 TilesRoadX[P][Length(TilesRoadX[P]) - 1] := DX1;
                  TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
@@ -6972,7 +6985,7 @@ begin
              end;
 
              for Y1 := Y2 - BOOMERANG_LENGTH + 1 to Y2 - 2 do
-               if TileOnBattlefield(X2 + 1, Y1) then
+               if TileOnBattlefield(DX2, Y1) then
                begin
                  Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -6981,7 +6994,7 @@ begin
                  SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-                 TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + 1;
+                 TilesRoadX[P][Length(TilesRoadX[P]) - 1] := DX2;
                  TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
@@ -7034,7 +7047,7 @@ begin
              end;
 
              for X1 := X2 + 2 to X2 + BOOMERANG_LENGTH - 1 do
-               if TileOnBattlefield(X1, Y2 - 1) then
+               if TileOnBattlefield(X1, DY1) then
                begin
                  Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7044,7 +7057,7 @@ begin
                  SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                  TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
-                 TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
+                 TilesRoadY[P][Length(TilesRoadY[P]) - 1] := DY1;
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
@@ -7073,7 +7086,7 @@ begin
              end;
 
              for X1 := X2 + BOOMERANG_LENGTH - 1 downto X2 + 2 do
-               if TileOnBattlefield(X1, Y2 + 1) then
+               if TileOnBattlefield(X1, DY2) then
                begin
                  Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7083,7 +7096,7 @@ begin
                  SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                  TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
-                 TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 + 1;
+                 TilesRoadY[P][Length(TilesRoadY[P]) - 1] := DY2;
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
@@ -7135,7 +7148,7 @@ begin
              end;
 
              for Y1 := Y2 + 2 to Y2 + BOOMERANG_LENGTH - 1 do
-               if TileOnBattlefield(X2 - 1, Y1) then
+               if TileOnBattlefield(DX1, Y1) then
                begin
                  Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7144,7 +7157,7 @@ begin
                  SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-                 TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 - 1;
+                 TilesRoadX[P][Length(TilesRoadX[P]) - 1] := DX1;
                  TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
@@ -7174,7 +7187,7 @@ begin
              end;
 
              for Y1 := Y2 + BOOMERANG_LENGTH - 1 downto Y2 + 2 do
-               if TileOnBattlefield(X2 + 1, Y1) then
+               if TileOnBattlefield(DX2, Y1) then
                begin
                  Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7183,7 +7196,7 @@ begin
                  SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-                 TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + 1;
+                 TilesRoadX[P][Length(TilesRoadX[P]) - 1] := DX2;
                  TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
@@ -7236,7 +7249,7 @@ begin
              end;
 
              for X1 := X2 - 2 downto X2 - BOOMERANG_LENGTH + 1 do
-               if TileOnBattlefield(X1, Y2 - 1) then
+               if TileOnBattlefield(X1, DY1) then
                begin
                  Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7246,7 +7259,7 @@ begin
                  SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                  TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
-                 TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
+                 TilesRoadY[P][Length(TilesRoadY[P]) - 1] := DY1;
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
@@ -7275,7 +7288,7 @@ begin
              end;
 
              for X1 := X2 - BOOMERANG_LENGTH + 1 to X2 - 2 do
-               if TileOnBattlefield(X1, Y2 + 1) then
+               if TileOnBattlefield(X1, DY2) then
                begin
                  Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7285,7 +7298,7 @@ begin
                  SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                  SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                  TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
-                 TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 + 1;
+                 TilesRoadY[P][Length(TilesRoadY[P]) - 1] := DY2;
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
