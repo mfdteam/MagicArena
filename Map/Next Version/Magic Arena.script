@@ -345,8 +345,7 @@ type
             sViseOfDeath, sSacrificialTeleport, sConcentration,
             sFierySnake, sSturdyArmor, sCircleOfSilence,
             sRopesOfDeath, sDeafeningClatter, sRagingSpurt,
-            sMentalBurst, sSteal, sUniversal, 
-            sStones, sVampire,
+            sMentalBurst, sSteal, sUniversal,
             sBoomerang, sSilence, sMind);
 
 
@@ -440,11 +439,6 @@ type
     MindX2: Integer;
     MindY2: Integer;
     MindDir2: Integer;
-    Stone: Integer;
-    TempStone: Integer;
-    StoneRogue: Boolean;
-    SetUnit: Integer;
-    UnitKillDelay: Integer;
     StayingOnRuneTime: Integer;
     PikeAppearTime: Integer;
     PikeX: Integer;
@@ -457,7 +451,6 @@ type
     TempHero: Integer;
     TempX: Integer;
     TempY: Integer;
-    KilledByVampire: Boolean;
     SkillDirection: Integer;
     TrackStartTime: Integer;
     TrackStopTime: Integer;
@@ -533,8 +526,7 @@ var
   TeamInfo, Scores: array[0..1] of ANSIString;
   ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime: array[0..11] of Integer;
   RuneTime: Integer;
-  M, M2, M3, hX, hY: array[0..7] of Integer;
-  Scan: Integer;
+  M, M2: array[0..7] of Integer;
   ZomboHero: array[0..7] of array[0..3] of Integer;
   AISoldiers: array of Integer;
   SpurtTimes, SpurtX, SpurtY, SpurtDir: array[0..11] of array[0..SPURT_LENGTH - 1] of Integer;
@@ -963,7 +955,6 @@ begin
       StolenSkillName := '<$57>';
       TempHeroType := -1;
       StolenSkillTime := 0;
-      Stone := MAX_SCOUT_STONES;
       MindTime := 0;
       MindTime2 := 0;
       CaptureMind := False;
@@ -972,11 +963,9 @@ begin
       StunnedMindTime := 0;
       HeroMindType := -1;
       TempHeroMindType := -1;
-      StoneRogue := False;
       TempStolenSkill := sNone;
       TempStolenSkillName := '';
       TempStolenSkillTime := 0;
-      TempStone := 0;
       TempPlayersTeam := -1;
       MindAppearTime := 0;
       MindAppearTimeBack := 0;
@@ -986,8 +975,6 @@ begin
       MindX2 := 0;
       MindY2 := 0;
       MindDir2 := 0;
-      SetUnit := 0;
-      UnitKillDelay := 0;
       StayingOnRuneTime := 0;
       PikeAppearTime := 0;
       PikeX := 0;
@@ -1000,7 +987,6 @@ begin
       TempHero := -1;
       TempX := 2 + 2 * I;
       TempY := 2;
-      KilledByVampire := False;
       SkillDirection := -1;
       TrackStartTime := 0;
       TrackStopTime := 0;
@@ -1511,12 +1497,9 @@ begin
     sSteal: Result := '<$56>';
     sUniversal: Result := '';
 
-    sStones: Result := '<$99>';
-    sVampire: Result := '<$101>';
-    sMind: Result := '<$102>';
-
     sBoomerang: Result := '<$80>';
     sSilence: Result := '<$81>';
+    sMind: Result := '<$102>';
 
     sNone: Result := '';
 
@@ -1533,7 +1516,6 @@ begin
     18: Result := '[$00A5FF]<$11>[]';
     19: Result := '[$4782FF]<$12>[]';
     20: Result := '[$B8B8B8]<$13>[]';
-    //21: Result := '[$AAAAAA]<$99> [](<$100> []' + IntToStr(Players[P].Stone) + ')[]';
     21: Result := '[$AAAAAA]<$80>[]';
     22: Result := '[$634BBA]<$50>[]';
     23: Result := '[$499AEE]<$14>[]';
@@ -1553,7 +1535,6 @@ begin
     18: Result := '[$0045FF]<$19>[]';
     19: Result := '[$FFFF97]<$20>[]';
     20: Result := '[$00008B]<$21>[]';
-    //21: Result := '[$BA5555]<$101>[]';
     21: Result := '[$BA5555]<$81>[]';
     22: Result := '[$902F9D]<$51>[]';
     23: Result := '[$4040FF]<$22>[]';
@@ -1578,12 +1559,7 @@ begin
     23: Result := '[$EE677A]<$30>[]';
     26: Result := '[$1707A6]<$48>[]';
     27: Result := '[$00FC7C]<$31>[]';
-    25: begin
-        if Players[P].StolenSkillName = '<$99>' then
-          Result := '[$FFFFFF]<$99> []<$100> []' + IntToStr(Players[P].Stone) + ')[]';
-        if Players[P].StolenSkillName <> '<$99>' then
-          Result := '[$AE209F]' + Players[P].StolenSkillName + '[]';
-        end;
+    25: Result := '[$AE209F]' + Players[P].StolenSkillName + '[]';
   end;
 end;
 
@@ -6864,197 +6840,6 @@ end;
 //SCOUT
 
 
-procedure Stones(P, X, Y: Integer);
-var
- X2, Y2, U: Integer;
-begin
-  if Players[P].Hero <= 0 then
-    Exit;
-
-  if States.GroupMember(Players[P].Hero, 0) <= 0 then
-    Exit;
-
-  if (TileOnBattlefield(X, Y))
-  and (Players[P].Hero > 0) then
-  begin
-    U := States.UnitAt(X, Y);
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    if (Abs(X2 - X) <= STONES_RADIUS)
-    and (Abs(Y2 - Y) <= STONES_RADIUS)
-    and (CanPlaceObject(X, Y))
-    and (States.MapTileObject(X, Y) <> SCOUT_OBJECT2)
-    and (U = - 1) then
-    begin
-      Players[P].Stone := Players[P].Stone - 1;
-      TilesRoadLength[P] := TilesRoadLength[P] + 1;
-      SetLength(TilesRoadX[P], TilesRoadLength[P]);
-      SetLength(TilesRoadY[P], TilesRoadLength[P]);
-      SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
-      SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
-      SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-         
-      TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X; 
-      TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y;
-
-      if (not States.IsRoadAt(0, TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1]))
-      and (not States.IsRoadAt(1, TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1])) 
-      and (not States.IsRoadAt(2, TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1])) 
-      and (not States.IsRoadAt(3, TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1])) 
-      and (not States.IsRoadAt(4, TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1])) 
-      and (not States.IsRoadAt(5, TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1])) 
-      and (not States.IsRoadAt(6, TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1])) 
-      and (not States.IsRoadAt(7, TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1])) then
-      begin
-        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 75;
-        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 1;
-        TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT;
-        if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1]) = BARB_OBJECT3)
-        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1]) = BOWMAN_ROCKET)
-        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1]) = BOWMAN_OBJECT5)
-        or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - 1], TilesRoadY[P][Length(TilesRoadY[P]) - 1]), SWORD_OBJECT, VAGA_OBJECT6)) then
-        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEANUP_TIME;
-
-        Players[P].LastUsedSkill := sStones;
-
-        if (Players[P].Stone = 0) and (Players[P].StoneRogue = False) then
-        begin
-          Players[P].RoadSkillDelay := Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-          ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
-          Players[P].Stone := MAX_SCOUT_STONES;
-        end;
-        Players[P].StoneRogue := False;
-      end;
-    end;
-  end;
-end;
-
-
-procedure Vampire(P, X, Y: Integer);
-var
-  X2, Y2, U, O: Integer;
-begin
-  if Players[P].Hero <= 0 then
-    Exit;
-
-  if States.GroupMember(Players[P].Hero, 0) <= 0 then
-    Exit;
-
-  if not TileOnBattlefield(X, Y) then
-    Exit;
-
-  if States.UnitAt(X, Y) <= 0 then
-    Exit;
-
-  if (TileOnBattlefield(X, Y))
-  and (Players[P].Hero > 0) then
-  begin
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    if (Abs(X2 - X) <= VAMPIRE_RADIUS)
-    and (Abs(Y2 - Y) <= VAMPIRE_RADIUS) then
-    begin
-
-      hX[P] := MIN_X - 1;
-      hY[P] := MIN_Y - 1;
-
-      U := States.UnitAt(X, Y);
-      O := States.UnitOwner(U);
-      Players[P].SetUnit := U;
-      M3[P] := O;
-
-      if Players[O].HP = 1 then
-        Players[O].KilledByVampire := True;
-
-      if (U > 0)
-      and ((InRange(O, 8, 11)
-      and (Players[O].PlayersTeam <> Players[P].PlayersTeam))
-      or ((InRange(O, 0, 7))
-      and (U = States.GroupMember(Players[O].Hero, 0))
-      and (not Players[O].HeroPrisoned)
-      and (not Players[O].HeroImmortal)
-      and ((Players[P].PlayersTeam <> Players[O].PlayersTeam)
-      or ((P = O) and (Players[P].HP >= 2))))) then
-      begin
-        TilesFieldLength[P] := TilesFieldLength[P] + 5;
-        SetLength(TilesFieldX[P], TilesFieldLength[P]);
-        SetLength(TilesFieldY[P], TilesFieldLength[P]);
-
-        SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
-        SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
-        SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
-  
-        TilesFieldX[P][Length(TilesFieldX[P]) - 4] := X2 + 1;
-        TilesFieldX[P][Length(TilesFieldX[P]) - 3] := X2 - 1;
-        TilesFieldX[P][Length(TilesFieldX[P]) - 2] := X2 + 1;
-        TilesFieldX[P][Length(TilesFieldX[P]) - 1] := X2 - 1;
-    
-        TilesFieldY[P][Length(TilesFieldY[P]) - 4] := Y2 + 1;
-        TilesFieldY[P][Length(TilesFieldY[P]) - 3] := Y2 + 1;
-        TilesFieldY[P][Length(TilesFieldY[P]) - 2] := Y2 - 1;
-        TilesFieldY[P][Length(TilesFieldY[P]) - 1] := Y2 - 1;
-
-        for I := 1 to 4 do
-          TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := SCOUT_OBJECT3;
-
-        for I := 1 to 5 do
-          if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
-          begin
-            Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Owner := P;
-            Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Skill := sVampire;
-          end;
-    
-        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 11;
-        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 13;
-        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 15;
-        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 17;
-    
-        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 4] := States.GameTime + 1;
-        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 3] := States.GameTime + 3;
-        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 2] := States.GameTime + 5;
-        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 7;
-
-        for I := 1 to 4 do
-          if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
-            if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
-             or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
-             or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
-             or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
-               ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
-
-
-        Players[P].LastUsedSkill := sVampire;
-
-        Players[P].FieldSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-
-        if (Players[P].PlayersTeam = Players[O].PlayersTeam)
-        and (P <> O) then
-          Exit;
-
-        if (InRange(O, 0, 7))
-        and (U = States.GroupMember(Players[O].Hero, 0))
-        and (not Players[O].HeroPrisoned)
-        and (not Players[O].HeroImmortal)
-        and ((Players[P].PlayersTeam <> Players[O].PlayersTeam)
-        or ((P = O) and (Players[P].HP >= 2))) then
-        begin
-          Players[P].VampireDelay := States.GameTime + VAMPIRE_HEALBUSH_START_TIME;
-          Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-          Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$77> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sVampire);
-        end;
-
-        if (InRange(O, 8, 11))
-        and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
-          Players[P].UnitKillDelay := States.GameTime + VAMPIRE_HEALBUSH_START_TIME;
-
-        ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-
-      end;
-    end;
-  end;
-end;
-
-
 procedure Boomerang(P, X, Y, D: Integer);
 var
   X1, Y1, X2, Y2, aX, aY, Desync, Direction: Integer;
@@ -8320,11 +8105,9 @@ begin
           sSteal: Players[P].StolenSkillName := '<$56>';
           sUniversal: Players[P].StolenSkillName := '<$57>';
 
-          sStones: Players[P].StolenSkillName := '<$99>';
-          sVampire: Players[P].StolenSkillName := '<$101>';
-          sMind: Players[P].StolenSkillName := '<$102>';
-
+          sBoomerang: Players[P].StolenSkillName := '<$80>';
           sSilence: Players[P].StolenSkillName := '<$81>';
+          sMind: Players[P].StolenSkillName := '<$102>';
 
           sNone: Players[P].StolenSkillName := '<$58>';
 
@@ -8619,18 +8402,12 @@ begin
                 Players[P].WineSkillDelay := Round(ROGUE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
               end;
 
-      sStones: begin
-                 Players[P].StoneRogue := True;
-                 TempRoadSkillDelay := Players[P].RoadSkillDelay;
-                 Stones(P, X, Y);
-                 Players[P].RoadSkillDelay := TempRoadSkillDelay;
-                 if Players[P].Stone = 0 then
-                 begin
-                   Players[P].WineSkillDelay := Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-                   ClearRoadTilesArrayTime[P] := States.GameTime + Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - 5;
-                   Players[P].Stone := MAX_SCOUT_STONES;
-                 end;
-               end;
+      sBoomerang: begin
+                    TempRoadSkillDelay := Players[P].RoadSkillDelay;
+                    Boomerang(P, X, Y, -1);
+                    Players[P].RoadSkillDelay := TempRoadSkillDelay;
+                    Players[P].WineSkillDelay := Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                  end;
 
       sSilence: if (U > 0)
                 and (InRange(O, 0, 7))
@@ -8640,18 +8417,6 @@ begin
                 begin
                   TempFieldSkillDelay := Players[P].FieldSkillDelay;
                   Silence(P, X, Y);
-                  Players[P].FieldSkillDelay := TempFieldSkillDelay;
-                  Players[P].WineSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-                end;
-
-      sVampire: if (U > 0)
-                and (Abs(X - X2) <= VAMPIRE_RADIUS)
-                and (Abs(Y - Y2) <= VAMPIRE_RADIUS)
-                and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-                or (P = O) then
-                begin
-                  TempFieldSkillDelay := Players[P].FieldSkillDelay;
-                  Vampire(P, X, Y);
                   Players[P].FieldSkillDelay := TempFieldSkillDelay;
                   Players[P].WineSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                 end;
@@ -8742,7 +8507,6 @@ begin
       18: AccurateShot(P, X, Y, -1);
       19: FieryLance(P, X, Y, -1);
       20: ViseOfDeath(P, X, Y, -1);
-      //21: Stones(P, X, Y);
       21: Boomerang(P, X, Y, -1);
       22: RopesOfDeath(P, X, Y);
       23: CrackingEarth(P, X, Y, -1);
@@ -8804,7 +8568,6 @@ begin
       18: SuddenDeath(P, X, Y);
       19: Teleport(P, X, Y);
       20: SacrificialTeleport(P, X, Y);
-      //21: Vampire(P, X, Y);
       21: Silence(P, X, Y);
       22: DeafeningClatter(P, X, Y);
       23: WaveOfRage(P, X, Y);
@@ -9895,7 +9658,7 @@ begin
   if (InRange(P, 0, 7)) then
   begin
     Actions.FogRevealAll(P);
-    Actions.GroupKillAll(Players[P].Hero, not Players[P].KilledByVampire);
+    Actions.GroupKillAll(Players[P].Hero, True);
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].TribuneX, Players[P].TribuneY, 4, 1, 1);
     Actions.CinematicStart(P);
     Actions.CinematicPanTo(P, Players[P].TribuneX, Players[P].TribuneY, 0);
@@ -9988,7 +9751,7 @@ begin
     if Players[O].HP = 0 then
     begin
       Actions.FogRevealAll(O);
-      Actions.GroupKillAll(Players[O].Hero, not Players[O].KilledByVampire);
+      Actions.GroupKillAll(Players[O].Hero, True);
       Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[O].TribuneX, Players[O].TribuneY, 4, 1, 1);
       Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
       Actions.CinematicStart(O);
@@ -10293,60 +10056,6 @@ begin
         end;
       end;
 
-      if States.GameTime = Players[I1].VampireDelay - 1 then
-        if Players[M3[I1]].HP <= 0 then
-          TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 5] := 255;
-
-      if States.GameTime = Players[I1].VampireDelay then
-      begin
-        if (not Players[M3[I1]].MindStunned)
-        and (not Players[M3[I1]].CaptureMind)
-        and (Players[M3[I1]].HP > 0) then
-          Players[M3[I1]].HP := Players[M3[I1]].HP - 1;
-        if (Players[M3[I1]].CaptureMind)
-        and (Players[M3[I1]].HP > 0) then
-          Players[M[I1]].HP := Players[M[I1]].HP - 1;
-        if (Players[M3[I1]].MindStunned)
-        and (Players[I1].HP > 0) then
-          Players[I1].HP := Players[I1].HP - 1;
-
-        Scan := 0;
-        while (States.UnitAt(hX[I1], hY[I1]) > 0)
-        or (InRange(States.MapTileObject(hX[I1], hY[I1]), 0, 251))
-        or (not TileOnBattlefield(hX[I1], hY[I1]))
-        or (not CanPlaceObject(hX[I1], hY[I1])) do
-        begin
-          hX[I1] := States.UnitPositionX(States.GroupMember(Players[M3[I1]].Hero, 0)) + States.KaMRandomI(3) - States.KaMRandomI(3);
-          hY[I1] := States.UnitPositionY(States.GroupMember(Players[M3[I1]].Hero, 0)) + States.KaMRandomI(3) - States.KaMRandomI(3);
-          Scan := Scan + 1;
-          if Scan = 100 then
-            Exit;
-        end;
-
-        TilesFieldX[I1][Length(TilesFieldX[I1]) - 1] := hX[I1];
-        TilesFieldY[I1][Length(TilesFieldY[I1]) - 1] := hY[I1];
-
-        ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := States.GameTime + VAMPIRE_HEALBUSH_END_TIME;
-        SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - 1] := States.GameTime + 1;
-        TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 1] := SCOUT_OBJECT2;
-
-        if TileOnBattlefield(hX[I1], hY[I1]) then
-        begin
-          Tiles[hX[I1]][hY[I1]].Owner := I1;
-          Tiles[hX[I1]][hY[I1]].Skill := sVampire;
-        end;
-
-        if (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]) = BARB_OBJECT3)
-        or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]) = BOWMAN_ROCKET)
-        or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]) = BOWMAN_OBJECT5)
-        or (InRange(States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - 1], TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]), SWORD_OBJECT, VAGA_OBJECT6)) then
-          ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] + CLEANUP_TIME;
-        ClearFieldTilesArrayTime[I1] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] + CLEAR_ARRAY_FACTOR;
-      end;
-
-      if States.GameTime = Players[I1].UnitKillDelay then  
-        Actions.UnitKill(Players[I1].SetUnit, False);
-
       if States.GameTime = Players[I1].MindTime then
       begin
         Actions.GroupKillAll(Players[I1].Hero, True);
@@ -10379,7 +10088,6 @@ begin
         Players[I1].TempStolenSkill := Players[I1].StolenSkill;
         Players[I1].TempStolenSkillTime := Players[I1].StolenSkillTime;
         Players[I1].TempStolenSkillName := Players[I1].StolenSkillName;
-        Players[I1].TempStone := Players[I1].Stone;
         Players[I1].TempReCharge := Players[I1].ReCharge;
         Players[I1].TempReChargeTime := Players[I1].ReChargeTime;
 
@@ -10429,7 +10137,6 @@ begin
         Players[I1].StolenSkill := Players[M[I1]].StolenSkill;
         Players[I1].StolenSkillTime := Players[M[I1]].StolenSkillTime;
         Players[I1].StolenSkillName := Players[M[I1]].StolenSkillName;
-        Players[I1].Stone := Players[M[I1]].Stone;
         Players[I1].ReCharge := Players[M[I1]].ReCharge;
         Players[I1].ReChargeTime := Players[M[I1]].ReChargeTime;
         Players[I1].Preparing := Players[M[I1]].Preparing;
@@ -10515,8 +10222,6 @@ begin
           Players[I1].StolenSkill := Players[I1].TempStolenSkill;
           Players[I1].StolenSkillTime := Players[I1].TempStolenSkillTime;
           Players[I1].StolenSkillName := Players[I1].TempStolenSkillName;
-          Players[M[I1]].Stone := Players[I1].Stone;
-          Players[I1].Stone := Players[I1].TempStone;
           Players[M[I1]].ReCharge := Players[I1].ReCharge;
           Players[I1].ReCharge := Players[I1].TempReCharge;
           Players[M[I1]].ReChargeTime := Players[I1].ReChargeTime;
