@@ -7385,6 +7385,7 @@ begin
       and (not Players[O].HeroInFear)
       and (not Players[O].HeroStunned)
       and (not Players[O].HeroSilent)
+      and (not Players[O].HeroImmortal)
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
