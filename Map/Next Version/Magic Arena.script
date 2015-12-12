@@ -72,7 +72,6 @@ const
   PRISON_RADIUS = 3;
   GRAVITY_RADIUS1 = 5;
   FIRE_RADIUS = 6;
-  WEREWOLF_RADIUS = 6;
   SHOCK_RADIUS = 6;
   REGEN_RADIUS = 4;
   ARMOR_RADIUS = 5;
@@ -4958,22 +4957,18 @@ begin
     NewDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    if (Abs(X2 - X) <= WEREWOLF_RADIUS)
-    and (Abs(Y2 - Y) <= WEREWOLF_RADIUS) then
-    begin
-      Players[P].WineSkillDelay := 0;
-      Players[P].RoadSkillDelay := 0;
-      Players[P].FieldSkillDelay := 0;
-      Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
-      Players[P].VagaX := X2;
-      Players[P].VagaY := Y2;
-      Players[P].VagaDir := NewDir;
-      Players[P].VagaAppearTime := States.GameTime + VAGA_DELAY_OF_TURNING;
-      Players[P].TempHeroType := Players[P].HeroType;
-      Players[P].HeroType := 27;
-      Players[P].LastUsedSkill := sWerewolf;
-    end;
+    Players[P].WineSkillDelay := 0;
+    Players[P].RoadSkillDelay := 0;
+    Players[P].FieldSkillDelay := 0;
+    Actions.GroupKillAll(Players[P].Hero, True);
+    Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+    Players[P].VagaX := X2;
+    Players[P].VagaY := Y2;
+    Players[P].VagaDir := NewDir;
+    Players[P].VagaAppearTime := States.GameTime + VAGA_DELAY_OF_TURNING;
+    Players[P].TempHeroType := Players[P].HeroType;
+    Players[P].HeroType := 27;
+    Players[P].LastUsedSkill := sWerewolf;
   end;
 
 end;
@@ -8318,9 +8313,7 @@ begin
                           Players[P].WineSkillDelay := Round(AXE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                         end;
 
-      sWerewolf: if (Abs(X - X2) <= WEREWOLF_RADIUS)
-                 and (Abs(Y - Y2) <= WEREWOLF_RADIUS) then
-                   Werewolf(P, X, Y);
+      sWerewolf: Werewolf(P, X, Y);
 
       sDisorientation: if (Abs(X - X2) <= SHOCK_RADIUS)
                        and (Abs(Y - Y2) <= SHOCK_RADIUS) then
