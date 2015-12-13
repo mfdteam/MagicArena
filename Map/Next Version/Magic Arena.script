@@ -1821,9 +1821,12 @@ end;
 
 
 procedure EndReChoice(P: Integer);
+var
+  TH: Integer;
 begin
-  Actions.GroupKillAll(Players[P].Hero, True);
+  TH := Players[P].Hero;
   Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
+  Actions.GroupKillAll(TH, True);
   Players[P].ReChoice := False;
   Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
   Actions.FogCoverAll(P);
@@ -8479,7 +8482,8 @@ begin
   and (Players[P].Hero = -1)
   and (States.UnitAt(X, Y) > 0)
   and (InRange(States.UnitType(States.UnitAt(X, Y)), 14, 27)))
-  or (Players[P].ReChoice) then
+  or ((Players[P].ReChoice)
+  and (InRange(States.UnitType(States.UnitAt(X, Y)), 14, 27))) then
   begin
     Players[P].HeroType := States.UnitType(States.UnitAt(X, Y));
     Players[P].TempHeroType := Players[P].HeroType;
@@ -8492,7 +8496,8 @@ begin
       TeamChoice[1] := TeamChoice[1] + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$32> ' + States.UnitTypeName(Players[P].HeroType);
   end;
 
-  if Players[P].ReChoice then
+  if (Players[P].ReChoice)
+  and (InRange(States.UnitType(States.UnitAt(X, Y)), 14, 27)) then
     EndReChoice(P);
 
   if Players[P].HP <= 0 then
