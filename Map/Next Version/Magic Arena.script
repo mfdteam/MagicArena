@@ -1,4 +1,4 @@
-//Script version 2.27 (24 nov 2015)
+//Script version 2.64 (13 dec 2015)
 
 const
 
@@ -9809,7 +9809,6 @@ procedure OnPlayerVictory(P: Integer);
 begin
   if (InRange(P, 0, 7)) then
     Actions.FogRevealAll(P);
-  Actions.PlayWAVFadeMusic(-1, 'Win', 1);
 end;
 
 
