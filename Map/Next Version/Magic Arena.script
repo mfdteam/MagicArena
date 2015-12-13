@@ -1,4 +1,4 @@
-//Script version 2.64 (13 dec 2015)
+//Script version 2.27 (24 nov 2015)
 
 const
 
@@ -286,7 +286,7 @@ const
   TRACK_TIME = 100;
   TRACK_DELAY = 3;
   TRACK_FACTOR = 3;
-  GRAVITY_MOVE_TIME = 60;
+  GRAVITY_MOVE_TIME = 20;
   SILENCE_SCOUT_TIME = 50;
   SILENCE_SCOUT_DELAY = 12;
 
@@ -474,6 +474,7 @@ type
     DoubleKill: Boolean;
     TripleKill: Boolean;
     Rampage: Boolean;
+    GravityUser: Integer;
   end;
 
 
@@ -1017,6 +1018,7 @@ begin
       DoubleKill := False;
       TripleKill := False;
       Rampage := False;
+      GravityUser := -1;
     end;
   end;
 
@@ -8842,6 +8844,41 @@ begin
                 Players[Players[P].HeroFearGiver].KillsCountTime := Players[Players[P].HeroFearGiver].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
           end;
+          if (Players[P].MovedByGravity)
+          and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+          begin
+            Players[Players[P].GravityUser].Kills := Players[Players[P].GravityUser].Kills + 1 + Byte(Players[Tiles[aX][aY].Owner].DD);
+            Players[Players[P].GravityUser].TotalKills := Players[Players[P].GravityUser].TotalKills + 1;
+            SetLength(Players[Players[P].GravityUser].KillTimes, Length(Players[Players[P].GravityUser].KillTimes) + 1);
+            Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] := States.GameTime;
+            if Length(Players[Players[P].GravityUser].KillTimes) >= 4 then
+              if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
+              {and (not Players[Players[P].GravityUser].Rampage)} then
+              begin
+                Actions.PlayWAV(-1, 'Rampage', 1);
+                Players[Players[P].GravityUser].Rampage := True;
+                Players[Players[P].GravityUser].KillsCountTime := States.GameTime + KILLS_REFRESH_TIME;
+              end;
+            if Length(Players[Players[P].GravityUser].KillTimes) >= 3 then
+              if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
+              and (not Players[Players[P].GravityUser].TripleKill)
+              and (not Players[Players[P].GravityUser].Rampage) then
+              begin
+                Actions.PlayWAV(-1, 'TripleKill', 1);
+                Players[Players[P].GravityUser].TripleKill := True;
+                Players[Players[P].GravityUser].KillsCountTime := Players[Players[P].GravityUser].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+              end;
+            if Length(Players[Players[P].GravityUser].KillTimes) >= 2 then
+              if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
+              and (not Players[Players[P].GravityUser].DoubleKill)
+              and (not Players[Players[P].GravityUser].TripleKill)
+              and (not Players[Players[P].GravityUser].Rampage) then
+              begin
+                Actions.PlayWAV(-1, 'DoubleKill', 1);
+                Players[Players[P].GravityUser].DoubleKill := True;
+                Players[Players[P].GravityUser].KillsCountTime := Players[Players[P].GravityUser].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+              end;
+          end;
         end;
         if not (Players[P].CaptureMind)
         and not (Players[P].MindStunned) then
@@ -9679,6 +9716,7 @@ begin
                       Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
                       Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sGravity);
                       Players[O].MovedByGravity := True;
+                      Players[O].GravityUser := P;
                       Players[O].GravityTime := States.GameTime + GRAVITY_MOVE_TIME;
                     end;
                     Break;
@@ -9771,6 +9809,7 @@ procedure OnPlayerVictory(P: Integer);
 begin
   if (InRange(P, 0, 7)) then
     Actions.FogRevealAll(P);
+  Actions.PlayWAVFadeMusic(-1, 'Win', 1);
 end;
 
 
