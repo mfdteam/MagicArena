@@ -8845,6 +8845,7 @@ begin
               end;
           end;
           if (Players[P].MovedByGravity)
+          and (Players[P].PlayersTeam <> Players[Players[P].GravityUser].PlayersTeam)
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
             Players[Players[P].GravityUser].Kills := Players[Players[P].GravityUser].Kills + 1 + Byte(Players[Tiles[aX][aY].Owner].DD);
