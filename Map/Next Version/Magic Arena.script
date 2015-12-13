@@ -475,6 +475,7 @@ type
     TripleKill: Boolean;
     Rampage: Boolean;
     GravityUser: Integer;
+    MovedByRopes: Boolean;
   end;
 
 
@@ -1019,6 +1020,7 @@ begin
       TripleKill := False;
       Rampage := False;
       GravityUser := -1;
+      MovedByRopes := False;
     end;
   end;
 
@@ -6523,6 +6525,7 @@ begin
 
         Players[O].RopeTime := States.GameTime + ROPE_DELAY;
         Players[O].RopeAttacker := P;
+        Players[O].MovedByRopes := True;
         Players[O].RopeUnitDir := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
         case D of
 
@@ -8880,6 +8883,42 @@ begin
                 Players[Players[P].GravityUser].KillsCountTime := Players[Players[P].GravityUser].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
           end;
+          if (Players[P].MovedByRopes)
+          and (Players[P].PlayersTeam <> Players[Players[P].RopeAttacker].PlayersTeam)
+          and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+          begin
+            Players[Players[P].RopeAttacker].Kills := Players[Players[P].RopeAttacker].Kills + 1 + Byte(Players[Tiles[aX][aY].Owner].DD);
+            Players[Players[P].RopeAttacker].TotalKills := Players[Players[P].RopeAttacker].TotalKills + 1;
+            SetLength(Players[Players[P].RopeAttacker].KillTimes, Length(Players[Players[P].RopeAttacker].KillTimes) + 1);
+            Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 1] := States.GameTime;
+            if Length(Players[Players[P].RopeAttacker].KillTimes) >= 4 then
+              if (Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 1] - Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
+              {and (not Players[Players[P].RopeAttacker].Rampage)} then
+              begin
+                Actions.PlayWAV(-1, 'Rampage', 1);
+                Players[Players[P].RopeAttacker].Rampage := True;
+                Players[Players[P].RopeAttacker].KillsCountTime := States.GameTime + KILLS_REFRESH_TIME;
+              end;
+            if Length(Players[Players[P].RopeAttacker].KillTimes) >= 3 then
+              if (Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 1] - Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
+              and (not Players[Players[P].RopeAttacker].TripleKill)
+              and (not Players[Players[P].RopeAttacker].Rampage) then
+              begin
+                Actions.PlayWAV(-1, 'TripleKill', 1);
+                Players[Players[P].RopeAttacker].TripleKill := True;
+                Players[Players[P].RopeAttacker].KillsCountTime := Players[Players[P].RopeAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+              end;
+            if Length(Players[Players[P].RopeAttacker].KillTimes) >= 2 then
+              if (Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 1] - Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
+              and (not Players[Players[P].RopeAttacker].DoubleKill)
+              and (not Players[Players[P].RopeAttacker].TripleKill)
+              and (not Players[Players[P].RopeAttacker].Rampage) then
+              begin
+                Actions.PlayWAV(-1, 'DoubleKill', 1);
+                Players[Players[P].RopeAttacker].DoubleKill := True;
+                Players[Players[P].RopeAttacker].KillsCountTime := Players[Players[P].RopeAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+              end;
+          end;
         end;
         if not (Players[P].CaptureMind)
         and not (Players[P].MindStunned) then
@@ -10182,6 +10221,10 @@ begin
         Players[I1].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[I1].RopeAttacker) + ']' + States.PlayerName(Players[I1].RopeAttacker) + '[]<$71> ' + SkillName(sRopesOfDeath);
       end;
+
+      if (States.GameTime >= Players[I1].RopeTime + ROPE_DELAY)
+      and (Players[I1].MovedByRopes) then
+        Players[I1].MovedByRopes := False;
 
       if States.GameTime = Players[I1].SkillTime then
         Players[I1].CastingSkill := False;
