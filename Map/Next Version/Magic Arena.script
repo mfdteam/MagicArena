@@ -665,8 +665,10 @@ begin
     if (aObj <> 255)
     and (not InRange(aObj, 149, 172))
     and (TileOnBattlefield(aX, aY))
-    and (States.GameTime > Tiles[aX][aY].ObjectRefreshTime) then
-      Actions.MapTileObjectSet(aX, aY, 255);
+    and (States.GameTime > Tiles[aX][aY].ObjectRefreshTime)
+    and (InRange(Tiles[aX][aY].Owner, 0, 11)) then
+      if States.PlayerIsAI(Tiles[aX][aY].Owner) then
+        Actions.MapTileObjectSet(aX, aY, 255);
   end;
 
 end;
@@ -9770,7 +9772,7 @@ begin
                         begin
                           OT := Zombies[I].Owner;
                           HT := States.UnitHunger(Zombies[I].ID);
-                      end;
+                        end;
                       Actions.GroupKillAll(States.UnitsGroup(U), True);
                       G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
                       SetLength(Zombies, Length(Zombies) + 1);
