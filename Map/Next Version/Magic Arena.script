@@ -9722,7 +9722,7 @@ end;
 
 procedure CheckGravityCircles(P: Integer);
 var
-  X, Y, O, U, G, D, UT, CC, OT: Integer;
+  X, Y, O, U, G, D, UT, CC, OT, HT: Integer;
 begin
   if States.PlayerEnabled(P) then
     if GravityCirclesLength[P] > 0 then
@@ -9767,13 +9767,16 @@ begin
                     begin
                       for I := 0 to Length(Zombies) - 1 do
                         if U = Zombies[I].ID then
+                        begin
                           OT := Zombies[I].Owner;
+                          HT := States.UnitHunger(Zombies[I].ID);
+                      end;
                       Actions.GroupKillAll(States.UnitsGroup(U), True);
                       G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
                       SetLength(Zombies, Length(Zombies) + 1);
                       Zombies[Length(Zombies) - 1].Owner := OT;
                       Zombies[Length(Zombies) - 1].ID := States.GroupMember(G, 0);
-                      Actions.GroupHungerSet(G, RUNE_ZOMBIE_LIFE);
+                      Actions.GroupHungerSet(G, HT);
                       Break;
                       Exit;
                     end;
@@ -12855,4 +12858,3 @@ begin
     end;
 
 end;
-
