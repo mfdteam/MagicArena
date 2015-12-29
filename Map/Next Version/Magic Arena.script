@@ -8772,6 +8772,9 @@ begin
       begin 
         Actions.GroupKillAll(Players[P].Hero, False);
         Players[P].Hero := Actions.GiveGroup(P, T, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
+        Players[P].HeroInFearTime := 0;
+        Players[P].HeroStunnedTime := 0;
+        Players[P].HeroSilentTime := 0;
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
           if SkillName(Tiles[aX][aY].Skill) <> '' then
