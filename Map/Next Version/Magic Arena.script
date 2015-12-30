@@ -9061,16 +9061,7 @@ begin
     Players[P].ReChargeTime := States.GameTime + RUNE_RECHARGE_TIME;
     Players[P].RoadSkillDelay := 0;
     Players[P].FieldSkillDelay := 0;
-    if Players[P].HeroType <> 25 then
-      Players[P].WineSkillDelay := 0;
-    if Players[P].HeroType = 23 then
-      Players[P].WineSkillDelay := ROGUE_TOTEM_DELAY;
-    if Players[P].HeroType = 15 then
-      Players[P].FieldSkillDelay := ROGUE_FIREWORKS_DELAY;
-    if Players[P].HeroType = 17 then
-      Players[P].WineSkillDelay := ROGUE_REVENGE_DELAY;
-    if Players[P].HeroType = 25 then
-      Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
+    Players[P].WineSkillDelay := 0;
     Actions.MapTileObjectSet(aX, aY, 255);
   end;
 
