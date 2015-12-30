@@ -665,8 +665,10 @@ begin
     if (aObj <> 255)
     and (not InRange(aObj, 149, 172))
     and (TileOnBattlefield(aX, aY))
-    and (States.GameTime > Tiles[aX][aY].ObjectRefreshTime) then
-      Actions.MapTileObjectSet(aX, aY, 255);
+    and (States.GameTime > Tiles[aX][aY].ObjectRefreshTime)
+    and (InRange(Tiles[aX][aY].Owner, 0, 11)) then
+      if States.PlayerIsAI(Tiles[aX][aY].Owner) then
+        Actions.MapTileObjectSet(aX, aY, 255);
   end;
 
 end;
@@ -4569,10 +4571,10 @@ begin
       for I := 1 to 4 do 
         TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := VAGA_OBJECT5;
   
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 10;
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 12;
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 14;
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 16;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 8;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 10;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 12;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 14;
     
       SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 1;
       SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 3;
@@ -8770,6 +8772,23 @@ begin
       begin 
         Actions.GroupKillAll(Players[P].Hero, False);
         Players[P].Hero := Actions.GiveGroup(P, T, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
+        Players[P].HeroInFearTime := 0;
+        Players[P].HeroStunnedTime := 0;
+        Players[P].HeroSilentTime := 0;
+
+        if Tiles[aX][aY].Owner = P then
+        begin
+          if TilesRoadLength[P] > 0 then
+            for I := 0 to TilesRoadLength[P] - 1 do
+              SetTilesRoadTimes[P][I] := 0;
+          if TilesFieldLength[P] > 0 then
+            for I := 0 to TilesFieldLength[P] - 1 do
+              SetTilesFieldTimes[P][I] := 0;
+          if TilesWineLength[P] > 0 then
+            for I := 0 to TilesWineLength[P] - 1 do
+              SetTilesWineTimes[P][I] := 0;
+        end;
+
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
           if SkillName(Tiles[aX][aY].Skill) <> '' then
@@ -9722,7 +9741,7 @@ end;
 
 procedure CheckGravityCircles(P: Integer);
 var
-  X, Y, O, U, G, D, UT, CC, OT: Integer;
+  X, Y, O, U, G, D, UT, CC, OT, HT: Integer;
 begin
   if States.PlayerEnabled(P) then
     if GravityCirclesLength[P] > 0 then
@@ -9767,13 +9786,16 @@ begin
                     begin
                       for I := 0 to Length(Zombies) - 1 do
                         if U = Zombies[I].ID then
+                        begin
                           OT := Zombies[I].Owner;
+                          HT := States.UnitHunger(Zombies[I].ID);
+                        end;
                       Actions.GroupKillAll(States.UnitsGroup(U), True);
                       G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
                       SetLength(Zombies, Length(Zombies) + 1);
                       Zombies[Length(Zombies) - 1].Owner := OT;
                       Zombies[Length(Zombies) - 1].ID := States.GroupMember(G, 0);
-                      Actions.GroupHungerSet(G, RUNE_ZOMBIE_LIFE);
+                      Actions.GroupHungerSet(G, HT);
                       Break;
                       Exit;
                     end;
@@ -12855,4 +12877,3 @@ begin
     end;
 
 end;
-
