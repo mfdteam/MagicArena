@@ -9907,6 +9907,37 @@ begin
   aX := States.UnitPositionX(aID);
   aY := States.UnitPositionY(aID);
 
+  if (InRange(O, 0, 7))
+  and (InRange(aKiller, 9, 11)) then
+  begin
+
+    Players[O].HeroSilentTime := 0;
+    Players[O].HeroStunnedTime := 0;
+    Players[O].HeroInFearTime := 0;
+    
+    if TilesRoadLength[O] > 0 then
+      for I := 0 to TilesRoadLength[O] - 1 do
+      begin
+        SetTilesRoadTimes[O][I] := 0;
+        TilesRoadObjects[O][I] := 255;
+      end;
+
+    if TilesFieldLength[O] > 0 then
+      for I := 0 to TilesFieldLength[O] - 1 do
+      begin
+        SetTilesFieldTimes[O][I] := 0;
+        TilesFieldObjects[O][I] := 255;
+      end;
+
+    if TilesWineLength[O] > 0 then
+      for I := 0 to TilesWineLength[O] - 1 do
+      begin
+        SetTilesWineTimes[O][I] := 0;
+        TilesWineObjects[O][I] := 255;
+      end;
+
+  end;
+
   for I := 0 to 7 do
   for K := 0 to 3 do
     if ZomboHero[I][K] > 0 then
