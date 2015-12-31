@@ -8776,18 +8776,15 @@ begin
         Players[P].HeroStunnedTime := 0;
         Players[P].HeroSilentTime := 0;
 
-        if Tiles[aX][aY].Owner = P then
-        begin
-          if TilesRoadLength[P] > 0 then
-            for I := 0 to TilesRoadLength[P] - 1 do
-              SetTilesRoadTimes[P][I] := 0;
-          if TilesFieldLength[P] > 0 then
-            for I := 0 to TilesFieldLength[P] - 1 do
-              SetTilesFieldTimes[P][I] := 0;
-          if TilesWineLength[P] > 0 then
-            for I := 0 to TilesWineLength[P] - 1 do
-              SetTilesWineTimes[P][I] := 0;
-        end;
+        if TilesRoadLength[P] > 0 then
+          for I := 0 to TilesRoadLength[P] - 1 do
+            SetTilesRoadTimes[P][I] := 0;
+        if TilesFieldLength[P] > 0 then
+          for I := 0 to TilesFieldLength[P] - 1 do
+            SetTilesFieldTimes[P][I] := 0;
+        if TilesWineLength[P] > 0 then
+          for I := 0 to TilesWineLength[P] - 1 do
+            SetTilesWineTimes[P][I] := 0;
 
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
