@@ -8782,18 +8782,27 @@ begin
             SetTilesRoadTimes[P][I] := 0;
             TilesRoadObjects[P][I] := 255;
           end;
+
         if TilesFieldLength[P] > 0 then
           for I := 0 to TilesFieldLength[P] - 1 do
           begin
             SetTilesFieldTimes[P][I] := 0;
             TilesFieldObjects[P][I] := 255;
           end;
+
         if TilesWineLength[P] > 0 then
           for I := 0 to TilesWineLength[P] - 1 do
           begin
             SetTilesWineTimes[P][I] := 0;
             TilesWineObjects[P][I] := 255;
           end;
+
+        for I := 0 to 7 do
+          if Players[I].RopeAttacker = P then
+            Players[I].RopeAttacker := -1;
+
+        for K := 0 to SPURT_LENGTH - 1 do
+          SpurtTimes[P][K] := 0;
 
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
@@ -9938,9 +9947,17 @@ begin
 
   end;
 
-  for I := 0 to 7 do
-    if Players[I].RopeAttacker = O then
-      Players[I].RopeAttacker := -1;
+  if InRange(aKiller, 9, 11) then
+  begin
+
+    for I := 0 to 7 do
+      if Players[I].RopeAttacker = O then
+        Players[I].RopeAttacker := -1;
+
+    for K := 0 to SPURT_LENGTH - 1 do
+      SpurtTimes[O][K] := 0;
+
+  end;
 
   for I := 0 to 7 do
   for K := 0 to 3 do
