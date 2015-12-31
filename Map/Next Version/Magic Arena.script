@@ -8778,13 +8778,22 @@ begin
 
         if TilesRoadLength[P] > 0 then
           for I := 0 to TilesRoadLength[P] - 1 do
+          begin
             SetTilesRoadTimes[P][I] := 0;
+            TilesRoadObjects[P][I] := 255;
+          end;
         if TilesFieldLength[P] > 0 then
           for I := 0 to TilesFieldLength[P] - 1 do
+          begin
             SetTilesFieldTimes[P][I] := 0;
+            TilesFieldObjects[P][I] := 255;
+          end;
         if TilesWineLength[P] > 0 then
           for I := 0 to TilesWineLength[P] - 1 do
+          begin
             SetTilesWineTimes[P][I] := 0;
+            TilesWineObjects[P][I] := 255;
+          end;
 
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
