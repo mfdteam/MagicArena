@@ -6831,6 +6831,7 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRagingSpurt;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
+
         end;
 
     {Players[P].KnightX := X2;
@@ -6855,7 +6856,8 @@ procedure CheckSpurt(P, Step: Integer);
 begin
   if (States.GameTime = SpurtTimes[P][Step] + 1)
   and (States.GameTime > CHOOSE_HERO_TIMER)
-  and (Players[P].HP > 0) then
+  and (Players[P].HP > 0)
+  and (TileOnBattlefield(SpurtX[P][Step], SpurtY[P][Step])) then
   begin
     Actions.GroupKillAll(Players[P].Hero, True);
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, SpurtX[P][Step], SpurtY[P][Step], SpurtDir[P][Step], 1, 1);
