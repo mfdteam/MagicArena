@@ -6717,10 +6717,11 @@ begin
     SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 16 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
 
     for I := 1 to 8 do
-    begin
-      TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := KNIGHT_OBJECT2;
-      Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
-    end;
+      if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
+      begin
+        TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := KNIGHT_OBJECT2;
+        Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
+      end;
 
     for I := 1 to 8 do
       if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
