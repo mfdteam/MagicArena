@@ -8793,8 +8793,16 @@ begin
         begin
           if SkillName(Tiles[aX][aY].Skill) <> '' then
           begin
-            Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-            Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+            if Tiles[aX][aY].Owner <> P then
+            begin
+              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+            end;
+            if Tiles[aX][aY].Owner = P then
+            begin
+              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
+            end;
           end;
           if (P <> Tiles[aX][aY].Owner)
           and (Players[P].PlayersTeam <> Players[Tiles[aX][aY].Owner].PlayersTeam) then
