@@ -476,6 +476,7 @@ type
     Rampage: Boolean;
     GravityUser: Integer;
     MovedByRopes: Boolean;
+    SpurtStartTime: Integer;
   end;
 
 
@@ -1023,6 +1024,7 @@ begin
       Rampage := False;
       GravityUser := -1;
       MovedByRopes := False;
+      SpurtStartTime := 0;
     end;
   end;
 
@@ -6661,10 +6663,7 @@ begin
     Actions.GroupOrderHalt(Players[P].Hero);
     Actions.GroupBlockOrders(Players[P].Hero, True);
     Players[P].HeroStunned := True;
-    Players[P].HeroImmortalTime := States.GameTime + SPURT_TIME + 5 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
-    Players[P].HeroImmortal := True;
-    Players[P].Preparing := True;
-    Players[P].PreparingTime := States.GameTime + SPURT_TIME + 5 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+    Players[P].SpurtStartTime := States.GameTime + 25 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
 
     if not States.PlayerIsAI(P) then
       Direction := Players[P].SkillDirection;
@@ -10215,6 +10214,14 @@ begin
         Players[I1].HeroImmortalTime := States.GameTime + ARMOR_TIME;
         Players[I1].PlayerStatusTime := States.GameTime + ARMOR_TIME + 5;
         Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$70> ' + '[$' + States.PlayerColorText(Players[I1].ArmorGiver) + ']' + States.PlayerName(Players[I1].ArmorGiver) + '[]<$71> ' + SkillName(sSturdyArmor);
+      end;
+
+      if States.GameTime = Players[I1].SpurtStartTime then
+      begin
+        Players[I1].HeroImmortalTime := (States.GameTime + SPURT_TIME + 5) - 25 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
+        Players[I1].HeroImmortal := True;
+        Players[I1].Preparing := True;
+        Players[I1].PreparingTime := (States.GameTime + SPURT_TIME + 5) - 25 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
       end;
 
       if States.GameTime = Players[I1].ScoutSilenceStartTime then
