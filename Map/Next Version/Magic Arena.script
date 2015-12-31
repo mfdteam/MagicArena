@@ -9939,6 +9939,10 @@ begin
   end;
 
   for I := 0 to 7 do
+    if Players[I].RopeAttacker = O then
+      Players[I].RopeAttacker := -1;
+
+  for I := 0 to 7 do
   for K := 0 to 3 do
     if ZomboHero[I][K] > 0 then
       if aID = States.GroupMember(ZomboHero[I][K], 0) then
@@ -10278,15 +10282,16 @@ begin
       end;
 
       if States.GameTime = Players[I1].RopeTime then
-      begin
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].RopeDX
-        + States.UnitPositionX(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)), Players[I1].RopeDY
-        + States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)), Players[I1].RopeUnitDir, 1, 1);
-        Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-        Players[I1].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[I1].RopeAttacker) + ']' + States.PlayerName(Players[I1].RopeAttacker) + '[]<$71> ' + SkillName(sRopesOfDeath);
-      end;
+        if (InRange(Players[I1].RopeAttacker, 0, 7)) then
+        begin
+          Actions.GroupKillAll(Players[I1].Hero, True);
+          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].RopeDX
+          + States.UnitPositionX(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)), Players[I1].RopeDY
+          + States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)), Players[I1].RopeUnitDir, 1, 1);
+          Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
+          Players[I1].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+          Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[I1].RopeAttacker) + ']' + States.PlayerName(Players[I1].RopeAttacker) + '[]<$71> ' + SkillName(sRopesOfDeath);
+        end;
 
       if (States.GameTime >= Players[I1].RopeTime + ROPE_DELAY)
       and (Players[I1].MovedByRopes) then
