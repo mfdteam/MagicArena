@@ -10361,7 +10361,8 @@ begin
       if (States.PlayerEnabled(I1))
       and (Players[I1].Hero > 0) then
       begin
-        if (InRange(States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)), Players[I1].TribuneY, Players[I1].TribuneY + 1))
+        if (States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) < MIN_Y)
+        and (States.GroupOwner(Players[I1].Hero) = I1)
         and (Players[I1].HP > 0) then
         begin
           Actions.GroupKillAll(Players[I1].Hero, True);
