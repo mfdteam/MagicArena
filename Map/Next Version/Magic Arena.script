@@ -4607,7 +4607,7 @@ begin
 
       for I := 5 to 13 do
       begin
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := States.GameTime + 70;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := States.GameTime + 100;
         SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - I] := States.GameTime + 20;
         TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := VAGA_OBJECT;
         if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
