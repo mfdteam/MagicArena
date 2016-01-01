@@ -317,6 +317,7 @@ const
   AI_RUNE_CHECK_TIME = 25;
   STORM_CHECK_RADIUS = 6;
   TILES_RECHECK_TIME = 150;
+  SKILL_CANCEL_OBJ = -2;
 
 //Battlefield
 
@@ -8785,24 +8786,27 @@ begin
 
         if TilesRoadLength[P] > 0 then
           for I := 0 to TilesRoadLength[P] - 1 do
-          begin
-            SetTilesRoadTimes[P][I] := 0;
-            TilesRoadObjects[P][I] := 255;
-          end;
+            if SetTilesRoadTimes[P][I] > States.GameTime then
+            begin
+              SetTilesRoadTimes[P][I] := 0;
+              TilesRoadObjects[P][I] := SKILL_CANCEL_OBJ;
+            end;
 
         if TilesFieldLength[P] > 0 then
           for I := 0 to TilesFieldLength[P] - 1 do
-          begin
-            SetTilesFieldTimes[P][I] := 0;
-            TilesFieldObjects[P][I] := 255;
-          end;
+            if SetTilesFieldTimes[P][I] > States.GameTime then
+            begin
+              SetTilesFieldTimes[P][I] := 0;
+              TilesFieldObjects[P][I] := SKILL_CANCEL_OBJ;
+            end;
 
         if TilesWineLength[P] > 0 then
           for I := 0 to TilesWineLength[P] - 1 do
-          begin
-            SetTilesWineTimes[P][I] := 0;
-            TilesWineObjects[P][I] := 255;
-          end;
+            if SetTilesWineTimes[P][I] > States.GameTime then
+            begin
+              SetTilesWineTimes[P][I] := 0;
+              TilesWineObjects[P][I] := SKILL_CANCEL_OBJ;
+            end;
 
         for I := 0 to 7 do
           if Players[I].RopeAttacker = P then
@@ -8813,43 +8817,61 @@ begin
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to TotemCirclesLength[P][K] - 1 do
-            TotemCircles[P][K][I].Obj := 255;
+            if (TotemCircles[P][K][I].AddTime > States.GameTime)
+            and (TotemCircles[P][K][I].Obj <> 255) then
+              TotemCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to ConcentrationCirclesLength[P][K] - 1 do
-            ConcentrationCircles[P][K][I].Obj := 255;
+            ConcentrationCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to ExpCirclesLength[P][K] - 1 do
-            ExpCircles[P][K][I].Obj := 255;
+            if (ExpCircles[P][K][I].AddTime > States.GameTime)
+            and (ExpCircles[P][K][I].Obj <> 255) then
+              ExpCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to RogueCirclesLength[P][K] - 1 do
-            RogueCircles[P][K][I].Obj := 255;
+            if (RogueCircles[P][K][I].AddTime > States.GameTime)
+            and (RogueCircles[P][K][I].Obj <> 255) then
+              RogueCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to StolenRogueCirclesLength[P][K] - 1 do
-            StolenRogueCircles[P][K][I].Obj := 255;
+            if (StolenRogueCircles[P][K][I].AddTime > States.GameTime)
+            and (StolenRogueCircles[P][K][I].Obj <> 255) then
+              StolenRogueCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles1Length[P][K] - 1 do
-            FireworksCircles1[P][K][I].Obj := 255;
+            if (FireworksCircles1[P][K][I].AddTime > States.GameTime)
+            and (FireworksCircles1[P][K][I].Obj <> 255) then
+              FireworksCircles1[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles2Length[P][K] - 1 do
-            FireworksCircles2[P][K][I].Obj := 255;
+            if (FireworksCircles2[P][K][I].AddTime > States.GameTime)
+            and (FireworksCircles2[P][K][I].Obj <> 255) then
+              FireworksCircles2[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles3Length[P][K] - 1 do
-            FireworksCircles3[P][K][I].Obj := 255;
+            if (FireworksCircles3[P][K][I].AddTime > States.GameTime)
+            and (FireworksCircles3[P][K][I].Obj <> 255) then
+              FireworksCircles3[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles4Length[P][K] - 1 do
-            FireworksCircles4[P][K][I].Obj := 255;
+            if (FireworksCircles4[P][K][I].AddTime > States.GameTime)
+            and (FireworksCircles4[P][K][I].Obj <> 255) then
+              FireworksCircles4[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles5Length[P][K] - 1 do
-            FireworksCircles5[P][K][I].Obj := 255;
+            if (FireworksCircles5[P][K][I].AddTime > States.GameTime)
+            and (FireworksCircles5[P][K][I].Obj <> 255) then
+              FireworksCircles5[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
@@ -9389,7 +9411,8 @@ begin
         begin
           if TileOnBattlefield(TotemCircles[P][K][I].X, TotemCircles[P][K][I].Y) then
           begin
-            if (States.GameTime = TotemCircles[P][K][I].AddTime) then
+            if (States.GameTime = TotemCircles[P][K][I].AddTime)
+            and (TotemCircles[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
               SetCircle(P, TotemCircles[P][K][I].X, TotemCircles[P][K][I].Y, TotemCircles[P][K][I].Radius, TotemCircles[P][K][I].Obj, False, False, sTotem);
           end;
         end;
@@ -9427,7 +9450,8 @@ begin
         begin
           if TileOnBattlefield(FireworksCircles1[P][K][I].X, FireworksCircles1[P][K][I].Y) then
           begin
-            if (States.GameTime = FireworksCircles1[P][K][I].AddTime) then
+            if (States.GameTime = FireworksCircles1[P][K][I].AddTime)
+            and (FireworksCircles1[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
             begin
               SetCircle(P, FireworksCircles1[P][K][I].X, FireworksCircles1[P][K][I].Y, FireworksCircles1[P][K][I].Radius, FireworksCircles1[P][K][I].Obj, False, False, sDeadlyFireworks);
 
@@ -9470,7 +9494,8 @@ begin
         begin
           if TileOnBattlefield(FireworksCircles2[P][K][I].X, FireworksCircles2[P][K][I].Y) then
           begin
-            if (States.GameTime = FireworksCircles2[P][K][I].AddTime) then
+            if (States.GameTime = FireworksCircles2[P][K][I].AddTime)
+            and (FireworksCircles2[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
             begin
               SetCircle(P, FireworksCircles2[P][K][I].X, FireworksCircles2[P][K][I].Y, FireworksCircles2[P][K][I].Radius, FireworksCircles2[P][K][I].Obj, False, False, sDeadlyFireworks);
 
@@ -9513,7 +9538,8 @@ begin
         begin
           if TileOnBattlefield(FireworksCircles3[P][K][I].X, FireworksCircles3[P][K][I].Y) then
           begin
-            if (States.GameTime = FireworksCircles3[P][K][I].AddTime) then
+            if (States.GameTime = FireworksCircles3[P][K][I].AddTime)
+            and (FireworksCircles3[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
             begin
               SetCircle(P, FireworksCircles3[P][K][I].X, FireworksCircles3[P][K][I].Y, FireworksCircles3[P][K][I].Radius, FireworksCircles3[P][K][I].Obj, False, False, sDeadlyFireworks);
 
@@ -9556,7 +9582,8 @@ begin
         begin
           if TileOnBattlefield(FireworksCircles4[P][K][I].X, FireworksCircles4[P][K][I].Y) then
           begin
-            if (States.GameTime = FireworksCircles4[P][K][I].AddTime) then
+            if (States.GameTime = FireworksCircles4[P][K][I].AddTime)
+            and (FireworksCircles4[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
             begin
               SetCircle(P, FireworksCircles4[P][K][I].X, FireworksCircles4[P][K][I].Y, FireworksCircles4[P][K][I].Radius, FireworksCircles4[P][K][I].Obj, False, False, sDeadlyFireworks);
 
@@ -9599,7 +9626,8 @@ begin
         begin
           if TileOnBattlefield(FireworksCircles5[P][K][I].X, FireworksCircles5[P][K][I].Y) then
           begin
-            if (States.GameTime = FireworksCircles5[P][K][I].AddTime) then
+            if (States.GameTime = FireworksCircles5[P][K][I].AddTime)
+            and (FireworksCircles5[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
             begin
               SetCircle(P, FireworksCircles5[P][K][I].X, FireworksCircles5[P][K][I].Y, FireworksCircles5[P][K][I].Radius, FireworksCircles5[P][K][I].Obj, False, False, sDeadlyFireworks);
 
@@ -9642,7 +9670,8 @@ begin
         begin
           if TileOnBattlefield(ExpCircles[P][K][I].X, ExpCircles[P][K][I].Y) then
           begin
-            if (States.GameTime = ExpCircles[P][K][I].AddTime) then
+            if (States.GameTime = ExpCircles[P][K][I].AddTime)
+            and (ExpCircles[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
             begin
               SetCircle(P, ExpCircles[P][K][I].X, ExpCircles[P][K][I].Y, ExpCircles[P][K][I].Radius, ExpCircles[P][K][I].Obj, False, False, sRevengeFromNowhere);
 
@@ -9705,7 +9734,8 @@ begin
         begin
           if TileOnBattlefield(RogueCircles[P][K][I].X, RogueCircles[P][K][I].Y) then
           begin
-            if (States.GameTime = RogueCircles[P][K][I].AddTime) then
+            if (States.GameTime = RogueCircles[P][K][I].AddTime)
+            and (RogueCircles[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
             begin
               SetCircle(P, RogueCircles[P][K][I].X, RogueCircles[P][K][I].Y, RogueCircles[P][K][I].Radius, RogueCircles[P][K][I].Obj, False, False, sMentalBurst);
 
@@ -9748,7 +9778,8 @@ begin
         begin
           if TileOnBattlefield(StolenRogueCircles[P][K][I].X, StolenRogueCircles[P][K][I].Y) then
           begin
-            if (States.GameTime = StolenRogueCircles[P][K][I].AddTime) then
+            if (States.GameTime = StolenRogueCircles[P][K][I].AddTime)
+            and (StolenRogueCircles[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
             begin
               SetCircle(P, StolenRogueCircles[P][K][I].X, StolenRogueCircles[P][K][I].Y, StolenRogueCircles[P][K][I].Radius, StolenRogueCircles[P][K][I].Obj, False, False, sMentalBurst);
 
@@ -9883,7 +9914,8 @@ begin
         begin
           if TileOnBattlefield(ConcentrationCircles[P][K][I].X, ConcentrationCircles[P][K][I].Y) then
           begin
-            if (States.GameTime = ConcentrationCircles[P][K][I].AddTime) then
+            if (States.GameTime = ConcentrationCircles[P][K][I].AddTime)
+            and (ConcentrationCircles[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
             begin
               SetCircle(P, ConcentrationCircles[P][K][I].X, ConcentrationCircles[P][K][I].Y, ConcentrationCircles[P][K][I].Radius, ConcentrationCircles[P][K][I].Obj, False, False, sConcentration);
 
@@ -9973,24 +10005,27 @@ begin
     
     if TilesRoadLength[O] > 0 then
       for I := 0 to TilesRoadLength[O] - 1 do
-      begin
-        SetTilesRoadTimes[O][I] := 0;
-        TilesRoadObjects[O][I] := 255;
-      end;
+        if SetTilesRoadTimes[O][I] > States.GameTime then
+        begin
+          SetTilesRoadTimes[O][I] := 0;
+          TilesRoadObjects[O][I] := SKILL_CANCEL_OBJ;
+        end;
 
     if TilesFieldLength[O] > 0 then
       for I := 0 to TilesFieldLength[O] - 1 do
-      begin
-        SetTilesFieldTimes[O][I] := 0;
-        TilesFieldObjects[O][I] := 255;
-      end;
+        if SetTilesFieldTimes[O][I] > States.GameTime then
+        begin
+          SetTilesFieldTimes[O][I] := 0;
+          TilesFieldObjects[O][I] := SKILL_CANCEL_OBJ;
+        end;
 
     if TilesWineLength[O] > 0 then
       for I := 0 to TilesWineLength[O] - 1 do
-      begin
-        SetTilesWineTimes[O][I] := 0;
-        TilesWineObjects[O][I] := 255;
-      end;
+        if SetTilesWineTimes[O][I] > States.GameTime then
+        begin
+          SetTilesWineTimes[O][I] := 0;
+          TilesWineObjects[O][I] := SKILL_CANCEL_OBJ;
+        end;
 
   end;
 
@@ -10006,43 +10041,61 @@ begin
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to TotemCirclesLength[O][K] - 1 do
-        TotemCircles[O][K][I].Obj := 255;
+        if (TotemCircles[O][K][I].AddTime > States.GameTime)
+        and (TotemCircles[O][K][I].Obj <> 255) then
+          TotemCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to ConcentrationCirclesLength[O][K] - 1 do
-        ConcentrationCircles[O][K][I].Obj := 255;
+        ConcentrationCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to ExpCirclesLength[O][K] - 1 do
-        ExpCircles[O][K][I].Obj := 255;
+        if (ExpCircles[O][K][I].AddTime > States.GameTime)
+        and (ExpCircles[O][K][I].Obj <> 255)  then
+          ExpCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to RogueCirclesLength[O][K] - 1 do
-        RogueCircles[O][K][I].Obj := 255;
+        if (RogueCircles[O][K][I].AddTime > States.GameTime)
+        and (RogueCircles[O][K][I].Obj <> 255)  then
+          RogueCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to StolenRogueCirclesLength[O][K] - 1 do
-        StolenRogueCircles[O][K][I].Obj := 255;
+        if (StolenRogueCircles[O][K][I].AddTime > States.GameTime)
+        and (StolenRogueCircles[O][K][I].Obj <> 255)  then
+          StolenRogueCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles1Length[O][K] - 1 do
-        FireworksCircles1[O][K][I].Obj := 255;
+        if (FireworksCircles1[O][K][I].AddTime > States.GameTime)
+        and (FireworksCircles1[O][K][I].Obj <> 255)  then
+          FireworksCircles1[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles2Length[O][K] - 1 do
-        FireworksCircles2[O][K][I].Obj := 255;
+        if (FireworksCircles2[O][K][I].AddTime > States.GameTime)
+        and (FireworksCircles2[O][K][I].Obj <> 255)  then
+          FireworksCircles2[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles3Length[O][K] - 1 do
-        FireworksCircles3[O][K][I].Obj := 255;
+        if (FireworksCircles3[O][K][I].AddTime > States.GameTime)
+        and (FireworksCircles3[O][K][I].Obj <> 255)  then
+          FireworksCircles3[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles4Length[O][K] - 1 do
-        FireworksCircles4[O][K][I].Obj := 255;
+        if (FireworksCircles4[O][K][I].AddTime > States.GameTime)
+        and (FireworksCircles4[O][K][I].Obj <> 255)  then
+          FireworksCircles4[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles5Length[O][K] - 1 do
-        FireworksCircles5[O][K][I].Obj := 255;
+        if (FireworksCircles5[O][K][I].AddTime > States.GameTime)
+        and (FireworksCircles5[O][K][I].Obj <> 255)  then
+          FireworksCircles5[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
   end;
 
@@ -10568,8 +10621,16 @@ begin
         end;
         if Players[M[I1]].Hero > 0 then
         begin
-          Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
-          Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
+          if Players[M[I1]].HP > 0 then
+          begin
+            Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
+            Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
+          end;
+          if Players[M[I1]].HP <= 0 then
+          begin
+            Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
+            Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+          end;
           Players[I1].MindDir2 := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
           Actions.GroupKillAll(Players[M[I1]].Hero, True);
           Players[M[I1]].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
@@ -10648,7 +10709,8 @@ begin
   begin
     if (TilesRoadX[P][K] > 0)
     and (TilesRoadY[P][K] > 0) then
-      if TileOnBattlefield(TilesRoadX[P][K], TilesRoadY[P][K]) then
+      if TileOnBattlefield(TilesRoadX[P][K], TilesRoadY[P][K])
+      and (TilesRoadObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
 
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
@@ -10719,7 +10781,8 @@ begin
   begin
     if (TilesFieldX[P][K] > 0)
     and (TilesFieldY[P][K] > 0) then
-      if TileOnBattlefield(TilesFieldX[P][K], TilesFieldY[P][K]) then
+      if TileOnBattlefield(TilesFieldX[P][K], TilesFieldY[P][K])
+      and (TilesFieldObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
 
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
@@ -10789,7 +10852,8 @@ begin
   begin
     if (TilesWineX[P][K] > 0)
     and (TilesWineY[P][K] > 0) then
-      if TileOnBattlefield(TilesWineX[P][K], TilesWineY[P][K]) then
+      if TileOnBattlefield(TilesWineX[P][K], TilesWineY[P][K])
+      and (TilesWineObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
