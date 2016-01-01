@@ -6978,7 +6978,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
              for Y1 := Y2 - 2 downto Y2 - BOOMERANG_LENGTH + 1 do
@@ -6998,7 +6998,7 @@ begin
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
              if TileOnBattlefield(X2, Y2 - BOOMERANG_LENGTH) then
@@ -7017,7 +7017,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
              for Y1 := Y2 - BOOMERANG_LENGTH + 1 to Y2 - 2 do
@@ -7037,7 +7037,7 @@ begin
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
              if TileOnBattlefield(X2, Y2 - 1) then
@@ -7056,7 +7056,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
            end;
@@ -7079,7 +7079,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
              for X1 := X2 + 2 to X2 + BOOMERANG_LENGTH - 1 do
@@ -7099,7 +7099,7 @@ begin
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
              if TileOnBattlefield(X2 + BOOMERANG_LENGTH, Y2) then
@@ -7118,7 +7118,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
              for X1 := X2 + BOOMERANG_LENGTH - 1 downto X2 + 2 do
@@ -7138,7 +7138,7 @@ begin
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
              if TileOnBattlefield(X2 + 1, Y2) then
@@ -7157,7 +7157,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
            end;
@@ -7180,7 +7180,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
              for Y1 := Y2 + 2 to Y2 + BOOMERANG_LENGTH - 1 do
@@ -7200,7 +7200,7 @@ begin
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
              if TileOnBattlefield(X2, Y2 + BOOMERANG_LENGTH) then
@@ -7219,7 +7219,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
              for Y1 := Y2 + BOOMERANG_LENGTH - 1 downto Y2 + 2 do
@@ -7239,7 +7239,7 @@ begin
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
              if TileOnBattlefield(X2, Y2 + 1) then
@@ -7258,7 +7258,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
            end;
@@ -7281,7 +7281,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
              for X1 := X2 - 2 downto X2 - BOOMERANG_LENGTH + 1 do
@@ -7301,7 +7301,7 @@ begin
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
              if TileOnBattlefield(X2 - BOOMERANG_LENGTH, Y2) then
@@ -7320,7 +7320,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
              for X1 := X2 - BOOMERANG_LENGTH + 1 to X2 - 2 do
@@ -7340,7 +7340,7 @@ begin
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
              if TileOnBattlefield(X2 - 1, Y2) then
@@ -7359,7 +7359,7 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
            end;
@@ -10739,6 +10739,13 @@ begin
         begin
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], KNIGHT_OBJECT4);
           Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Skill := sRagingSpurt;
+          Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Owner := P;
+        end;
+
+        if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
+        and (TilesRoadObjects[P][K] = SCOUT_OBJECT6) then
+        begin
+          Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Skill := sBoomerang;
           Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Owner := P;
         end;
 
