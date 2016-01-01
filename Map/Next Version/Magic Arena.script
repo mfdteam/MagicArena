@@ -8809,6 +8809,10 @@ begin
               TilesWineObjects[P][I] := SKILL_CANCEL_OBJ;
             end;
 
+        Players[P].TrackStartTime := 0;
+        Players[P].TrackStopTime := 0;
+        Players[P].SettingTrack := False;
+
         for I := 0 to 7 do
           if Players[I].RopeAttacker = P then
             Players[I].RopeAttacker := -1;
@@ -10032,6 +10036,10 @@ begin
 
   if InRange(aKiller, 9, 11) then
   begin
+
+    Players[O].TrackStartTime := 0;
+    Players[O].TrackStopTime := 0;
+    Players[O].SettingTrack := False;
 
     for I := 0 to 7 do
       if Players[I].RopeAttacker = O then
