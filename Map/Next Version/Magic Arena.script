@@ -8535,7 +8535,6 @@ begin
   and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
     Exit;
 
-  
 //Use skills
 
   if (Players[P].Hero > 0)
@@ -8597,7 +8596,6 @@ begin
   and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
     Exit;
 
-
 //Use skills
 
   if (Players[P].Hero > 0)
@@ -8658,7 +8656,6 @@ begin
   if (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = RUNE_X)
   and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
     Exit;
-
 
 //Use skills
 
@@ -10702,6 +10699,13 @@ begin
           Players[I1].ReChargeTime := Players[I1].TempReChargeTime;
           Players[M[I1]].Preparing := Players[I1].Preparing;
           Players[M[I1]].PreparingTime := Players[I1].PreparingTime;
+          if Players[I1].Preparing then
+          begin
+            Players[I1].Preparing := False;
+            Players[I1].PreparingTime := 0;
+            Players[I1].HeroStunned := False;
+            Players[I1].HeroStunnedTime := 0;
+          end;
           Players[M[I1]].HeroInFear := Players[I1].HeroInFear;
           Players[M[I1]].HeroInFearTime := Players[I1].HeroInFearTime;
           Players[M[I1]].HeroStunned := Players[I1].HeroStunned;
