@@ -8791,10 +8791,12 @@ begin
         if TilesRoadLength[P] > 0 then
           for I := 0 to TilesRoadLength[P] - 1 do
             if SetTilesRoadTimes[P][I] > States.GameTime then
-            begin
-              SetTilesRoadTimes[P][I] := 0;
-              TilesRoadObjects[P][I] := SKILL_CANCEL_OBJ;
-            end;
+              if (TilesRoadObjects[P][I] <> BOWMAN_ROCKET)
+              and (TilesRoadObjects[P][I] <> BOWMAN_OBJECT6) then
+              begin
+                SetTilesRoadTimes[P][I] := 0;
+                TilesRoadObjects[P][I] := SKILL_CANCEL_OBJ;
+              end;
 
         if TilesFieldLength[P] > 0 then
           for I := 0 to TilesFieldLength[P] - 1 do
@@ -10014,10 +10016,12 @@ begin
     if TilesRoadLength[O] > 0 then
       for I := 0 to TilesRoadLength[O] - 1 do
         if SetTilesRoadTimes[O][I] > States.GameTime then
-        begin
-          SetTilesRoadTimes[O][I] := 0;
-          TilesRoadObjects[O][I] := SKILL_CANCEL_OBJ;
-        end;
+          if (TilesRoadObjects[O][I] <> BOWMAN_ROCKET)
+          and (TilesRoadObjects[O][I] <> BOWMAN_OBJECT6) then
+          begin
+            SetTilesRoadTimes[O][I] := 0;
+            TilesRoadObjects[O][I] := SKILL_CANCEL_OBJ;
+          end;
 
     if TilesFieldLength[O] > 0 then
       for I := 0 to TilesFieldLength[O] - 1 do
