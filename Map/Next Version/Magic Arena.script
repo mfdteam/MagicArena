@@ -2153,6 +2153,7 @@ begin
       if (U <> - 1)
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroInFear)
+      and (not Players[O].HeroImmortal)
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
@@ -6423,6 +6424,7 @@ begin
         begin
           O := States.GroupOwner(G);
           if (G = Players[O].Hero)
+          and (not Players[O].HeroImmortal)
           and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
           begin
             Players[O].HeroSilentStartTime := States.GameTime + 1;
@@ -7481,6 +7483,7 @@ begin
       if (U <> - 1)
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroInFear)
+      and (not Players[O].HeroImmortal)
       and (not Players[O].MindStunned)
       and (not Players[P].CaptureMind)
       and (not Players[P].MindStunned)
@@ -8531,6 +8534,11 @@ begin
   if (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = RUNE_X)
   and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
     Exit;
+
+  for I := 0 to 7 do
+    if (X = Players[I].SpawnX)
+    and (Y = Players[I].SpawnY) then
+      Exit;
   
 //Use skills
 
@@ -8593,6 +8601,11 @@ begin
   and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
     Exit;
 
+  for I := 0 to 7 do
+    if (X = Players[I].SpawnX)
+    and (Y = Players[I].SpawnY) then
+      Exit;
+
 //Use skills
 
   if (Players[P].Hero > 0)
@@ -8653,6 +8666,11 @@ begin
   if (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = RUNE_X)
   and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
     Exit;
+
+  for I := 0 to 7 do
+    if (X = Players[I].SpawnX)
+    and (Y = Players[I].SpawnY) then
+      Exit;
 
 //Use skills
 
