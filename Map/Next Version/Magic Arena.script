@@ -8535,10 +8535,6 @@ begin
   and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
     Exit;
 
-  for I := 0 to 7 do
-    if (X = Players[I].SpawnX)
-    and (Y = Players[I].SpawnY) then
-      Exit;
   
 //Use skills
 
@@ -8601,10 +8597,6 @@ begin
   and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
     Exit;
 
-  for I := 0 to 7 do
-    if (X = Players[I].SpawnX)
-    and (Y = Players[I].SpawnY) then
-      Exit;
 
 //Use skills
 
@@ -8667,10 +8659,6 @@ begin
   and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = RUNE_Y2) then
     Exit;
 
-  for I := 0 to 7 do
-    if (X = Players[I].SpawnX)
-    and (Y = Players[I].SpawnY) then
-      Exit;
 
 //Use skills
 
