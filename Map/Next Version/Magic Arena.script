@@ -479,6 +479,7 @@ type
     GravityUser: Integer;
     MovedByRopes: Boolean;
     SpurtStartTime: Integer;
+    CurrentSpurtLength: Integer;
   end;
 
 
@@ -1027,6 +1028,7 @@ begin
       GravityUser := -1;
       MovedByRopes := False;
       SpurtStartTime := 0;
+      CurrentSpurtLength := 0;
     end;
   end;
 
@@ -6738,10 +6740,16 @@ begin
       or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
         ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
+    Players[P].CurrentSpurtLength := 0;
+
     case Direction of
 
-      0,1: for Y1 := Y2 - 1 downto Y2 - SPURT_LENGTH do
-             if TileOnBattlefield(X2, Y1) then
+      0,1: begin
+             for Y1 := Y2 - 1 downto Y2 - SPURT_LENGTH do
+               if TileOnBattlefield(X2, Y1) then
+                 Players[P].CurrentSpurtLength := Players[P].CurrentSpurtLength + 1;
+
+             for Y1 := Y2 - 1 downto Y2 - Players[P].CurrentSpurtLength do
              begin
                Desync := Desync + 1;
                TilesWineLength[P] := TilesWineLength[P] + 1;
@@ -6764,8 +6772,14 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
-      2,3: for X1 := X2 + 1 to X2 + SPURT_LENGTH do
-             if TileOnBattlefield(X1, Y2) then
+           end;
+
+      2,3: begin
+             for X1 := X2 + 1 to X2 + SPURT_LENGTH do
+               if TileOnBattlefield(X1, Y2) then
+                 Players[P].CurrentSpurtLength := Players[P].CurrentSpurtLength + 1;
+
+             for X1 := X2 + 1 to X2 + Players[P].CurrentSpurtLength do
              begin
                Desync := Desync + 1;
                TilesWineLength[P] := TilesWineLength[P] + 1;
@@ -6788,8 +6802,14 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
-      4,5: for Y1 := Y2 + 1 to Y2 + SPURT_LENGTH do
-             if TileOnBattlefield(X2, Y1) then
+           end;
+
+      4,5: begin
+             for Y1 := Y2 + 1 to Y2 + SPURT_LENGTH do
+               if TileOnBattlefield(X2, Y1) then
+                 Players[P].CurrentSpurtLength := Players[P].CurrentSpurtLength + 1;
+
+             for Y1 := Y2 + 1 to Y2 + Players[P].CurrentSpurtLength do
              begin
                Desync := Desync + 1;
                TilesWineLength[P] := TilesWineLength[P] + 1;
@@ -6812,8 +6832,14 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
-      6,7: for X1 := X2 - 1 downto X2 - SPURT_LENGTH do
-             if TileOnBattlefield(X1, Y2) then
+           end;
+
+      6,7: begin
+             for X1 := X2 - 1 downto X2 - SPURT_LENGTH do
+               if TileOnBattlefield(X1, Y2) then
+                 Players[P].CurrentSpurtLength := Players[P].CurrentSpurtLength + 1;
+
+             for X1 := X2 - 1 downto X2 - Players[P].CurrentSpurtLength do 
              begin
                Desync := Desync + 1;
                TilesWineLength[P] := TilesWineLength[P] + 1;
@@ -6836,6 +6862,8 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
+           end;
+
         end;
 
     {Players[P].KnightX := X2;
@@ -6857,15 +6885,18 @@ end;
 
 
 procedure CheckSpurt(P, Step: Integer);
+var
+  TempHero: Integer;
 begin
-  if (States.GameTime = SpurtTimes[P][Step] + 1)
+  if (States.GameTime = SpurtTimes[P][Step] + 2)
   and (States.GameTime > CHOOSE_HERO_TIMER)
   and (Players[P].HP > 0)
   and (TileOnBattlefield(SpurtX[P][Step], SpurtY[P][Step])) then
   begin
-    Actions.GroupKillAll(Players[P].Hero, True);
+    TempHero := Players[P].Hero;
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, SpurtX[P][Step], SpurtY[P][Step], SpurtDir[P][Step], 1, 1);
     Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+    Actions.GroupKillAll(TempHero, True);
   end;
 end;
 
@@ -13080,7 +13111,7 @@ begin
 
       AIWalkIdle(I);
 
-      for S := 0 to (SPURT_LENGTH - 1) do
+      for S := 0 to (Players[I].CurrentSpurtLength - 1) do
         CheckSpurt(I, S);
 
       if Players[I].Hero > 0 then
