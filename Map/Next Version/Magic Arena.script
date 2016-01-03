@@ -9423,7 +9423,7 @@ begin
           begin
             if (States.GameTime = TotemCircles[P][K][I].AddTime)
             and (TotemCircles[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
-              SetCircle(P, TotemCircles[P][K][I].X, TotemCircles[P][K][I].Y, TotemCircles[P][K][I].Radius, TotemCircles[P][K][I].Obj, False, False, sTotem);
+              SetCircle(P, TotemCircles[P][K][I].X, TotemCircles[P][K][I].Y, TotemCircles[P][K][I].Radius, TotemCircles[P][K][I].Obj, False, True, sTotem);
           end;
         end;
     end;
