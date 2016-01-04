@@ -6885,19 +6885,30 @@ end;
 
 
 procedure CheckSpurt(P, Step: Integer);
-var
-  TempHero: Integer;
 begin
-  if (States.GameTime = SpurtTimes[P][Step] + 2)
+  if (States.GameTime = SpurtTimes[P][Step] + 1)
   and (States.GameTime > CHOOSE_HERO_TIMER)
   and (Players[P].HP > 0)
   and (TileOnBattlefield(SpurtX[P][Step], SpurtY[P][Step])) then
   begin
-    TempHero := Players[P].Hero;
+    Actions.GroupKillAll(Players[P].Hero, True);
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, SpurtX[P][Step], SpurtY[P][Step], SpurtDir[P][Step], 1, 1);
     Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
-    Actions.GroupKillAll(TempHero, True);
   end;
+
+  if (States.GameTime = SpurtTimes[P][Players[P].CurrentSpurtLength - 1] + 2)
+  and ((SpurtX[P][Players[P].CurrentSpurtLength - 1] = MAX_X)
+  or (SpurtX[P][Players[P].CurrentSpurtLength - 1] = MIN_X)
+  or (SpurtY[P][Players[P].CurrentSpurtLength - 1] = MAX_Y)
+  or (SpurtY[P][Players[P].CurrentSpurtLength - 1] = MIN_Y))
+  and (States.GameTime > CHOOSE_HERO_TIMER)
+  and (Players[P].HP > 0) then
+  begin
+    Actions.GroupKillAll(Players[P].Hero, True);
+    Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, SpurtX[P][Players[P].CurrentSpurtLength - 1], SpurtY[P][Players[P].CurrentSpurtLength - 1], SpurtDir[P][Players[P].CurrentSpurtLength - 1], 1, 1);
+    Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+  end;
+
 end;
 
 
