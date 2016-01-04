@@ -8935,7 +8935,13 @@ begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
             end;
-            if Tiles[aX][aY].Owner = P then
+            if ((Tiles[aX][aY].Owner = P)
+            and (not Players[P].CaptureMind)
+            and (not Players[P].MindStunned))
+            or ((Players[P].CaptureMind)
+            and (Tiles[aX][aY].Owner = M[P]))
+            or ((Players[P].MindStunned)
+            and (Tiles[aX][aY].Owner = M[P])) then
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
@@ -10169,7 +10175,7 @@ begin
   and (InRange(States.UnitOwner(aID), 0, 7))
   and (aID = States.GroupMember(Players[O].Hero, 0)) then
   begin
-    if LastAttacker <> - 1 then
+    if InRange(LastAttacker, 0, 11) then
     begin
       Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
       Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
