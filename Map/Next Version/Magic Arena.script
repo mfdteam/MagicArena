@@ -6910,10 +6910,8 @@ begin
   end;
 
   if (States.GameTime = SpurtTimes[P][Players[P].CurrentSpurtLength - 1] + 2)
-  and ((SpurtX[P][Players[P].CurrentSpurtLength - 1] = MAX_X)
-  or (SpurtX[P][Players[P].CurrentSpurtLength - 1] = MIN_X)
-  or (SpurtY[P][Players[P].CurrentSpurtLength - 1] = MAX_Y)
-  or (SpurtY[P][Players[P].CurrentSpurtLength - 1] = MIN_Y))
+  and ((States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) <> SpurtX[P][Players[P].CurrentSpurtLength - 1])
+  or (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) <> SpurtY[P][Players[P].CurrentSpurtLength - 1]))
   and (States.GameTime > CHOOSE_HERO_TIMER)
   and (Players[P].HP > 0) then
   begin
