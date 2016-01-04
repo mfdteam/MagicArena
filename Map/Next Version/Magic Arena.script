@@ -480,6 +480,10 @@ type
     MovedByRopes: Boolean;
     SpurtStartTime: Integer;
     CurrentSpurtLength: Integer;
+    SpurtStartX: Integer;
+    SpurtStartY: Integer;
+    SpurtStartDX: Integer;
+    SpurtStartDY: Integer;
   end;
 
 
@@ -1029,6 +1033,10 @@ begin
       MovedByRopes := False;
       SpurtStartTime := 0;
       CurrentSpurtLength := 0;
+      SpurtStartX := 0;
+      SpurtStartY := 0;
+      SpurtStartDX := 0;
+      SpurtStartDY := 0;
     end;
   end;
 
@@ -6670,6 +6678,11 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
+    Players[P].SpurtStartX := X2;
+    Players[P].SpurtStartY := Y2;
+    Players[P].SpurtStartDX:= 0;
+    Players[P].SpurtStartDY:= 0;
+
     Players[P].HeroStunnedTime := States.GameTime + SPURT_TIME + 5 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
     Actions.GroupOrderHalt(Players[P].Hero);
     Actions.GroupBlockOrders(Players[P].Hero, True);
@@ -10497,6 +10510,27 @@ begin
 
       if States.GameTime = Players[I1].SpurtStartTime then
       begin
+        Players[I1].SpurtStartDX := Players[I1].SpurtStartX - States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
+        Players[I1].SpurtStartDY := Players[I1].SpurtStartY - States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+        if (Players[I1].SpurtStartDX <> 0)
+        or (Players[I1].SpurtStartDY <> 0) then
+        begin
+
+          for K := 0 to TilesRoadLength[I1] - 1 do
+            if TilesRoadObjects[I][K] = KNIGHT_OBJECT4 then
+            begin
+              TilesRoadX[I1][K] := TilesRoadX[I1][K] - Players[I1].SpurtStartDX;
+              TilesRoadY[I1][K] := TilesRoadY[I1][K] - Players[I1].SpurtStartDY;
+            end;
+
+          for I := 0 to Players[I1].CurrentSpurtLength - 1 do
+          begin
+            SpurtX[I1][I] := SpurtX[I1][I] - Players[I1].SpurtStartDX;
+            SpurtY[I1][I] := SpurtY[I1][I] - Players[I1].SpurtStartDY;
+          end;
+
+        end;
+            
         Players[I1].HeroImmortalTime := (States.GameTime + SPURT_TIME + 5) - 25 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
         Players[I1].HeroImmortal := True;
         Players[I1].Preparing := True;
