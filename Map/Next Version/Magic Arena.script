@@ -10578,10 +10578,6 @@ begin
         Actions.GroupBlockOrders(Players[M[I1]].Hero, True);
         Actions.GroupOrderHalt(Players[M[I1]].Hero);  
         Players[I1].MindTime2 := States.GameTime + 25;
-        Players[M[I1]].MindStunned := True;
-        Players[I1].CaptureMind := True;
-        Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME; 
-        Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME;
         Players[M[I1]].HeroStunned := True;
         Players[M[I1]].HeroStunnedTime := States.GameTime + 25;
         Actions.FogCoverAll(I1);
@@ -10592,6 +10588,10 @@ begin
 
       if States.GameTime = Players[I1].MindTime2 then
       begin
+        Players[M[I1]].MindStunned := True;
+        Players[I1].CaptureMind := True;
+        Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME - 25; 
+        Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME - 25;
         Players[I1].TempPlayersTeam := Players[I1].PlayersTeam;
         Players[I1].HeroMindType := Players[I1].HeroType;
         Players[M[I1]].HeroMindType := Players[M[I1]].HeroType;
