@@ -10588,6 +10588,10 @@ begin
 
       if States.GameTime = Players[I1].MindTime2 then
       begin
+        if Length(Zombies) > 0 then
+        for K := 0 to Length(Zombies) - 1 do
+          if Zombies[K].Owner = M[I1] then
+            Zombies[I1].Owner := -1;
         Players[M[I1]].MindStunned := True;
         Players[I1].CaptureMind := True;
         Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME - 25; 
@@ -10763,6 +10767,10 @@ begin
           Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
           Players[M[I1]].HeroImmortal := True;
           Players[M[I1]].HeroImmortalTime := States.GameTime + 20;
+          if Length(Zombies) > 0 then
+          for K := 0 to Length(Zombies) - 1 do
+            if Zombies[K].Owner = -1 then
+              Zombies[I1].Owner := M[I1];
         end;
       end;
     end;
