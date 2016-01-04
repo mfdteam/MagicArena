@@ -8829,6 +8829,7 @@ begin
         Players[P].HeroInFearTime := 0;
         Players[P].HeroStunnedTime := 0;
         Players[P].HeroSilentTime := 0;
+        Players[P].PreparingTime := 0;
 
         if TilesRoadLength[P] > 0 then
           for I := 0 to TilesRoadLength[P] - 1 do
@@ -10054,6 +10055,7 @@ begin
     Players[O].HeroSilentTime := 0;
     Players[O].HeroStunnedTime := 0;
     Players[O].HeroInFearTime := 0;
+    Players[O].PreparingTime := 0;
     
     if TilesRoadLength[O] > 0 then
       for I := 0 to TilesRoadLength[O] - 1 do
