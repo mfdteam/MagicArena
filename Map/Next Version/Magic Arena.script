@@ -8831,6 +8831,9 @@ begin
         Players[P].HeroSilentTime := 0;
         Players[P].PreparingTime := 0;
 
+        if States.GameTime < Players[P].MindTime2 then
+          Players[P].MindTime2 := 0;
+
         if TilesRoadLength[P] > 0 then
           for I := 0 to TilesRoadLength[P] - 1 do
             if SetTilesRoadTimes[P][I] > States.GameTime then
@@ -10062,6 +10065,9 @@ begin
     Players[O].HeroStunnedTime := 0;
     Players[O].HeroInFearTime := 0;
     Players[O].PreparingTime := 0;
+
+    if States.GameTime < Players[O].MindTime2 then
+      Players[O].MindTime2 := 0;
     
     if TilesRoadLength[O] > 0 then
       for I := 0 to TilesRoadLength[O] - 1 do
