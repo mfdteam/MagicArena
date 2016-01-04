@@ -10340,6 +10340,10 @@ begin
       if Players[I1].HP < 0 then
         Players[I1].HP := 0;
 
+      if (Players[I1].HP <= 0)
+      and (not States.FogRevealed(I1, 2, 40)) then
+        Actions.FogRevealAll(I1);
+
       if States.GameTime = Players[I1].PlayerStatusTime then
         Players[I1].PlayerStatus := '';
 
