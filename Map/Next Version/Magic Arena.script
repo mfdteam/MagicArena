@@ -8843,7 +8843,9 @@ begin
         Actions.GroupKillAll(Players[P].Hero, False);
         Players[P].Hero := Actions.GiveGroup(P, T, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
         Players[P].HeroInFearTime := 0;
-        Players[P].HeroStunnedTime := 0;
+        if (not Players[P].CaptureMind)
+        and (not Players[P].MindStunned) then
+          Players[P].HeroStunnedTime := 0;
         Players[P].HeroSilentTime := 0;
         Players[P].PreparingTime := 0;
 
@@ -8887,7 +8889,7 @@ begin
             Players[I].RopeAttacker := -1;
 
           if Players[I].ScoutSilenceGiver = P then
-            Players[I].HeroSilentStartTime := 0;
+            Players[I].ScoutSilenceGiver := -1;
 
         end;
 
@@ -10085,7 +10087,9 @@ begin
   begin
 
     Players[O].HeroSilentTime := 0;
-    Players[O].HeroStunnedTime := 0;
+    if (not Players[O].CaptureMind)
+    and (not Players[O].MindStunned) then
+      Players[O].HeroStunnedTime := 0;
     Players[O].HeroInFearTime := 0;
     Players[O].PreparingTime := 0;
 
@@ -10134,7 +10138,7 @@ begin
         Players[I].RopeAttacker := -1;
 
       if Players[I].ScoutSilenceGiver = O then
-        Players[I].HeroSilentStartTime := 0;
+        Players[I].ScoutSilenceGiver := -1;
 
     end;
 
@@ -10468,10 +10472,11 @@ begin
       end;
 
       if States.GameTime = Players[I1].HeroSilentStartTime then
-      begin
-        Players[I1].HeroSilent := True;
-        Players[I1].HeroSilentTime := States.GameTime + SILENCE_TIME + 20;
-      end;
+        if InRange(Players[I1].ScoutSilenceGiver, 0, 11) then
+        begin
+          Players[I1].HeroSilent := True;
+          Players[I1].HeroSilentTime := States.GameTime + SILENCE_TIME + 20;
+        end;
 
       if States.GameTime = Players[I1].TrackStartTime then
       begin
@@ -10558,7 +10563,8 @@ begin
         Players[I1].PreparingTime := (States.GameTime + SPURT_TIME + 5) - 25 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
       end;
 
-      if States.GameTime = Players[I1].ScoutSilenceStartTime then
+      if (States.GameTime = Players[I1].ScoutSilenceStartTime)
+      and (InRange(Players[I1].ScoutSilenceGiver, 0, 11)) then
       begin
         Players[I1].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$73> ' + '[$' + States.PlayerColorText(Players[I1].ScoutSilenceGiver) + ']' + States.PlayerName(Players[I1].ScoutSilenceGiver) + '[]<$71> ' + SkillName(sSilence);
