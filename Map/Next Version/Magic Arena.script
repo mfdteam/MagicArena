@@ -1911,6 +1911,10 @@ begin
           Players[I].HeroType := States.UnitType(States.UnitAt(X, Y));
           Players[I].HeroChosen := True;
           Actions.GiveUnit(8, 13, 13, 14, 4);
+          if InRange(I, 0, 3) then
+            TeamChoice[0] := TeamChoice[0] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[] <$32> ' + States.UnitTypeName(Players[I].HeroType);
+          if InRange(I, 4, 7) then
+            TeamChoice[1] := TeamChoice[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[] <$32> ' + States.UnitTypeName(Players[I].HeroType);
         end;
 end;
 
