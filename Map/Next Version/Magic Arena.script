@@ -10533,11 +10533,11 @@ begin
         or (Players[I1].SpurtStartDY <> 0) then
         begin
 
-          for K := 0 to TilesRoadLength[I1] - 1 do
-            if TilesRoadObjects[I][K] = KNIGHT_OBJECT4 then
+          for K := 0 to TilesWineLength[I1] - 1 do
+            if TilesWineObjects[I][K] = KNIGHT_OBJECT4 then
             begin
-              TilesRoadX[I1][K] := TilesRoadX[I1][K] - Players[I1].SpurtStartDX;
-              TilesRoadY[I1][K] := TilesRoadY[I1][K] - Players[I1].SpurtStartDY;
+              TilesWineX[I1][K] := TilesWineX[I1][K] - Players[I1].SpurtStartDX;
+              TilesWineY[I1][K] := TilesWineY[I1][K] - Players[I1].SpurtStartDY;
             end;
 
           for I := 0 to Players[I1].CurrentSpurtLength - 1 do
@@ -12947,7 +12947,7 @@ end;
 procedure OnTick;
 var
   N: array[0..17] of Integer;
-  S: array[0..7] of Integer;  
+  S1, S2, S3, S4, S5, S6, S7, S8: Integer;  
 begin
 
   if InRange(States.GameTime, GAME_START_TIME + 3, GAME_START_TIME + 10) then
@@ -13175,6 +13175,30 @@ begin
         and (States.GameTime = Players[I].AIChoiceTime) then
           AIHeroChoice(I);
 
+  for S1 := 0 to (Players[0].CurrentSpurtLength - 1) do
+    CheckSpurt(0, S1);
+
+  for S2 := 0 to (Players[1].CurrentSpurtLength - 1) do
+    CheckSpurt(1, S2);
+
+  for S3 := 0 to (Players[2].CurrentSpurtLength - 1) do
+    CheckSpurt(2, S3);
+
+  for S4 := 0 to (Players[3].CurrentSpurtLength - 1) do
+    CheckSpurt(3, S4);
+
+  for S5 := 0 to (Players[4].CurrentSpurtLength - 1) do
+    CheckSpurt(4, S5);
+
+  for S6 := 0 to (Players[5].CurrentSpurtLength - 1) do
+    CheckSpurt(5, S6);
+
+  for S7 := 0 to (Players[6].CurrentSpurtLength - 1) do
+    CheckSpurt(6, S7);
+
+  for S8 := 0 to (Players[7].CurrentSpurtLength - 1) do
+    CheckSpurt(7, S8);
+
   for I := 0 to 7 do
     if States.Gametime > CHOOSE_HERO_TIMER then
     begin
@@ -13194,9 +13218,6 @@ begin
       AIWalkAfterSkill(I);
 
       AIWalkIdle(I);
-
-      for S[I] := 0 to (Players[I].CurrentSpurtLength - 1) do
-        CheckSpurt(I, S[I]);
 
       if Players[I].Hero > 0 then
         if States.GroupMember(Players[I].Hero, 0) > 0 then
