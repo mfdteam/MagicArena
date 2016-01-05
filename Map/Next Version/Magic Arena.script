@@ -12946,7 +12946,7 @@ end;
 procedure OnTick;
 var
   N: array[0..17] of Integer;
-  S: Integer;  
+  S: array[0..7] of Integer;  
 begin
 
   if InRange(States.GameTime, GAME_START_TIME + 3, GAME_START_TIME + 10) then
@@ -13194,8 +13194,8 @@ begin
 
       AIWalkIdle(I);
 
-      for S := 0 to (Players[I].CurrentSpurtLength - 1) do
-        CheckSpurt(I, S);
+      for S[I] := 0 to (Players[I].CurrentSpurtLength - 1) do
+        CheckSpurt(I, S[I]);
 
       if Players[I].Hero > 0 then
         if States.GroupMember(Players[I].Hero, 0) > 0 then
