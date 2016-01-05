@@ -294,7 +294,7 @@ const
 //Game mechanics
 
   DESYNC_FACTOR = 1;
-  RELIEF_CHANGE_FACTOR = 9;
+  RELIEF_CHANGE_FACTOR = 7;
   RELIEF_REGEN_TIME = 300;
   CLEANUP_TIME = 20;
   PLANT_TREES_TIME = 25;
@@ -10888,7 +10888,7 @@ begin
         if (TilesRoadObjects[P][K] = BARB_OBJECT)
         and (States.MapTileObject(TilesRoadX[P][K], TilesRoadY[P][K]) = BARB_OBJECT)
         and (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K]))
-        and (States.GameTime mod 5 = 0)
+        and (States.GameTime mod 3 = 0)
         and (CHANGE_RELIEF) then
         begin
           aRelief := Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
