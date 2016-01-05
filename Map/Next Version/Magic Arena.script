@@ -8876,8 +8876,15 @@ begin
         Players[P].SettingTrack := False;
 
         for I := 0 to 7 do
+        begin
+
           if Players[I].RopeAttacker = P then
             Players[I].RopeAttacker := -1;
+
+          if Players[I].ScoutSilenceGiver = P then
+            Players[I].HeroSilentStartTime := 0;
+
+        end;
 
         for K := 0 to SPURT_LENGTH - 1 do
           SpurtTimes[P][K] := 0;
@@ -10116,8 +10123,15 @@ begin
     Players[O].SettingTrack := False;
 
     for I := 0 to 7 do
+    begin
+
       if Players[I].RopeAttacker = O then
         Players[I].RopeAttacker := -1;
+
+      if Players[I].ScoutSilenceGiver = O then
+        Players[I].HeroSilentStartTime := 0;
+
+    end;
 
     for K := 0 to SPURT_LENGTH - 1 do
       SpurtTimes[O][K] := 0;
