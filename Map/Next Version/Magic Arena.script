@@ -1715,7 +1715,8 @@ begin
         Actions.MapTileObjectSet(PosX, PosY, aObj);
         if (Tiles[PosX][PosY].Owner <> P)
         and (Tiles[PosX][PosY].Skill <> sCircleOfSilence)
-        and (Tiles[PosX][PosY].Skill <> sTrack) then
+        and (Tiles[PosX][PosY].Skill <> sTrack)
+        and (Tiles[PosX][PosY].Skill <> sDeadlyFireworks) then
         begin
           Tiles[PosX][PosY].Owner := P;
           Tiles[PosX][PosY].Skill := fSkill;
