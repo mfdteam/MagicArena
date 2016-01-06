@@ -8978,7 +8978,7 @@ begin
           if (P <> Tiles[aX][aY].Owner)
           and (Players[P].PlayersTeam <> Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
-            Players[Tiles[aX][aY].Owner].Kills := Players[Tiles[aX][aY].Owner].Kills + 1 + Byte(Players[Tiles[aX][aY].Owner].DD);
+            Players[Tiles[aX][aY].Owner].Kills := Players[Tiles[aX][aY].Owner].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
             Players[Tiles[aX][aY].Owner].TotalKills := Players[Tiles[aX][aY].Owner].TotalKills + 1;
             SetLength(Players[Tiles[aX][aY].Owner].KillTimes, Length(Players[Tiles[aX][aY].Owner].KillTimes) + 1);
             Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] := States.GameTime;
@@ -9013,7 +9013,7 @@ begin
           if (Players[P].HeroInFear)
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
-            Players[Players[P].HeroFearGiver].Kills := Players[Players[P].HeroFearGiver].Kills + 1 + Byte(Players[Tiles[aX][aY].Owner].DD);
+            Players[Players[P].HeroFearGiver].Kills := Players[Players[P].HeroFearGiver].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
             Players[Players[P].HeroFearGiver].TotalKills := Players[Players[P].HeroFearGiver].TotalKills + 1;
             SetLength(Players[Players[P].HeroFearGiver].KillTimes, Length(Players[Players[P].HeroFearGiver].KillTimes) + 1);
             Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] := States.GameTime;
@@ -9049,7 +9049,7 @@ begin
           and (Players[P].PlayersTeam <> Players[Players[P].GravityUser].PlayersTeam)
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
-            Players[Players[P].GravityUser].Kills := Players[Players[P].GravityUser].Kills + 1 + Byte(Players[Tiles[aX][aY].Owner].DD);
+            Players[Players[P].GravityUser].Kills := Players[Players[P].GravityUser].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
             Players[Players[P].GravityUser].TotalKills := Players[Players[P].GravityUser].TotalKills + 1;
             SetLength(Players[Players[P].GravityUser].KillTimes, Length(Players[Players[P].GravityUser].KillTimes) + 1);
             Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] := States.GameTime;
@@ -9085,7 +9085,7 @@ begin
           and (Players[P].PlayersTeam <> Players[Players[P].RopeAttacker].PlayersTeam)
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
-            Players[Players[P].RopeAttacker].Kills := Players[Players[P].RopeAttacker].Kills + 1 + Byte(Players[Tiles[aX][aY].Owner].DD);
+            Players[Players[P].RopeAttacker].Kills := Players[Players[P].RopeAttacker].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
             Players[Players[P].RopeAttacker].TotalKills := Players[Players[P].RopeAttacker].TotalKills + 1;
             SetLength(Players[Players[P].RopeAttacker].KillTimes, Length(Players[Players[P].RopeAttacker].KillTimes) + 1);
             Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 1] := States.GameTime;
