@@ -8845,7 +8845,10 @@ begin
         Players[P].HeroInFearTime := 0;
         if (not Players[P].CaptureMind)
         and (not Players[P].MindStunned) then
+        begin
           Players[P].HeroStunnedTime := 0;
+          Players[P].WineSkillDelay := SCOUT_WINE_DELAY;
+        end;
         Players[P].HeroSilentTime := 0;
         Players[P].PreparingTime := 0;
 
@@ -10088,7 +10091,10 @@ begin
     Players[O].HeroSilentTime := 0;
     if (not Players[O].CaptureMind)
     and (not Players[O].MindStunned) then
+    begin
       Players[O].HeroStunnedTime := 0;
+      Players[O].WineSkillDelay := SCOUT_WINE_DELAY;
+    end;
     Players[O].HeroInFearTime := 0;
     Players[O].PreparingTime := 0;
 
