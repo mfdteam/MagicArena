@@ -9920,7 +9920,7 @@ end;
 
 procedure CheckGravityCircles(P: Integer);
 var
-  X, Y, O, U, G, D, UT, CC, OT, HT: Integer;
+  X, Y, O, U, G, UT, CC, OT, HT: Integer;
 begin
   if States.PlayerEnabled(P) then
     if GravityCirclesLength[P] > 0 then
@@ -9942,12 +9942,11 @@ begin
                 begin
                   O := States.UnitOwner(U);
                   UT := States.UnitType(U);
-                  D := States.UnitDirection(U);
                   if (InRange(O, 0, 7))
                   and (not Players[O].HeroImmortal) then
                   begin
                     Actions.GroupKillAll(Players[O].Hero, True);
-                    Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
+                    Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8), 1, 1);
                     Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
                     if not Players[O].MovedByGravity then
                     begin
@@ -9970,7 +9969,7 @@ begin
                           HT := States.UnitHunger(Zombies[I].ID);
                         end;
                       Actions.GroupKillAll(States.UnitsGroup(U), True);
-                      G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
+                      G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8), 1, 1);
                       SetLength(Zombies, Length(Zombies) + 1);
                       Zombies[Length(Zombies) - 1].Owner := OT;
                       Zombies[Length(Zombies) - 1].ID := States.GroupMember(G, 0);
