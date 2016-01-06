@@ -81,7 +81,7 @@ const
   STONES_RADIUS = 7;
   VAMPIRE_RADIUS = 5;
   MIND_RADIUS = 4;
-  SILENCE_SCOUT_RADIUS = 5;
+  SILENCE_SCOUT_RADIUS = 6;
 
   RAGE_RADIUS = 5;
   TOTEM_RADIUS = 4;
@@ -8845,15 +8845,15 @@ begin
         Players[P].HeroInFearTime := 0;
         if (not Players[P].CaptureMind)
         and (not Players[P].MindStunned) then
-        begin
           Players[P].HeroStunnedTime := 0;
-          Players[P].WineSkillDelay := SCOUT_WINE_DELAY;
-        end;
         Players[P].HeroSilentTime := 0;
         Players[P].PreparingTime := 0;
 
         if States.GameTime < Players[P].MindTime2 then
+        begin
           Players[P].MindTime2 := 0;
+          Players[P].WineSkillDelay := 500;
+        end;
 
         if TilesRoadLength[P] > 0 then
           for I := 0 to TilesRoadLength[P] - 1 do
@@ -10091,15 +10091,15 @@ begin
     Players[O].HeroSilentTime := 0;
     if (not Players[O].CaptureMind)
     and (not Players[O].MindStunned) then
-    begin
       Players[O].HeroStunnedTime := 0;
-      Players[O].WineSkillDelay := SCOUT_WINE_DELAY;
-    end;
     Players[O].HeroInFearTime := 0;
     Players[O].PreparingTime := 0;
 
     if States.GameTime < Players[O].MindTime2 then
+    begin
       Players[O].MindTime2 := 0;
+      Players[O].WineSkillDelay := 500;
+    end;
     
     if TilesRoadLength[O] > 0 then
       for I := 0 to TilesRoadLength[O] - 1 do
