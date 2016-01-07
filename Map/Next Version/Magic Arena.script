@@ -1751,10 +1751,8 @@ begin
         and (not InRange(States.MapTileObject(PosX, PosY), SHIELD_OBJECT, SHIELD_OBJECT8)) then
         begin
           Actions.MapTileObjectSet(PosX, PosY, aObj);
-          if ((Tiles[PosX][PosY].Owner <> P)
-          and ((Tiles[PosX][PosY].Skill = sNone))
-          or ((Tiles[PosX][PosY].Skill = sDeadlyFireworks)
-          or (Tiles[PosX][PosY].Skill = sGravity))) then
+          if (Tiles[PosX][PosY].Skill = sNone)
+          or (Tiles[PosX][PosY].Skill = sGravity) then
           begin
             Tiles[PosX][PosY].Owner := P;
             Tiles[PosX][PosY].Skill := fSkill;
@@ -7024,7 +7022,7 @@ begin
 
       0,1: begin
 
-             if TileOnBattlefield(X2, Y2 - 1) then
+             if TileOnBattlefield(X2, Y2 - 2) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7034,7 +7032,7 @@ begin
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
-               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
+               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 2;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
@@ -7043,7 +7041,7 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
-             for Y1 := Y2 - 2 downto Y2 - BOOMERANG_LENGTH + 1 do
+             for Y1 := Y2 - 3 downto Y2 - BOOMERANG_LENGTH do
                if TileOnBattlefield(DX1, Y1) then
                begin
                  Desync := Desync + 1;
@@ -7063,7 +7061,7 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
-             if TileOnBattlefield(X2, Y2 - BOOMERANG_LENGTH) then
+             if TileOnBattlefield(X2, Y2 - BOOMERANG_LENGTH - 1) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7073,7 +7071,7 @@ begin
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
-               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - BOOMERANG_LENGTH;
+               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - BOOMERANG_LENGTH - 1;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
@@ -7082,7 +7080,7 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
-             for Y1 := Y2 - BOOMERANG_LENGTH + 1 to Y2 - 2 do
+             for Y1 := Y2 - BOOMERANG_LENGTH to Y2 - 3 do
                if TileOnBattlefield(DX2, Y1) then
                begin
                  Desync := Desync + 1;
@@ -7102,7 +7100,7 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
-             if TileOnBattlefield(X2, Y2 - 1) then
+             if TileOnBattlefield(X2, Y2 - 2) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7112,7 +7110,7 @@ begin
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
-               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
+               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 2;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
@@ -7125,7 +7123,7 @@ begin
 
       2,3: begin
 
-             if TileOnBattlefield(X2 + 1, Y2) then
+             if TileOnBattlefield(X2 + 2, Y2) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7134,7 +7132,7 @@ begin
                SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + 1;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + 2;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
@@ -7144,7 +7142,7 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
-             for X1 := X2 + 2 to X2 + BOOMERANG_LENGTH - 1 do
+             for X1 := X2 + 3 to X2 + BOOMERANG_LENGTH do
                if TileOnBattlefield(X1, DY1) then
                begin
                  Desync := Desync + 1;
@@ -7164,7 +7162,7 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
-             if TileOnBattlefield(X2 + BOOMERANG_LENGTH, Y2) then
+             if TileOnBattlefield(X2 + BOOMERANG_LENGTH + 1, Y2) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7173,7 +7171,7 @@ begin
                SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + BOOMERANG_LENGTH;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + BOOMERANG_LENGTH + 1;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
@@ -7183,7 +7181,7 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
-             for X1 := X2 + BOOMERANG_LENGTH - 1 downto X2 + 2 do
+             for X1 := X2 + BOOMERANG_LENGTH downto X2 + 3 do
                if TileOnBattlefield(X1, DY2) then
                begin
                  Desync := Desync + 1;
@@ -7203,7 +7201,7 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
-             if TileOnBattlefield(X2 + 1, Y2) then
+             if TileOnBattlefield(X2 + 2, Y2) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7212,7 +7210,7 @@ begin
                SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + 1;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + 2;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
@@ -7226,7 +7224,7 @@ begin
 
       4,5: begin
 
-             if TileOnBattlefield(X2, Y2 + 1) then
+             if TileOnBattlefield(X2, Y2 + 2) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7236,7 +7234,7 @@ begin
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
-               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 + 1;
+               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 + 2;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
@@ -7245,7 +7243,7 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
-             for Y1 := Y2 + 2 to Y2 + BOOMERANG_LENGTH - 1 do
+             for Y1 := Y2 + 3 to Y2 + BOOMERANG_LENGTH do
                if TileOnBattlefield(DX1, Y1) then
                begin
                  Desync := Desync + 1;
@@ -7265,7 +7263,7 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
-             if TileOnBattlefield(X2, Y2 + BOOMERANG_LENGTH) then
+             if TileOnBattlefield(X2, Y2 + BOOMERANG_LENGTH + 1) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7275,7 +7273,7 @@ begin
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
-               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 + BOOMERANG_LENGTH;
+               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 + BOOMERANG_LENGTH + 1;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
@@ -7284,7 +7282,7 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
-             for Y1 := Y2 + BOOMERANG_LENGTH - 1 downto Y2 + 2 do
+             for Y1 := Y2 + BOOMERANG_LENGTH downto Y2 + 3 do
                if TileOnBattlefield(DX2, Y1) then
                begin
                  Desync := Desync + 1;
@@ -7304,7 +7302,7 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
-             if TileOnBattlefield(X2, Y2 + 1) then
+             if TileOnBattlefield(X2, Y2 + 2) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7314,7 +7312,7 @@ begin
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
-               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 + 1;
+               TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 + 2;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
@@ -7327,7 +7325,7 @@ begin
 
       6,7: begin
 
-             if TileOnBattlefield(X2 - 1, Y2) then
+             if TileOnBattlefield(X2 - 2, Y2) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7336,7 +7334,7 @@ begin
                SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 - 1;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 - 2;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
@@ -7346,7 +7344,7 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
-             for X1 := X2 - 2 downto X2 - BOOMERANG_LENGTH + 1 do
+             for X1 := X2 - 3 downto X2 - BOOMERANG_LENGTH do
                if TileOnBattlefield(X1, DY1) then
                begin
                  Desync := Desync + 1;
@@ -7366,7 +7364,7 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
-             if TileOnBattlefield(X2 - BOOMERANG_LENGTH, Y2) then
+             if TileOnBattlefield(X2 - BOOMERANG_LENGTH - 1, Y2) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7375,7 +7373,7 @@ begin
                SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 - BOOMERANG_LENGTH;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 - BOOMERANG_LENGTH - 1;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
@@ -7385,7 +7383,7 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
-             for X1 := X2 - BOOMERANG_LENGTH + 1 to X2 - 2 do
+             for X1 := X2 - BOOMERANG_LENGTH to X2 - 3 do
                if TileOnBattlefield(X1, DY2) then
                begin
                  Desync := Desync + 1;
@@ -7405,7 +7403,7 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
 
-             if TileOnBattlefield(X2 - 1, Y2) then
+             if TileOnBattlefield(X2 - 2, Y2) then
              begin
                Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7414,7 +7412,7 @@ begin
                SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 - 1;
+               TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 - 2;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
@@ -7638,90 +7636,88 @@ begin
         TilesWineY[P][Length(TilesWineY[P]) - 2] := Y2;
         TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2 - 1;
 
-        for I := 1 to 16 do
-          TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := SCOUT_OBJECT4;
-        for I := 17 to 32 do
+        for I := 1 to 32 do
           TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := SCOUT_OBJECT4;
 
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 32] := States.GameTime + 16;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 31] := States.GameTime + 19;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 30] := States.GameTime + 22;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 29] := States.GameTime + 25;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 32] := States.GameTime + 18;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 31] := States.GameTime + 21;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 30] := States.GameTime + 24;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 29] := States.GameTime + 27;
     
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 32] := States.GameTime + 13;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 31] := States.GameTime + 16;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 30] := States.GameTime + 19;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 29] := States.GameTime + 22;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 32] := States.GameTime + 15;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 31] := States.GameTime + 18;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 30] := States.GameTime + 21;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 29] := States.GameTime + 24;
 
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 28] := States.GameTime + 16;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 27] := States.GameTime + 19;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 26] := States.GameTime + 22;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 25] := States.GameTime + 25;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 28] := States.GameTime + 18;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 27] := States.GameTime + 21;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 26] := States.GameTime + 24;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 25] := States.GameTime + 27;
     
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 28] := States.GameTime + 13;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 27] := States.GameTime + 16;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 26] := States.GameTime + 19;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 25] := States.GameTime + 22;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 28] := States.GameTime + 15;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 27] := States.GameTime + 18;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 26] := States.GameTime + 21;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 25] := States.GameTime + 24;
 
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 24] := States.GameTime + 4;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 23] := States.GameTime + 7;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 22] := States.GameTime + 10;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 21] := States.GameTime + 13;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 24] := States.GameTime + 6;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 23] := States.GameTime + 9;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 22] := States.GameTime + 12;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 21] := States.GameTime + 15;
     
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 24] := States.GameTime + 1;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 23] := States.GameTime + 4;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 22] := States.GameTime + 7;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 21] := States.GameTime + 10;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 24] := States.GameTime + 3;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 23] := States.GameTime + 6;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 22] := States.GameTime + 9;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 21] := States.GameTime + 12;
 
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 20] := States.GameTime + 4;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 19] := States.GameTime + 7;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 18] := States.GameTime + 10;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 17] := States.GameTime + 13;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 20] := States.GameTime + 6;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 19] := States.GameTime + 9;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 18] := States.GameTime + 12;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 17] := States.GameTime + 15;
     
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 20] := States.GameTime + 1;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 19] := States.GameTime + 4;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 18] := States.GameTime + 7;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 17] := States.GameTime + 10;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 20] := States.GameTime + 3;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 19] := States.GameTime + 6;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 18] := States.GameTime + 9;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 17] := States.GameTime + 12;
 
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 16] := States.GameTime + 16;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 15] := States.GameTime + 19;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 14] := States.GameTime + 22;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 13] := States.GameTime + 25;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 16] := States.GameTime + 18;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 15] := States.GameTime + 21;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 14] := States.GameTime + 24;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 13] := States.GameTime + 27;
     
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 16] := States.GameTime + 13;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 15] := States.GameTime + 16;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 14] := States.GameTime + 19;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 13] := States.GameTime + 22;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 16] := States.GameTime + 15;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 15] := States.GameTime + 18;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 14] := States.GameTime + 21;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 13] := States.GameTime + 24;
 
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 12] := States.GameTime + 16;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 11] := States.GameTime + 19;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 10] := States.GameTime + 22;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 9] := States.GameTime + 25;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 12] := States.GameTime + 18;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 11] := States.GameTime + 21;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 10] := States.GameTime + 24;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 9] := States.GameTime + 27;
     
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 12] := States.GameTime + 13;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 11] := States.GameTime + 16;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 10] := States.GameTime + 19;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 9] := States.GameTime + 22;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 12] := States.GameTime + 15;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 11] := States.GameTime + 18;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 10] := States.GameTime + 21;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 9] := States.GameTime + 24;
 
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 4;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 7;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 10;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 13;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 6;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 9;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 12;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 15;
     
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 1;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 4;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 7;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 10;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 3;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 6;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 9;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 12;
 
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 4;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 7;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 10;
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 13;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 6;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 9;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 12;
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 15;
     
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 1;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 4;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 7;
-        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 10;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 3;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 6;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 9;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 12;
 
         for I := 1 to 32 do
           if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
@@ -9960,6 +9956,8 @@ begin
                       Players[O].MovedByGravity := True;
                       Players[O].GravityUser := P;
                       Players[O].GravityTime := States.GameTime + GRAVITY_MOVE_TIME;
+                      if Players[O].HeroStunned then
+                        Actions.GroupBlockOrders(Players[O].Hero, True);
                     end;
                     Break;
                     Exit;
@@ -10588,6 +10586,8 @@ begin
           + States.UnitPositionX(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)), Players[I1].RopeDY
           + States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)), Players[I1].RopeUnitDir, 1, 1);
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
+          if Players[I1].HeroStunned then
+            Actions.GroupBlockOrders(Players[I1].Hero, True);
           Players[I1].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
           Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[I1].RopeAttacker) + ']' + States.PlayerName(Players[I1].RopeAttacker) + '[]<$71> ' + SkillName(sRopesOfDeath);
         end;
@@ -10658,9 +10658,9 @@ begin
         Actions.GroupOrderHalt(Players[I1].Hero); 
         Actions.GroupBlockOrders(Players[M[I1]].Hero, True);
         Actions.GroupOrderHalt(Players[M[I1]].Hero);  
-        Players[I1].MindTime2 := States.GameTime + 25;
+        Players[I1].MindTime2 := States.GameTime + 30;
         Players[M[I1]].HeroStunned := True;
-        Players[M[I1]].HeroStunnedTime := States.GameTime + 25;
+        Players[M[I1]].HeroStunnedTime := States.GameTime + 30;
         Actions.FogCoverAll(I1);
         Actions.FogRevealRect(I1, 1, 39, 70, 109);
         Actions.FogCoverAll(M[I1]);
@@ -10675,8 +10675,8 @@ begin
             Zombies[K].Owner := -1;
         Players[M[I1]].MindStunned := True;
         Players[I1].CaptureMind := True;
-        Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME - 25; 
-        Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME - 25;
+        Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME - 30; 
+        Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME - 30;
         Players[I1].TempPlayersTeam := Players[I1].PlayersTeam;
         Players[I1].HeroMindType := Players[I1].HeroType;
         Players[M[I1]].HeroMindType := Players[M[I1]].HeroType;
