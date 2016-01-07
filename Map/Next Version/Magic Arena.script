@@ -10838,7 +10838,11 @@ begin
             Players[I1].HeroStunned := False;
             Players[I1].HeroStunnedTime := 0;
           end;
-          if Players[I].SpurtStartTime > States.GameTime then
+          if Players[I1].SpurtStartTime < States.GameTime then
+            for I := 0 to Players[I1].CurrentSpurtLength - 1 do
+              if SpurtTimes[I1][I] > States.GameTime then
+                SpurtTimes[I1][I] := 0;
+          if Players[I1].SpurtStartTime > States.GameTime then
           begin
             Players[M[I1]].SpurtStartTime := Players[I].SpurtStartTime;
             Players[M[I1]].CurrentSpurtLength := Players[I1].CurrentSpurtLength;
