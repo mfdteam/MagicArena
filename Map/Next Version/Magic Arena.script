@@ -1025,7 +1025,7 @@ begin
       ScoutSilenceStartTime := 0;
       ScoutSilenceGiver := -1;
       TotalKills := 0;
-      KillsCountTime := 0;
+      KillsCountTime := KILLS_REFRESH_TIME;
       DoubleKill := False;
       TripleKill := False;
       Rampage := False;
