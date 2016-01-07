@@ -10838,6 +10838,35 @@ begin
             Players[I1].HeroStunned := False;
             Players[I1].HeroStunnedTime := 0;
           end;
+          if Players[I].SpurtStartTime > States.GameTime then
+          begin
+            Players[M[I1]].SpurtStartTime := Players[I].SpurtStartTime;
+            Players[M[I1]].CurrentSpurtLength := Players[I1].CurrentSpurtLength;
+            for I := 0 to Players[M[I1]].CurrentSpurtLength - 1 do
+            begin
+              SpurtX[M[I1]][I] := SpurtX[I1][I];
+              SpurtY[M[I1]][I] := SpurtY[I1][I];
+              SpurtTimes[M[I1]][I] := SpurtTimes[I1][I];
+              Tiles[SpurtX[M[I1]][I]][SpurtY[M[I1]][I]].Owner := M[I1];
+              SpurtTimes[I1][I] := 0;
+            end;
+            TilesWineLength[M[I1]] := TilesWineLength[I1];
+            SetLength(TilesWineX[M[I1]], TilesWineLength[M[I1]]);
+            SetLength(TilesWineY[M[I1]], TilesWineLength[M[I1]]);
+            SetLength(TilesWineObjects[M[I1]], TilesWineLength[M[I1]]);
+            SetLength(SetTilesWineTimes[M[I1]], TilesWineLength[M[I1]]);
+            SetLength(ClearTilesWineTimes[M[I1]], TilesWineLength[M[I1]]);
+            for K := 1 to TilesWineLength[M[I1]] - 1 do
+            begin
+              TilesWineX[M[I1]][K] := TilesWineX[I1][K];
+              TilesWineY[M[I1]][K] := TilesWineY[I1][K];
+              TilesWineObjects[M[I1]][K] := TilesWineObjects[I1][K];
+              SetTilesWineTimes[M[I1]][K] := SetTilesWineTimes[I1][K];
+              ClearTilesWineTimes[M[I1]][K] := ClearTilesWineTimes[I1][K];
+            end;
+            ClearWineTilesArrayTime[M[I1]] := ClearWineTilesArrayTime[I1];
+            Players[I].SpurtStartTime := 0;
+          end;
           Players[M[I1]].HeroInFear := Players[I1].HeroInFear;
           Players[M[I1]].HeroInFearTime := Players[I1].HeroInFearTime;
           Players[M[I1]].HeroStunned := Players[I1].HeroStunned;
