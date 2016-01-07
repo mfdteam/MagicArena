@@ -10404,6 +10404,7 @@ begin
         Players[I1].TripleKill := False;
         Players[I1].Rampage := False;
         SetLength(Players[I1].KillTimes, 0);
+        Players[I1].KillsCountTime := Players[I1].KillsCountTime + KILLS_REFRESH_TIME;
       end;
 
       if States.GameTime = Players[I1].WerewolfTime then
