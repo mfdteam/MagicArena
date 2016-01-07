@@ -6694,7 +6694,7 @@ begin
     Actions.GroupOrderHalt(Players[P].Hero);
     Actions.GroupBlockOrders(Players[P].Hero, True);
     Players[P].HeroStunned := True;
-    Players[P].SpurtStartTime := States.GameTime + 25 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+    Players[P].SpurtStartTime := States.GameTime + 27 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
 
     if not States.PlayerIsAI(P) then
       Direction := Players[P].SkillDirection;
@@ -10549,8 +10549,8 @@ begin
         or (Players[I1].SpurtStartDY <> 0) then
         begin
 
-          for K := 0 to TilesWineLength[I1] - 1 do
-            if TilesWineObjects[I][K] = KNIGHT_OBJECT4 then
+          for K := 1 to TilesWineLength[I1] - 1 do
+            if TilesWineObjects[I1][K] = KNIGHT_OBJECT4 then
             begin
               TilesWineX[I1][K] := TilesWineX[I1][K] - Players[I1].SpurtStartDX;
               TilesWineY[I1][K] := TilesWineY[I1][K] - Players[I1].SpurtStartDY;
@@ -10564,10 +10564,10 @@ begin
 
         end;
             
-        Players[I1].HeroImmortalTime := (States.GameTime + SPURT_TIME + 5) - 25 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
+        Players[I1].HeroImmortalTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
         Players[I1].HeroImmortal := True;
         Players[I1].Preparing := True;
-        Players[I1].PreparingTime := (States.GameTime + SPURT_TIME + 5) - 25 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
+        Players[I1].PreparingTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
       end;
 
       if (States.GameTime = Players[I1].ScoutSilenceStartTime)
