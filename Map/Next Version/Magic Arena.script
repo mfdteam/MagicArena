@@ -10671,7 +10671,7 @@ begin
         if Length(Zombies) > 0 then
         for K := 0 to Length(Zombies) - 1 do
           if Zombies[K].Owner = M[I1] then
-            Zombies[I1].Owner := -1;
+            Zombies[K].Owner := -1;
         Players[M[I1]].MindStunned := True;
         Players[I1].CaptureMind := True;
         Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME - 25; 
@@ -10883,7 +10883,7 @@ begin
           if Length(Zombies) > 0 then
           for K := 0 to Length(Zombies) - 1 do
             if Zombies[K].Owner = -1 then
-              Zombies[I1].Owner := M[I1];
+              Zombies[K].Owner := M[I1];
         end;
       end;
     end;
