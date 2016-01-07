@@ -1751,10 +1751,10 @@ begin
         and (not InRange(States.MapTileObject(PosX, PosY), SHIELD_OBJECT, SHIELD_OBJECT8)) then
         begin
           Actions.MapTileObjectSet(PosX, PosY, aObj);
-          if (Tiles[PosX][PosY].Owner <> P)
-          and ((Tiles[PosX][PosY].Skill = sNone)
-          or (Tiles[PosX][PosY].Skill = sDeadlyFireworks)
-          or (Tiles[PosX][PosY].Skill = sGravity)) then
+          if ((Tiles[PosX][PosY].Owner <> P)
+          and ((Tiles[PosX][PosY].Skill = sNone))
+          or ((Tiles[PosX][PosY].Skill = sDeadlyFireworks)
+          or (Tiles[PosX][PosY].Skill = sGravity))) then
           begin
             Tiles[PosX][PosY].Owner := P;
             Tiles[PosX][PosY].Skill := fSkill;
