@@ -17,7 +17,7 @@ const
   XBOW_WINE_DELAY = 200;
 
   SWORD_ROAD_DELAY = 120;
-  SWORD_FIELD_DELAY = 150;
+  SWORD_FIELD_DELAY = 130;
   SWORD_WINE_DELAY = 250;
 
   PIKE_ROAD_DELAY = 150;
@@ -8381,7 +8381,7 @@ begin
           Players[P].StolenSkill := Players[O].LastUsedSkill;
 
         if InRange(O, 8, 11) then
-          if States.KaMRandom < 0.700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 then
+          if States.KaMRandom < 0.7 then
             Actions.UnitKill(U, False);
 
         case Players[P].StolenSkill of
