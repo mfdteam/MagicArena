@@ -8334,9 +8334,10 @@ begin
       if U <> - 1 then
         O := States.UnitOwner(U);
       if (U <> - 1)
-      and (U = States.GroupMember(Players[O].Hero, 0))
+      and ((U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroImmortal)
-      and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
+      and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+      or (InRange(O, 8, 11))) then
       begin
         TilesFieldLength[P] := TilesFieldLength[P] + 4;
         SetLength(TilesFieldX[P], TilesFieldLength[P]);
@@ -8376,10 +8377,12 @@ begin
              or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
                ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
 
-        Players[P].StolenSkill := Players[O].LastUsedSkill;
+        if InRange(O, 0, 7) then
+          Players[P].StolenSkill := Players[O].LastUsedSkill;
 
-        //Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        //Players[O].PlayerStatus := Players[O].PlayerStatus + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$78> ' + SkillName(Players[P].StolenSkill);
+        if InRange(O, 8, 11) then
+          if States.KaMRandom < 0.700000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001 then
+            Actions.UnitKill(U, False);
 
         case Players[P].StolenSkill of
 
