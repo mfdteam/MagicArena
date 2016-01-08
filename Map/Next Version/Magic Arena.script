@@ -258,7 +258,7 @@ const
 
   IMMORTAL_TIME = 110;
   STUNNED_TIME = 50;
-  STUNNED_ANIMATION_TIME = 30;
+  STUNNED_ANIMATION_TIME = 15;
   IN_FEAR_TIME = 80;
   START_HP = 10;
   MAX_HP = 12;
@@ -5831,7 +5831,7 @@ end;
 
 procedure RevengeFromNowhere(P, X, Y, Dir: Integer);
 var
-  X2, Y2, X1, Y1, Direction, Desync: Integer;
+  X2, Y2, X1, Y1, Direction, Desync, CircleTime: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -5958,6 +5958,7 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRevengeFromNowhere;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
+               CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
       2,3: for X1 := X2 + 2 to X2 + 18 do
@@ -5978,6 +5979,7 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRevengeFromNowhere;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
+               CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
       4,5: for Y1 := Y2 + 2 to Y2 + 18 do
@@ -5998,6 +6000,7 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRevengeFromNowhere;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
+               CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
       6,7: for X1 := X2 - 2 downto X2 - 18 do
@@ -6018,6 +6021,7 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRevengeFromNowhere;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
+               CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
     end; 
 
@@ -6038,7 +6042,19 @@ begin
                end;
       end;
 
-    ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := States.GameTime + 28 + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I);
+    if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X > MAX_X then
+      ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X := MAX_X;
+
+    if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y > MAX_Y then
+      ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y := MAX_Y;
+
+    if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X < MIN_X then
+      ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X := MIN_X;
+
+    if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y < MIN_Y then
+      ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y := MIN_Y;
+
+    ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 4 + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I);
     if I mod EXP_RADIUS > 0 then
       ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Radius := EXP_RADIUS + 1 - I mod EXP_RADIUS
     else
