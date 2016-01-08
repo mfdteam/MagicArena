@@ -256,7 +256,7 @@ const
 
 //Player stats
 
-  IMMORTAL_TIME = 60;
+  IMMORTAL_TIME = 110;
   STUNNED_TIME = 30;
   IN_FEAR_TIME = 80;
   START_HP = 10;
