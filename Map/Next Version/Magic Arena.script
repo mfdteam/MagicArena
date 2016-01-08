@@ -1873,6 +1873,9 @@ begin
   Actions.CinematicStart(P);
   Actions.CinematicPanTo(P, Players[P].SpawnX, Players[P].SpawnY, 0);
   Actions.CinematicEnd(P);
+  Players[P].RoadSkillDelay := 0;
+  Players[P].FieldSkillDelay := 0;
+  Players[P].WineSkillDelay := 0;
   Players[P].ReChoiceAllowed := False;
 end;
 
