@@ -1308,6 +1308,17 @@ begin
 end;
 
 
+function FieryTrackStatus(P: Integer): ANSIString;
+begin
+  if Players[P].SettingTrack then
+    Result := '|[$1528FE]<$23>[] (' + IntToStr((Players[P].TrackStopTime - States.GameTime)/10) + ')'
+
+  else
+
+    Result := '';
+end;
+
+
 function DDStatus(P: Integer): ANSIString;
 begin
   if Players[P].DDTime - States.GameTime > 0 then
@@ -1465,7 +1476,7 @@ function StatusText(P: Integer): ANSIString;
 begin
   Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) {+ PrisonedStatus(P)} + WerewolfStatus(P)
   + RegenStatus(P) + DDStatus(P) {+ IllusionStatus(P)} + SilenceStatus(P) + PreparingStatus(P)
-  + ReChargeStatus(P) + RogueStatus(P) + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + GameplayStatus(P);
+  + ReChargeStatus(P) + RogueStatus(P) + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + FieryTrackStatus(P) + GameplayStatus(P);
 end;
 
 
