@@ -9973,9 +9973,9 @@ begin
                   if (InRange(O, 0, 7))
                   and (not Players[O].HeroImmortal) then
                   begin
-                    D := States.KaMRandomI(8);
-                    if States.GameTime <= Players[O].SpurtStartTime then
-                      D := SpurtDir[O][0];
+                    D := States.UnitDirection(U);
+                    //if States.GameTime <= Players[O].SpurtStartTime then
+                      //D := SpurtDir[O][0];
                     Actions.GroupKillAll(Players[O].Hero, True);
                     Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
                     Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
