@@ -10898,9 +10898,9 @@ begin
                 SpurtTimes[I1][I] := 0;
           if Players[I1].SpurtStartTime > States.GameTime then
           begin
-            Players[M[I1]].SpurtStartTime := Players[I].SpurtStartTime;
+            Players[M[I1]].SpurtStartTime := Players[I1].SpurtStartTime;
             Players[M[I1]].CurrentSpurtLength := Players[I1].CurrentSpurtLength;
-            Players[I].SpurtStartTime := 0;
+            Players[I1].SpurtStartTime := 0;
             Players[I1].CurrentSpurtLength := 0;
             for I := 0 to Players[M[I1]].CurrentSpurtLength - 1 do
             begin
@@ -10926,7 +10926,7 @@ begin
               ClearTilesWineTimes[M[I1]][K] := ClearTilesWineTimes[I1][K];
             end;
             ClearWineTilesArrayTime[M[I1]] := ClearWineTilesArrayTime[I1];
-            Players[I].SpurtStartTime := 0;
+            Players[I1].SpurtStartTime := 0;
           end;
           Players[M[I1]].HeroInFear := Players[I1].HeroInFear;
           Players[M[I1]].HeroInFearTime := Players[I1].HeroInFearTime;
