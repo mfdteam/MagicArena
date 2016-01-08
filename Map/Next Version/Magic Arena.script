@@ -10369,7 +10369,7 @@ begin
       Players[I].Hero := Actions.GiveGroup(I, Players[I].HeroType, Players[I].SpawnX, Players[I].SpawnY, Players[I].Direction, 1, 1);
       Actions.GroupHungerSet(Players[I].Hero, States.UnitMaxHunger);
       Players[I].HeroImmortal := True;
-      Players[I].HeroImmortalTime := States.GameTime + IMMORTAL_TIME;
+      Players[I].HeroImmortalTime := States.GameTime + IMMORTAL_TIME - REBORN_TIME;
       Actions.CinematicStart(I);
       Actions.CinematicPanTo(I, Players[I].SpawnX, Players[I].SpawnY, 0);
       Actions.CinematicEnd(I);
@@ -10421,9 +10421,11 @@ begin
       and (Players[I1].ReChoice) then
         EndReChoice(I1);
 
-      if (Players[I1].HeroStunned)
-      and not (States.GroupIdle(Players[I1].Hero)) then
+      if Players[I1].HeroStunned then
+      begin
         Actions.GroupOrderHalt(Players[I1].Hero);
+        Actions.GroupBlockOrders(Players[I1].Hero, True);
+      end;
 
       if States.GameTime = Players[I1].RebornTime then
       begin
