@@ -10632,7 +10632,8 @@ begin
       end;
 
       if States.GameTime = Players[I1].RopeTime then
-        if (InRange(Players[I1].RopeAttacker, 0, 7)) then
+        if (InRange(Players[I1].RopeAttacker, 0, 7))
+        and (States.GroupOwner(Players[I1].Hero) = I1) then
         begin
           Actions.GroupKillAll(Players[I1].Hero, True);
           Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].RopeDX
