@@ -9948,7 +9948,7 @@ end;
 
 procedure CheckGravityCircles(P: Integer);
 var
-  X, Y, O, U, G, UT, CC, OT, HT: Integer;
+  X, Y, O, U, G, UT, CC, OT, HT, D: Integer;
 begin
   if States.PlayerEnabled(P) then
     if GravityCirclesLength[P] > 0 then
@@ -9973,8 +9973,11 @@ begin
                   if (InRange(O, 0, 7))
                   and (not Players[O].HeroImmortal) then
                   begin
+                    D := States.KaMRandomI(8);
+                    if States.GameTime <= Players[O].SpurtStartTime then
+                      D := SpurtDir[O][0];
                     Actions.GroupKillAll(Players[O].Hero, True);
-                    Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8), 1, 1);
+                    Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), D, 1, 1);
                     Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
                     if not Players[O].MovedByGravity then
                     begin
@@ -10897,11 +10900,14 @@ begin
           begin
             Players[M[I1]].SpurtStartTime := Players[I].SpurtStartTime;
             Players[M[I1]].CurrentSpurtLength := Players[I1].CurrentSpurtLength;
+            Players[I].SpurtStartTime := 0;
+            Players[I1].CurrentSpurtLength := 0;
             for I := 0 to Players[M[I1]].CurrentSpurtLength - 1 do
             begin
               SpurtX[M[I1]][I] := SpurtX[I1][I];
               SpurtY[M[I1]][I] := SpurtY[I1][I];
               SpurtTimes[M[I1]][I] := SpurtTimes[I1][I];
+              SpurtDir[M[I1]][I] := SpurtDir[I1][I];
               Tiles[SpurtX[M[I1]][I]][SpurtY[M[I1]][I]].Owner := M[I1];
               SpurtTimes[I1][I] := 0;
             end;
