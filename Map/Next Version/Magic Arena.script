@@ -1888,6 +1888,14 @@ begin
   Players[P].FieldSkillDelay := 0;
   Players[P].WineSkillDelay := 0;
   Players[P].ReChoiceAllowed := False;
+  Players[P].VagaAppearTimeBack := 0;
+  Players[P].VagaAppearTime := 0;
+  Players[P].HeroStunnedTime := 0;
+  Players[P].HeroSilentTime := 0;
+  Players[P].HeroInFearTime := 0;
+  Players[P].WerewolfTime := 0;
+  Players[P].DDTime := 0;
+  Players[P].ReChargeTime := 0;
 end;
 
 
@@ -9060,6 +9068,8 @@ begin
           Players[P].HeroStunnedTime := 0;
         Players[P].HeroSilentTime := 0;
         Players[P].PreparingTime := 0;
+        Players[P].DDTime := 0;
+        Players[P].ReChargeTime := 0;
 
         if States.GameTime < Players[P].MindTime2 then
         begin
@@ -10331,6 +10341,8 @@ begin
       Players[O].HeroStunnedTime := 0;
     Players[O].HeroInFearTime := 0;
     Players[O].PreparingTime := 0;
+    Players[O].DDTime := 0;
+    Players[O].ReChargeTime := 0;
 
     if States.GameTime < Players[O].MindTime2 then
     begin
