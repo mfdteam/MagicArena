@@ -10753,6 +10753,14 @@ begin
       and (not States.FogRevealed(I1, 2, 40)) then
         Actions.FogRevealAll(I1);
 
+      if (Players[I1].HP > 0)
+      and (States.FogRevealed(I1, Players[I1].TempX, Players[I1].TempY))
+      and (not States.PlayerVictorious(I1)) then
+      begin
+        Actions.FogCoverAll(I1);
+        Actions.FogRevealRect(I1, 1, 39, 70, 109);
+      end;
+
       if States.GameTime = Players[I1].PlayerStatusTime then
         Players[I1].PlayerStatus := '';
 
