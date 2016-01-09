@@ -488,6 +488,7 @@ type
     SpurtStartDY: Integer;
     RebornTime: Integer;
     HeroReborn: Boolean;
+    MovedToTribune: Boolean;
   end;
 
 
@@ -1043,6 +1044,7 @@ begin
       SpurtStartDY := 0;
       RebornTime := 0;
       HeroReborn := False;
+      MovedToTribune := False;
     end;
   end;
 
@@ -10626,10 +10628,16 @@ begin
       begin
         Players[I1].HeroReborn := False;
         Players[I1].RebornTime := 0;
-        Actions.FogRevealAll(I1);
-        Actions.CinematicStart(I1);
-        Actions.CinematicPanTo(I1, Players[I1].TribuneX, Players[I1].TribuneY, 0);
-        Actions.CinematicEnd(I1);
+        if not Players[I1].MovedToTribune then
+        begin
+          Actions.FogRevealAll(I1);
+          Actions.CinematicStart(I1);
+          Actions.CinematicPanTo(I1, Players[I1].TribuneX, Players[I1].TribuneY, 0);
+          Actions.CinematicEnd(I1);
+          Actions.GroupHungerset(Players[I1].Hero, States.UnitMaxHunger);
+          Actions.GroupBlockOrders(Players[I1].Hero, True);
+          Players[I1].MovedToTribune := True;
+        end;
       end;
 
       if (Players[I1].HP <= 0)
