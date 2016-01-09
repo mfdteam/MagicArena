@@ -308,7 +308,7 @@ const
   HEAL_CHECK_TIME = 15;
   RUNE_STAYING_TIME = 20;
   CLEAR_ARRAY_FACTOR = 5;
-  DEBUG_MODE = True;
+  DEBUG_MODE = False;
   CHANGE_RELIEF = True;
   MOVEMENT_DISTANCE = 3;
   MOVEMENT_FACTOR = 2;
@@ -9458,8 +9458,8 @@ begin
     for I := 1 to 9 do
     begin
       TilesFieldObjects[Tiles[aX][aY].Owner][Length(TilesFieldObjects[Tiles[aX][aY].Owner]) - I] := BOWMAN_ROCKET2;
-      ClearTilesFieldTimes[Tiles[aX][aY].Owner][Length(ClearTilesFieldTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 16 + States.KaMRandomI(3);
-      SetTilesFieldTimes[Tiles[aX][aY].Owner][Length(SetTilesFieldTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 6 + States.KaMRandomI(3);
+      ClearTilesFieldTimes[Tiles[aX][aY].Owner][Length(ClearTilesFieldTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 45 + States.KaMRandomI(3);
+      SetTilesFieldTimes[Tiles[aX][aY].Owner][Length(SetTilesFieldTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 15 + States.KaMRandomI(3);
 
       if TileOnBattlefield(TilesFieldX[Tiles[aX][aY].Owner][Length(TilesFieldX[Tiles[aX][aY].Owner]) - I], TilesFieldY[Tiles[aX][aY].Owner][Length(TilesFieldY[Tiles[aX][aY].Owner]) - I]) then
       begin
@@ -9712,8 +9712,8 @@ begin
             for I := 1 to 9 do
             begin
               TilesFieldObjects[Tiles[aX][aY].Owner][Length(TilesFieldObjects[Tiles[aX][aY].Owner]) - I] := BOWMAN_ROCKET2;
-              ClearTilesFieldTimes[Tiles[aX][aY].Owner][Length(ClearTilesFieldTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 16 + States.KaMRandomI(3);
-              SetTilesFieldTimes[Tiles[aX][aY].Owner][Length(SetTilesFieldTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 6 + States.KaMRandomI(3);
+              ClearTilesFieldTimes[Tiles[aX][aY].Owner][Length(ClearTilesFieldTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 45 + States.KaMRandomI(3);
+              SetTilesFieldTimes[Tiles[aX][aY].Owner][Length(SetTilesFieldTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 15 + States.KaMRandomI(3);
 
               if TileOnBattlefield(TilesFieldX[Tiles[aX][aY].Owner][Length(TilesFieldX[Tiles[aX][aY].Owner]) - I], TilesFieldY[Tiles[aX][aY].Owner][Length(TilesFieldY[Tiles[aX][aY].Owner]) - I]) then
               begin
@@ -9911,7 +9911,8 @@ begin
                 if aRelief < 0 then
                   aRelief := -1 * aRelief;
                 if (((FireworksCircles1[P][K][I].X - PosX) * (FireworksCircles1[P][K][I].X - PosX) + (FireworksCircles1[P][K][I].Y - PosY) * (FireworksCircles1[P][K][I].Y - PosY)) <= FireworksCircles1[P][K][I].Radius * FireworksCircles1[P][K][I].Radius) then
-                  if TileOnBattlefield(PosX, PosY) then
+                  if (TileOnBattlefield(PosX, PosY))
+                  and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
                     Actions.MapTileHeightSet(PosX, PosY, aRelief);
               end;
 
@@ -9955,7 +9956,8 @@ begin
                 if aRelief < 0 then
                   aRelief := -1 * aRelief;
                 if (((FireworksCircles2[P][K][I].X - PosX) * (FireworksCircles2[P][K][I].X - PosX) + (FireworksCircles2[P][K][I].Y - PosY) * (FireworksCircles2[P][K][I].Y - PosY)) <= FireworksCircles2[P][K][I].Radius * FireworksCircles2[P][K][I].Radius) then
-                  if TileOnBattlefield(PosX, PosY) then
+                  if (TileOnBattlefield(PosX, PosY))
+                  and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
                     Actions.MapTileHeightSet(PosX, PosY, aRelief);
               end;
 
@@ -9963,7 +9965,7 @@ begin
                 for PosX := FireworksCircles2[P][K][I].X - FireworksCircles2[P][K][I].Radius to FireworksCircles2[P][K][I].X + FireworksCircles2[P][K][I].Radius do
                 for PosY := FireworksCircles2[P][K][I].Y - FireworksCircles2[P][K][I].Radius to FireworksCircles2[P][K][I].Y + FireworksCircles2[P][K][I].Radius do
                   if (((FireworksCircles2[P][K][I].X - PosX) * (FireworksCircles2[P][K][I].X - PosX) + (FireworksCircles2[P][K][I].Y - PosY) * (FireworksCircles2[P][K][I].Y - PosY)) <= FireworksCircles2[P][K][I].Radius * FireworksCircles2[P][K][I].Radius) then
-                    if TileOnBattlefield(PosX, PosY) then  
+                  if TileOnBattlefield(PosX, PosY) then  
                       Actions.MapTileHeightSet(PosX, PosY, Tiles[PosX][PosY].Relief);
             end;
           end;
@@ -9999,7 +10001,8 @@ begin
                 if aRelief < 0 then
                   aRelief := -1 * aRelief;
                 if (((FireworksCircles3[P][K][I].X - PosX) * (FireworksCircles3[P][K][I].X - PosX) + (FireworksCircles3[P][K][I].Y - PosY) * (FireworksCircles3[P][K][I].Y - PosY)) <= FireworksCircles3[P][K][I].Radius * FireworksCircles3[P][K][I].Radius) then
-                  if TileOnBattlefield(PosX, PosY) then
+                  if (TileOnBattlefield(PosX, PosY))
+                  and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
                     Actions.MapTileHeightSet(PosX, PosY, aRelief);
               end;
 
@@ -10007,7 +10010,7 @@ begin
                 for PosX := FireworksCircles3[P][K][I].X - FireworksCircles3[P][K][I].Radius to FireworksCircles3[P][K][I].X + FireworksCircles3[P][K][I].Radius do
                 for PosY := FireworksCircles3[P][K][I].Y - FireworksCircles3[P][K][I].Radius to FireworksCircles3[P][K][I].Y + FireworksCircles3[P][K][I].Radius do
                   if (((FireworksCircles3[P][K][I].X - PosX) * (FireworksCircles3[P][K][I].X - PosX) + (FireworksCircles3[P][K][I].Y - PosY) * (FireworksCircles3[P][K][I].Y - PosY)) <= FireworksCircles3[P][K][I].Radius * FireworksCircles3[P][K][I].Radius) then
-                    if TileOnBattlefield(PosX, PosY) then
+                  if TileOnBattlefield(PosX, PosY) then
                       Actions.MapTileHeightSet(PosX, PosY, Tiles[PosX][PosY].Relief);
             end;
           end;
@@ -10043,7 +10046,8 @@ begin
                 if aRelief < 0 then
                   aRelief := -1 * aRelief;
                 if (((FireworksCircles4[P][K][I].X - PosX) * (FireworksCircles4[P][K][I].X - PosX) + (FireworksCircles4[P][K][I].Y - PosY) * (FireworksCircles4[P][K][I].Y - PosY)) <= FireworksCircles4[P][K][I].Radius * FireworksCircles4[P][K][I].Radius) then
-                  if TileOnBattlefield(PosX, PosY) then
+                  if (TileOnBattlefield(PosX, PosY))
+                  and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
                     Actions.MapTileHeightSet(PosX, PosY, aRelief);
               end;
 
@@ -10087,7 +10091,8 @@ begin
                 if aRelief < 0 then
                   aRelief := -1 * aRelief;
                 if (((FireworksCircles5[P][K][I].X - PosX) * (FireworksCircles5[P][K][I].X - PosX) + (FireworksCircles5[P][K][I].Y - PosY) * (FireworksCircles5[P][K][I].Y - PosY)) <= FireworksCircles5[P][K][I].Radius * FireworksCircles5[P][K][I].Radius) then
-                  if TileOnBattlefield(PosX, PosY) then
+                  if (TileOnBattlefield(PosX, PosY))
+                  and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
                     Actions.MapTileHeightSet(PosX, PosY, aRelief);
               end;
 
@@ -10131,7 +10136,8 @@ begin
                 if aRelief < 0 then
                   aRelief := -1 * aRelief;
                 if (((ExpCircles[P][K][I].X - PosX) * (ExpCircles[P][K][I].X - PosX) + (ExpCircles[P][K][I].Y - PosY) * (ExpCircles[P][K][I].Y - PosY)) <= ExpCircles[P][K][I].Radius * ExpCircles[P][K][I].Radius) then
-                  if TileOnBattlefield(PosX, PosY) then
+                  if (TileOnBattlefield(PosX, PosY))
+                  and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
                     Actions.MapTileHeightSet(PosX, PosY, aRelief);
               end;
 
@@ -10195,7 +10201,8 @@ begin
                 if aRelief < 0 then
                 aRelief := -1 * aRelief;
                 if (((RogueCircles[P][K][I].X - PosX) * (RogueCircles[P][K][I].X - PosX) + (RogueCircles[P][K][I].Y - PosY) * (RogueCircles[P][K][I].Y - PosY)) <= RogueCircles[P][K][I].Radius * RogueCircles[P][K][I].Radius) then
-                  if TileOnBattlefield(PosX, PosY) then
+                  if (TileOnBattlefield(PosX, PosY))
+                  and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
                     Actions.MapTileHeightSet(PosX, PosY, aRelief);
               end;
 
@@ -10239,7 +10246,8 @@ begin
                 if aRelief < 0 then
                   aRelief := -1 * aRelief;
                 if (((StolenRogueCircles[P][K][I].X - PosX) * (StolenRogueCircles[P][K][I].X - PosX) + (StolenRogueCircles[P][K][I].Y - PosY) * (StolenRogueCircles[P][K][I].Y - PosY)) <= StolenRogueCircles[P][K][I].Radius * StolenRogueCircles[P][K][I].Radius) then
-                  if TileOnBattlefield(PosX, PosY) then
+                  if (TileOnBattlefield(PosX, PosY))
+                  and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
                     Actions.MapTileHeightSet(PosX, PosY, aRelief);
               end;
 
@@ -10379,7 +10387,8 @@ begin
                 if aRelief < 0 then
                   aRelief := -1 * aRelief;
                 if (((ConcentrationCircles[P][K][I].X - PosX) * (ConcentrationCircles[P][K][I].X - PosX) + (ConcentrationCircles[P][K][I].Y - PosY) * (ConcentrationCircles[P][K][I].Y - PosY)) <= ConcentrationCircles[P][K][I].Radius * ConcentrationCircles[P][K][I].Radius) then
-                  if TileOnBattlefield(PosX, PosY) then
+                  if (TileOnBattlefield(PosX, PosY))
+                  and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
                     Actions.MapTileHeightSet(PosX, PosY, aRelief);
               end;
 
@@ -11353,7 +11362,8 @@ begin
         begin
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], 255);
 
-          if CHANGE_RELIEF then
+          if (CHANGE_RELIEF)
+          and (InRange(States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]), 0, 45)) then
             Actions.MapTileHeightSet(TilesRoadX[P][K], TilesRoadY[P][K], Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief);
 
         end;
@@ -11362,7 +11372,8 @@ begin
         and (States.MapTileObject(TilesRoadX[P][K], TilesRoadY[P][K]) = BARB_OBJECT)
         and (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K]))
         and (States.GameTime mod 3 = 0)
-        and (CHANGE_RELIEF) then
+        and (CHANGE_RELIEF)
+        and (InRange(States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]), 0, 45)) then
         begin
           aRelief := Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
           if aRelief < 0 then
