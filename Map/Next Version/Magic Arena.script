@@ -10902,21 +10902,22 @@ begin
       and (States.GroupOwner(Players[I1].Hero) = I1)
       and (Players[I1].Hero > 0)
       and (Players[I1].HP > 0) then
-      begin
-        TilesFieldLength[I1] := TilesFieldLength[I1] + 1;
-        SetLength(TilesFieldX[I1], TilesFieldLength[I1]);
-        SetLength(TilesFieldY[I1], TilesFieldLength[I1]);
-        SetLength(ClearTilesFieldTimes[I1], TilesFieldLength[I1]);
-        SetLength(SetTilesFieldTimes[I1], TilesFieldLength[I1]);
-        SetLength(TilesFieldObjects[I1], TilesFieldLength[I1]);  
-        TilesFieldX[I1][Length(TilesFieldX[I1]) - 1] := FieryTrackX(I1);    
-        TilesFieldY[I1][Length(TilesFieldY[I1]) - 1] := FieryTrackY(I1);
-        TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 1] := VAGA_OBJECT8;    
-        ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := Players[I1].TrackStopTime + 3;    
-        SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - 1] := States.GameTime + 1;
-        Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Owner := I1;
-        Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Skill := sTrack;
-      end;
+        if TileOnBattlefield(FieryTrackX(I1), FieryTrackY(I1)) then
+        begin
+          TilesFieldLength[I1] := TilesFieldLength[I1] + 1;
+          SetLength(TilesFieldX[I1], TilesFieldLength[I1]);
+          SetLength(TilesFieldY[I1], TilesFieldLength[I1]);
+          SetLength(ClearTilesFieldTimes[I1], TilesFieldLength[I1]);
+          SetLength(SetTilesFieldTimes[I1], TilesFieldLength[I1]);
+          SetLength(TilesFieldObjects[I1], TilesFieldLength[I1]);  
+          TilesFieldX[I1][Length(TilesFieldX[I1]) - 1] := FieryTrackX(I1);    
+          TilesFieldY[I1][Length(TilesFieldY[I1]) - 1] := FieryTrackY(I1);
+          TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 1] := VAGA_OBJECT8;    
+          ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := Players[I1].TrackStopTime + 3;    
+          SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - 1] := States.GameTime + 1;
+          Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Owner := I1;
+          Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Skill := sTrack;
+        end;
 
       if (States.GameTime >= Players[I1].GravityTime)
       and (Players[I1].MovedByGravity) then
