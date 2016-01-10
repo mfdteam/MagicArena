@@ -1,4 +1,4 @@
-//Script version 2.64 (13 dec 2015)
+//Script version 2.101 (09 jan 2016)
 
 const
 
@@ -9773,6 +9773,7 @@ begin
               or (aObj = BOWMAN_OBJECT3)
               or (aObj = BOWMAN_OBJECT4)
               or (aObj = BOWMAN_ROCKET)
+              or (aObj = BOWMAN_ROCKET2)
               or (aObj = AXE_OBJECT2)
               or (aObj = AXE_OBJECT3)
               or (aObj = VAGA_OBJECT2)
