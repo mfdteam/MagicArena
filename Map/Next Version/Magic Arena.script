@@ -6079,6 +6079,8 @@ begin
     if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y < MIN_Y then
       ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y := MIN_Y;
 
+
+      ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I);
     if I mod EXP_RADIUS > 0 then
       ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Radius := EXP_RADIUS + 1 - I mod EXP_RADIUS
     else
