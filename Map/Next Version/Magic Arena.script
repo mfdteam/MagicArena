@@ -284,6 +284,7 @@ const
   DEAFENING_TIME = 50;
   SPURT_TIME = 35;
   SPURT_AI_FACTOR = 8;
+  SPURT_AI_RANDOM = 5;
   STOLEN_SKILL_TIME = 1200;
   CAPTURE_MIND_TIME = 200;
   TRACK_TIME = 100;
@@ -6874,7 +6875,7 @@ end;
 
 procedure RagingSpurt(P, X, Y, Dir: Integer);
 var
-  X1, Y1, X2, Y2, Desync, Direction: Integer;
+  X1, Y1, X2, Y2, Desync, Direction, R: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -6895,6 +6896,8 @@ begin
       Direction := Dir;
     end;
 
+    R := States.KaMRandomI(SPURT_AI_RANDOM);
+
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
@@ -6903,11 +6906,11 @@ begin
     Players[P].SpurtStartDX:= 0;
     Players[P].SpurtStartDY:= 0;
 
-    Players[P].HeroStunnedTime := States.GameTime + SPURT_TIME + 5 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+    Players[P].HeroStunnedTime := States.GameTime + SPURT_TIME + 5 + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
     Actions.GroupOrderHalt(Players[P].Hero);
     Actions.GroupBlockOrders(Players[P].Hero, True);
     Players[P].HeroStunned := True;
-    Players[P].SpurtStartTime := States.GameTime + 27 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+    Players[P].SpurtStartTime := States.GameTime + 27 + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
 
     if not States.PlayerIsAI(P) then
       Direction := Players[P].SkillDirection;
@@ -6993,10 +6996,10 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X2;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                SpurtX[P][Desync - 1] := X2;
                SpurtY[P][Desync - 1] := Y1;
                SpurtDir[P][Desync - 1] := 0;
@@ -7023,10 +7026,10 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                SpurtX[P][Desync - 1] := X1;
                SpurtY[P][Desync - 1] := Y2;
                SpurtDir[P][Desync - 1] := 2;
@@ -7053,10 +7056,10 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X2;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                SpurtX[P][Desync - 1] := X2;
                SpurtY[P][Desync - 1] := Y1;
                SpurtDir[P][Desync - 1] := 4;
@@ -7083,10 +7086,10 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+               SpurtTimes[P][Desync - 1] := States.GameTime + 29 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                SpurtX[P][Desync - 1] := X1;
                SpurtY[P][Desync - 1] := Y2;
                SpurtDir[P][Desync - 1] := 6;
@@ -13245,11 +13248,12 @@ end;
 
 procedure AIKnight(P: Integer);
 var
-  X, Y, aX, aY, uX, uY, U, O, A, E, D, aX1, aX2, aY1, aY2: Integer;
+  X, Y, aX, aY, uX, uY, U, O, A, E, D: Integer;
 begin
 
   if (Players[P].RoadSkillDelay = 0)
   and (Players[P].WineSkillDelay = 0)
+  and (Players[P].FieldSkillDelay = 0)
   and (Players[P].Hero > 0)
   and (States.GameTime mod 50 = 0) then
     if States.GroupMember(Players[P].Hero, 0) > 0 then
@@ -13281,8 +13285,7 @@ begin
             begin
               uX := States.UnitPositionX(U);
               uY := States.UnitPositionY(U);
-              if States.KaMRandom < 0.6 then
-                DeafeningClatter(P, uX, uY);
+              DeafeningClatter(P, uX, uY);
               RopesOfDeath(P, uX, uY);
               RagingSpurt(P, X, Y, D);
               Exit;
@@ -13292,94 +13295,7 @@ begin
       end;
     end;
 
-  if (States.KaMRandomI(10) > 4)
-  and (Players[P].WineSkillDelay = 0)
-  and (States.GameTime mod 60 = 0)
-  and (Players[P].Hero > 0)
-  and (States.GameTime > CHOOSE_HERO_TIMER + 100)
-  and not (Players[P].CastingSkill) then
-    if States.GroupMember(Players[P].Hero, 0) > 0 then
-    begin
-      D := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
-      if D mod 2 = 1 then
-        Exit;
-      Actions.GroupOrderHalt(Players[P].Hero);
-      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-
-      case D of
-
-        0: begin
-             aX1 := aX;
-             aX2 := aX;
-             aY1 := aY - SPURT_LENGTH + 1;
-             aY2 := aY - 1;
-           end;
-
-        4: begin
-             aX1 := aX;
-             aX2 := aX;
-             aY1 := aY + 1;
-             aY2 := aY + SPURT_LENGTH - 1;
-           end;
-
-        2: begin
-             aX1 := aX + 1;
-             aX2 := aX + SPURT_LENGTH - 1;
-             aY1 := aY;
-             aY2 := aY;
-           end;
-
-        6: begin
-             aX1 := aX - SPURT_LENGTH + 1;
-             aX2 := aX - 1;
-             aY1 := aY;
-             aY2 := aY;
-           end;
-
-      end;
-
-      for X := aX1 to aX2 do
-      for Y := aY1 to aY2 do
-      begin
-        if TileOnBattlefield(X, Y) then
-          U := States.UnitAt(X, Y);
-        if U > 0 then
-        begin
-          O := States.UnitOwner(U);
-          if (P <> O)
-          and (CanUseSkillAgainstUnit(P, U))
-          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          and (States.KaMRandom > 0.1) then 
-          begin
-            uX := States.UnitPositionX(U);
-            uY := States.UnitPositionY(U);
-            if ((uX = aX) and (uY < (aY - 1)) and (D = 0)) then
-            begin
-              RagingSpurt(P, aX, aY, 0);
-              Exit;
-            end;
-            if ((uX = aX) and (uY > (aY + 1)) and (D = 4)) then
-            begin
-              RagingSpurt(P, aX, aY, 4);
-              Exit;
-            end;
-            if ((uX < (aX - 1)) and (uY = aY) and (D = 6)) then
-            begin
-              RagingSpurt(P, aX, aY, 6);
-              Exit;
-            end;
-            if ((uX > (aX + 1)) and (uY = aY) and (D = 2)) then
-            begin
-              RagingSpurt(P, aX, aY, 2);
-              Exit;
-            end;
-          end;
-        end;
-      end;
-    end;
-
-  if (States.KaMRandom > 0.6)
+  if (States.KaMRandom > 0.85)
   and (Players[P].FieldSkillDelay = 0)
   and (Players[P].Hero > 0) then
     if States.GroupMember(Players[P].Hero, 0) > 0 then
@@ -13402,7 +13318,8 @@ begin
           and (InRange(O, 0, 7))
           and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
           and (States.KaMRandom > 0.1)
-          and (E > A) then 
+          and (E > A)
+          and (States.UnitDirection(States.GroupMember(Players[P].Hero, 0)) mod 2 = 1) then 
           begin
             DeafeningClatter(P, X, Y);
             Exit;
@@ -13688,12 +13605,16 @@ begin
       if States.GameTime = Players[I].ClearPikeObjTime then
         ClearPikeObj(I);
 
-      if States.GameTime >= Players[I].SkillCastRespawnTime then
-        if Players[I].Hero > 0 then
-          if States.GroupOwner(Players[I].Hero) = TEMP_PLAYER then
-            RespawnUnit(I);
+      if not Players[I].HeroReborn then
+      begin
+        if States.GameTime >= Players[I].SkillCastRespawnTime then
+          if Players[I].Hero > 0 then
+            if States.GroupOwner(Players[I].Hero) = TEMP_PLAYER then
+              RespawnUnit(I);
 
-      CheckRespawn(I);
+        CheckRespawn(I);
+
+      end;
 
       AIWalkAfterSkill(I);
 
