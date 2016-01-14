@@ -1,4 +1,4 @@
-//Script version 2.101 (09 jan 2016)
+//Script version 2.112 (14 jan 2016)
 
 const
 
@@ -2364,6 +2364,13 @@ begin
       U := States.UnitAt(X, Y);
       if U <> - 1 then
         O := States.UnitOwner(U);
+      if InRange(States.UnitOwner(U), 8, 11) then
+        if States.KaMRandom < 0.7 then
+        begin
+          Actions.UnitKill(U, False);
+          Players[P].LastUsedSkill := sFear;
+          Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+        end;
       if (U <> - 1)
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroInFear)
@@ -4073,7 +4080,7 @@ begin
     Players[P].HeroStunnedTime := States.GameTime + CONCENTRATION_TIME + 5;
     if not Players[P].HeroImmortal then
     begin
-      Players[P].HeroImmortalTime := States.GameTime + CONCENTRATION_TIME + 5;
+      Players[P].HeroImmortalTime := States.GameTime + CONCENTRATION_TIME + 15;
       Players[P].HeroImmortal := True;
     end;
     Players[P].Preparing := True;
