@@ -9727,7 +9727,7 @@ begin
               or (States.MapTileObject(TilesFieldX[Tiles[aX][aY].Owner][Length(TilesFieldX[Tiles[aX][aY].Owner]) - I], TilesFieldY[Tiles[aX][aY].Owner][Length(TilesFieldY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_ROCKET)
               or (States.MapTileObject(TilesFieldX[Tiles[aX][aY].Owner][Length(TilesFieldX[Tiles[aX][aY].Owner]) - I], TilesFieldY[Tiles[aX][aY].Owner][Length(TilesFieldY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_OBJECT5)
               or (InRange(States.MapTileObject(TilesFieldX[Tiles[aX][aY].Owner][Length(TilesFieldX[Tiles[aX][aY].Owner]) - I], TilesFieldY[Tiles[aX][aY].Owner][Length(TilesFieldY[Tiles[aX][aY].Owner]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
-                ClearTilesFieldTimes[Tiles[aX][aY].Owner][Length(ClearTilesFieldTimes[Tiles[aX][aY].Owner]) - I] := ClearTilesFieldTimes[Tiles[aX][aY].Owner][Length(ClearTilesFieldTimes[Tiles[aX][aY].Owner]) - I] + CLEANUP_TIME;
+                ClearTilesFieldTimes[Tiles[aX][aY].Owner][Length(ClearTilesFieldTimes[Tiles[aX][aY].Owner]) - I] := ClearTilesFieldTimes[Tiles[aX][aY].Owner][Length(ClearTilesFieldTimes[Tiles[aX][aY].Owner]) - I] + CLEANUP_TIME + 5;
 
             end;
 
