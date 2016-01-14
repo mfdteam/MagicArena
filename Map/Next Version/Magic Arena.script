@@ -9202,7 +9202,9 @@ begin
             if Tiles[aX][aY].Owner <> P then
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[Tiles[aX][aY].Owner].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+              Players[Tiles[aX][aY].Owner].PlayerStatus := Players[Tiles[aX][aY].Owner].PlayerStatus + '|<$84> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
             end;
             if ((Tiles[aX][aY].Owner = P)
             and (not Players[P].CaptureMind)
@@ -10610,10 +10612,17 @@ begin
     begin
       Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
       Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+      Players[LastAttacker].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
       if LastAttackerUnitType = 14 then
+      begin
         Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$75> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
+        Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$89> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
+      end;
       if InRange(LastAttackerUnitType, 15, 27) then
+      begin
         Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$76> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
+        Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$90> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
+      end;
       Players[O].RespawnCheckTime := States.GameTime + 10;
       Players[LastAttacker].TotalKills := Players[LastAttacker].TotalKills + 1;
       SetLength(Players[LastAttacker].KillTimes, Length(Players[LastAttacker].KillTimes) + 1);
