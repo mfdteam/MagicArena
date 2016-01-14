@@ -8445,28 +8445,33 @@ begin
         Players[P].LastUsedSkill := sSteal;
         Players[P].FieldSkillDelay := Round(ROGUE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
-        if Players[P].StolenSkill = sTotem then
-          Players[P].WineSkillDelay := ROGUE_TOTEM_DELAY
+        if InRange(O, 0, 7) then
+        begin
 
-        else
+          if Players[P].StolenSkill = sTotem then
+            Players[P].WineSkillDelay := ROGUE_TOTEM_DELAY
 
-        if Players[P].StolenSkill = sDeadlyFireworks then
-          Players[P].WineSkillDelay := ROGUE_FIREWORKS_DELAY
+          else
 
-        else
+          if Players[P].StolenSkill = sDeadlyFireworks then
+            Players[P].WineSkillDelay := ROGUE_FIREWORKS_DELAY
 
-        if Players[P].StolenSkill = sRevengeFromNowhere then
-          Players[P].WineSkillDelay := ROGUE_REVENGE_DELAY
+          else
 
-        else
+          if Players[P].StolenSkill = sRevengeFromNowhere then
+            Players[P].WineSkillDelay := ROGUE_REVENGE_DELAY
 
-        if (Players[P].StolenSkill <> sRevengeFromNowhere)
-        and (Players[P].StolenSkill <> sDeadlyFireworks)
-        and (Players[P].StolenSkill <> sTotem) then
-          Players[P].WineSkillDelay := ROGUE_WINE_DELAY;
+          else
 
-        if Players[P].StolenSkill <> sNone then
-          Players[P].StolenSkillTime := STOLEN_SKILL_TIME;
+          if (Players[P].StolenSkill <> sRevengeFromNowhere)
+          and (Players[P].StolenSkill <> sDeadlyFireworks)
+          and (Players[P].StolenSkill <> sTotem) then
+            Players[P].WineSkillDelay := ROGUE_WINE_DELAY;
+
+          if Players[P].StolenSkill <> sNone then
+            Players[P].StolenSkillTime := STOLEN_SKILL_TIME;
+
+        end;
 
         ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
 
