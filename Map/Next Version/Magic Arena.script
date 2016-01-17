@@ -10919,11 +10919,10 @@ begin
       end;
 
       if States.GameTime = Players[I1].HeroSilentStartTime then
-        if InRange(Players[I1].ScoutSilenceGiver, 0, 11) then
-        begin
-          Players[I1].HeroSilent := True;
-          Players[I1].HeroSilentTime := States.GameTime + SILENCE_TIME + 20;
-        end;
+      begin
+        Players[I1].HeroSilent := True;
+        Players[I1].HeroSilentTime := States.GameTime + SILENCE_TIME + 20;
+      end;
 
       if States.GameTime = Players[I1].TrackStartTime then
       begin
