@@ -2364,13 +2364,14 @@ begin
       U := States.UnitAt(X, Y);
       if U <> - 1 then
         O := States.UnitOwner(U);
+
       if InRange(States.UnitOwner(U), 8, 11) then
-        if States.KaMRandom < 0.7 then
-        begin
-          Actions.UnitKill(U, False);
-          Players[P].LastUsedSkill := sFear;
-          Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-        end;
+      begin
+        Actions.UnitKill(U, False);
+        Players[P].LastUsedSkill := sFear;
+        Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+      end;
+
       if (U <> - 1)
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroInFear)
