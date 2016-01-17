@@ -9229,35 +9229,30 @@ begin
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles1Length[P][K] - 1 do
             if (FireworksCircles1[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime < Players[P].FireworkStartTime)
             and (FireworksCircles1[P][K][I].Obj <> 255) then
               FireworksCircles1[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles2Length[P][K] - 1 do
             if (FireworksCircles2[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime < Players[P].FireworkStartTime)
             and (FireworksCircles2[P][K][I].Obj <> 255) then
               FireworksCircles2[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles3Length[P][K] - 1 do
             if (FireworksCircles3[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime < Players[P].FireworkStartTime)
             and (FireworksCircles3[P][K][I].Obj <> 255) then
               FireworksCircles3[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles4Length[P][K] - 1 do
             if (FireworksCircles4[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime < Players[P].FireworkStartTime)
             and (FireworksCircles4[P][K][I].Obj <> 255) then
               FireworksCircles4[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles5Length[P][K] - 1 do
             if (FireworksCircles5[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime < Players[P].FireworkStartTime)
             and (FireworksCircles5[P][K][I].Obj <> 255) then
               FireworksCircles5[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
@@ -10627,35 +10622,30 @@ begin
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles1Length[O][K] - 1 do
         if (FireworksCircles1[O][K][I].AddTime > States.GameTime)
-        and (States.GameTime < Players[O].FireworkStartTime)
         and (FireworksCircles1[O][K][I].Obj <> 255)  then
           FireworksCircles1[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles2Length[O][K] - 1 do
         if (FireworksCircles2[O][K][I].AddTime > States.GameTime)
-        and (States.GameTime < Players[O].FireworkStartTime)
         and (FireworksCircles2[O][K][I].Obj <> 255)  then
           FireworksCircles2[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles3Length[O][K] - 1 do
         if (FireworksCircles3[O][K][I].AddTime > States.GameTime)
-        and (States.GameTime < Players[O].FireworkStartTime)
         and (FireworksCircles3[O][K][I].Obj <> 255)  then
           FireworksCircles3[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles4Length[O][K] - 1 do
         if (FireworksCircles4[O][K][I].AddTime > States.GameTime)
-        and (States.GameTime < Players[O].FireworkStartTime)
         and (FireworksCircles4[O][K][I].Obj <> 255)  then
           FireworksCircles4[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles5Length[O][K] - 1 do
         if (FireworksCircles5[O][K][I].AddTime > States.GameTime)
-        and (States.GameTime < Players[O].FireworkStartTime)
         and (FireworksCircles5[O][K][I].Obj <> 255)  then
           FireworksCircles5[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
