@@ -1730,6 +1730,7 @@ end;
 procedure SetCircle(P, X, Y, R, aObj: Integer; aDef, aSaveCracking: Boolean; fSkill: aSkill);
 var
   X1, X2, Y1, Y2, PosX, PosY: Integer;
+  Tree: Boolean;
 begin
   X1 := X - R;
   X2 := X + R;
@@ -1753,22 +1754,26 @@ begin
       and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6))
       and (fSkill <> sDeadlyFireworks) then
       begin
-        Actions.MapTileObjectSet(PosX, PosY, aObj);
-        if (Tiles[PosX][PosY].Owner <> P)
-        and (Tiles[PosX][PosY].Skill <> sCircleOfSilence)
-        and (Tiles[PosX][PosY].Skill <> sTrack)
-        and (Tiles[PosX][PosY].Skill <> sDeadlyFireworks) then
+        Tree := (aObj = 255) and (InRange(States.MapTileObject(PosX, PosY), 149, 172));
+        if not Tree then
         begin
-          Tiles[PosX][PosY].Owner := P;
-          Tiles[PosX][PosY].Skill := fSkill;
-        end;
-        if aObj = 255 then
-          if Tiles[PosX][PosY].Skill = fSkill then
-            Tiles[PosX][PosY].Skill := sNone;
-      end;
-      if not aSaveCracking then
-        if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
           Actions.MapTileObjectSet(PosX, PosY, aObj);
+          if (Tiles[PosX][PosY].Owner <> P)
+          and (Tiles[PosX][PosY].Skill <> sCircleOfSilence)
+          and (Tiles[PosX][PosY].Skill <> sTrack)
+          and (Tiles[PosX][PosY].Skill <> sDeadlyFireworks) then
+          begin
+            Tiles[PosX][PosY].Owner := P;
+            Tiles[PosX][PosY].Skill := fSkill;
+          end;
+        end;
+          if aObj = 255 then
+            if Tiles[PosX][PosY].Skill = fSkill then
+              Tiles[PosX][PosY].Skill := sNone;
+        end;
+        if not aSaveCracking then
+          if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
+            Actions.MapTileObjectSet(PosX, PosY, aObj);
   end;
 
   if fSkill = sDeadlyFireworks then
@@ -1791,12 +1796,16 @@ begin
         and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6))
         and (not InRange(States.MapTileObject(PosX, PosY), SHIELD_OBJECT, SHIELD_OBJECT8)) then
         begin
-          Actions.MapTileObjectSet(PosX, PosY, aObj);
-          if (Tiles[PosX][PosY].Skill = sNone)
-          or (Tiles[PosX][PosY].Skill = sGravity) then
+          Tree := (aObj = 255) and (InRange(States.MapTileObject(PosX, PosY), 149, 172));
+          if not Tree then
           begin
-            Tiles[PosX][PosY].Owner := P;
-            Tiles[PosX][PosY].Skill := fSkill;
+            Actions.MapTileObjectSet(PosX, PosY, aObj);
+            if (Tiles[PosX][PosY].Skill = sNone)
+            or (Tiles[PosX][PosY].Skill = sGravity) then
+            begin
+              Tiles[PosX][PosY].Owner := P;
+              Tiles[PosX][PosY].Skill := fSkill;
+            end;
           end;
           if aObj = 255 then
             if Tiles[PosX][PosY].Skill = fSkill then
@@ -1859,7 +1868,11 @@ begin
         and (States.MapTileObject(PosX, PosY) <> ROGUE_OBJECT4)
         and (States.MapTileObject(PosX, PosY) <> KNIGHT_OBJECT4)
         and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6)) then
-          Actions.MapTileObjectSet(PosX, PosY, 255);
+        begin
+          Tree := (aObj = 255) and (InRange(States.MapTileObject(PosX, PosY), 149, 172));
+          if not Tree then
+            Actions.MapTileObjectSet(PosX, PosY, 255);
+        end;
         if not aSaveCracking then
           if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
             Actions.MapTileObjectSet(PosX, PosY, 255);
