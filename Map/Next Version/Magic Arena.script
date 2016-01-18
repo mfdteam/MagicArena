@@ -94,6 +94,7 @@ const
   SILENCE_RADIUS = 8;
   DEAFENING_RADIUS = 4;
   MENTAL_RADIUS = 3;
+  REVENGE_RADIUS = 5;
   
   RAGE_CYCLES = 1;
   TOTEM_CYCLES = 5;
@@ -109,6 +110,7 @@ const
   MENTAL_CYCLES = 1;
   MENTAL_DISTANCE = 8;
   TEN_K_SPEARS_WAVES = 1;
+  REVENGE_CYCLES = 10;
 
 //Skills speed
 
@@ -138,6 +140,7 @@ const
   VAGA_FIELD_SPEED = 1.5;
 
   WARRIOR_ROAD_SPEED = 2;
+  WARRIOR_WINE_SPEED = 0.9;
 
   KNIGHT_FIELD_SPEED = 3;
   KNIGHT_WINE_SPEED = 3;
@@ -352,7 +355,7 @@ type
             sGravity, sDeadlyFireworks, sWerewolf,
             sDisorientation, sTrack, sRegen,
             sViseOfDeath, sSacrificialTeleport, sConcentration,
-            sFierySnake, sSturdyArmor, sCircleOfSilence,
+            sFierySnake, sSturdyArmor, sCircleOfSilence, sWavesOfRevenge,
             sRopesOfDeath, sDeafeningClatter, sRagingSpurt,
             sMentalBurst, sSteal, sUniversal,
             sBoomerang, sSilence, sMind);
@@ -532,20 +535,20 @@ var
   ClearTilesWineTimes, SetTilesWineTimes, TilesWineX, TilesWineY, TilesWineObjects: array[0..11] of array of Integer;
   RageCircles, TotemCircles, ConcentrationCircles, ViseCircles, ExpCircles,
   FireworksCircles1, FireworksCircles2, FireworksCircles3, FireworksCircles4, 
-  FireworksCircles5, KnightCircles, RogueCircles, StolenRogueCircles: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of array of aCircle;
+  FireworksCircles5, KnightCircles, RogueCircles, StolenRogueCircles, RevengeCircles: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of array of aCircle;
   GravityCircles: array[0..11] of array of aCircle;
   RageCirclesCounter, TotemCirclesCounter, ConcentrationCirclesCounter, ViseCirclesCounter, ExpCirclesCounter,
   FireworksCircles1Counter, FireworksCircles2Counter, FireworksCircles3Counter, FireworksCircles4Counter, 
-  FireworksCircles5Counter, KnightCirclesCounter, RogueCirclesCounter, StolenRogueCirclesCounter: array[0..11] of Integer;
+  FireworksCircles5Counter, KnightCirclesCounter, RogueCirclesCounter, StolenRogueCirclesCounter, RevengeCirclesCounter: array[0..11] of Integer;
   TilesRoadLength, TilesFieldLength, TilesWineLength: array[0..11] of Integer;
   RageCirclesLength, TotemCirclesLength, ConcentrationCirclesLength, ViseCirclesLength, ExpCirclesLength,
   FireworksCircles1Length, FireworksCircles2Length, FireworksCircles3Length, 
-  FireworksCircles4Length, FireworksCircles5Length, KnightCirclesLength, RogueCirclesLength, StolenRogueCirclesLength: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
+  FireworksCircles4Length, FireworksCircles5Length, KnightCirclesLength, RogueCirclesLength, StolenRogueCirclesLength, RevengeCirclesLength: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
   GravityCirclesLength, TimeToClearGravityArray: array[0..11] of Integer;
   TimeToClearRageArray, TimeToClearTotemArray, TimeToClearConcentrationArray,
   TimeToClearViseArray, TimeToClearExpArray, TimeToClearFireworks1Array,
   TimeToClearFireworks2Array, TimeToClearFireworks3Array, TimeToClearFireworks4Array, TimeToClearFireworks5Array,
-  TimeToClearKnightArray, TimeToClearRogueArray, TimeToClearStolenRogueArray: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
+  TimeToClearKnightArray, TimeToClearRogueArray, TimeToClearStolenRogueArray, TimeToclearRevengeArray: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
   PikeObjects, ShieldObjects: array[0..7] of Integer;
   Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
   TeamChoice: array[0..1] of ANSIString;
@@ -882,6 +885,7 @@ begin
     KnightCirclesLength[I][K] := 0;
     RogueCirclesLength[I][K] := 0;
     StolenRogueCirclesLength[I][K] := 0;
+    RevengeCirclesLength[I][K] := 0;
   end;
 
   for I := 0 to 11 do
@@ -905,6 +909,7 @@ begin
     KnightCirclesCounter[I] := -1;
     RogueCirclesCounter[I] := -1;
     StolenRogueCirclesCounter[I] := -1;
+    RevengeCirclesCounter[I] := -1;
   end;
 
   for I := 8 to 9 do
@@ -1557,7 +1562,7 @@ begin
 
     sFierySnake: Result := '<$46>';
     sSturdyArmor: Result := '<$47>';
-    sCircleOfSilence: Result := '<$48>';
+    sWavesOfRevenge: Result := '<$48>';
 
     sRopesOfDeath: Result := '<$50>';
     sDeafeningClatter: Result := '<$51>';
@@ -6748,6 +6753,54 @@ begin
 end;
 
 
+procedure WavesOfRevenge(P, X, Y: Integer);
+var
+  X2, Y2: Integer;
+begin
+  if Players[P].Hero <= 0 then
+    Exit;
+
+  if States.GroupMember(Players[P].Hero, 0) <= 0 then
+    Exit;
+
+  if (TileOnBattlefield(X, Y))
+  and (Players[P].Hero > 0) then
+  begin
+    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    RevengeCirclesCounter[P] := RevengeCirclesCounter[P] + 1;
+    if RevengeCirclesCounter[P] = MAX_CIRCLES_AT_ONCE then
+      RevengeCirclesCounter[P] := 0;
+    RevengeCirclesLength[P][RevengeCirclesCounter[P]] := RevengeCirclesLength[P][RevengeCirclesCounter[P]] + REVENGE_CYCLES * REVENGE_RADIUS;
+    SetLength(RevengeCircles[P][RevengeCirclesCounter[P]], RevengeCirclesLength[P][RevengeCirclesCounter[P]]);
+
+    for I := RevengeCirclesLength[P][RevengeCirclesCounter[P]] downto RevengeCirclesLength[P][RevengeCirclesCounter[P]] - REVENGE_CYCLES * REVENGE_RADIUS + 1 do
+    begin
+      RevengeCircles[P][RevengeCirclesCounter[P]][RevengeCirclesLength[P][RevengeCirclesCounter[P]] - I].Obj := PikeObjects[P];
+      RevengeCircles[P][RevengeCirclesCounter[P]][RevengeCirclesLength[P][RevengeCirclesCounter[P]] - I].X := X2;
+      RevengeCircles[P][RevengeCirclesCounter[P]][RevengeCirclesLength[P][RevengeCirclesCounter[P]] - I].Y := Y2;
+      RevengeCircles[P][RevengeCirclesCounter[P]][RevengeCirclesLength[P][RevengeCirclesCounter[P]] - I].AddTime := States.GameTime + Round(WARRIOR_WINE_SPEED * (RevengeCirclesLength[P][RevengeCirclesCounter[P]] - I));
+      if I mod REVENGE_RADIUS > 0 then
+        RevengeCircles[P][RevengeCirclesCounter[P]][RevengeCirclesLength[P][RevengeCirclesCounter[P]] - I].Radius := REVENGE_RADIUS + 2 - I mod REVENGE_RADIUS
+      else
+        RevengeCircles[P][RevengeCirclesCounter[P]][RevengeCirclesLength[P][RevengeCirclesCounter[P]] - I].Radius := 1;
+    end; 
+       
+    for I := 0 to RevengeCirclesLength[P][RevengeCirclesCounter[P]] - 1 do 
+      if I mod REVENGE_RADIUS = 1 then
+        RevengeCircles[P][RevengeCirclesCounter[P]][RevengeCirclesLength[P][RevengeCirclesCounter[P]] - I].Obj := 255;
+
+    Players[P].LastUsedSkill := sWavesOfRevenge;
+
+    Players[P].WineSkillDelay := Round(WARRIOR_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+
+    TimeToClearRevengeArray[P][RevengeCirclesCounter[P]] := RevengeCircles[P][RevengeCirclesCounter[P]][RevengeCirclesLength[P][RevengeCirclesCounter[P]] - 1].AddTime + CLEAR_ARRAY_FACTOR;
+
+  end;
+
+end;
+
+
 //KNIGHT
 
 
@@ -8488,7 +8541,7 @@ begin
 
           sFierySnake: Players[P].StolenSkillName := '<$46>';
           sSturdyArmor: Players[P].StolenSkillName := '<$47>';
-          sCircleOfSilence: Players[P].StolenSkillName := '<$48>';
+          sWavesOfRevenge: Players[P].StolenSkillName := '<$48>';
 
           sRopesOfDeath: Players[P].StolenSkillName := '<$50>';
           sDeafeningClatter: Players[P].StolenSkillName := '<$51>';
@@ -8762,7 +8815,7 @@ begin
                       Players[P].WineSkillDelay := Round(WARRIOR_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                     end;
 
-      sCircleOfSilence: CircleOfSilence(P, X, Y);
+      sWavesOfRevenge: WavesOfRevenge(P, X, Y);
 
       sRopesOfDeath: if (U > 0)
                      and (InRange(O, 0, 7))
@@ -9040,7 +9093,7 @@ begin
       22: RagingSpurt(P, X, Y, -1);
       23: TotemOfAncestors(P, X, Y);
       25: UseStolenSkill(P, X, Y, -1);
-      26: CircleOfSilence(P, X, Y);
+      26: WavesOfRevenge(P, X, Y);
       27: Regen(P, X, Y);
     end;
   end;
@@ -9255,6 +9308,12 @@ begin
             if (FireworksCircles5[P][K][I].AddTime > States.GameTime)
             and (FireworksCircles5[P][K][I].Obj <> 255) then
               FireworksCircles5[P][K][I].Obj := SKILL_CANCEL_OBJ;
+
+        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+          for I := 0 to RevengeCirclesLength[P][K] - 1 do
+            if (RevengeCircles[P][K][I].AddTime > States.GameTime)
+            and (RevengeCircles[P][K][I].Obj <> 255) then
+              RevengeCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
@@ -9943,6 +10002,24 @@ begin
           begin
             if (States.GameTime = RageCircles[P][K][I].AddTime) then
               SetCircle(P, RageCircles[P][K][I].X, RageCircles[P][K][I].Y, RageCircles[P][K][I].Radius, RageCircles[P][K][I].Obj, True, False, sWaveOfRage);
+          end;
+        end;
+    end;
+end;
+
+
+procedure CheckRevengeCircles(P: Integer);
+begin
+  if States.PlayerEnabled(P) then
+    for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+    begin
+      if RevengeCirclesLength[P][K] > 0 then
+        for I := 0 to RevengeCirclesLength[P][K] - 1 do
+        begin
+          if TileOnBattlefield(RevengeCircles[P][K][I].X, RevengeCircles[P][K][I].Y) then
+          begin
+            if (States.GameTime = RevengeCircles[P][K][I].AddTime) then
+              SetCircle(P, RevengeCircles[P][K][I].X, RevengeCircles[P][K][I].Y, RevengeCircles[P][K][I].Radius, RevengeCircles[P][K][I].Obj, True, False, sWavesOfRevenge);
           end;
         end;
     end;
@@ -10649,6 +10726,12 @@ begin
         and (FireworksCircles5[O][K][I].Obj <> 255)  then
           FireworksCircles5[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
+    for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+      for I := 0 to RevengeCirclesLength[O][K] - 1 do
+        if (RevengeCircles[O][K][I].AddTime > States.GameTime)
+        and (RevengeCircles[O][K][I].Obj <> 255) then
+          RevengeCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
+
   end;
 
   for I := 0 to 7 do
@@ -10960,6 +11043,15 @@ begin
         Players[I1].HeroSilent := True;
         Players[I1].HeroSilentTime := States.GameTime + SILENCE_TIME + 20;
       end;
+
+      if RevengeCirclesCounter[I1] > 0 then
+        if RevengeCirclesLength[I1][RevengeCirclesCounter[I1]] > 0 then
+          for I := RevengeCirclesLength[I1][RevengeCirclesCounter[I1]] downto RevengeCirclesLength[I1][RevengeCirclesCounter[I1]] - REVENGE_CYCLES * REVENGE_RADIUS + 1 do
+            if States.GameTime = RevengeCircles[I1][RevengeCirclesCounter[I1]][RevengeCirclesLength[I1][RevengeCirclesCounter[I1]] - I].AddTime - 2 then
+            begin
+              RevengeCircles[I1][RevengeCirclesCounter[I1]][RevengeCirclesLength[I1][RevengeCirclesCounter[I1]] - I].X := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
+              RevengeCircles[I1][RevengeCirclesCounter[I1]][RevengeCirclesLength[I1][RevengeCirclesCounter[I1]] - I].Y := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+            end;
 
       if States.GameTime = Players[I1].TrackStartTime then
       begin
@@ -11697,6 +11789,12 @@ begin
       begin
         StolenRogueCirclesLength[I][K] := 0;
         SetLength(StolenRogueCircles[I][K], 0);
+      end;
+
+      if States.GameTime = TimeToClearRevengeArray[I][K] then
+      begin
+        RevengeCirclesLength[I][K] := 0;
+        SetLength(RevengeCircles[I][K], 0);
       end;
 
     end;
@@ -12936,7 +13034,7 @@ end;
 
 procedure AIWarrior(P: Integer);
 var
-  aX, aY, O, U, X, Y, uX, uY, aX1, aX2, aY1, aY2: Integer;
+  aX, aY, O, U, X, Y, uX, uY, aX1, aX2, aY1, aY2, E, A: Integer;
 begin
 
   if (States.KaMRandomI(10) > 7)
@@ -13049,7 +13147,7 @@ begin
       end;
     end;
 
-  if (States.KaMRandomI(10) > 7)
+  {if (States.KaMRandomI(10) > 7)
   and (Players[P].WineSkillDelay = 0)
   and (Players[P].Hero > 0) then
     if States.GroupMember(Players[P].Hero, 0) > 0 then
@@ -13071,6 +13169,41 @@ begin
           and (States.KaMRandom > 0.1) then 
           begin
             CircleOfSilence(P, aX, aY);
+            Exit;
+          end;
+        end;
+      end;
+    end;}
+
+  if (States.KaMRandomI(10) > 7)
+  and (Players[P].WineSkillDelay = 0)
+  and (Players[P].Hero > 0) then
+    if States.GroupMember(Players[P].Hero, 0) > 0 then
+    begin
+      A := 0;
+      E := 0;
+      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+      for X := (aX - REVENGE_RADIUS + 1) to (aX + REVENGE_RADIUS - 1) do
+      for Y := (aY - REVENGE_RADIUS + 1) to (aY + REVENGE_RADIUS - 1) do
+      begin
+        U := States.UnitAt(X, Y);
+        if (U > 0)
+        and (not InRange(X, aX - 1, aX + 1))
+        and (not InRange(Y, aY - 1, aY + 1)) then
+        begin
+          O := States.UnitOwner(U);
+          if Players[P].PlayersTeam <> Players[O].PlayersTeam then
+            E := E + 1;
+          if Players[P].PlayersTeam = Players[O].PlayersTeam then
+            A := A + 1;
+          if (P <> O)
+          and (CanUseSkillAgainstUnit(P, U))
+          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+          and (States.KaMRandom > 0.1)
+          and (E > A) then 
+          begin
+            WavesOfRevenge(P, aX, aY);
             Exit;
           end;
         end;
@@ -13498,6 +13631,9 @@ begin
 
   for N[16] := 0 to 7 do
     CheckRogueCircles(N[16]);
+
+  for N[15] := 0 to 7 do
+    CheckRevengeCircles(N[15]);
 
   for N[17] := 0 to 7 do
     CheckStolenRogueCircles(N[17]);
