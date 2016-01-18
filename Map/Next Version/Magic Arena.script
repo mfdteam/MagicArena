@@ -309,7 +309,12 @@ const
   RELIEF_REGEN_TIME = 300;
   CLEANUP_TIME = 20;
   PLANT_TREES_TIME = 25;
-  PLANT_TREES_FACTOR = 0.8;
+  PLANT_TREES_FACTOR = 0.65;
+  TREE_AGE1 = 1500;
+  TREE_AGE2 = 3000;
+  TREE_AGE3 = 4800;
+  TREE_AGE4 = 7200;
+  TREES_GROW_TIME = 200;
   AVOID_FACTOR = 3;
   RECHARGE_FACTOR = 0.25;
   ZOMBIE_STORM_FACTOR = 20;
@@ -529,6 +534,7 @@ type
     Relief: Integer;
     ReliefRefreshTime: Integer;
     ObjectRefreshTime: Integer;
+    TreeTime: Integer;
   end;
 
 
@@ -656,6 +662,7 @@ begin
     Tiles[aX][aY].ReliefRefreshTime := 0;
     Tiles[aX][aY].ObjectRefreshTime := 0;
     Tiles[aX][aY].Skill := sNone;
+    Tiles[aX][aY].TreeTime := 0;
   end;
 end;
 
@@ -12007,23 +12014,36 @@ begin
   and (States.MapTileObject(aX, aY) <> BARB_OBJECT3)
   and (States.MapTileObject(aX, aY) <> BOWMAN_OBJECT5)
   and (States.MapTileObject(aX, aY) <> BOWMAN_ROCKET) then
-  begin
     if (States.KaMRandom < PLANT_TREES_FACTOR)
     and (States.MapTileObject(aX, aY) = 255) then
+    begin
       Actions.MapTileObjectSet(aX, aY, 157);
+      Tiles[aX][aY].TreeTime := States.GameTime;
+    end;
 
-    if (States.MapTileObject(aX, aY) = 157)
-    and (States.KaMRandom < (PLANT_TREES_FACTOR/3)) then
-      Actions.MapTileObjectSet(aX, aY, 158);
+  if States.GameTime mod TREES_GROW_TIME = 0 then
+    for aX := MIN_X to MAX_X do
+    for aY := MIN_Y to MAX_Y do
+    begin
 
-    if (States.MapTileObject(aX, aY) = 158)
-    and (States.KaMRandom < (PLANT_TREES_FACTOR/5)) then
-      Actions.MapTileObjectSet(aX, aY, 159);
+      if (States.MapTileObject(aX, aY) = 157)
+      and (States.GameTime >= Tiles[aX][aY].TreeTime + TREE_AGE1) then
+        Actions.MapTileObjectSet(aX, aY, 158);
 
-    if (States.MapTileObject(aX, aY) = 159)
-    and (States.KaMRandom < (PLANT_TREES_FACTOR/10)) then
-      Actions.MapTileObjectSet(aX, aY, 172);
-  end;
+      if (States.MapTileObject(aX, aY) = 158)
+      and (States.GameTime >= Tiles[aX][aY].TreeTime + TREE_AGE2) then
+        Actions.MapTileObjectSet(aX, aY, 159);
+
+      if (States.MapTileObject(aX, aY) = 159)
+      and (States.GameTime >= Tiles[aX][aY].TreeTime + TREE_AGE3) then
+        Actions.MapTileObjectSet(aX, aY, 160);
+
+      if (States.MapTileObject(aX, aY) = 160)
+      and (States.GameTime >= Tiles[aX][aY].TreeTime + TREE_AGE4) then
+        Actions.MapTileObjectSet(aX, aY, 172);
+
+    end;
+
 end;
 
 
