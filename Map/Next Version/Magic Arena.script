@@ -256,6 +256,11 @@ const
   RUNE_IMMORTAL_TIME = 200;
   RUNE_ILLUSION_TIME = 1800;
   RUNE_RECHARGE_TIME = 600;
+
+  SILENCE_ANIMATION = 66;
+  FEAR_ANIMATION = 122;
+  STUN_ANIMATION = 93;
+  MIND_ANIMATION = 204;
  
 
 //Player stats
@@ -11134,6 +11139,60 @@ begin
         TilesEffectX[I1][Length(TilesEffectX[I1]) - 1] := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));    
         TilesEffectY[I1][Length(TilesEffectY[I1]) - 1] := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
         TilesEffectObjects[I1][Length(TilesEffectObjects[I1]) - 1] := RUNE_DOUBLE_ANIMATION;    
+        ClearTilesEffectTimes[I1][Length(ClearTilesEffectTimes[I1]) - 1] := States.GameTime + 3;    
+        SetTilesEffectTimes[I1][Length(SetTilesEffectTimes[I1]) - 1] := States.GameTime + 1;
+      end;
+
+      if (Players[I1].HeroStunned)
+      and (States.GroupOwner(Players[I1].Hero) = I1)
+      and (Players[I1].Hero > 0)
+      and (Players[I1].HP > 0) then
+      begin
+        TilesEffectLength[I1] := TilesEffectLength[I1] + 1;
+        SetLength(TilesEffectX[I1], TilesEffectLength[I1]);
+        SetLength(TilesEffectY[I1], TilesEffectLength[I1]);
+        SetLength(ClearTilesEffectTimes[I1], TilesEffectLength[I1]);
+        SetLength(SetTilesEffectTimes[I1], TilesEffectLength[I1]);
+        SetLength(TilesEffectObjects[I1], TilesEffectLength[I1]);  
+        TilesEffectX[I1][Length(TilesEffectX[I1]) - 1] := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));    
+        TilesEffectY[I1][Length(TilesEffectY[I1]) - 1] := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+        TilesEffectObjects[I1][Length(TilesEffectObjects[I1]) - 1] := STUN_ANIMATION;    
+        ClearTilesEffectTimes[I1][Length(ClearTilesEffectTimes[I1]) - 1] := States.GameTime + 3;    
+        SetTilesEffectTimes[I1][Length(SetTilesEffectTimes[I1]) - 1] := States.GameTime + 1;
+      end;
+
+      if (Players[I1].HeroInFear)
+      and (States.GroupOwner(Players[I1].Hero) = I1)
+      and (Players[I1].Hero > 0)
+      and (Players[I1].HP > 0) then
+      begin
+        TilesEffectLength[I1] := TilesEffectLength[I1] + 1;
+        SetLength(TilesEffectX[I1], TilesEffectLength[I1]);
+        SetLength(TilesEffectY[I1], TilesEffectLength[I1]);
+        SetLength(ClearTilesEffectTimes[I1], TilesEffectLength[I1]);
+        SetLength(SetTilesEffectTimes[I1], TilesEffectLength[I1]);
+        SetLength(TilesEffectObjects[I1], TilesEffectLength[I1]);  
+        TilesEffectX[I1][Length(TilesEffectX[I1]) - 1] := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));    
+        TilesEffectY[I1][Length(TilesEffectY[I1]) - 1] := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+        TilesEffectObjects[I1][Length(TilesEffectObjects[I1]) - 1] := FEAR_ANIMATION;    
+        ClearTilesEffectTimes[I1][Length(ClearTilesEffectTimes[I1]) - 1] := States.GameTime + 3;    
+        SetTilesEffectTimes[I1][Length(SetTilesEffectTimes[I1]) - 1] := States.GameTime + 1;
+      end;
+
+      if (Players[I1].MindStunned)
+      and (States.GroupOwner(Players[I1].Hero) = I1)
+      and (Players[I1].Hero > 0)
+      and (Players[I1].HP > 0) then
+      begin
+        TilesEffectLength[I1] := TilesEffectLength[I1] + 1;
+        SetLength(TilesEffectX[I1], TilesEffectLength[I1]);
+        SetLength(TilesEffectY[I1], TilesEffectLength[I1]);
+        SetLength(ClearTilesEffectTimes[I1], TilesEffectLength[I1]);
+        SetLength(SetTilesEffectTimes[I1], TilesEffectLength[I1]);
+        SetLength(TilesEffectObjects[I1], TilesEffectLength[I1]);  
+        TilesEffectX[I1][Length(TilesEffectX[I1]) - 1] := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));    
+        TilesEffectY[I1][Length(TilesEffectY[I1]) - 1] := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+        TilesEffectObjects[I1][Length(TilesEffectObjects[I1]) - 1] := MIND_ANIMATION;    
         ClearTilesEffectTimes[I1][Length(ClearTilesEffectTimes[I1]) - 1] := States.GameTime + 3;    
         SetTilesEffectTimes[I1][Length(SetTilesEffectTimes[I1]) - 1] := States.GameTime + 1;
       end;
