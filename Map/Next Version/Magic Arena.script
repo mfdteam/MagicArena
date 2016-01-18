@@ -532,7 +532,8 @@ var
   Players: array[0..11] of aPlayer;
   ClearTilesRoadTimes, SetTilesRoadTimes, TilesRoadX, TilesRoadY, TilesRoadObjects,
   ClearTilesFieldTimes, SetTilesFieldTimes, TilesFieldX, TilesFieldY, TilesFieldObjects,
-  ClearTilesWineTimes, SetTilesWineTimes, TilesWineX, TilesWineY, TilesWineObjects: array[0..11] of array of Integer;
+  ClearTilesWineTimes, SetTilesWineTimes, TilesWineX, TilesWineY, TilesWineObjects, 
+  ClearTilesEffectTimes, SetTilesEffectTimes, TilesEffectX, TilesEffectY, TilesEffectObjects: array[0..11] of array of Integer;
   RageCircles, TotemCircles, ConcentrationCircles, ViseCircles, ExpCircles,
   FireworksCircles1, FireworksCircles2, FireworksCircles3, FireworksCircles4, 
   FireworksCircles5, KnightCircles, RogueCircles, StolenRogueCircles, RevengeCircles: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of array of aCircle;
@@ -540,7 +541,7 @@ var
   RageCirclesCounter, TotemCirclesCounter, ConcentrationCirclesCounter, ViseCirclesCounter, ExpCirclesCounter,
   FireworksCircles1Counter, FireworksCircles2Counter, FireworksCircles3Counter, FireworksCircles4Counter, 
   FireworksCircles5Counter, KnightCirclesCounter, RogueCirclesCounter, StolenRogueCirclesCounter, RevengeCirclesCounter: array[0..11] of Integer;
-  TilesRoadLength, TilesFieldLength, TilesWineLength: array[0..11] of Integer;
+  TilesRoadLength, TilesFieldLength, TilesWineLength, TilesEffectLength: array[0..11] of Integer;
   RageCirclesLength, TotemCirclesLength, ConcentrationCirclesLength, ViseCirclesLength, ExpCirclesLength,
   FireworksCircles1Length, FireworksCircles2Length, FireworksCircles3Length, 
   FireworksCircles4Length, FireworksCircles5Length, KnightCirclesLength, RogueCirclesLength, StolenRogueCirclesLength, RevengeCirclesLength: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
@@ -553,7 +554,7 @@ var
   Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
   TeamChoice: array[0..1] of ANSIString;
   TeamInfo, Scores: array[0..1] of ANSIString;
-  ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime: array[0..11] of Integer;
+  ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime, ClearEffectTilesArrayTime: array[0..11] of Integer;
   RuneTime: Integer;
   M, M2: array[0..7] of Integer;
   ZomboHero: array[0..7] of array[0..3] of Integer;
@@ -893,9 +894,11 @@ begin
     ClearRoadTilesArrayTime[I] := -1;
     ClearFieldTilesArrayTime[I] := -1;
     ClearWineTilesArrayTime[I] := -1;
+    ClearEffectTilesArrayTime[I] := -1;
     TilesRoadLength[I] := 0;
     TilesFieldLength[I] := 0;
     TilesWineLength[I] := 0;
+    TilesEffectLength[I] := 0;
     RageCirclesCounter[I] := -1;
     TotemCirclesCounter[I] := -1;
     ConcentrationCirclesCounter[I] := -1;
@@ -11086,6 +11089,42 @@ begin
           Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Skill := sTrack;
         end;
 
+      if (Players[I1].HeroImmortal)
+      and (States.GroupOwner(Players[I1].Hero) = I1)
+      and (Players[I1].Hero > 0)
+      and (Players[I1].HP > 0) then
+      begin
+        TilesEffectLength[I1] := TilesEffectLength[I1] + 1;
+        SetLength(TilesEffectX[I1], TilesEffectLength[I1]);
+        SetLength(TilesEffectY[I1], TilesEffectLength[I1]);
+        SetLength(ClearTilesEffectTimes[I1], TilesEffectLength[I1]);
+        SetLength(SetTilesEffectTimes[I1], TilesEffectLength[I1]);
+        SetLength(TilesEffectObjects[I1], TilesEffectLength[I1]);  
+        TilesEffectX[I1][Length(TilesEffectX[I1]) - 1] := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));    
+        TilesEffectY[I1][Length(TilesEffectY[I1]) - 1] := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+        TilesEffectObjects[I1][Length(TilesEffectObjects[I1]) - 1] := RUNE_IMMORTAL_ANIMATION;    
+        ClearTilesEffectTimes[I1][Length(ClearTilesEffectTimes[I1]) - 1] := States.GameTime + 3;    
+        SetTilesEffectTimes[I1][Length(SetTilesEffectTimes[I1]) - 1] := States.GameTime + 1;
+      end;
+
+      if (Players[I1].DD)
+      and (States.GroupOwner(Players[I1].Hero) = I1)
+      and (Players[I1].Hero > 0)
+      and (Players[I1].HP > 0) then
+      begin
+        TilesEffectLength[I1] := TilesEffectLength[I1] + 1;
+        SetLength(TilesEffectX[I1], TilesEffectLength[I1]);
+        SetLength(TilesEffectY[I1], TilesEffectLength[I1]);
+        SetLength(ClearTilesEffectTimes[I1], TilesEffectLength[I1]);
+        SetLength(SetTilesEffectTimes[I1], TilesEffectLength[I1]);
+        SetLength(TilesEffectObjects[I1], TilesEffectLength[I1]);  
+        TilesEffectX[I1][Length(TilesEffectX[I1]) - 1] := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));    
+        TilesEffectY[I1][Length(TilesEffectY[I1]) - 1] := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+        TilesEffectObjects[I1][Length(TilesEffectObjects[I1]) - 1] := RUNE_DOUBLE_ANIMATION;    
+        ClearTilesEffectTimes[I1][Length(ClearTilesEffectTimes[I1]) - 1] := States.GameTime + 3;    
+        SetTilesEffectTimes[I1][Length(SetTilesEffectTimes[I1]) - 1] := States.GameTime + 1;
+      end;
+
       if (States.GameTime >= Players[I1].GravityTime)
       and (Players[I1].MovedByGravity) then
         Players[I1].MovedByGravity := False;
@@ -11674,6 +11713,31 @@ begin
 end;
 
 
+procedure CheckTileEffectObjects(P: Integer);
+begin
+  for K := 0 to TilesEffectLength[P] - 1 do
+  begin
+    if (TilesEffectX[P][K] > 0)
+    and (TilesEffectY[P][K] > 0) then
+      if TileOnBattlefield(TilesEffectX[P][K], TilesEffectY[P][K]) then
+      begin
+
+        if (InRange(States.GameTime, ClearTilesEffectTimes[P][K], 1 + ClearTilesEffectTimes[P][K]))
+        and (States.MapTileObject(TilesEffectX[P][K], TilesEffectY[P][K]) <> 255) then
+          Actions.MapTileObjectSet(TilesEffectX[P][K], TilesEffectY[P][K], 255);
+
+        if States.GameTime = SetTilesEffectTimes[P][K] then
+          if (CanPlaceObject(TilesEffectX[P][K], TilesEffectY[P][K]))
+          and (States.MapTileObject(TilesEffectX[P][K], TilesEffectY[P][K]) = 255) then
+            Actions.MapTileObjectSet(TilesEffectX[P][K], TilesEffectY[P][K], TilesEffectObjects[P][K]);
+
+      end;
+
+  end;
+
+end;
+
+
 procedure ClearArrays;
 begin
 
@@ -11708,6 +11772,16 @@ begin
       SetLength(ClearTilesWineTimes[I], TilesWineLength[I]);
       SetLength(SetTilesWineTimes[I], TilesWineLength[I]);
       SetLength(TilesWineObjects[I], TilesWineLength[I]);
+    end;
+
+    if States.GameTime = ClearEffectTilesArrayTime[I] then
+    begin
+      TilesEffectLength[I] := 1;
+      SetLength(TilesEffectX[I], TilesEffectLength[I]);
+      SetLength(TilesEffectY[I], TilesEffectLength[I]);
+      SetLength(ClearTilesEffectTimes[I], TilesEffectLength[I]);
+      SetLength(SetTilesEffectTimes[I], TilesEffectLength[I]);
+      SetLength(TilesEffectObjects[I], TilesEffectLength[I]);
     end;
 
     if States.GameTime = TimeToClearGravityArray[I] then
@@ -11877,52 +11951,6 @@ begin
     if (States.MapTileObject(aX, aY) = 159)
     and (States.KaMRandom < (PLANT_TREES_FACTOR/10)) then
       Actions.MapTileObjectSet(aX, aY, 172);
-  end;
-end;
-
-
-procedure CheckImmortal;
-var
-  aX, aY, aU, aO: Integer;
-begin
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
-  begin
-    if States.MapTileObject(aX, aY) = RUNE_IMMORTAL_ANIMATION then
-      Actions.MapTileObjectSet(aX, aY, 255);
-    aU := States.UnitAt(aX, aY);
-    if (aU <> - 1) then
-    begin
-      aO := States.UnitOwner(aU);
-      if (InRange(aO, 0, 7))
-      and (aU = States.GroupMember(Players[aO].Hero, 0))
-      and (States.MapTileObject(aX, aY) = 255) then
-        if Players[aO].HeroImmortal then
-          Actions.MapTileObjectSet(aX, aY, RUNE_IMMORTAL_ANIMATION);
-    end;
-  end;
-end;
-
-
-procedure CheckDoubleDamage;
-var
-  aX, aY, aU, aO: Integer;
-begin
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
-  begin
-    if States.MapTileObject(aX, aY) = RUNE_DOUBLE_ANIMATION then
-      Actions.MapTileObjectSet(aX, aY, 255);
-    aU := States.UnitAt(aX, aY);
-    if (aU <> - 1) then
-    begin
-      aO := States.UnitOwner(aU);
-      if (InRange(aO, 0, 7))
-      and (aU = States.GroupMember(Players[aO].Hero, 0))
-      and (States.MapTileObject(aX, aY) = 255) then
-        if Players[aO].DD then
-          Actions.MapTileObjectSet(aX, aY, RUNE_DOUBLE_ANIMATION);
-    end;
   end;
 end;
 
@@ -13528,7 +13556,7 @@ end;
 
 procedure OnTick;
 var
-  N: array[0..17] of Integer;
+  N: array[0..19] of Integer;
   S1, S2, S3, S4, S5, S6, S7, S8: Integer;  
 begin
 
@@ -13546,12 +13574,6 @@ begin
   CheckRuneTime;
 
   GoOutFromRune;
-
-  if States.GameTime mod 10 = 0 then
-  begin
-    CheckImmortal;
-    CheckDoubleDamage;
-  end;
 
   if States.GameTime mod ZOMBIE_STORM_FACTOR = 0 then
   begin
@@ -13580,12 +13602,16 @@ begin
         CheckTileRoadObjects(N[13]);
 
   for N[14] := 0 to 11 do
-      if TilesFieldLength[N[14]] > 0 then
-        CheckTileFieldObjects(N[14]);
+    if TilesFieldLength[N[14]] > 0 then
+      CheckTileFieldObjects(N[14]);
 
   for N[15] := 0 to 11 do
-      if TilesWineLength[N[15]] > 0 then
-        CheckTileWineObjects(N[15]);
+    if TilesWineLength[N[15]] > 0 then
+      CheckTileWineObjects(N[15]);
+
+  for N[18] := 0 to 11 do
+    if TilesEffectLength[N[18]] > 0 then
+      CheckTileEffectObjects(N[18]);
 
   for I := 0 to 7 do
     if Players[I].Hero > 0 then
@@ -13632,11 +13658,11 @@ begin
   for N[16] := 0 to 7 do
     CheckRogueCircles(N[16]);
 
-  for N[15] := 0 to 7 do
-    CheckRevengeCircles(N[15]);
+  for N[19] := 0 to 7 do
+    CheckRevengeCircles(N[19]);
 
-  for N[17] := 0 to 7 do
-    CheckStolenRogueCircles(N[17]);
+  for N[11] := 0 to 7 do
+    CheckStolenRogueCircles(N[11]);
 
   if States.GameTime = CHOOSE_HERO_TIMER then
   begin
