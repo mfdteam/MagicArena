@@ -9363,6 +9363,9 @@ begin
         Players[P].TrackStopTime := 0;
         Players[P].SettingTrack := False;
 
+        Players[P].RevengeCircleCycles := 0;
+        Players[P].RevengeCircleTime := 0;
+
         for I := 0 to 7 do
         begin
 
@@ -10779,6 +10782,8 @@ begin
     Players[O].TrackStartTime := 0;
     Players[O].TrackStopTime := 0;
     Players[O].SettingTrack := False;
+    Players[O].RevengeCircleCycles := 0;
+    Players[O].RevengeCircleTime := 0;
 
     for I := 0 to 7 do
     begin
