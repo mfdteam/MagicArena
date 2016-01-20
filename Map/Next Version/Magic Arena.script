@@ -33,7 +33,7 @@ const
   AXE_WINE_DELAY = 1250;
 
   VAGA_ROAD_DELAY = 90;
-  VAGA_FIELD_DELAY = 170;
+  VAGA_FIELD_DELAY = 140;
   VAGA_WINE_DELAY = 600;
 
   WARRIOR_ROAD_DELAY = 110;
@@ -285,7 +285,7 @@ const
   VAGA_DELAY_OF_TURNING = 10;
   REGEN_DELAY = 90;
   CONCENTRATION_TIME = 60;
-  SHOCK_TIME = 15;
+  SHOCK_TIME = 20;
   SKILL_RESPAWN_TIME = 1;
   ARMOR_TIME = 50;
   ARMOR_DELAY = 12;
@@ -296,7 +296,7 @@ const
   SPURT_AI_RANDOM = 5;
   STOLEN_SKILL_TIME = 1200;
   CAPTURE_MIND_TIME = 200;
-  TRACK_TIME = 100;
+  TRACK_TIME = 70;
   TRACK_DELAY = 3;
   TRACK_FACTOR = 3;
   GRAVITY_MOVE_TIME = 20;
@@ -4954,7 +4954,7 @@ end;
 
 procedure DeadlyFireworks(P, X, Y: Integer);
 var
-  X2, Y2: Integer;
+  X2, Y2, R: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4979,18 +4979,27 @@ begin
         Actions.GroupOrderHalt(Players[P].Hero);
       end;
 
-      TilesFieldLength[P] := TilesFieldLength[P] + 26;
+      TilesFieldLength[P] := TilesFieldLength[P] + 31;
       SetLength(TilesFieldX[P], TilesFieldLength[P]);
       SetLength(TilesFieldY[P], TilesFieldLength[P]);
       SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
       SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
       SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
 
+      R := States.KaMRandomI(10);
+
       for I := 21 to 26 do
       begin
         TilesFieldX[P][Length(TilesFieldX[P]) - I] := X;
         TilesFieldY[P][Length(TilesFieldX[P]) - I] := Y;
         TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := AXE_OBJECT4;
+      end;
+
+      for I := 27 to 31 do
+      begin
+        TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := CIRCLE_FILL_OBJ;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - I] := States.GameTime + 48;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := States.GameTime + 58;
       end;
 
       TilesFieldX[P][Length(TilesFieldX[P]) - 20] := X2 + 1;
@@ -5156,6 +5165,10 @@ begin
         FireworksCircles1[P][FireworksCircles1Counter[P]][FireworksCircles1Length[P][FireworksCircles1Counter[P]] - I].Obj := AXE_OBJECT2;
         FireworksCircles1[P][FireworksCircles1Counter[P]][FireworksCircles1Length[P][FireworksCircles1Counter[P]] - I].X := X;
         FireworksCircles1[P][FireworksCircles1Counter[P]][FireworksCircles1Length[P][FireworksCircles1Counter[P]] - I].Y := Y;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 27] := X;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 27] := Y;
+        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 27] := States.GameTime + 40;
+        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 27] := States.GameTime + 50;
         FireworksCircles1[P][FireworksCircles1Counter[P]][FireworksCircles1Length[P][FireworksCircles1Counter[P]] - I].AddTime := States.GameTime + 40 + Round(AXE_FIELD_SPEED * (FireworksCircles1Length[P][FireworksCircles1Counter[P]] - I));
         if I mod FIREWORKS1_RADIUS > 0 then
           FireworksCircles1[P][FireworksCircles1Counter[P]][FireworksCircles1Length[P][FireworksCircles1Counter[P]] - I].Radius := FIREWORKS1_RADIUS - I mod FIREWORKS1_RADIUS
@@ -5173,6 +5186,13 @@ begin
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Obj := AXE_OBJECT2;
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS;
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y := Y;
+        if R < 5 then
+        begin
+          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS - 1;
+          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + 1;
+        end;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 28] := FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 28] := FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y;
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].AddTime := States.GameTime + 48 + Round(AXE_FIELD_SPEED * (FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I));
         if I mod FIREWORKS2_RADIUS > 0 then
           FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Radius := FIREWORKS2_RADIUS - I mod FIREWORKS2_RADIUS
@@ -5190,6 +5210,13 @@ begin
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Obj := AXE_OBJECT2;
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS;
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y := Y;
+        if R < 5 then
+        begin
+          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS + 1;
+          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + 1;
+        end;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 29] := FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 29] := FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y;
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].AddTime := States.GameTime + 48 + Round(AXE_FIELD_SPEED * (FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I));
         if I mod FIREWORKS2_RADIUS > 0 then
           FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Radius := FIREWORKS2_RADIUS - I mod FIREWORKS2_RADIUS
@@ -5207,6 +5234,13 @@ begin
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Obj := AXE_OBJECT2;
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X := X;
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS;
+        if R < 5 then
+        begin
+          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X := X + FIREWORKS1_RADIUS - 1;
+          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - 1;
+        end;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 30] := FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 30] := FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y;
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].AddTime := States.GameTime + 48 + Round(AXE_FIELD_SPEED * (FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I));
         if I mod FIREWORKS2_RADIUS > 0 then
           FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Radius := FIREWORKS2_RADIUS - I mod FIREWORKS2_RADIUS
@@ -5224,6 +5258,13 @@ begin
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Obj := AXE_OBJECT2;
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X := X;
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS;
+        if R < 5 then
+        begin
+          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X := X - FIREWORKS1_RADIUS + 1;
+          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - 1;
+        end;
+        TilesFieldX[P][Length(TilesFieldX[P]) - 31] := FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X;
+        TilesFieldY[P][Length(TilesFieldY[P]) - 31] := FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y;
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].AddTime := States.GameTime + 48 + Round(AXE_FIELD_SPEED * (FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I));
         if I mod FIREWORKS2_RADIUS > 0 then
           FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Radius := FIREWORKS2_RADIUS - I mod FIREWORKS2_RADIUS
@@ -5253,7 +5294,7 @@ begin
       TimeToClearFireworks4Array[P][FireworksCircles4Counter[P]] := FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - 1].AddTime + CLEAR_ARRAY_FACTOR;
       TimeToClearFireworks5Array[P][FireworksCircles5Counter[P]] := FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - 1].AddTime + CLEAR_ARRAY_FACTOR;
 
-      ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 15] + CLEAR_ARRAY_FACTOR;
+      ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 31] + CLEAR_ARRAY_FACTOR;
 
     end;
 
