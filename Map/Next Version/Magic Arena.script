@@ -11766,6 +11766,8 @@ begin
   aX := States.KaMRandomI(46) + 13;
   aY := States.KaMRandomI(46) + 52;
   if (CanUseWineFieldSkill(aX, aY))
+  and ((aX <> RUNE_X) and (aY <> RUNE_Y1))
+  and ((aX <> RUNE_X) and (aY <> RUNE_Y2))
   and (not TileHasTreesAround(aX, aY))
   and (States.MapTileObject(aX, aY) <> BARB_OBJECT3)
   and (States.MapTileObject(aX, aY) <> BOWMAN_OBJECT5)
