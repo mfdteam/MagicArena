@@ -595,7 +595,6 @@ begin
     Exit;
   Result := (InRange(X, MIN_X, MAX_X))
   and (InRange(Y, MIN_Y, MAX_Y))
-  and (States.MapTileType(X, Y) <> 152)
   and (States.MapTileType(X, Y) <> 202)
   and (States.MapTileObject(X, Y) <> RUNE_IMMORTAL_OBJ)
   and (States.MapTileObject(X, Y) <> RUNE_DOUBLE_OBJ)
@@ -1433,7 +1432,6 @@ begin
     and (States.MapTileType(X, Y) <> 207)
     and (States.MapTileType(X, Y) <> 215)
     and (States.MapTileType(X, Y) <> 223)
-    and (States.MapTileType(X, Y) <> 152)
     and (not States.IsRoadAt(8, X, Y));
 end;
 
