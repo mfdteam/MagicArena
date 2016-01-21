@@ -10858,6 +10858,47 @@ begin
         Players[I1].HeroImmortal := True;
         Players[I1].HeroImmortalTime := States.GameTime + IMMORTAL_TIME;
         Players[I1].HeroReborn := False;
+
+        TilesFieldLength[I1] := TilesFieldLength[I1] + 8;
+        SetLength(TilesFieldX[I1], TilesFieldLength[I1]);
+        SetLength(TilesFieldY[I1], TilesFieldLength[I1]);
+        SetLength(ClearTilesFieldTimes[I1], TilesFieldLength[I1]);
+        SetLength(SetTilesFieldTimes[I1], TilesFieldLength[I1]);
+        SetLength(TilesFieldObjects[I1], TilesFieldLength[I1]);
+
+        TilesFieldX[I1][Length(TilesFieldX[I1]) - 1] := Players[I1].SpawnX;
+        TilesFieldY[I1][Length(TilesFieldY[I1]) - 1] := Players[I1].SpawnY - 1;
+        TilesFieldX[I1][Length(TilesFieldX[I1]) - 2] := Players[I1].SpawnX;
+        TilesFieldY[I1][Length(TilesFieldY[I1]) - 2] := Players[I1].SpawnY + 1;
+        TilesFieldX[I1][Length(TilesFieldX[I1]) - 3] := Players[I1].SpawnX - 1;
+        TilesFieldY[I1][Length(TilesFieldY[I1]) - 3] := Players[I1].SpawnY;
+        TilesFieldX[I1][Length(TilesFieldX[I1]) - 4] := Players[I1].SpawnX + 1;
+        TilesFieldY[I1][Length(TilesFieldY[I1]) - 4] := Players[I1].SpawnY;
+        TilesFieldX[I1][Length(TilesFieldX[I1]) - 5] := Players[I1].SpawnX + 1;
+        TilesFieldY[I1][Length(TilesFieldY[I1]) - 5] := Players[I1].SpawnY + 1;
+        TilesFieldX[I1][Length(TilesFieldX[I1]) - 6] := Players[I1].SpawnX + 1;
+        TilesFieldY[I1][Length(TilesFieldY[I1]) - 6] := Players[I1].SpawnY - 1;
+        TilesFieldX[I1][Length(TilesFieldX[I1]) - 7] := Players[I1].SpawnX - 1;
+        TilesFieldY[I1][Length(TilesFieldY[I1]) - 7] := Players[I1].SpawnY + 1;
+        TilesFieldX[I1][Length(TilesFieldX[I1]) - 8] := Players[I1].SpawnX - 1;
+        TilesFieldY[I1][Length(TilesFieldY[I1]) - 8] := Players[I1].SpawnY - 1;
+
+        for I := 1 to 8 do
+        begin
+          TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - I] := PikeObjects[I1];
+          ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - I] := States.GameTime + 51;
+          SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - I] := States.GameTime + 1;
+
+          if (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]) = BARB_OBJECT3)
+          or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]) = BOWMAN_ROCKET)
+          or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]) = BOWMAN_OBJECT5)
+          or (InRange(States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+            ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - I] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - I] + CLEANUP_TIME;
+
+        end;
+
+        ClearFieldTilesArrayTime[I1] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 8] + CLEAR_ARRAY_FACTOR + 2;
+
       end;
 
       if States.GameTime = Players[I1].VagaAppearTime then
