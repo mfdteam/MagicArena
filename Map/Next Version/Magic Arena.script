@@ -587,6 +587,19 @@ begin
 end;
 
 
+function TileOnRuneSpawn(X, Y: Integer): Boolean;
+begin
+  if X <= 0 then
+    Exit;
+  if Y <= 0 then
+    Exit;
+
+  Result := (X = RUNE_X)
+  and (Y = RUNE_Y);
+
+end;
+
+
 function TileOnBattlefield(X, Y: Integer): Boolean;
 begin
   if X <= 0 then
@@ -599,8 +612,11 @@ begin
   and (States.MapTileObject(X, Y) <> RUNE_IMMORTAL_OBJ)
   and (States.MapTileObject(X, Y) <> RUNE_DOUBLE_OBJ)
   and (States.MapTileObject(X, Y) <> RUNE_RECHARGE_OBJ)
-  and (States.MapTileObject(X, Y) <> RUNE_REGEN_OBJ)
   and (States.MapTileObject(X, Y) <> RUNE_ILLUSION_OBJ);
+
+  if States.MapTileObject(X, Y) = RUNE_REGEN_OBJ then
+    Result := not TileOnRuneSpawn(X, Y);
+
 end;
 
 
@@ -9404,6 +9420,9 @@ begin
             end;
           end;
           Actions.MapTileObjectSet(aX, aY, 255);
+          if (Players[P].HP = 12)
+          and (TileOnRuneSpawn(aX, aY)) then
+            Actions.MapTileObjectSet(aX, aY, 255);
         end;
     if Players[P].CaptureMind then
       if States.GameTime > Players[M[P]].RegenDelay then
@@ -9420,6 +9439,9 @@ begin
             end;
           end;
           Actions.MapTileObjectSet(aX, aY, 255);
+          if (Players[M[P]].HP = 12)
+          and (TileOnRuneSpawn(aX, aY)) then
+            Actions.MapTileObjectSet(aX, aY, 255);
         end;
     if Players[P].MindStunned then
       if States.GameTime > Players[M2[P]].RegenDelay then
@@ -9436,6 +9458,9 @@ begin
             end;
           end;
           Actions.MapTileObjectSet(aX, aY, 255);
+          if (Players[M2[P]].HP = 12)
+          and (TileOnRuneSpawn(aX, aY)) then
+            Actions.MapTileObjectSet(aX, aY, 255);
         end;
   end;
 
