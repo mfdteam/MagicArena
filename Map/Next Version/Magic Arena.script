@@ -249,8 +249,6 @@ const
   RUNE_ILLUSION_OBJ = 203;
   RUNE_IMMORTAL_OBJ = 63;
   RUNE_RECHARGE_OBJ = 88;
-  RUNE_IMMORTAL_ANIMATION = 4;
-  RUNE_DOUBLE_ANIMATION = 11;
   RUNE_BLOCK_OBJ = 61;
   RUNE_DOUBLE_TIME = 300;
   RUNE_IMMORTAL_TIME = 200;
@@ -259,11 +257,13 @@ const
 
 //Animation
 
-  SILENCE_ANIMATION = 66;
-  FEAR_ANIMATION = 122;
-  STUN_ANIMATION = 93;
-  MIND_ANIMATION = 204;
-  RECHARGE_ANIMATION = 97; 
+  IMMORTAL_ANIMATION = 20;
+  DOUBLE_ANIMATION = 28;
+  SILENCE_ANIMATION = 14;
+  FEAR_ANIMATION = 220;
+  STUN_ANIMATION = 16;
+  MIND_ANIMATION = 9;
+  RECHARGE_ANIMATION = 0; 
 
 //Player stats
 
@@ -539,6 +539,8 @@ type
     ReliefRefreshTime: Integer;
     ObjectRefreshTime: Integer;
     TreeTime: Integer;
+    TileType: Integer;
+    TileDirection: Integer;
   end;
 
 
@@ -666,6 +668,8 @@ begin
     Tiles[aX][aY].ObjectRefreshTime := 0;
     Tiles[aX][aY].Skill := sNone;
     Tiles[aX][aY].TreeTime := 0;
+    Tiles[aX][aY].TileType := States.MapTileType(aX, aY);
+    Tiles[aX][aY].TileDirection := States.MapTileRotation(aX, aY);
   end;
 end;
 
@@ -9197,6 +9201,8 @@ begin
         Players[P].DDTime := 0;
         Players[P].ReChargeTime := 0;
 
+        Actions.MapTileSet(aX, aY, Tiles[aX][aY].TileType, Tiles[aX][aY].TileDirection);
+
         if States.GameTime < Players[P].MindTime2 then
         begin
           Players[P].MindTime2 := 0;
@@ -10603,6 +10609,8 @@ begin
   and (InRange(aKiller, 9, 11)) then
   begin
 
+    Actions.MapTileSet(aX, aY, Tiles[aX][aY].TileType, Tiles[aX][aY].TileDirection);
+
     Players[O].HeroSilentTime := 0;
     if (not Players[O].CaptureMind)
     and (not Players[O].MindStunned) then
@@ -11795,7 +11803,7 @@ end;
 
 procedure CheckEffects(P: Integer);
 var
-  aX, aY, aU, X, Y, Obj: Integer;
+  aX, aY, aU, X, Y, Tile: Integer;
 begin
   aU := Players[P].Hero;
   if aU <= 0 then
@@ -11812,33 +11820,33 @@ begin
   for Y := aY - 2 to aY + 2 do
     if TileOnBattlefield(X, Y) then
     begin
-      Obj := States.MapTileObject(X, Y);
-      if (Obj = RUNE_IMMORTAL_ANIMATION)
-      or (Obj = RUNE_DOUBLE_ANIMATION)
-      or (Obj = RECHARGE_ANIMATION)
-      or (Obj = MIND_ANIMATION)
-      or (Obj = STUN_ANIMATION)
-      or (Obj = FEAR_ANIMATION)
-      or (Obj = SILENCE_ANIMATION) then
-        Actions.MapTileObjectSet(X, Y, 255);
+      Tile := States.MapTileType(X, Y);
+      if (Tile = IMMORTAL_ANIMATION)
+      or (Tile = DOUBLE_ANIMATION)
+      or (Tile = RECHARGE_ANIMATION)
+      or (Tile = MIND_ANIMATION)
+      or (Tile = STUN_ANIMATION)
+      or (Tile = FEAR_ANIMATION)
+      or (Tile = SILENCE_ANIMATION) then
+        Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
     end;
 
-  if States.MapTileObject(aX, aY) = 255 then
+  if States.MapTileType(aX, aY) = Tiles[aX][aY].TileType then
   begin
     if Players[P].HeroImmortal then
-      Actions.MapTileObjectSet(aX, aY, RUNE_IMMORTAL_ANIMATION);
+      Actions.MapTileSet(aX, aY, IMMORTAL_ANIMATION, States.KaMRandomI(4));
     if Players[P].DD then
-      Actions.MapTileObjectSet(aX, aY, RUNE_DOUBLE_ANIMATION);
+      Actions.MapTileSet(aX, aY, DOUBLE_ANIMATION, States.KaMRandomI(4));
     if Players[P].ReCharge then
-      Actions.MapTileObjectSet(aX, aY, RECHARGE_ANIMATION);
+      Actions.MapTileSet(aX, aY, RECHARGE_ANIMATION, States.KaMRandomI(4));
     if Players[P].MindStunned then
-      Actions.MapTileObjectSet(aX, aY, MIND_ANIMATION);
+      Actions.MapTileSet(aX, aY, MIND_ANIMATION, States.KaMRandomI(4));
     if Players[P].HeroStunned then
-      Actions.MapTileObjectSet(aX, aY, STUN_ANIMATION);
+      Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
     if Players[P].HeroInFear then
-      Actions.MapTileObjectSet(aX, aY, FEAR_ANIMATION);
+      Actions.MapTileSet(aX, aY, FEAR_ANIMATION, States.KaMRandomI(4));
     if Players[P].HeroSilent then
-      Actions.MapTileObjectSet(aX, aY, SILENCE_ANIMATION);
+      Actions.MapTileSet(aX, aY, SILENCE_ANIMATION, States.KaMRandomI(4));
   end;
 
 end;
