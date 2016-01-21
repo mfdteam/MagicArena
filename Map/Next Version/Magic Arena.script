@@ -10468,11 +10468,12 @@ begin
   aX := States.UnitPositionX(aID);
   aY := States.UnitPositionY(aID);
 
+  if TileOnBattlefield(aX, aY) then
+    Actions.MapTileSet(aX, aY, Tiles[aX][aY].TileType, Tiles[aX][aY].TileDirection);
+
   if (InRange(O, 0, 7))
   and (InRange(aKiller, 9, 11)) then
   begin
-
-    Actions.MapTileSet(aX, aY, Tiles[aX][aY].TileType, Tiles[aX][aY].TileDirection);
 
     Players[O].HeroSilentTime := 0;
     if (not Players[O].CaptureMind)
