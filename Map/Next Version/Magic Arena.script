@@ -1132,6 +1132,8 @@ begin
       RUNE_Y := RUNE_Y1
     else
       RUNE_Y := RUNE_Y2;
+    Actions.MapTileObjectSet(RUNE_X, RUNE_Y1, 255);
+    Actions.MapTileObjectSet(RUNE_X, RUNE_Y2, 255);
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RuneType);
     Actions.PlayWAV(-1, 'Rune', 1);
     RuneTime := RUNE_TIMER;
