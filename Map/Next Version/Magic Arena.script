@@ -7013,9 +7013,7 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     Desync := 0;
     R := States.KaMRandomI(SPURT_AI_RANDOM);
-    Direction := Players[P].SkillDirection;
-    if States.PlayerIsAI(P) then
-      Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+    Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     Players[P].CurrentSpurtLength := 0;
 
     case Direction of
