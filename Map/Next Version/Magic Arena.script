@@ -496,10 +496,6 @@ type
     MovedByRopes: Boolean;
     SpurtStartTime: Integer;
     CurrentSpurtLength: Integer;
-    SpurtStartX: Integer;
-    SpurtStartY: Integer;
-    SpurtStartDX: Integer;
-    SpurtStartDY: Integer;
     RebornTime: Integer;
     HeroReborn: Boolean;
     MovedToTribune: Boolean;
@@ -1081,10 +1077,6 @@ begin
       MovedByRopes := False;
       SpurtStartTime := 0;
       CurrentSpurtLength := 0;
-      SpurtStartX := 0;
-      SpurtStartY := 0;
-      SpurtStartDX := 0;
-      SpurtStartDY := 0;
       RebornTime := 0;
       HeroReborn := False;
       MovedToTribune := False;
@@ -6882,6 +6874,13 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
+    if States.PlayerIsAI(P) then
+    begin
+      Players[P].CastingSkill := True;
+      Players[P].SkillTime := States.GameTime + 10;
+      Actions.GroupOrderHalt(Players[P].Hero);
+    end;
+
     KnightCirclesCounter[P] := KnightCirclesCounter[P] + 1;
     if KnightCirclesCounter[P] = MAX_CIRCLES_AT_ONCE then
       KnightCirclesCounter[P] := 0;
@@ -6932,10 +6931,12 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
-    Players[P].SpurtStartX := X2;
-    Players[P].SpurtStartY := Y2;
-    Players[P].SpurtStartDX:= 0;
-    Players[P].SpurtStartDY:= 0;
+    if States.PlayerIsAI(P) then
+    begin
+      Players[P].CastingSkill := True;
+      Players[P].SkillTime := States.GameTime + 50;
+      Actions.GroupOrderHalt(Players[P].Hero);
+    end;
 
     Players[P].HeroStunnedTime := States.GameTime + SPURT_TIME + 5 + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
     Actions.GroupOrderHalt(Players[P].Hero);
