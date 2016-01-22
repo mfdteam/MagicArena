@@ -9630,7 +9630,9 @@ begin
     begin
       Players[P].HeroImmortal := True;
       Players[P].HeroImmortalTime := States.GameTime + RUNE_IMMORTAL_TIME;
-      if InRange(Tiles[aX][aY].Owner, 0, 7) then
+      if InRange(Tiles[aX][aY].Owner, 0, 7)
+      and (not TileOnRuneSpawn(aX, aY))
+      and (not RuneTaken) then
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$70> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
