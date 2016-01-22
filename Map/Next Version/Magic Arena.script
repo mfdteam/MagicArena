@@ -575,24 +575,13 @@ var
   Zombies: array of aZombie;
   LastAttacker, LastAttackerUnitType: Integer;
   FirstBlood: Boolean;
+  RuneTaken: Boolean;
+  RuneObject: Integer;
 
 
 function InRange(Value, Min, Max: Integer): Boolean;
 begin
   Result := (Value >= Min) and (Value <= Max);
-end;
-
-
-function TileOnRuneSpawn(X, Y: Integer): Boolean;
-begin
-  if X <= 0 then
-    Exit;
-  if Y <= 0 then
-    Exit;
-
-  Result := (X = RUNE_X)
-  and (Y = RUNE_Y);
-
 end;
 
 
@@ -604,15 +593,7 @@ begin
     Exit;
   Result := (InRange(X, MIN_X, MAX_X))
   and (InRange(Y, MIN_Y, MAX_Y))
-  and (States.MapTileType(X, Y) <> 202)
-  and (States.MapTileObject(X, Y) <> RUNE_IMMORTAL_OBJ)
-  and (States.MapTileObject(X, Y) <> RUNE_DOUBLE_OBJ)
-  and (States.MapTileObject(X, Y) <> RUNE_RECHARGE_OBJ)
-  and (States.MapTileObject(X, Y) <> RUNE_ILLUSION_OBJ);
-
-  if States.MapTileObject(X, Y) = RUNE_REGEN_OBJ then
-    Result := not TileOnRuneSpawn(X, Y);
-
+  and (States.MapTileType(X, Y) <> 202);
 end;
 
 
@@ -824,6 +805,9 @@ begin
     RUNE_Y := RUNE_Y2;
 
   CheckTilesInfo;
+
+  RuneTaken := True;
+  RuneObject := 255;
 
   FirstBlood := False;
 
@@ -1130,6 +1114,19 @@ begin
 end;
 
 
+function TileOnRuneSpawn(X, Y: Integer): Boolean;
+begin
+  if X <= 0 then
+    Exit;
+  if Y <= 0 then
+    Exit;
+
+  Result := (X = RUNE_X)
+  and (Y = RUNE_Y);
+
+end;
+
+
 procedure CheckRuneTime;
 begin
   if RuneTime > 0 then
@@ -1143,9 +1140,21 @@ begin
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y1, 255);
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y2, 255);
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RuneType);
+    RuneObject := RuneType;
+    RuneTaken := False;
     Actions.PlayWAV(-1, 'Rune', 1);
     RuneTime := RUNE_TIMER;
   end;
+end;
+
+
+procedure CheckRuneCleanup;
+begin
+  if States.MapTileObject(RUNE_X, RUNE_Y) = BARB_OBJECT3 then
+    RuneTaken := True;
+  if (not RuneTaken)
+  and (States.MapTileObject(RUNE_X, RUNE_Y) <> RuneObject) then
+    Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RuneObject);
 end;
 
 
@@ -9420,10 +9429,9 @@ begin
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
             end;
           end;
+          if TileOnRuneSpawn(aX, aY) then
+            RuneTaken := True;
           Actions.MapTileObjectSet(aX, aY, 255);
-          if (Players[P].HP = 12)
-          and (TileOnRuneSpawn(aX, aY)) then
-            Actions.MapTileObjectSet(aX, aY, 255);
         end;
     if Players[P].CaptureMind then
       if States.GameTime > Players[M[P]].RegenDelay then
@@ -9439,10 +9447,9 @@ begin
               Players[M[P]].PlayerStatus := Players[M[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
             end;
           end;
+          if TileOnRuneSpawn(aX, aY) then
+            RuneTaken := True;
           Actions.MapTileObjectSet(aX, aY, 255);
-          if (Players[M[P]].HP = 12)
-          and (TileOnRuneSpawn(aX, aY)) then
-            Actions.MapTileObjectSet(aX, aY, 255);
         end;
     if Players[P].MindStunned then
       if States.GameTime > Players[M2[P]].RegenDelay then
@@ -9458,10 +9465,9 @@ begin
               Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
             end;
           end;
+          if TileOnRuneSpawn(aX, aY) then
+            RuneTaken := True;
           Actions.MapTileObjectSet(aX, aY, 255);
-          if (Players[M2[P]].HP = 12)
-          and (TileOnRuneSpawn(aX, aY)) then
-            Actions.MapTileObjectSet(aX, aY, 255);
         end;
   end;
 
@@ -9524,6 +9530,8 @@ begin
     begin
       Players[P].DD := True;
       Players[P].DDTime := States.GameTime + RUNE_DOUBLE_TIME;
+      if TileOnRuneSpawn(aX, aY) then
+        RuneTaken := True;
       Actions.MapTileObjectSet(aX, aY, 255);
     end;
   end;
@@ -9539,6 +9547,8 @@ begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$70> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
       end;
+      if TileOnRuneSpawn(aX, aY) then
+        RuneTaken := True;
       Actions.MapTileObjectSet(aX, aY, 255);
     end;
   end;
@@ -9553,6 +9563,8 @@ begin
       Zombies[Length(Zombies) - 1].Owner := P;
       Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
       Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
+      if TileOnRuneSpawn(aX, aY) then
+        RuneTaken := True;
       Actions.MapTileObjectSet(aX, aY, 255);
     end;
   end;
@@ -9564,6 +9576,8 @@ begin
     Players[P].RoadSkillDelay := 0;
     Players[P].FieldSkillDelay := 0;
     Players[P].WineSkillDelay := 0;
+    if TileOnRuneSpawn(aX, aY) then
+      RuneTaken := True;
     Actions.MapTileObjectSet(aX, aY, 255);
   end;
 
@@ -13492,6 +13506,8 @@ begin
     SetScreen;
 
   CheckRuneTime;
+
+  CheckRuneCleanup;
 
   if States.GameTime mod EFFECT_CHECK_FACTOR = 0 then
     for I := 0 to 7 do
