@@ -501,6 +501,9 @@ type
     MovedToTribune: Boolean;
     PowerWithinCircleCycles: Integer;
     PowerWithinCircleTime: Integer;
+    FireworkTime: Integer;
+    FireworkX: Integer;
+    FireworkY: Integer;
   end;
 
 
@@ -1066,6 +1069,9 @@ begin
       MovedToTribune := False;
       PowerWithinCircleCycles := 0;
       PowerWithinCircleTime := 0;
+      FireworkTime := 0;
+      FireworkX := 0;
+      FireworkY := 0;
     end;
   end;
 
@@ -4932,7 +4938,8 @@ end;
 
 procedure DeadlyFireworks(P, X, Y: Integer);
 var
-  X2, Y2, R: Integer;
+  X2, Y2: Integer;
+  R: array[0..9] of Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4957,6 +4964,10 @@ begin
         Actions.GroupOrderHalt(Players[P].Hero);
       end;
 
+      Players[P].FireworkTime := States.GameTime + 58;
+      Players[P].FireworkX := X;
+      Players[P].FireworkY := Y;
+
       TilesFieldLength[P] := TilesFieldLength[P] + 31;
       SetLength(TilesFieldX[P], TilesFieldLength[P]);
       SetLength(TilesFieldY[P], TilesFieldLength[P]);
@@ -4964,7 +4975,8 @@ begin
       SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
       SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
 
-      R := States.KaMRandomI(10);
+      for I := 0 to 9 do
+        R[I] := States.KaMRandomI(10);
 
       for I := 21 to 26 do
       begin
@@ -5164,10 +5176,10 @@ begin
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Obj := AXE_OBJECT2;
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS;
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y := Y;
-        if R < 5 then
+        if R[0] < R[States.KaMRandomI(10)] then
         begin
-          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS - 1;
-          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + 1;
+          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS - 2;
+          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + 2;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 28] := FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 28] := FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y;
@@ -5188,10 +5200,10 @@ begin
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Obj := AXE_OBJECT2;
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS;
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y := Y;
-        if R < 5 then
+        if R[3] < R[States.KaMRandomI(10)] then
         begin
-          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS + 1;
-          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + 1;
+          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS + 2;
+          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + 2;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 29] := FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 29] := FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y;
@@ -5212,10 +5224,10 @@ begin
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Obj := AXE_OBJECT2;
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X := X;
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS;
-        if R < 5 then
+        if R[8] < R[States.KaMRandomI(10)] then
         begin
-          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X := X + FIREWORKS1_RADIUS - 1;
-          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - 1;
+          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X := X + FIREWORKS1_RADIUS - 2;
+          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - 2;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 30] := FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 30] := FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y;
@@ -5236,10 +5248,10 @@ begin
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Obj := AXE_OBJECT2;
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X := X;
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS;
-        if R < 5 then
+        if R[2] < R[States.KaMRandomI(10)] then
         begin
-          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X := X - FIREWORKS1_RADIUS + 1;
-          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - 1;
+          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X := X - FIREWORKS1_RADIUS + 2;
+          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - 2;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 31] := FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 31] := FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y;
@@ -10888,7 +10900,7 @@ end;
 
 procedure CheckStatus;
 var
-  I1: Integer;
+  I1, aX, aY: Integer;
 begin
   for I1 := 0 to 7 do
     if Players[I1].Hero > 0 then
@@ -11099,6 +11111,12 @@ begin
       begin
         Players[I1].SettingTrack := False;
       end;
+
+      if States.GameTime = Players[I1].FireworkTime then
+        for aX := Players[I1].FireworkX - FIREWORKS1_RADIUS - FIREWORKS2_RADIUS - 2 to Players[I1].FireworkX + FIREWORKS1_RADIUS + FIREWORKS2_RADIUS + 2 do
+        for aY := Players[I1].FireworkY - FIREWORKS1_RADIUS - FIREWORKS2_RADIUS - 2 to Players[I1].FireworkY + FIREWORKS1_RADIUS + FIREWORKS2_RADIUS + 2 do
+          if States.MapTileObject(aX, aY) = AXE_OBJECT2 then
+            Actions.MapTileObjectSet(aX, aY, 255);
 
       if (Players[I1].SettingTrack)
       and ((States.GameTime - Players[I1].TrackStopTime) mod TRACK_FACTOR = 0)
