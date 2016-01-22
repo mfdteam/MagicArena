@@ -1158,6 +1158,72 @@ begin
 end;
 
 
+procedure GetRuneEffect(P, aRune: Integer);
+begin
+
+  if RuneTaken then
+    Exit;
+
+  case aRune of
+
+    RUNE_REGEN_OBJ:
+      if (not Players[P].MindStunned)
+      and (not Players[P].CaptureMind) then
+        if States.GameTime > Players[P].RegenDelay then
+          if Players[P].HP < MAX_HP then
+          begin
+            Players[P].HP := Players[P].HP + 1;
+            Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
+            RuneTaken := True;
+            Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+          end;
+
+    RUNE_DOUBLE_OBJ:
+      if States.GameTime > Players[P].DDTime then
+      begin
+        Players[P].DD := True;
+        Players[P].DDTime := States.GameTime + RUNE_DOUBLE_TIME;
+        RuneTaken := True;
+        Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+      end;
+
+    RUNE_ILLUSION_OBJ:
+      for I := 0 to 3 do
+      begin
+        ZomboHero[P][I] := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
+        SetLength(Zombies, Length(Zombies) + 1);
+        Zombies[Length(Zombies) - 1].Owner := P;
+        Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
+        Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
+        RuneTaken := True;
+        Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+      end;
+
+    RUNE_IMMORTAL_OBJ:
+      if States.GameTime > Players[P].HeroImmortalTime then
+      begin
+        Players[P].HeroImmortal := True;
+        Players[P].HeroImmortalTime := States.GameTime + RUNE_IMMORTAL_TIME;
+        RuneTaken := True;
+        Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+      end;
+
+    RUNE_RECHARGE_OBJ:
+    begin
+      Players[P].ReCharge := True;
+      Players[P].ReChargeTime := States.GameTime + RUNE_RECHARGE_TIME;
+      Players[P].RoadSkillDelay := 0;
+      Players[P].FieldSkillDelay := 0;
+      Players[P].WineSkillDelay := 0;
+      RuneTaken := True;
+      Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+    end;
+
+  end;
+
+end;
+
+
 procedure CheckStolenSkillTime(P: Integer);
 begin
   if Players[P].StolenSkillTime = 0 then
@@ -7187,6 +7253,9 @@ begin
     Actions.GroupKillAll(Players[P].Hero, True);
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, SpurtX[P][Step], SpurtY[P][Step], SpurtDir[P][Step], 1, 1);
     Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+    if (TileOnRuneSpawn(SpurtX[P][Step], SpurtY[P][Step]))
+    and (not RuneTaken) then
+      GetRuneEffect(P, RuneObject);
   end;
 
   if (States.GameTime = SpurtTimes[P][Players[P].CurrentSpurtLength - 1] + 2)
