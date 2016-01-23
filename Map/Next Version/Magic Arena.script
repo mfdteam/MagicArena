@@ -7279,7 +7279,7 @@ begin
     Actions.GroupKillAll(Players[P].Hero, True);
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, SpurtX[P][Step], SpurtY[P][Step], SpurtDir[P][Step], 1, 1);
     Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
-    if (TileOnRuneSpawn(SpurtX[P][Desync - 1], SpurtY[P][Desync - 1]))
+    if (TileOnRuneSpawn(SpurtX[P][Step], SpurtY[P][Step]))
     and (not RuneTaken)
     and (RuneObject <> RUNE_DOUBLE_OBJ) then
       GetRuneEffect(P, RuneObject);
@@ -11523,14 +11523,6 @@ begin
       if TileOnBattlefield(TilesRoadX[P][K], TilesRoadY[P][K])
       and (TilesRoadObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
-
-        if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
-        and (TilesRoadObjects[P][K] = BOWMAN_OBJECT5) then
-          Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], BOWMAN_OBJECT5);
-
-        if (InRange(States.GameTime, ClearTilesRoadTimes[P][K], 1 + ClearTilesRoadTimes[P][K]))
-        and (TilesRoadObjects[P][K] = BOWMAN_OBJECT5) then
-          Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], 255);
 
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (TilesRoadObjects[P][K] = BARB_OBJECT3) then
