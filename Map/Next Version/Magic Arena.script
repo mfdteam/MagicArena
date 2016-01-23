@@ -7149,7 +7149,8 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRagingSpurt;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                if (TileOnRuneSpawn(SpurtX[P][Desync - 1], SpurtY[P][Desync - 1]))
-               and (not RuneTaken) then
+               and (not RuneTaken)
+               and (RuneObject = RUNE_DOUBLE_OBJ) then
                  GetRuneEffect(P, RuneObject);
              end;
 
@@ -7182,7 +7183,8 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRagingSpurt;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                if (TileOnRuneSpawn(SpurtX[P][Desync - 1], SpurtY[P][Desync - 1]))
-               and (not RuneTaken) then
+               and (not RuneTaken)
+               and (RuneObject = RUNE_DOUBLE_OBJ) then
                  GetRuneEffect(P, RuneObject);
              end;
 
@@ -7215,7 +7217,8 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRagingSpurt;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                if (TileOnRuneSpawn(SpurtX[P][Desync - 1], SpurtY[P][Desync - 1]))
-               and (not RuneTaken) then
+               and (not RuneTaken)
+               and (RuneObject = RUNE_DOUBLE_OBJ) then
                  GetRuneEffect(P, RuneObject);
              end;
 
@@ -7248,7 +7251,8 @@ begin
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRagingSpurt;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                if (TileOnRuneSpawn(SpurtX[P][Desync - 1], SpurtY[P][Desync - 1]))
-               and (not RuneTaken) then
+               and (not RuneTaken)
+               and (RuneObject = RUNE_DOUBLE_OBJ) then
                  GetRuneEffect(P, RuneObject);
              end;
 
@@ -7275,6 +7279,10 @@ begin
     Actions.GroupKillAll(Players[P].Hero, True);
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, SpurtX[P][Step], SpurtY[P][Step], SpurtDir[P][Step], 1, 1);
     Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+    if (TileOnRuneSpawn(SpurtX[P][Desync - 1], SpurtY[P][Desync - 1]))
+    and (not RuneTaken)
+    and (RuneObject <> RUNE_DOUBLE_OBJ) then
+      GetRuneEffect(P, RuneObject);
   end;
 
   if (States.GameTime = SpurtTimes[P][Players[P].CurrentSpurtLength - 1] + 2)
