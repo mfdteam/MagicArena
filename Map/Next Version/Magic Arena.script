@@ -11886,14 +11886,14 @@ begin
       Actions.MapTileSet(aX, aY, DOUBLE_ANIMATION, States.KaMRandomI(4));
     if Players[P].ReCharge then
       Actions.MapTileSet(aX, aY, RECHARGE_ANIMATION, States.KaMRandomI(4));
-    if Players[P].MindStunned then
-      Actions.MapTileSet(aX, aY, MIND_ANIMATION, States.KaMRandomI(4));
     if Players[P].HeroStunned then
       Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
     if Players[P].HeroInFear then
       Actions.MapTileSet(aX, aY, FEAR_ANIMATION, States.KaMRandomI(4));
     if Players[P].HeroSilent then
       Actions.MapTileSet(aX, aY, SILENCE_ANIMATION, States.KaMRandomI(4));
+    if Players[P].MindStunned then
+      Actions.MapTileSet(aX, aY, MIND_ANIMATION, States.KaMRandomI(4));
   end;
 
 end;
