@@ -9890,7 +9890,7 @@ begin
 end;
 
 
-function TileIsDangerous(X, Y: Integer): Boolean;
+function TileIsDangerous(P, X, Y: Integer): Boolean;
 var
   aObj: Integer;
 begin
@@ -9941,6 +9941,9 @@ begin
               or (aObj = SCOUT_OBJECT3)
               or (aObj = SCOUT_OBJECT6)
               or (aObj = SCOUT_OBJECT5));
+
+    Result := Result and (not aObj = PikeObjects[P]);
+
   end;
 end;
 
@@ -12083,65 +12086,65 @@ begin
     begin
       case D of
 
-        0: if (TileIsDangerous(aX, aY - 2))
-           or (TileIsDangerous(aX, aY - 1)) then
+        0: if (TileIsDangerous(P, aX, aY - 2))
+           or (TileIsDangerous(P, aX, aY - 1)) then
            begin
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5) - States.KaMRandomI(5), aY + States.KaMRandomI(5), States.KaMRandomI(8));
            end;
 
-        1: if (TileIsDangerous(aX + 1, aY - 2))
-           or (TileIsDangerous(aX + 1, aY - 1))
-           or (TileIsDangerous(aX + 2, aY - 2))
-           or (TileIsDangerous(aX + 2, aY - 1)) then
+        1: if (TileIsDangerous(P, aX + 1, aY - 2))
+           or (TileIsDangerous(P, aX + 1, aY - 1))
+           or (TileIsDangerous(P, aX + 2, aY - 2))
+           or (TileIsDangerous(P, aX + 2, aY - 1)) then
            begin
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5) - States.KaMRandomI(5), aY + States.KaMRandomI(5), States.KaMRandomI(8));
            end;
 
-        2: if (TileIsDangerous(aX + 1, aY))
-           or (TileIsDangerous(aX + 2, aY)) then
+        2: if (TileIsDangerous(P, aX + 1, aY))
+           or (TileIsDangerous(P, aX + 2, aY)) then
            begin
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX - States.KaMRandomI(5), aY + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8));
            end;
 
-        3: if (TileIsDangerous(aX + 1, aY + 2))
-           or (TileIsDangerous(aX + 1, aY + 1))
-           or (TileIsDangerous(aX + 2, aY + 2))
-           or (TileIsDangerous(aX + 2, aY + 1)) then
+        3: if (TileIsDangerous(P, aX + 1, aY + 2))
+           or (TileIsDangerous(P, aX + 1, aY + 1))
+           or (TileIsDangerous(P, aX + 2, aY + 2))
+           or (TileIsDangerous(P, aX + 2, aY + 1)) then
            begin
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX - States.KaMRandomI(5), aY - States.KaMRandomI(5), States.KaMRandomI(8));
            end;
 
-        4: if (TileIsDangerous(aX, aY + 2))
-           or (TileIsDangerous(aX, aY + 1)) then
+        4: if (TileIsDangerous(P, aX, aY + 2))
+           or (TileIsDangerous(P, aX, aY + 1)) then
            begin
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5) - States.KaMRandomI(5), aY - States.KaMRandomI(5), States.KaMRandomI(8));
            end;
 
-        5: if (TileIsDangerous(aX - 1, aY + 2))
-           or (TileIsDangerous(aX - 1, aY + 1))
-           or (TileIsDangerous(aX - 2, aY + 2))
-           or (TileIsDangerous(aX - 2, aY + 1)) then
+        5: if (TileIsDangerous(P, aX - 1, aY + 2))
+           or (TileIsDangerous(P, aX - 1, aY + 1))
+           or (TileIsDangerous(P, aX - 2, aY + 2))
+           or (TileIsDangerous(P, aX - 2, aY + 1)) then
            begin
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5), aY - States.KaMRandomI(5), States.KaMRandomI(8));
            end;
 
-        6: if (TileIsDangerous(aX - 2, aY))
-           or (TileIsDangerous(aX - 1, aY)) then
+        6: if (TileIsDangerous(P, aX - 2, aY))
+           or (TileIsDangerous(P, aX - 1, aY)) then
            begin
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5), aY + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8));
            end;
 
-        7: if (TileIsDangerous(aX - 1, aY - 2))
-           or (TileIsDangerous(aX - 1, aY - 1))
-           or (TileIsDangerous(aX - 2, aY - 2))
-           or (TileIsDangerous(aX - 2, aY - 1)) then
+        7: if (TileIsDangerous(P, aX - 1, aY - 2))
+           or (TileIsDangerous(P, aX - 1, aY - 1))
+           or (TileIsDangerous(P, aX - 2, aY - 2))
+           or (TileIsDangerous(P, aX - 2, aY - 1)) then
            begin
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX - States.KaMRandomI(5), aY - States.KaMRandomI(5), States.KaMRandomI(8));
@@ -12996,7 +12999,7 @@ begin
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
       X := aX + States.KaMRandomI(TELEPORT_RADIUS) - States.KaMRandomI(TELEPORT_RADIUS);
       Y := aY + States.KaMRandomI(TELEPORT_RADIUS) - States.KaMRandomI(TELEPORT_RADIUS);
-      if (not TileIsDangerous(X, Y))
+      if (not TileIsDangerous(P, X, Y))
       and (Tiles[X][Y].Skill = sNone) then
       begin
         Teleport(P, X, Y);
