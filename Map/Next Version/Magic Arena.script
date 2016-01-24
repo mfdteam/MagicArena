@@ -10612,7 +10612,7 @@ end;
 
 procedure OnUnitDied(aID, aKiller: Integer);
 var
-  O, aX, aY: Integer;
+  O, aX, aY, X, Y: Integer;
 begin
   if aID < 0 then
     Exit;
@@ -10627,8 +10627,10 @@ begin
   aX := States.UnitPositionX(aID);
   aY := States.UnitPositionY(aID);
 
-  if TileOnBattlefield(aX, aY) then
-    Actions.MapTileSet(aX, aY, Tiles[aX][aY].TileType, Tiles[aX][aY].TileDirection);
+  if InRange(O, 0, 7) then
+    for X := MIN_X to MAX_X do
+    for Y := MIN_Y to MAX_Y do
+      Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
 
   if (InRange(O, 0, 7))
   and (InRange(aKiller, 9, 11)) then
