@@ -9697,6 +9697,7 @@ begin
       end;
       Players[P].HeroStunnedTime := States.GameTime + STUNNED_TIME;
       Players[P].HeroStunned := True;
+      Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
     end;
   end;
 
@@ -9718,6 +9719,7 @@ begin
       end;
       Players[P].HeroStunnedTime := States.GameTime + STUNNED_ANIMATION_TIME;
       Players[P].HeroStunned := True;
+      Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
     end;
   end;
 
@@ -9739,6 +9741,7 @@ begin
       end;
       Players[P].HeroStunnedTime := States.GameTime + SHOCK_TIME;
       Players[P].HeroStunned := True;
+      Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
     end;
   end;
 
@@ -9760,6 +9763,7 @@ begin
       end;
       Players[P].HeroStunnedTime := States.GameTime + DEAFENING_TIME;
       Players[P].HeroStunned := True;
+      Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
     end;
   end;
 
