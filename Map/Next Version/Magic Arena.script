@@ -10967,6 +10967,9 @@ begin
       begin
         Actions.GroupOrderHalt(Players[I1].Hero);
         Actions.GroupBlockOrders(Players[I1].Hero, True);
+        if TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0))) then
+          if States.GameTime mod 3 = 1 then
+            Actions.MapTileSet(States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)), STUN_ANIMATION, States.KaMRandomI(4));
       end;
 
       if States.GameTime = Players[I1].RebornTime then
