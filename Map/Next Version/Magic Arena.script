@@ -1749,6 +1749,7 @@ begin
       and (States.MapTileObject(PosX, PosY) <> WARRIOR_OBJECT5)
       and (States.MapTileObject(PosX, PosY) <> CIRCLE_FILL_OBJ)
       and (States.MapTileObject(PosX, PosY) <> KNIGHT_OBJECT4)
+      and (States.MapTileObject(PosX, PosY) <> VAGA_OBJECT8)
       and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6))
       and (fSkill <> sDeadlyFireworks) then
       begin
@@ -1790,6 +1791,7 @@ begin
         and (States.MapTileObject(PosX, PosY) <> WARRIOR_OBJECT5)
         and (States.MapTileObject(PosX, PosY) <> CIRCLE_FILL_OBJ)
         and (States.MapTileObject(PosX, PosY) <> KNIGHT_OBJECT4)
+        and (States.MapTileObject(PosX, PosY) <> VAGA_OBJECT8)
         and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6))
         and (not InRange(States.MapTileObject(PosX, PosY), SHIELD_OBJECT, SHIELD_OBJECT8)) then
         begin
@@ -1832,6 +1834,7 @@ begin
         and (States.MapTileObject(PosX, PosY) <> WARRIOR_OBJECT5)
         and (States.MapTileObject(PosX, PosY) <> CIRCLE_FILL_OBJ)
         and (States.MapTileObject(PosX, PosY) <> KNIGHT_OBJECT4)
+        and (States.MapTileObject(PosX, PosY) <> VAGA_OBJECT8)
         and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6)) then
           Actions.MapTileObjectSet(PosX, PosY, ShieldObjects[P]);
         if not aSaveCracking then
@@ -1864,6 +1867,7 @@ begin
         and (States.MapTileObject(PosX, PosY) <> WARRIOR_OBJECT5)
         and (States.MapTileObject(PosX, PosY) <> CIRCLE_FILL_OBJ)
         and (States.MapTileObject(PosX, PosY) <> KNIGHT_OBJECT4)
+        and (States.MapTileObject(PosX, PosY) <> VAGA_OBJECT8)
         and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6)) then
         begin
           Tree := (aObj = 255) and (InRange(States.MapTileObject(PosX, PosY), 149, 172));
