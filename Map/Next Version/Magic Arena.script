@@ -335,6 +335,7 @@ const
   REBORN_TIME = 50;
   BOWMAN_PRISON_AI_CHANCE = 0.9;
   EFFECT_CHECK_FACTOR = 7;
+  FENCE_TIME = 10;
 
 //Battlefield
 
@@ -11015,7 +11016,7 @@ begin
         for I := 1 to 8 do
         begin
           TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - I] := PikeObjects[I1];
-          ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - I] := States.GameTime + 51;
+          ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - I] := States.GameTime + 1 + FENCE_TIME;
           SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - I] := States.GameTime + 1;
 
           if (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]) = BARB_OBJECT3)
