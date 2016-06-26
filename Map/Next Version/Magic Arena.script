@@ -9224,14 +9224,15 @@ begin
         end;
 
         if TilesRoadLength[P] > 0 then
-          for I := 0 to TilesRoadLength[P] - 1 do
-            if SetTilesRoadTimes[P][I] > States.GameTime then
-              if (TilesRoadObjects[P][I] <> BOWMAN_ROCKET)
-              and (TilesRoadObjects[P][I] <> BOWMAN_OBJECT6) then
-              begin
-                SetTilesRoadTimes[P][I] := 0;
-                TilesRoadObjects[P][I] := SKILL_CANCEL_OBJ;
-              end;
+          if Players[P].HeroType <> 23 then
+            for I := 0 to TilesRoadLength[P] - 1 do
+              if SetTilesRoadTimes[P][I] > States.GameTime then
+                if (TilesRoadObjects[P][I] <> BOWMAN_ROCKET)
+                and (TilesRoadObjects[P][I] <> BOWMAN_OBJECT6) then
+                begin
+                  SetTilesRoadTimes[P][I] := 0;
+                  TilesRoadObjects[P][I] := SKILL_CANCEL_OBJ;
+                end;
 
         if TilesFieldLength[P] > 0 then
           for I := 0 to TilesFieldLength[P] - 1 do
@@ -9242,12 +9243,14 @@ begin
             end;
 
         if TilesWineLength[P] > 0 then
-          for I := 0 to TilesWineLength[P] - 1 do
-            if SetTilesWineTimes[P][I] > States.GameTime then
-            begin
-              SetTilesWineTimes[P][I] := 0;
-              TilesWineObjects[P][I] := SKILL_CANCEL_OBJ;
-            end;
+          if (Players[P].HeroType <> 25)
+          and (Players[P].LastUsedSkill <> sCrackingEarth) then
+            for I := 0 to TilesWineLength[P] - 1 do
+              if SetTilesWineTimes[P][I] > States.GameTime then
+              begin
+                SetTilesWineTimes[P][I] := 0;
+                TilesWineObjects[P][I] := SKILL_CANCEL_OBJ;
+              end;
 
         Players[P].TrackStartTime := 0;
         Players[P].TrackStopTime := 0;
@@ -10672,14 +10675,15 @@ begin
     end;
     
     if TilesRoadLength[O] > 0 then
-      for I := 0 to TilesRoadLength[O] - 1 do
-        if SetTilesRoadTimes[O][I] > States.GameTime then
-          if (TilesRoadObjects[O][I] <> BOWMAN_ROCKET)
-          and (TilesRoadObjects[O][I] <> BOWMAN_OBJECT6) then
-          begin
-            SetTilesRoadTimes[O][I] := 0;
-            TilesRoadObjects[O][I] := SKILL_CANCEL_OBJ;
-          end;
+      if Players[O].HeroType <> 23 then
+        for I := 0 to TilesRoadLength[O] - 1 do
+          if SetTilesRoadTimes[O][I] > States.GameTime then
+            if (TilesRoadObjects[O][I] <> BOWMAN_ROCKET)
+            and (TilesRoadObjects[O][I] <> BOWMAN_OBJECT6) then
+            begin
+              SetTilesRoadTimes[O][I] := 0;
+              TilesRoadObjects[O][I] := SKILL_CANCEL_OBJ;
+            end;
 
     if TilesFieldLength[O] > 0 then
       for I := 0 to TilesFieldLength[O] - 1 do
@@ -10690,12 +10694,14 @@ begin
         end;
 
     if TilesWineLength[O] > 0 then
-      for I := 0 to TilesWineLength[O] - 1 do
-        if SetTilesWineTimes[O][I] > States.GameTime then
-        begin
-          SetTilesWineTimes[O][I] := 0;
-          TilesWineObjects[O][I] := SKILL_CANCEL_OBJ;
-        end;
+      if (Players[O].HeroType <> 25)
+      and (Players[O].LastUsedSkill <> sCrackingEarth) then
+        for I := 0 to TilesWineLength[O] - 1 do
+          if SetTilesWineTimes[O][I] > States.GameTime then
+          begin
+            SetTilesWineTimes[O][I] := 0;
+            TilesWineObjects[O][I] := SKILL_CANCEL_OBJ;
+          end;
 
   end;
 
