@@ -1954,6 +1954,8 @@ begin
   and (Players[P].ReChoiceAllowed)
   and (not Players[P].MindStunned)
   and (not Players[P].CaptureMind)
+  and (not Players[P].HeroStunned)
+  and (not Players[P].Preparing)
   and (Players[P].HP > 0) then
     StartReChoice(P);
   if (HT = 21)
