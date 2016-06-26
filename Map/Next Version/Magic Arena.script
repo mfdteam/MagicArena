@@ -267,6 +267,7 @@ const
 //Player stats
 
   IMMORTAL_TIME = 60;
+  RECHOICE_IMMORTAL_TIME = 30;
   STUNNED_TIME = 50;
   STUNNED_ANIMATION_TIME = 15;
   IN_FEAR_TIME = 80;
@@ -1924,6 +1925,8 @@ begin
   Players[P].WerewolfTime := 0;
   Players[P].DDTime := 0;
   Players[P].ReChargeTime := 0;
+  Players[P].HeroImmortal := True;
+  Players[P].HeroImmortalTime := States.GameTime + RECHOICE_IMMORTAL_TIME;
 end;
 
 
