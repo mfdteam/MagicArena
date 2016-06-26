@@ -11205,8 +11205,11 @@ begin
       if States.GameTime = Players[I1].SpurtStartTime then
       begin
         StartSpurt(I1);
-        Players[I1].HeroImmortalTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
-        Players[I1].HeroImmortal := True;
+        if not Players[I1].HeroImmortal then
+        begin
+          Players[I1].HeroImmortalTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
+          Players[I1].HeroImmortal := True;
+        end;
         Players[I1].Preparing := True;
         Players[I1].PreparingTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
       end;
