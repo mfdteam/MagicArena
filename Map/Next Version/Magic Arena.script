@@ -2483,7 +2483,7 @@ begin
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 3;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 4;
 
-    Players[P].CrackingStartTime := States.GameTime + 6;
+    Players[P].CrackingStartTime := States.GameTime + 9;
 
     for I := 1 to 4 do
     begin
@@ -9639,8 +9639,8 @@ begin
     end;
 
     TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - 1] := BOWMAN_ROCKET2;
-    ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 45 + States.KaMRandomI(3);
-    SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 34;
+    ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] + 40;
+    SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] + 16;
 
     ClearRoadTilesArrayTime[Tiles[aX][aY].Owner] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9] + CLEAR_ARRAY_FACTOR + 2;
 
@@ -9911,8 +9911,8 @@ begin
             end;
 
             TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - 1] := BOWMAN_ROCKET2;
-            ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 45 + States.KaMRandomI(3);
-            SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 34;
+            ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] + 40;
+            SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] + 16;
 
             ClearRoadTilesArrayTime[Tiles[aX][aY].Owner] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9] + CLEAR_ARRAY_FACTOR + 2;
          
