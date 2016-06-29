@@ -506,6 +506,7 @@ type
     FireworkTime: Integer;
     FireworkX: Integer;
     FireworkY: Integer;
+    CrackingStartTime: Integer;
   end;
 
 
@@ -1074,6 +1075,7 @@ begin
       FireworkTime := 0;
       FireworkX := 0;
       FireworkY := 0;
+      CrackingStartTime := 0;
     end;
   end;
 
@@ -2480,6 +2482,8 @@ begin
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 3] := States.GameTime + 2;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 3;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 4;
+
+    Players[P].CrackingStartTime := States.GameTime + 6;
 
     for I := 1 to 4 do
     begin
@@ -9226,7 +9230,9 @@ begin
         end;
 
         if TilesRoadLength[P] > 0 then
-          if Players[P].HeroType <> 23 then
+          if (Players[P].HeroType <> 23)
+          or ((Players[P].HeroType = 23)
+          and (States.GameTime < Players[P].CrackingStartTime)) then
             for I := 0 to TilesRoadLength[P] - 1 do
               if SetTilesRoadTimes[P][I] > States.GameTime then
                 if (TilesRoadObjects[P][I] <> BOWMAN_ROCKET)
@@ -9245,8 +9251,11 @@ begin
             end;
 
         if TilesWineLength[P] > 0 then
-          if (Players[P].HeroType <> 25)
-          and (Players[P].LastUsedSkill <> sCrackingEarth) then
+          if ((Players[P].HeroType <> 25)
+          and (Players[P].LastUsedSkill <> sCrackingEarth))
+          or ((Players[P].HeroType = 25)
+          and (Players[P].LastUsedSkill = sCrackingEarth)
+          and (States.GameTime < Players[P].CrackingStartTime))  then
             for I := 0 to TilesWineLength[P] - 1 do
               if SetTilesWineTimes[P][I] > States.GameTime then
               begin
@@ -10677,7 +10686,9 @@ begin
     end;
     
     if TilesRoadLength[O] > 0 then
-      if Players[O].HeroType <> 23 then
+      if (Players[O].HeroType <> 23)
+      or ((Players[O].HeroType = 23)
+      and (States.GameTime < Players[O].CrackingStartTime)) then
         for I := 0 to TilesRoadLength[O] - 1 do
           if SetTilesRoadTimes[O][I] > States.GameTime then
             if (TilesRoadObjects[O][I] <> BOWMAN_ROCKET)
@@ -10696,8 +10707,11 @@ begin
         end;
 
     if TilesWineLength[O] > 0 then
-      if (Players[O].HeroType <> 25)
-      and (Players[O].LastUsedSkill <> sCrackingEarth) then
+      if ((Players[O].HeroType <> 25)
+      and (Players[O].LastUsedSkill <> sCrackingEarth))
+      or ((Players[O].HeroType = 25)
+      and (Players[O].LastUsedSkill = sCrackingEarth)
+      and (States.GameTime < Players[O].CrackingStartTime)) then
         for I := 0 to TilesWineLength[O] - 1 do
           if SetTilesWineTimes[O][I] > States.GameTime then
           begin
