@@ -10585,7 +10585,7 @@ begin
               if not CHANGE_RELIEF then
                 Exit;
 
-              for PosX := ConcentrationCircles[P][K][I].X - ConcentrationCircles[P][K][I].Radius to ConcentrationCircles[P][K][I].X + ConcentrationCircles[P][K][I].Radius do
+              {for PosX := ConcentrationCircles[P][K][I].X - ConcentrationCircles[P][K][I].Radius to ConcentrationCircles[P][K][I].X + ConcentrationCircles[P][K][I].Radius do
               for PosY := ConcentrationCircles[P][K][I].Y - ConcentrationCircles[P][K][I].Radius to ConcentrationCircles[P][K][I].Y + ConcentrationCircles[P][K][I].Radius do
               begin
                 aRelief := States.MapTileHeight(PosX, PosY) + States.KaMRandomI(RELIEF_CHANGE_FACTOR - 4) - States.KaMRandomI(RELIEF_CHANGE_FACTOR - 4);
@@ -10595,14 +10595,14 @@ begin
                   if (TileOnBattlefield(PosX, PosY))
                   and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
                     Actions.MapTileHeightSet(PosX, PosY, aRelief);
-              end;
+              end;}
 
-              if I = ConcentrationCirclesLength[P][K] - 1 then
+              {if I = ConcentrationCirclesLength[P][K] - 1 then
                 for PosX := ConcentrationCircles[P][K][I].X - ConcentrationCircles[P][K][I].Radius to ConcentrationCircles[P][K][I].X + ConcentrationCircles[P][K][I].Radius do
                 for PosY := ConcentrationCircles[P][K][I].Y - ConcentrationCircles[P][K][I].Radius to ConcentrationCircles[P][K][I].Y + ConcentrationCircles[P][K][I].Radius do
                   if (((ConcentrationCircles[P][K][I].X - PosX) * (ConcentrationCircles[P][K][I].X - PosX) + (ConcentrationCircles[P][K][I].Y - PosY) * (ConcentrationCircles[P][K][I].Y - PosY)) <= ConcentrationCircles[P][K][I].Radius * ConcentrationCircles[P][K][I].Radius) then
                     if TileOnBattlefield(PosX, PosY) then
-                      Actions.MapTileHeightSet(PosX, PosY, Tiles[PosX][PosY].Relief);
+                      Actions.MapTileHeightSet(PosX, PosY, Tiles[PosX][PosY].Relief);}
             end;
           end;
         end;
