@@ -10484,8 +10484,8 @@ begin
           begin
             if (States.GameTime = ViseCircles[P][K][I].AddTime) then
             begin
-              SetCircle(P, ViseCircles[P][K][I].X, ViseCircles[P][K][I].Y, VISE_RADIUS, 255, False, False, sViseOfDeath);
-              SetCircle(P, ViseCircles[P][K][I].X, ViseCircles[P][K][I].Y, ViseCircles[P][K][I].Radius, ViseCircles[P][K][I].Obj, False, False, sViseOfDeath);
+              SetCircle(P, ViseCircles[P][K][I].X, ViseCircles[P][K][I].Y, VISE_RADIUS, 255, True, False, sViseOfDeath);
+              SetCircle(P, ViseCircles[P][K][I].X, ViseCircles[P][K][I].Y, ViseCircles[P][K][I].Radius, ViseCircles[P][K][I].Obj, True, False, sViseOfDeath);
             end;
           end;
         end;
