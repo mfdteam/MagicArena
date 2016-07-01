@@ -262,7 +262,8 @@ const
   FEAR_ANIMATION = 220;
   STUN_ANIMATION = 16;
   MIND_ANIMATION = 9;
-  RECHARGE_ANIMATION = 0; 
+  RECHARGE_ANIMATION = 0;
+  ANIMATION_CHECK_RADIUS = 4;
 
 //Player stats
 
@@ -10664,9 +10665,10 @@ begin
   aY := States.UnitPositionY(aID);
 
   if InRange(O, 0, 7) then
-    for X := MIN_X to MAX_X do
-    for Y := MIN_Y to MAX_Y do
-      Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
+    for X := aX - ANIMATION_CHECK_RADIUS to aX + ANIMATION_CHECK_RADIUS do
+    for Y := aY - ANIMATION_CHECK_RADIUS to aY + ANIMATION_CHECK_RADIUS do
+      if TileOnBattlefield(X, Y) then
+        Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
 
   if (InRange(O, 0, 7))
   and (InRange(aKiller, 9, 11)) then
