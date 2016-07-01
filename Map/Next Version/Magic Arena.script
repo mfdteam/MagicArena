@@ -12457,23 +12457,29 @@ begin
     ZombieSummon(P, aX + States.KaMRandomI(5) - States.KaMRandomI(5), aY + States.KaMRandomI(5) - States.KaMRandomI(5));
   end;
 
-  if (Players[I].WineSkillDelay = 0)
+  if (Players[P].WineSkillDelay = 0)
   and (Players[P].Hero > 0) then
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    O := States.KaMRandomI(8);
-    if (Players[O].Hero > 0) then
-      if (Abs(aX - States.UnitPositionX(States.GroupMember(Players[O].Hero, 0))) <= IN_FEAR_RADIUS)
-      and (Abs(aY - States.UnitPositionY(States.GroupMember(Players[O].Hero, 0))) <= IN_FEAR_RADIUS)
-      and (CanUseWineFieldSkill(X, Y))
-      and (P <> O)
-      and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-      and (not Players[O].HeroInFear) then
+    for X := aX - IN_FEAR_RADIUS to aX + IN_FEAR_RADIUS do
+    for Y := aY - IN_FEAR_RADIUS to aY + IN_FEAR_RADIUS do
+    begin
+      U := States.UnitAt(X, Y);
+      if U > 0 then
       begin
-        Players[O].HeroInFear := True;
-        Players[O].HeroInFearTime := States.GameTime + IN_FEAR_TIME;
+        O := States.UnitOwner(U);
+        if (P <> O)
+        and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
+        begin
+          if InRange(O, 0, 7) then
+            Fear(P, X, Y);
+          if InRange(O, 10, 11) then
+            if States.KaMRandom < 0.25 then
+              Fear(P, X, Y);
+        end;
       end;
+    end;
   end;
 
   AIWalk(P);
