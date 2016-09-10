@@ -8110,7 +8110,7 @@ begin
           or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
           or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
           or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
-          ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
+          ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME + 2;
 
         M[P] := O;
         M2[O] := P;
@@ -11358,6 +11358,13 @@ begin
         Players[I1].TempStolenSkillName := Players[I1].StolenSkillName;
         Players[I1].TempReCharge := Players[I1].ReCharge;
         Players[I1].TempReChargeTime := Players[I1].ReChargeTime;
+
+        Players[I1].MindX := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
+        Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
+        Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
+        Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
+        Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+        Players[I1].MindDir2 := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
 
         Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
