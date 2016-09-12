@@ -3661,7 +3661,7 @@ begin
       Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
-    ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 13] + CLEAR_ARRAY_FACTOR + 2;
+    ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 13] + CLEAR_ARRAY_FACTOR + 3;
 
   end;
 
@@ -11492,6 +11492,15 @@ begin
           Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
           Actions.GroupKillAll(Players[M[I1]].Hero, True);
           Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
+
+          Actions.CinematicStart(M[I1]);
+          Actions.CinematicPanTo(M[I1], Players[I1].MindX, Players[I1].MindY, 0);
+          Actions.CinematicEnd(M[I1]);
+
+          Actions.CinematicStart(I1);
+          Actions.CinematicPanTo(I1, Players[I1].MindX2, Players[I1].MindY2, 0);
+          Actions.CinematicEnd(I1);
+
           Players[M[I1]].RoadSkillDelay := Players[I1].RoadSkillDelay;
           Players[M[I1]].FieldSkillDelay := Players[I1].FieldSkillDelay;
           Players[M[I1]].WineSkillDelay := Players[I1].WineSkillDelay;
