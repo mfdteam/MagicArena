@@ -1113,18 +1113,6 @@ begin
 end;
 
 
-function RuneType: Integer;
-begin
-  case States.KaMRandomI(15) of
-    0..2:    Result := RUNE_REGEN_OBJ;
-    3..5:    Result := RUNE_DOUBLE_OBJ;
-    6..8:    Result := RUNE_ILLUSION_OBJ;
-    9..11:   Result := RUNE_IMMORTAL_OBJ;
-    12..14:  Result := RUNE_RECHARGE_OBJ;
-  end;
-end;
-
-
 function TileOnRuneSpawn(X, Y: Integer): Boolean;
 begin
   if X <= 0 then
@@ -1135,6 +1123,33 @@ begin
   Result := (X = RUNE_X)
   and (Y = RUNE_Y);
 
+end;
+
+
+function TileOnBattlefield_2(X, Y: Integer): Boolean;
+begin
+  if X <= 0 then
+    Exit;
+  if Y <= 0 then
+    Exit;
+
+  Result := TileOnBattlefield(X, Y);
+
+  if TileOnRuneSpawn(X, Y) then
+    Result := Result and RuneTaken;
+
+end;
+
+
+function RuneType: Integer;
+begin
+  case States.KaMRandomI(15) of
+    0..2:    Result := RUNE_REGEN_OBJ;
+    3..5:    Result := RUNE_DOUBLE_OBJ;
+    6..8:    Result := RUNE_ILLUSION_OBJ;
+    9..11:   Result := RUNE_IMMORTAL_OBJ;
+    12..14:  Result := RUNE_RECHARGE_OBJ;
+  end;
 end;
 
 
@@ -1180,14 +1195,13 @@ begin
     RUNE_REGEN_OBJ:
       if (not Players[P].MindStunned)
       and (not Players[P].CaptureMind) then
-        if States.GameTime > Players[P].RegenDelay then
-          if Players[P].HP < MAX_HP then
-          begin
-            Players[P].HP := Players[P].HP + 1;
-            Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
-            RuneTaken := True;
-            Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
-          end;
+        if States.GameTime > Players[P].RegenDelay then          
+        begin
+          Players[P].HP := Players[P].HP + 1;
+          Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
+          RuneTaken := True;
+          Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+        end;
 
     RUNE_DOUBLE_OBJ:
     begin
@@ -1743,7 +1757,7 @@ begin
   for PosY := Y1 to Y2 do
   begin
     if (((X - PosX) * (X - PosX) + (Y - PosY) * (Y - PosY)) <= R * R) then
-      if TileOnBattlefield(PosX, PosY)
+      if TileOnBattlefield_2(PosX, PosY)
       and (PosX > 0)
       and (PosY > 0)
       and (States.MapTileObject(PosX, PosY) <> BARB_OBJECT3)
@@ -1785,7 +1799,7 @@ begin
     for PosY := Y1 to Y2 do
     begin
       if (((X - PosX) * (X - PosX) + (Y - PosY) * (Y - PosY)) <= R * R) then
-        if TileOnBattlefield(PosX, PosY)
+        if TileOnBattlefield_2(PosX, PosY)
         and (PosX > 0)
         and (PosY > 0)
         and (States.MapTileObject(PosX, PosY) <> BARB_OBJECT3)
@@ -1828,7 +1842,7 @@ begin
     for PosY := Y1 to Y2 do
     begin
       if (((X - PosX) * (X - PosX) + (Y - PosY) * (Y - PosY)) <= ((R - 1) * (R - 1))) then
-        if TileOnBattlefield(PosX, PosY)
+        if TileOnBattlefield_2(PosX, PosY)
         and (PosX > 0)
         and (PosY > 0)
         and (States.MapTileObject(PosX, PosY) <> BARB_OBJECT3)
@@ -1861,7 +1875,7 @@ begin
     for PosY := Y1 to Y2 do
     begin
       if (((X - PosX) * (X - PosX) + (Y - PosY) * (Y - PosY)) <= ((R - 1) * (R - 1))) then
-        if TileOnBattlefield(PosX, PosY)
+        if TileOnBattlefield_2(PosX, PosY)
         and (PosX > 0)
         and (PosY > 0)
         and (States.MapTileObject(PosX, PosY) <> BARB_OBJECT3)
@@ -6809,13 +6823,13 @@ begin
     if I mod POWER_RADIUS = 1 then
       PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - I].Obj := 255;
 
-  TimeToClearPowerWithinArray[P][PowerWithinCirclesCounter[P]] := PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - 1].AddTime + CLEAR_ARRAY_FACTOR + 10;
-
   if Players[P].PowerWithinCircleCycles = POWER_CYCLES then
   begin
     Players[P].PowerWithinCircleCycles := 0;
     Players[P].PowerWithinCircleTime := 0;
   end;
+
+  TimeToClearPowerWithinArray[P][PowerWithinCirclesCounter[P]] := PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - 1].AddTime + CLEAR_ARRAY_FACTOR + 10;
 
 end;
 
@@ -9536,58 +9550,55 @@ begin
     if (not Players[P].MindStunned)
     and (not Players[P].CaptureMind) then
       if States.GameTime > Players[P].RegenDelay then
-        if Players[P].HP < MAX_HP then
+      begin
+        Players[P].HP := Players[P].HP + 1;
+        Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
+        if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
-          Players[P].HP := Players[P].HP + 1;
-          Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
-          if InRange(Tiles[aX][aY].Owner, 0, 7) then
+          if SkillName(Tiles[aX][aY].Skill) <> '' then
           begin
-            if SkillName(Tiles[aX][aY].Skill) <> '' then
-            begin
-              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
-            end;
+            Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+            Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
           end;
-          if TileOnRuneSpawn(aX, aY) then
-            RuneTaken := True;
-          Actions.MapTileObjectSet(aX, aY, 255);
         end;
+        if TileOnRuneSpawn(aX, aY) then
+          RuneTaken := True;
+        Actions.MapTileObjectSet(aX, aY, 255);
+      end;
     if Players[P].CaptureMind then
       if States.GameTime > Players[M[P]].RegenDelay then
-        if Players[M[P]].HP < MAX_HP then
+      begin
+        Players[M[P]].HP := Players[M[P]].HP + 1;
+        Players[M[P]].RegenDelay := States.GameTime + REGEN_DELAY;
+        if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
-          Players[M[P]].HP := Players[M[P]].HP + 1;
-          Players[M[P]].RegenDelay := States.GameTime + REGEN_DELAY;
-          if InRange(Tiles[aX][aY].Owner, 0, 7) then
+          if SkillName(Tiles[aX][aY].Skill) <> '' then
           begin
-            if SkillName(Tiles[aX][aY].Skill) <> '' then
-            begin
-              Players[M[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[M[P]].PlayerStatus := Players[M[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
-            end;
+            Players[M[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+            Players[M[P]].PlayerStatus := Players[M[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
           end;
-          if TileOnRuneSpawn(aX, aY) then
-            RuneTaken := True;
-          Actions.MapTileObjectSet(aX, aY, 255);
         end;
+        if TileOnRuneSpawn(aX, aY) then
+          RuneTaken := True;
+        Actions.MapTileObjectSet(aX, aY, 255);
+      end;
     if Players[P].MindStunned then
       if States.GameTime > Players[M2[P]].RegenDelay then
-        if Players[M2[P]].HP < MAX_HP then
+      begin
+        Players[M2[P]].HP := Players[M2[P]].HP + 1;
+        Players[M2[P]].RegenDelay := States.GameTime + REGEN_DELAY;
+        if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
-          Players[M2[P]].HP := Players[M2[P]].HP + 1;
-          Players[M2[P]].RegenDelay := States.GameTime + REGEN_DELAY;
-          if InRange(Tiles[aX][aY].Owner, 0, 7) then
+          if SkillName(Tiles[aX][aY].Skill) <> '' then
           begin
-            if SkillName(Tiles[aX][aY].Skill) <> '' then
-            begin
-              Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
-            end;
+            Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+            Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
           end;
-          if TileOnRuneSpawn(aX, aY) then
-            RuneTaken := True;
-          Actions.MapTileObjectSet(aX, aY, 255);
         end;
+        if TileOnRuneSpawn(aX, aY) then
+          RuneTaken := True;
+        Actions.MapTileObjectSet(aX, aY, 255);
+      end;
   end;
 
   if aObj = BOWMAN_ROCKET then
@@ -10970,6 +10981,9 @@ begin
       if Players[I1].HP < 0 then
         Players[I1].HP := 0;
 
+      if Players[I1].HP > MAX_HP then
+        Players[I1].HP := MAX_HP;
+
       if Players[I1].HP = 0 then
       begin
         Players[I1].HeroReborn := False;
@@ -11594,6 +11608,14 @@ begin
       and (TilesRoadObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
 
+        if (TileOnRuneSpawn(TilesRoadX[P][K], TilesRoadY[P][K]))
+        and (not RuneTaken)
+        and (TilesRoadObjects[P][K] <> BARB_OBJECT3) then
+        begin
+          TilesRoadObjects[P][K] := RuneObject;
+          ClearTilesRoadTimes[P][K] := 0;
+        end;
+
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (TilesRoadObjects[P][K] = BARB_OBJECT3) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], BARB_OBJECT3);
@@ -11668,6 +11690,14 @@ begin
       and (TilesFieldObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
 
+        if (TileOnRuneSpawn(TilesFieldX[P][K], TilesFieldY[P][K]))
+        and (not RuneTaken)
+        and (TilesFieldObjects[P][K] <> BARB_OBJECT3) then
+        begin
+          TilesFieldObjects[P][K] := RuneObject;
+          ClearTilesFieldTimes[P][K] := 0;
+        end;
+
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (TilesFieldObjects[P][K] = BOWMAN_OBJECT5) then
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], BOWMAN_OBJECT5);
@@ -11738,6 +11768,14 @@ begin
       if TileOnBattlefield(TilesWineX[P][K], TilesWineY[P][K])
       and (TilesWineObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
+
+        if (TileOnRuneSpawn(TilesWineX[P][K], TilesWineY[P][K]))
+        and (not RuneTaken)
+        and (TilesWineObjects[P][K] <> BARB_OBJECT3) then
+        begin
+          TilesWineObjects[P][K] := RuneObject;
+          ClearTilesWineTimes[P][K] := 0;
+        end;
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (TilesWineObjects[P][K] = BOWMAN_OBJECT5) then
