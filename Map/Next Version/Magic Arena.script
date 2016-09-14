@@ -22,7 +22,7 @@ const
 
   PIKE_ROAD_DELAY = 150;
   PIKE_FIELD_DELAY = 170;
-  PIKE_WINE_DELAY = 280;
+  PIKE_WINE_DELAY = 300;
 
   BOWMAN_ROAD_DELAY = 120;
   BOWMAN_FIELD_DELAY = 140;
@@ -509,9 +509,6 @@ type
     FireworkX: Integer;
     FireworkY: Integer;
     CrackingStartTime: Integer;
-    Tower: Integer;
-    Recruit: Integer;
-    RecruitKillTime: Integer;
   end;
 
 
@@ -1081,9 +1078,6 @@ begin
       FireworkX := 0;
       FireworkY := 0;
       CrackingStartTime := 0;
-      Tower := -1;
-      Recruit := -1;
-      RecruitKillTime := 0;
     end;
   end;
 
@@ -1582,6 +1576,7 @@ begin
     sViseOfDeath: Result := '<$13>';
     sSacrificialTeleport: Result := '<$21>';
     sConcentration: Result := '<$29>';
+    sTower: Result := '<$29>';
 
     sRocket: Result := '<$10>';
     sPrison: Result := '<$18>';
@@ -4108,7 +4103,7 @@ end;
 
 procedure InfernalTower(P, X, Y: Integer);
 var
-  X2, Y2: Integer;
+  X2, Y2, Recruit, Tower: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4131,13 +4126,15 @@ begin
     if (Abs(X2 - X) <= TOWER_RADIUS)
     and (Abs(Y2 - Y) <= TOWER_RADIUS) then
     begin
-      Players[P].Tower := Actions.GiveHouse(Players[P].ZombiePlayer, 17, X, Y);
-      if Players[P].Tower > 0 then
+      Tower := Actions.GiveHouse(Players[P].ZombiePlayer, 17, X, Y);
+      if Tower > 0 then
       begin
-        Players[P].Recruit := Actions.GiveUnit(Players[P].ZombiePlayer, 13, X + States.KaMRandomI(3) - States.KaMRandomI(3), Y + 2 + States.KaMRandomI(2), States.KaMRandomI(8));
-        Players[P].RecruitKillTime := States.GameTime + 168;
-        Actions.HouseAddWaresTo(Players[P].Tower, 1, 5);
-        Actions.HouseAddDamage(Players[P].Tower, 200);
+        Recruit := Actions.GiveUnit(Players[P].ZombiePlayer, 13, X + States.KaMRandomI(3) - States.KaMRandomI(3), Y + 2 + States.KaMRandomI(2), States.KaMRandomI(8));
+        SetLength(Zombies, Length(Zombies) + 1);
+        Zombies[Length(Zombies) - 1].Owner := P;
+        Zombies[Length(Zombies) - 1].ID := Recruit;
+        Actions.HouseAddWaresTo(Tower, 1, 5);
+        Actions.HouseAddDamage(Tower, 200);
         Players[P].WineSkillDelay := Round(PIKE_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
         Players[P].LastUsedSkill := sTower;
       end;
@@ -8649,6 +8646,7 @@ begin
           sViseOfDeath: Players[P].StolenSkillName := '<$13>';
           sSacrificialTeleport: Players[P].StolenSkillName := '<$21>';
           sConcentration: Players[P].StolenSkillName := '<$29>';
+          sTower: Players[P].StolenSkillName := '<$29>';
 
           sRocket: Players[P].StolenSkillName := '<$10>';
           sPrison: Players[P].StolenSkillName := '<$18>';
@@ -8886,6 +8884,10 @@ begin
                             end;
 
       sConcentration: Concentration(P, X, Y);
+
+      sTower: if (Abs(X - X2) <= TOWER_RADIUS)
+              and (Abs(Y - Y2) <= TOWER_RADIUS) then
+                InfernalTower(P, X, Y);
 
       sRocket: if (X <> X2)
                and (Y <> Y2)
@@ -9192,9 +9194,32 @@ begin
 end;
 
 
+procedure OnHouseDestroyed(H, D: Integer);
+var
+  Units: array of Integer;
+  O: Integer;
+begin
+  O := States.HouseOwner(H);
+  Units := States.PlayerGetAllUnits(O);
+  if Length(Units) > 0 then
+    for I := 0 to Length(Units) - 1 do
+      if (States.UnitType(Units[I]) = 13)
+      and (H = States.UnitHome(Units[I])) then
+        Actions.UnitKill(Units[I], True);
+end;
+
+
 procedure OnHouseAfterDestroyed(T, O, X, Y: Integer);
+var
+  X1, Y1: Integer;
 begin
   Actions.MapTileObjectSet(X, Y, 255);
+  for X1 := X - 1 to X do
+  for Y1 := Y - 1 to Y do
+  begin
+    Actions.GiveRoad(10, X1, Y1);
+    Actions.RemoveRoad(X1, Y1);
+  end;
 end;
 
 
@@ -10893,6 +10918,11 @@ begin
       Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
       Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
       Players[LastAttacker].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+      if LastAttackerUnitType = 13 then
+      begin
+        Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$105> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
+        Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$106> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
+      end;
       if LastAttackerUnitType = 14 then
       begin
         Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$75> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
@@ -11026,7 +11056,24 @@ end;
 procedure CheckStatus;
 var
   I1, aX, aY: Integer;
+  TowersLeft, TowersRight: array of Integer;
 begin
+
+  if States.GameTime mod 10 = 0 then
+  begin
+    TowersLeft := States.PlayerGetAllHouses(10);
+    TowersRight := States.PlayerGetAllHouses(11);
+
+      if Length(TowersLeft) > 0 then
+        for I := 0 to Length(TowersLeft) - 1 do
+          Actions.HouseAddDamage(TowersLeft[I], 3);
+
+      if Length(TowersRight) > 0 then
+        for K := 0 to Length(TowersRight) - 1 do
+          Actions.HouseAddDamage(TowersRight[K], 3);
+
+  end;
+
   for I1 := 0 to 7 do
     if Players[I1].Hero > 0 then
     begin 
@@ -11080,14 +11127,6 @@ begin
           if States.GameTime mod 3 = 1 then
             Actions.MapTileSet(States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)), STUN_ANIMATION, States.KaMRandomI(4));
       end;
-
-      if Players[I1].Tower > 0 then
-        if States.GameTime mod 10 = 0 then
-          Actions.HouseAddDamage(Players[I1].Tower, 3);
-
-      if States.GameTime = Players[I1].RecruitKillTime then
-        if Players[I1].Recruit > 0 then
-          Actions.UnitKill(Players[I1].Recruit, True);
 
       if States.GameTime = Players[I1].RebornTime then
       begin
