@@ -2370,19 +2370,11 @@ begin
     if (Abs(X2 - X) <= MILIZOMBIE_RADIUS)
     and (Abs(Y2 - Y) <= MILIZOMBIE_RADIUS) then
     begin
-      Zombie := Actions.GiveGroup(Players[P].ZombiePlayer, 14, X, Y, States.KaMRandomI(8), 1, 1);
+      Zombie := Actions.GiveGroup(Players[P].ZombiePlayer, 14 + 9 * Byte(Players[P].DD), X, Y, States.KaMRandomI(8), 1, 1);
       SetLength(Zombies, Length(Zombies) + 1);
       Zombies[Length(Zombies) - 1].Owner := P;
       Zombies[Length(Zombies) - 1].ID := States.GroupMember(Zombie, 0);
       Actions.GroupHungerSet(Zombie, RUNE_ZOMBIE_LIFE);
-      if Players[P].DD then
-      begin
-        Zombie := Actions.GiveGroup(Players[P].ZombiePlayer, 14, X, Y + 1, States.KaMRandomI(8), 1, 1);
-        SetLength(Zombies, Length(Zombies) + 1);
-        Zombies[Length(Zombies) - 1].Owner := P;
-        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Zombie, 0);
-        Actions.GroupHungerSet(Zombie, RUNE_ZOMBIE_LIFE);
-      end;
       Players[P].FieldSkillDelay := Round(SWORD_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Players[P].LastUsedSkill := sZombieSummon;
     end;
