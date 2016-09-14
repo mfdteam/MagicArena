@@ -11064,11 +11064,19 @@ begin
 
       if Length(TowersLeft) > 0 then
         for I := 0 to Length(TowersLeft) - 1 do
+        begin
+          if States.HouseDamage(TowersLeft[I]) = 239 then
+            Actions.HouseTakeWaresFrom(TowersLeft[I], 1, States.HouseResourceAmount(TowersLeft[I], 1));
           Actions.HouseAddDamage(TowersLeft[I], 3);
+        end;
 
       if Length(TowersRight) > 0 then
         for K := 0 to Length(TowersRight) - 1 do
+        begin
+          if States.HouseDamage(TowersRight[K]) = 239 then
+            Actions.HouseTakeWaresFrom(TowersRight[K], 1, States.HouseResourceAmount(TowersRight[K], 1));
           Actions.HouseAddDamage(TowersRight[K], 3);
+        end;
 
   end;
 
