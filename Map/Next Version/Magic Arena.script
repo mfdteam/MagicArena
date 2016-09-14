@@ -10922,6 +10922,12 @@ begin
       begin
         Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$105> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
         Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$106> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
+        if (Players[O].HP > 1)
+        and (Players[LastAttacker].DD) then
+        begin
+          Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
+          Players[O].HP := Players[O].HP - 1;
+        end;
       end;
       if LastAttackerUnitType = 14 then
       begin
