@@ -339,6 +339,7 @@ const
   BOWMAN_PRISON_AI_CHANCE = 0.9;
   EFFECT_CHECK_FACTOR = 7;
   FENCE_TIME = 10;
+  RECRUIT_HUNGER = 115;
 
 //Battlefield
 
@@ -4121,10 +4122,11 @@ begin
       Tower := Actions.GiveHouse(Players[P].ZombiePlayer, 17, X, Y);
       if Tower > 0 then
       begin
-        Recruit := Actions.GiveUnit(Players[P].ZombiePlayer, 13, X + States.KaMRandomI(3) - States.KaMRandomI(3), Y + 2 + States.KaMRandomI(2), States.KaMRandomI(8));
+        Recruit := Actions.GiveUnit(Players[P].ZombiePlayer, 13, X, Y + 2, States.KaMRandomI(8));
         SetLength(Zombies, Length(Zombies) + 1);
         Zombies[Length(Zombies) - 1].Owner := P;
         Zombies[Length(Zombies) - 1].ID := Recruit;
+        Actions.UnitHungerSet(Recruit, RECRUIT_HUNGER + States.UnitLowHunger);
         Actions.HouseAddWaresTo(Tower, 1, 5);
         Actions.HouseAddDamage(Tower, 200);
         Players[P].WineSkillDelay := Round(PIKE_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
@@ -11064,19 +11066,11 @@ begin
 
       if Length(TowersLeft) > 0 then
         for I := 0 to Length(TowersLeft) - 1 do
-        begin
-          if States.HouseDamage(TowersLeft[I]) = 239 then
-            Actions.HouseTakeWaresFrom(TowersLeft[I], 1, States.HouseResourceAmount(TowersLeft[I], 1));
           Actions.HouseAddDamage(TowersLeft[I], 3);
-        end;
 
       if Length(TowersRight) > 0 then
         for K := 0 to Length(TowersRight) - 1 do
-        begin
-          if States.HouseDamage(TowersRight[K]) = 239 then
-            Actions.HouseTakeWaresFrom(TowersRight[K], 1, States.HouseResourceAmount(TowersRight[K], 1));
           Actions.HouseAddDamage(TowersRight[K], 3);
-        end;
 
   end;
 
