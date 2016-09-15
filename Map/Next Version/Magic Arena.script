@@ -4122,7 +4122,7 @@ begin
       Tower := Actions.GiveHouse(Players[P].ZombiePlayer, 17, X, Y);
       if Tower > 0 then
       begin
-        Recruit := Actions.GiveUnit(Players[P].ZombiePlayer, 13, X, Y + 2, States.KaMRandomI(8));
+        Recruit := Actions.GiveUnit(Players[P].ZombiePlayer, 13, X, Y + 3, States.KaMRandomI(8));
         SetLength(Zombies, Length(Zombies) + 1);
         Zombies[Length(Zombies) - 1].Owner := P;
         Zombies[Length(Zombies) - 1].ID := Recruit;
@@ -9673,7 +9673,8 @@ begin
       end;
   end;
 
-  if aObj = BOWMAN_ROCKET then
+  if (aObj = BOWMAN_ROCKET)
+  and (not Players[P].HeroImmortal) then
   begin
     ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := 0;
     TilesRoadLength[Tiles[aX][aY].Owner] := TilesRoadLength[Tiles[aX][aY].Owner] + 9;
@@ -9727,7 +9728,7 @@ begin
     ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 45 + States.KaMRandomI(3);
     SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 15;
 
-    ClearRoadTilesArrayTime[Tiles[aX][aY].Owner] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9] + CLEAR_ARRAY_FACTOR + 2;
+    ClearRoadTilesArrayTime[Tiles[aX][aY].Owner] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9] + CLEAR_ARRAY_FACTOR + 3;
 
   end;
 
@@ -11074,6 +11075,10 @@ begin
 
   end;
 
+  if (RuneTaken)
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RuneObject) then
+    Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+
   for I1 := 0 to 7 do
     if Players[I1].Hero > 0 then
     begin 
@@ -11714,7 +11719,7 @@ begin
         and (not RuneTaken)
         and (TilesRoadObjects[P][K] <> BARB_OBJECT3) then
         begin
-          TilesRoadObjects[P][K] := RuneObject;
+          TilesRoadObjects[P][K] := SKILL_CANCEL_OBJ;
           ClearTilesRoadTimes[P][K] := 0;
         end;
 
@@ -11796,7 +11801,7 @@ begin
         and (not RuneTaken)
         and (TilesFieldObjects[P][K] <> BARB_OBJECT3) then
         begin
-          TilesFieldObjects[P][K] := RuneObject;
+          TilesFieldObjects[P][K] := SKILL_CANCEL_OBJ;
           ClearTilesFieldTimes[P][K] := 0;
         end;
 
@@ -11875,7 +11880,7 @@ begin
         and (not RuneTaken)
         and (TilesWineObjects[P][K] <> BARB_OBJECT3) then
         begin
-          TilesWineObjects[P][K] := RuneObject;
+          TilesWineObjects[P][K] := SKILL_CANCEL_OBJ;
           ClearTilesWineTimes[P][K] := 0;
         end;
 
