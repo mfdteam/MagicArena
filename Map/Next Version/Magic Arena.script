@@ -718,7 +718,7 @@ end;
 
 procedure AIHeroChoice(P: Integer);
 begin
-  case States.KaMRandomI(7) of
+  case States.KaMRandomI(8) of
     0: Players[P].HeroType := 16;
     1: Players[P].HeroType := 23;
     2: Players[P].HeroType := 18;
@@ -726,6 +726,7 @@ begin
     4: Players[P].HeroType := 26;
     5: Players[P].HeroType := 17;
     6: Players[P].HeroType := 22;
+    7: Players[P].HeroType := 20;
   end;
 
   Players[P].TempHeroType := Players[P].HeroType;
@@ -1221,6 +1222,7 @@ begin
         ZomboHero[P][I] := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
         SetLength(Zombies, Length(Zombies) + 1);
         Zombies[Length(Zombies) - 1].Owner := P;
+        Zombies[Length(Zombies) - 1].ZombieType := 3;
         Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
         Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
         RuneTaken := True;
@@ -13135,40 +13137,27 @@ begin
       end;
     end;
 
-  if (States.KaMRandomI(10) > 7)
-  and (Players[P].WineSkillDelay = 0)
-  and (Players[P].Hero > 0) then
-    if States.GroupMember(Players[P].Hero, 0) > 0 then
+  if (Players[P].WineSkillDelay = 0)
+  and (Players[P].Hero > 0)
+  and (States.KaMRandom > 0.25) then
+  begin
+    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    for X := aX - TOWER_RADIUS to aX + TOWER_RADIUS do
+    for Y := aY - TOWER_RADIUS to aY + TOWER_RADIUS do
     begin
-      A := 0;
-      E := 0;
-      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - CONCENTRATION_RADIUS + 1) to (aX + CONCENTRATION_RADIUS - 1) do
-      for Y := (aY - CONCENTRATION_RADIUS + 1) to (aY + CONCENTRATION_RADIUS - 1) do
+      U := States.UnitAt(X, Y);
+      if U > 0 then
       begin
-        U := States.UnitAt(X, Y);
-        if (U > 0)
-        and (not InRange(X, aX - 1, aX + 1))
-        and (not InRange(Y, aY - 1, aY + 1)) then
-        begin
-          O := States.UnitOwner(U);
-          if Players[P].PlayersTeam <> Players[O].PlayersTeam then
-            E := E + 1;
-          if Players[P].PlayersTeam = Players[O].PlayersTeam then
-            A := A + 1;
-          if (P <> O)
-          and (CanUseSkillAgainstUnit(P, U))
-          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          and (States.KaMRandom > 0.1)
-          and (E > A) then 
-          begin
-            Concentration(P, aX, aY);
-            Exit;
-          end;
-        end;
+        O := States.UnitOwner(U);
+        if (P <> O)
+        and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
+          if InRange(O, 0, 7) then
+            InfernalTower(P, X + States.KaMRandomI(3) - States.KaMRandomI(3), Y + States.KaMRandomI(3) - States.KaMRandomI(3));
       end;
     end;
+  end;
+
 
   AIWalk(P);
 
@@ -14132,10 +14121,10 @@ begin
           if AICanUseSkills(I, 18) then
             AICrossbow(I);
 
-      {if Players[I].Hero > 0 then
+      if Players[I].Hero > 0 then
         if States.GroupMember(Players[I].Hero, 0) > 0 then
           if AICanUseSkills(I, 20) then
-            AIPikeman(I);}
+            AIPikeman(I);
 
       if Players[I].Hero > 0 then
         if States.GroupMember(Players[I].Hero, 0) > 0 then
