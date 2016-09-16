@@ -518,6 +518,7 @@ type
     Owner: Integer;
     ID: Integer;
     Hunger: Integer;
+    ZombieType: Integer;
   end;
 
 
@@ -582,7 +583,7 @@ var
   OldX, OldY, NewX, NewY: array[0..11] of Integer;
   PlayersLeft, SortedPlayersLeft, PlayersRight, SortedPlayersRight: array of Integer;
   Zombies: array of aZombie;
-  LastAttacker, LastAttackerUnitType: Integer;
+  LastAttacker, LastAttackerUnitType, LastAttackerZombieType: Integer;
   FirstBlood: Boolean;
   RuneTaken: Boolean;
   RuneObject: Integer;
@@ -822,6 +823,7 @@ begin
 
   LastAttacker := -1;
   LastAttackerUnitType := -1;
+  LastAttackerZombieType := -1;
 
   PikeObjects[0] := PIKE_OBJECT;
   PikeObjects[1] := PIKE_OBJECT2;
@@ -2244,7 +2246,7 @@ begin
     if Length(Zombies) > 0 then
       for K := 0 to Length(Zombies) - 1 do
         if (Zombies[K].Owner = P)
-        and (States.UnitType(Zombies[K].ID) = 14) then
+        and (InRange(Zombies[K].ZombieType, 1, 2)) then
           ZombieStun(P, Zombies[K].ID);
 
     case Direction of
@@ -2375,6 +2377,7 @@ begin
       SetLength(Zombies, Length(Zombies) + 1);
       Zombies[Length(Zombies) - 1].Owner := P;
       Zombies[Length(Zombies) - 1].ID := States.GroupMember(Zombie, 0);
+      Zombies[Length(Zombies) - 1].ZombieType := 1 + Byte(Players[P].DD);
       Actions.GroupHungerSet(Zombie, RUNE_ZOMBIE_LIFE);
       Players[P].FieldSkillDelay := Round(SWORD_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Players[P].LastUsedSkill := sZombieSummon;
@@ -4126,6 +4129,7 @@ begin
         SetLength(Zombies, Length(Zombies) + 1);
         Zombies[Length(Zombies) - 1].Owner := P;
         Zombies[Length(Zombies) - 1].ID := Recruit;
+        Zombies[Length(Zombies) - 1].ZombieType := 0;
         Actions.UnitHungerSet(Recruit, RECRUIT_HUNGER + States.UnitLowHunger);
         Actions.HouseAddWaresTo(Tower, 1, 5);
         Actions.HouseAddDamage(Tower, 200);
@@ -9772,6 +9776,7 @@ begin
       SetLength(Zombies, Length(Zombies) + 1);
       Zombies[Length(Zombies) - 1].Owner := P;
       Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
+      Zombies[Length(Zombies) - 1].ZombieType := 3;
       Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
       if TileOnRuneSpawn(aX, aY) then
         RuneTaken := True;
@@ -10580,7 +10585,7 @@ end;
 
 procedure CheckGravityCircles(P: Integer);
 var
-  X, Y, O, U, G, UT, CC, OT, HT: Integer;
+  X, Y, O, U, G, UT, CC, OT, HT, ZT: Integer;
 begin
   if States.PlayerEnabled(P) then
     if GravityCirclesLength[P] > 0 then
@@ -10629,6 +10634,7 @@ begin
                         begin
                           OT := Zombies[I].Owner;
                           HT := States.UnitHunger(Zombies[I].ID);
+                          ZT := Zombies[I].ZombieType;
                         end;
                       if InRange(UT, 14, 27) then
                       begin
@@ -10637,6 +10643,7 @@ begin
                         SetLength(Zombies, Length(Zombies) + 1);
                         Zombies[Length(Zombies) - 1].Owner := OT;
                         Zombies[Length(Zombies) - 1].ID := States.GroupMember(G, 0);
+                        Zombies[Length(Zombies) - 1].ZombieType := ZT;
                         Actions.GroupHungerSet(G, HT);
                         Break;
                         Exit;
@@ -10649,6 +10656,7 @@ begin
                           SetLength(Zombies, Length(Zombies) + 1);
                           Zombies[Length(Zombies) - 1].Owner := OT;
                           Zombies[Length(Zombies) - 1].ID := G;
+                          Zombies[Length(Zombies) - 1].ZombieType := ZT;
                           Actions.UnitHungerSet(G, HT);
                           Break;
                           Exit;
@@ -10741,6 +10749,7 @@ begin
     if aAttacker = Zombies[I].ID then
     begin
       LastAttacker := Zombies[I].Owner;
+      LastAttackerZombieType := Zombies[I].ZombieType;
       LastAttackerUnitType := States.UnitType(aAttacker);
     end;
 end;
@@ -10944,10 +10953,17 @@ begin
         Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$75> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
         Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$89> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
       end;
-      if InRange(LastAttackerUnitType, 15, 27) then
+      if (InRange(LastAttackerUnitType, 15, 27))
+      and (LastAttackerZombieType = 3) then
       begin
         Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$76> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
         Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$90> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
+      end;
+      if (InRange(LastAttackerUnitType, 15, 27))
+      and (LastAttackerZombieType = 2) then
+      begin
+        Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$107> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
+        Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$108> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
       end;
       Players[O].RespawnCheckTime := States.GameTime + 10;
       Players[LastAttacker].TotalKills := Players[LastAttacker].TotalKills + 1;
