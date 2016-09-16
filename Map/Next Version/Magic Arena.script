@@ -9627,7 +9627,7 @@ begin
         Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
-          if SkillName(Tiles[aX][aY].Skill) <> '' then
+          if Tiles[aX][aY].Skill = sRegen then
           begin
             Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
             Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
@@ -10630,14 +10630,29 @@ begin
                           OT := Zombies[I].Owner;
                           HT := States.UnitHunger(Zombies[I].ID);
                         end;
-                      Actions.GroupKillAll(States.UnitsGroup(U), True);
-                      G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8), 1, 1);
-                      SetLength(Zombies, Length(Zombies) + 1);
-                      Zombies[Length(Zombies) - 1].Owner := OT;
-                      Zombies[Length(Zombies) - 1].ID := States.GroupMember(G, 0);
-                      Actions.GroupHungerSet(G, HT);
-                      Break;
-                      Exit;
+                      if InRange(UT, 14, 27) then
+                      begin
+                        Actions.GroupKillAll(States.UnitsGroup(U), True);
+                        G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8), 1, 1);
+                        SetLength(Zombies, Length(Zombies) + 1);
+                        Zombies[Length(Zombies) - 1].Owner := OT;
+                        Zombies[Length(Zombies) - 1].ID := States.GroupMember(G, 0);
+                        Actions.GroupHungerSet(G, HT);
+                        Break;
+                        Exit;
+                      end
+                      else
+                        if UT = 13 then
+                        begin
+                          Actions.UnitKill(U, True);
+                          G := Actions.GiveUnit(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8));
+                          SetLength(Zombies, Length(Zombies) + 1);
+                          Zombies[Length(Zombies) - 1].Owner := OT;
+                          Zombies[Length(Zombies) - 1].ID := G;
+                          Actions.UnitHungerSet(G, HT);
+                          Break;
+                          Exit;
+                        end;
                     end;
                   if not InRange (O, 0, 11) then
                     Exit;
