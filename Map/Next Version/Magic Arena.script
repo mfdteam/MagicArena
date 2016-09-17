@@ -86,7 +86,6 @@ const
 
   RAGE_RADIUS = 5;
   TOTEM_RADIUS = 4;
-  CONCENTRATION_RADIUS = 9;
   VISE_RADIUS = 5;
   EXP_RADIUS = 6;
   GRAVITY_RADIUS = 5;
@@ -99,7 +98,6 @@ const
   
   RAGE_CYCLES = 1;
   TOTEM_CYCLES = 5;
-  CONCENTRATION_CYCLES = 1;
   VISE_CYCLES = 1;
   EXP_CYCLES = 1;
   GRAVITY_CYCLES = 1;
@@ -286,7 +284,6 @@ const
   DELAY_OF_TURNING = 2;
   VAGA_DELAY_OF_TURNING = 10;
   REGEN_DELAY = 90;
-  CONCENTRATION_TIME = 60;
   SHOCK_TIME = 20;
   SKILL_RESPAWN_TIME = 1;
   ARMOR_TIME = 50;
@@ -370,7 +367,7 @@ type
             sRocket, sPrison, sRevengeFromNowhere,
             sGravity, sDeadlyFireworks, sWerewolf,
             sDisorientation, sTrack, sRegen,
-            sViseOfDeath, sSacrificialTeleport, sConcentration, sTower,
+            sViseOfDeath, sSacrificialTeleport, sTower,
             sFierySnake, sSturdyArmor, sPowerWithin,
             sRopesOfDeath, sDeafeningClatter, sRagingSpurt,
             sMentalBurst, sSteal, sUniversal,
@@ -553,22 +550,22 @@ var
   ClearTilesRoadTimes, SetTilesRoadTimes, TilesRoadX, TilesRoadY, TilesRoadObjects,
   ClearTilesFieldTimes, SetTilesFieldTimes, TilesFieldX, TilesFieldY, TilesFieldObjects,
   ClearTilesWineTimes, SetTilesWineTimes, TilesWineX, TilesWineY, TilesWineObjects: array[0..11] of array of Integer;
-  RageCircles, TotemCircles, ConcentrationCircles, ViseCircles, ExpCircles,
+  RageCircles, TotemCircles, ViseCircles, ExpCircles,
   FireworksCircles1, FireworksCircles2, FireworksCircles3, FireworksCircles4, 
   FireworksCircles5, KnightCircles, RogueCircles, StolenRogueCircles, PowerWithinCircles: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of array of aCircle;
   GravityCircles: array[0..11] of array of aCircle;
-  RageCirclesCounter, TotemCirclesCounter, ConcentrationCirclesCounter, ViseCirclesCounter, ExpCirclesCounter,
+  RageCirclesCounter, TotemCirclesCounter, ViseCirclesCounter, ExpCirclesCounter,
   FireworksCircles1Counter, FireworksCircles2Counter, FireworksCircles3Counter, FireworksCircles4Counter, 
   FireworksCircles5Counter, KnightCirclesCounter, RogueCirclesCounter, StolenRogueCirclesCounter, PowerWithinCirclesCounter: array[0..11] of Integer;
   TilesRoadLength, TilesFieldLength, TilesWineLength: array[0..11] of Integer;
-  RageCirclesLength, TotemCirclesLength, ConcentrationCirclesLength, ViseCirclesLength, ExpCirclesLength,
+  RageCirclesLength, TotemCirclesLength, ViseCirclesLength, ExpCirclesLength,
   FireworksCircles1Length, FireworksCircles2Length, FireworksCircles3Length, 
   FireworksCircles4Length, FireworksCircles5Length, KnightCirclesLength, RogueCirclesLength, StolenRogueCirclesLength, PowerWithinCirclesLength: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
   GravityCirclesLength, TimeToClearGravityArray: array[0..11] of Integer;
-  TimeToClearRageArray, TimeToClearTotemArray, TimeToClearConcentrationArray,
-  TimeToClearViseArray, TimeToClearExpArray, TimeToClearFireworks1Array,
-  TimeToClearFireworks2Array, TimeToClearFireworks3Array, TimeToClearFireworks4Array, TimeToClearFireworks5Array,
-  TimeToClearKnightArray, TimeToClearRogueArray, TimeToClearStolenRogueArray, TimeToClearPowerWithinArray: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
+  TimeToClearRageArray, TimeToClearTotemArray, TimeToClearViseArray, TimeToClearExpArray,
+  TimeToClearFireworks1Array, TimeToClearFireworks2Array, TimeToClearFireworks3Array, 
+  TimeToClearFireworks4Array, TimeToClearFireworks5Array, TimeToClearKnightArray,
+  TimeToClearRogueArray, TimeToClearStolenRogueArray, TimeToClearPowerWithinArray: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
   PikeObjects, ShieldObjects: array[0..7] of Integer;
   Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
   TeamChoice: array[0..1] of ANSIString;
@@ -903,7 +900,6 @@ begin
   begin
     RageCirclesLength[I][K] := 0;
     TotemCirclesLength[I][K] := 0;
-    ConcentrationCirclesLength[I][K] := 0;
     ViseCirclesLength[I][K] := 0;
     ExpCirclesLength[I][K] := 0;
     FireworksCircles1Length[I][K] := 0;
@@ -927,7 +923,6 @@ begin
     TilesWineLength[I] := 0;
     RageCirclesCounter[I] := -1;
     TotemCirclesCounter[I] := -1;
-    ConcentrationCirclesCounter[I] := -1;
     ViseCirclesCounter[I] := -1;
     ExpCirclesCounter[I] := -1;
     FireworksCircles1Counter[I] := -1;
@@ -1580,7 +1575,6 @@ begin
 
     sViseOfDeath: Result := '<$13>';
     sSacrificialTeleport: Result := '<$21>';
-    sConcentration: Result := '<$29>';
     sTower: Result := '<$29>';
 
     sRocket: Result := '<$10>';
@@ -4140,545 +4134,6 @@ begin
       end;
     end;
   end;
-end;
-
-
-procedure Concentration(P, X, Y: Integer);
-var
-  X2, Y2: Integer;
-begin
-  if Players[P].Hero <= 0 then
-    Exit;
-
-  if States.GroupMember(Players[P].Hero, 0) <= 0 then
-    Exit;
-
-  if (Players[P].Hero > 0)
-  and (TileOnBattlefield(X, Y)) then
-  begin
-    if States.PlayerIsAI(P) then
-    begin
-      Players[P].CastingSkill := True;
-      Players[P].SkillTime := States.GameTime + 80;
-    end;
-
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    ConcentrationCirclesCounter[P] := ConcentrationCirclesCounter[P] + 1;
-    if ConcentrationCirclesCounter[P] = MAX_CIRCLES_AT_ONCE then
-      ConcentrationCirclesCounter[P] := 0;
-    Actions.GroupOrderHalt(Players[P].Hero);
-    Actions.GroupBlockOrders(Players[P].Hero, True);
-    Players[P].HeroStunned := True;
-    Players[P].HeroStunnedTime := States.GameTime + CONCENTRATION_TIME + 5;
-    if not Players[P].HeroImmortal then
-    begin
-      Players[P].HeroImmortalTime := States.GameTime + CONCENTRATION_TIME + 15;
-      Players[P].HeroImmortal := True;
-    end;
-    Players[P].Preparing := True;
-    Players[P].PreparingTime := States.GameTime + CONCENTRATION_TIME + 5;
-
-    Players[P].PikeX := X2;
-    Players[P].PikeY := Y2;
-    Players[P].PikeDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
-    Players[P].PikeAppearTime := States.GameTime + DELAY_OF_TURNING;
-    Players[P].TempHeroType := Players[P].HeroType;
-    Actions.GroupKillAll(Players[P].Hero, True);
-    Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
-
-    TilesWineLength[P] := TilesWineLength[P] + 72;
-    SetLength(TilesWineX[P], TilesWineLength[P]);
-    SetLength(TilesWineY[P], TilesWineLength[P]);
-    SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
-    SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
-    SetLength(TilesWineObjects[P], TilesWineLength[P]);
-
-    TilesWineX[P][Length(TilesWineX[P]) - 72] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 71] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 70] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 69] := X2 + 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 72] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 71] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 71] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 69] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 68] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 67] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 66] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 65] := X2 - 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 68] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 67] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 66] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 65] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 64] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 63] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 62] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 61] := X2 + 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 64] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 63] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 62] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 61] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 60] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 59] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 58] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 57] := X2 - 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 60] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 59] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 58] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 57] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 56] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 55] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 54] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 53] := X2 + 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 56] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 55] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 54] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 53] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 52] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 51] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 50] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 49] := X2 - 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 52] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 51] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 50] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 49] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 48] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 47] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 46] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 45] := X2 + 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 48] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 47] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 46] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 45] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 44] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 43] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 42] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 41] := X2 - 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 44] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 43] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 42] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 41] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 40] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 39] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 38] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 37] := X2 + 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 40] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 39] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 38] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 37] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 36] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 35] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 34] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 33] := X2 - 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 36] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 35] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 34] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 33] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 32] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 31] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 30] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 29] := X2 + 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 32] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 31] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 30] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 29] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 28] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 27] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 26] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 25] := X2 - 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 28] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 27] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 26] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 25] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 24] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 23] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 22] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 21] := X2 + 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 24] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 23] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 22] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 21] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 20] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 19] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 18] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 17] := X2 - 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 20] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 19] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 18] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 17] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 16] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 15] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 14] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 13] := X2 + 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 16] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 15] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 14] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 13] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 12] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 11] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 10] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 9] := X2 - 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 12] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 11] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 10] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 9] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 8] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 7] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 6] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 5] := X2 + 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 8] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 7] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 6] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 5] := Y2;
-
-    TilesWineX[P][Length(TilesWineX[P]) - 4] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 3] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 2] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 1] := X2 - 1;
-
-    TilesWineY[P][Length(TilesWineY[P]) - 4] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 3] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 2] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 72] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 71] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 70] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 69] := PIKE_OBJ_STONE;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 72] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 71] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 70] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 69] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 72] := States.GameTime + 2;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 71] := States.GameTime + 2;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 70] := States.GameTime + 2;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 69] := States.GameTime + 2;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 68] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 67] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 66] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 65] := PIKE_OBJ_STONE;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 68] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 67] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 66] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 65] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 68] := States.GameTime + 2;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 67] := States.GameTime + 2;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 66] := States.GameTime + 2;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 65] := States.GameTime + 2;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 64] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 63] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 62] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 61] := PIKE_OBJ_STONE1;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 64] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 63] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 62] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 61] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 64] := States.GameTime + 16;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 63] := States.GameTime + 16;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 62] := States.GameTime + 16;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 61] := States.GameTime + 16;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 60] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 59] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 58] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 57] := PIKE_OBJ_STONE1;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 60] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 59] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 58] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 57] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 60] := States.GameTime + 16;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 59] := States.GameTime + 16;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 58] := States.GameTime + 16;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 57] := States.GameTime + 16;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 56] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 55] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 54] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 53] := PIKE_OBJ_STONE;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 56] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 55] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 54] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 53] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 56] := States.GameTime + 28;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 55] := States.GameTime + 28;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 54] := States.GameTime + 28;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 53] := States.GameTime + 28;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 52] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 51] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 50] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 49] := PIKE_OBJ_STONE;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 52] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 51] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 50] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 49] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 52] := States.GameTime + 28;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 51] := States.GameTime + 28;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 50] := States.GameTime + 28;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 49] := States.GameTime + 28;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 48] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 47] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 46] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 45] := PIKE_OBJ_STONE1;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 48] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 47] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 46] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 45] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 48] := States.GameTime + 38;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 47] := States.GameTime + 38;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 46] := States.GameTime + 38;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 45] := States.GameTime + 38;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 44] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 43] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 42] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 41] := PIKE_OBJ_STONE1;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 44] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 43] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 42] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 41] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 44] := States.GameTime + 38;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 43] := States.GameTime + 38;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 42] := States.GameTime + 38;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 41] := States.GameTime + 38;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 40] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 39] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 38] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 37] := PIKE_OBJ_STONE;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 40] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 39] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 38] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 37] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 40] := States.GameTime + 46;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 39] := States.GameTime + 46;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 38] := States.GameTime + 46;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 37] := States.GameTime + 46;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 36] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 35] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 34] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 33] := PIKE_OBJ_STONE;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 36] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 35] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 34] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 33] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 36] := States.GameTime + 46;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 35] := States.GameTime + 46;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 34] := States.GameTime + 46;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 33] := States.GameTime + 46;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 32] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 31] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 30] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 29] := PIKE_OBJ_STONE1;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 32] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 31] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 30] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 29] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 32] := States.GameTime + 52;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 31] := States.GameTime + 52;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 30] := States.GameTime + 52;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 29] := States.GameTime + 52;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 28] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 27] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 26] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 25] := PIKE_OBJ_STONE1;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 28] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 27] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 26] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 25] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 28] := States.GameTime + 52;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 27] := States.GameTime + 52;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 26] := States.GameTime + 52;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 25] := States.GameTime + 52;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 24] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 23] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 22] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 21] := PIKE_OBJ_STONE;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 24] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 23] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 22] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 21] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 24] := States.GameTime + 56;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 23] := States.GameTime + 56;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 22] := States.GameTime + 56;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 21] := States.GameTime + 56;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 20] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 19] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 18] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 17] := PIKE_OBJ_STONE;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 20] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 19] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 18] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 17] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 20] := States.GameTime + 56;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 19] := States.GameTime + 56;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 18] := States.GameTime + 56;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 17] := States.GameTime + 56;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 16] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 15] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 14] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 13] := PIKE_OBJ_STONE1;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 16] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 15] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 14] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 13] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 16] := States.GameTime + 59;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 15] := States.GameTime + 59;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 14] := States.GameTime + 59;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 13] := States.GameTime + 59;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 12] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 11] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 10] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 9] := PIKE_OBJ_STONE1;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 12] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 11] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 10] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 9] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 12] := States.GameTime + 59;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 11] := States.GameTime + 59;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 10] := States.GameTime + 59;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 9] := States.GameTime + 59;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 8] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 7] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 6] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 5] := PIKE_OBJ_STONE;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 61;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 61;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 61;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 61;
-
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 4] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 3] := PIKE_OBJ_STONE;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 2] := PIKE_OBJ_STONE1;
-    TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := PIKE_OBJ_STONE;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 65;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 65;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 61;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 61;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 61;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 61;
-
-    for I := 1 to 56 do
-      if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
-      or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
-      or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-      or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
-
-    ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] := ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] + CONCENTRATION_CYCLES * CONCENTRATION_RADIUS;
-    SetLength(ConcentrationCircles[P][ConcentrationCirclesCounter[P]], ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]]);
-    for I := ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] downto ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] - CONCENTRATION_CYCLES * CONCENTRATION_RADIUS + 1 do
-    begin
-      ConcentrationCircles[P][ConcentrationCirclesCounter[P]][ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] - I].Obj := PikeObjects[P];
-      ConcentrationCircles[P][ConcentrationCirclesCounter[P]][ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] - I].X := X2;
-      ConcentrationCircles[P][ConcentrationCirclesCounter[P]][ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] - I].Y := Y2;
-      ConcentrationCircles[P][ConcentrationCirclesCounter[P]][ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] - I].AddTime := States.GameTime + 62 + Round((ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] - I) / PIKE_WINE_SPEED);
-      if I mod CONCENTRATION_RADIUS > 0 then
-        ConcentrationCircles[P][ConcentrationCirclesCounter[P]][ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] - I].Radius := CONCENTRATION_RADIUS + 1 - I mod CONCENTRATION_RADIUS
-      else
-        ConcentrationCircles[P][ConcentrationCirclesCounter[P]][ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] - I].Radius := 1;
-    end;
-
-    for I := 0 to ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] - 1 do 
-      if I mod CONCENTRATION_RADIUS = 1 then
-        ConcentrationCircles[P][ConcentrationCirclesCounter[P]][ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] - I].Obj := 255;
-
-    Players[P].LastUsedSkill := sConcentration;
-
-    Players[P].WineSkillDelay := Round(PIKE_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-
-    TimeToClearConcentrationArray[P][ConcentrationCirclesCounter[P]] := ConcentrationCircles[P][ConcentrationCirclesCounter[P]][ConcentrationCirclesLength[P][ConcentrationCirclesCounter[P]] - 1].AddTime + CLEAR_ARRAY_FACTOR;
-
-    ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
-
-  end;
-
 end;
 
 
@@ -8645,7 +8100,6 @@ begin
 
           sViseOfDeath: Players[P].StolenSkillName := '<$13>';
           sSacrificialTeleport: Players[P].StolenSkillName := '<$21>';
-          sConcentration: Players[P].StolenSkillName := '<$29>';
           sTower: Players[P].StolenSkillName := '<$29>';
 
           sRocket: Players[P].StolenSkillName := '<$10>';
@@ -8882,8 +8336,6 @@ begin
                               Players[P].FieldSkillDelay := TempFieldSkillDelay;
                               Players[P].WineSkillDelay := Round(PIKE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                             end;
-
-      sConcentration: Concentration(P, X, Y);
 
       sTower: if (Abs(X - X2) <= TOWER_RADIUS)
               and (Abs(Y - Y2) <= TOWER_RADIUS) then
@@ -9181,7 +8633,7 @@ begin
       17: RevengeFromNowhere(P, X, Y, -1);
       18: SniperShot(P, X, Y, -1);
       19: TenThousandsSpears(P, X, Y, -1);
-      20: InfernalTower(P, X, Y);//Concentration(P, X, Y);
+      20: InfernalTower(P, X, Y);
       21: Mind(P, X, Y);
       22: RagingSpurt(P, X, Y);
       23: TotemOfAncestors(P, X, Y);
@@ -9382,10 +8834,6 @@ begin
             if (TotemCircles[P][K][I].AddTime > States.GameTime)
             and (TotemCircles[P][K][I].Obj <> 255) then
               TotemCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
-
-        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-          for I := 0 to ConcentrationCirclesLength[P][K] - 1 do
-            ConcentrationCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to ExpCirclesLength[P][K] - 1 do
@@ -10675,51 +10123,6 @@ begin
 end;
 
 
-procedure CheckConcentrationCircles(P: Integer);
-var
-  aRelief, PosX, PosY: Integer;
-begin
-  if States.PlayerEnabled(P) then
-    for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-    begin
-      if ConcentrationCirclesLength[P][K] > 0 then
-        for I := 0 to ConcentrationCirclesLength[P][K] - 1 do
-        begin
-          if TileOnBattlefield(ConcentrationCircles[P][K][I].X, ConcentrationCircles[P][K][I].Y) then
-          begin
-            if (States.GameTime = ConcentrationCircles[P][K][I].AddTime)
-            and (ConcentrationCircles[P][K][I].Obj <> SKILL_CANCEL_OBJ) then
-            begin
-              SetCircle(P, ConcentrationCircles[P][K][I].X, ConcentrationCircles[P][K][I].Y, ConcentrationCircles[P][K][I].Radius, ConcentrationCircles[P][K][I].Obj, False, False, sConcentration);
-
-              if not CHANGE_RELIEF then
-                Exit;
-
-              {for PosX := ConcentrationCircles[P][K][I].X - ConcentrationCircles[P][K][I].Radius to ConcentrationCircles[P][K][I].X + ConcentrationCircles[P][K][I].Radius do
-              for PosY := ConcentrationCircles[P][K][I].Y - ConcentrationCircles[P][K][I].Radius to ConcentrationCircles[P][K][I].Y + ConcentrationCircles[P][K][I].Radius do
-              begin
-                aRelief := States.MapTileHeight(PosX, PosY) + States.KaMRandomI(RELIEF_CHANGE_FACTOR - 4) - States.KaMRandomI(RELIEF_CHANGE_FACTOR - 4);
-                if aRelief < 0 then
-                  aRelief := -1 * aRelief;
-                if (((ConcentrationCircles[P][K][I].X - PosX) * (ConcentrationCircles[P][K][I].X - PosX) + (ConcentrationCircles[P][K][I].Y - PosY) * (ConcentrationCircles[P][K][I].Y - PosY)) <= ConcentrationCircles[P][K][I].Radius * ConcentrationCircles[P][K][I].Radius) then
-                  if (TileOnBattlefield(PosX, PosY))
-                  and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
-                    Actions.MapTileHeightSet(PosX, PosY, aRelief);
-              end;}
-
-              {if I = ConcentrationCirclesLength[P][K] - 1 then
-                for PosX := ConcentrationCircles[P][K][I].X - ConcentrationCircles[P][K][I].Radius to ConcentrationCircles[P][K][I].X + ConcentrationCircles[P][K][I].Radius do
-                for PosY := ConcentrationCircles[P][K][I].Y - ConcentrationCircles[P][K][I].Radius to ConcentrationCircles[P][K][I].Y + ConcentrationCircles[P][K][I].Radius do
-                  if (((ConcentrationCircles[P][K][I].X - PosX) * (ConcentrationCircles[P][K][I].X - PosX) + (ConcentrationCircles[P][K][I].Y - PosY) * (ConcentrationCircles[P][K][I].Y - PosY)) <= ConcentrationCircles[P][K][I].Radius * ConcentrationCircles[P][K][I].Radius) then
-                    if TileOnBattlefield(PosX, PosY) then
-                      Actions.MapTileHeightSet(PosX, PosY, Tiles[PosX][PosY].Relief);}
-            end;
-          end;
-        end;
-    end;
-end;
-
-
 procedure OnPlayerDefeated(P: Integer);
 begin
   if (InRange(P, 0, 7)) then
@@ -10863,10 +10266,6 @@ begin
         if (TotemCircles[O][K][I].AddTime > States.GameTime)
         and (TotemCircles[O][K][I].Obj <> 255) then
           TotemCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
-
-    for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-      for I := 0 to ConcentrationCirclesLength[O][K] - 1 do
-        ConcentrationCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to ExpCirclesLength[O][K] - 1 do
@@ -12005,12 +11404,6 @@ begin
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
     begin
-
-      if States.GameTime = TimeToClearConcentrationArray[I][K] then
-      begin
-        ConcentrationCirclesLength[I][K] := 0;
-        SetLength(ConcentrationCircles[I][K], 0);
-      end;
 
       if States.GameTime = TimeToClearRageArray[I][K] then
       begin
@@ -13896,9 +13289,6 @@ begin
 
   for N[1] := 0 to 7 do
     CheckExpCircles(N[1]);
-
-  for N[2] := 0 to 7 do
-    CheckConcentrationCircles(N[2]);
 
   for N[3] := 0 to 7 do
     CheckViseCircles(N[3]);
