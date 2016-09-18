@@ -4104,7 +4104,8 @@ begin
     Exit;
 
   if (Players[P].Hero > 0)
-  and (TileOnBattlefield(X, Y)) then
+  and (TileOnBattlefield(X, Y))
+  and (TileOnBattlefield(X, Y + 1)) then
   begin
     if States.PlayerIsAI(P) then
     begin
