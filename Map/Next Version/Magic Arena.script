@@ -436,6 +436,8 @@ type
     RopeUnitDir: Integer;
     RopeTime: Integer;
     RopeAttacker: Integer;
+    RopeX: Integer;
+    RopeY: Integer;
     RopeDX: Integer;
     RopeDY: Integer;
     Preparing: Boolean;
@@ -515,6 +517,9 @@ type
     HeroExileGiver: Integer;
     HeroExileDir: Integer;
     HeroExiled: Boolean;
+    LastX: Integer;
+    LastY: Integer;
+    LastDir: Integer;
   end;
 
 
@@ -1010,6 +1015,8 @@ begin
       RopeTime := -1;
       RopeDX := -1;
       RopeDY := -1;
+      RopeX := -1;
+      RopeY := -1;
       Preparing := False;
       PreparingTime := 0;
       ReCharge := False;
@@ -1089,6 +1096,9 @@ begin
       HeroExileGiver := -1;
       HeroExileDir := -1;
       HeroExiled := False;
+      LastX := 0;
+      LastY := 0;
+      LastDir := -1;
     end;
   end;
 
@@ -6227,6 +6237,8 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     U := States.UnitAt(X, Y);
+    if U <= 0 then
+      Exit;
     if U > 0 then
       O := States.UnitOwner(U);
     if (U > 0)
@@ -6496,6 +6508,7 @@ begin
         Players[O].RopeAttacker := P;
         Players[O].MovedByRopes := True;
         Players[O].RopeUnitDir := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
+
         case D of
 
           0: begin
@@ -10259,10 +10272,18 @@ begin
   aY := States.UnitPositionY(aID);
 
   if InRange(O, 0, 7) then
+  begin
+
     for X := aX - ANIMATION_CHECK_RADIUS to aX + ANIMATION_CHECK_RADIUS do
     for Y := aY - ANIMATION_CHECK_RADIUS to aY + ANIMATION_CHECK_RADIUS do
       if TileOnBattlefield(X, Y) then
         Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
+
+    Players[O].LastX := aX;
+    Players[O].LastY := aY;
+    Players[O].LastDir := States.UnitDirection(aID);
+
+  end;
 
   if (InRange(O, 0, 7))
   and (InRange(aKiller, 9, 11)) then
@@ -10881,7 +10902,7 @@ begin
           Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Skill := sTrack;
         end;
 
-      if (States.GameTime >= Players[I1].HeroExileTimeBack)
+      if (States.GameTime >= Players[I1].HeroExileBackTime)
       and (Players[I1].HeroExiled) then
         Players[I1].HeroExiled := False;
 
@@ -10926,10 +10947,10 @@ begin
         if (InRange(Players[I1].RopeAttacker, 0, 7))
         and (States.GroupOwner(Players[I1].Hero) = I1) then
         begin
+          Players[I1].RopeX := States.UnitPositionX(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].RopeAttacker].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) < MIN_Y);
+          Players[I1].RopeY := States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].RopeAttacker].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) < MIN_Y);
           Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].RopeDX
-          + States.UnitPositionX(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)), Players[I1].RopeDY
-          + States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)), Players[I1].RopeUnitDir, 1, 1);
+          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].RopeDX + Players[I1].RopeX, Players[I1].RopeDY + Players[I1].RopeY, Players[I1].RopeUnitDir, 1, 1);
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
           if Players[I1].HeroStunned then
             Actions.GroupBlockOrders(Players[I1].Hero, True);
