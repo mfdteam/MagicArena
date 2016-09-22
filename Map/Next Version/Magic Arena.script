@@ -37,7 +37,7 @@ const
   VAGA_WINE_DELAY = 600;
 
   WARRIOR_ROAD_DELAY = 110;
-  WARRIOR_FIELD_DELAY = 160;
+  WARRIOR_FIELD_DELAY = 150;
   WARRIOR_WINE_DELAY = 280;
 
   KNIGHT_ROAD_DELAY = 130;
@@ -83,6 +83,8 @@ const
   MIND_RADIUS = 4;
   SILENCE_SCOUT_RADIUS = 6;
   TOWER_RADIUS = 5;
+  EXILE_RADIUS = 3;
+  EXILE_ALLY_RADIUS = 7;
 
   RAGE_RADIUS = 5;
   TOTEM_RADIUS = 4;
@@ -216,6 +218,7 @@ const
   WARRIOR_OBJECT4 = 4;
   WARRIOR_OBJECT5 = 59;
   WARRIOR_OBJECT6 = 58;
+  WARRIOR_OBJECT7 = 196;
 
   KNIGHT_OBJECT = 62;
   KNIGHT_OBJECT2 = 12;
@@ -235,6 +238,8 @@ const
   SCOUT_OBJECT7 = 112;
 
   CIRCLE_FILL_OBJ = 17;
+
+  EXILE_TILE = 122;
 
 //Runes
 
@@ -301,6 +306,8 @@ const
   GRAVITY_MOVE_TIME = 20;
   SILENCE_SCOUT_TIME = 50;
   SILENCE_SCOUT_DELAY = 12;
+  EXILE_TIME = 40;
+  EXILE_DELAY = 10;
 
 //Game mechanics
 
@@ -368,7 +375,7 @@ type
             sGravity, sDeadlyFireworks, sWerewolf,
             sDisorientation, sTrack, sRegen,
             sViseOfDeath, sSacrificialTeleport, sTower,
-            sFierySnake, sSturdyArmor, sPowerWithin,
+            sFierySnake, sSturdyArmor, sExile, sPowerWithin,
             sRopesOfDeath, sDeafeningClatter, sRagingSpurt,
             sMentalBurst, sSteal, sUniversal,
             sBoomerang, sSilence, sMind);
@@ -507,6 +514,13 @@ type
     FireworkX: Integer;
     FireworkY: Integer;
     CrackingStartTime: Integer;
+    HeroExileTime: Integer;
+    HeroExileBackTime: Integer;
+    HeroExileX: Integer;
+    HeroExileY: Integer;
+    HeroExileGiver: Integer;
+    HeroExileDir: Integer;
+    HeroExiled: Boolean;
   end;
 
 
@@ -1077,6 +1091,13 @@ begin
       FireworkX := 0;
       FireworkY := 0;
       CrackingStartTime := 0;
+      HeroExileTime := 0;
+      HeroExileBackTime := 0;
+      HeroExileX := 0;
+      HeroExileY := 0;
+      HeroExileGiver := -1;
+      HeroExileDir := -1;
+      HeroExiled := False;
     end;
   end;
 
@@ -1504,10 +1525,21 @@ begin
 end;
 
 
+function ExileStatus(P: Integer): ANSIString;
+begin
+  if Players[P].HeroExiled then
+    Result := '|[$DEFACA]<$109>[] (' + IntToStr((Players[P].HeroExileBackTime - States.GameTime)/10) + ')'
+
+  else
+
+    Result := '';
+end;
+
+
 function StatusText(P: Integer): ANSIString;
 begin
   Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) {+ PrisonedStatus(P)} + WerewolfStatus(P)
-  + RegenStatus(P) + DDStatus(P) {+ IllusionStatus(P)} + SilenceStatus(P) + PreparingStatus(P)
+  + RegenStatus(P) + DDStatus(P) {+ IllusionStatus(P)} + SilenceStatus(P) + PreparingStatus(P) + ExileStatus(P)
   + ReChargeStatus(P) + RogueStatus(P) + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + FieryTrackStatus(P) + GameplayStatus(P);
 end;
 
@@ -1582,7 +1614,7 @@ begin
     sRevengeFromNowhere: Result := '<$26>';
 
     sFierySnake: Result := '<$46>';
-    sSturdyArmor: Result := '<$47>';
+    sExile: Result := '<$112>';
     sPowerWithin: Result := '<$48>';
 
     sRopesOfDeath: Result := '<$50>';
@@ -6104,7 +6136,87 @@ begin
 
   end;
 
-end;  
+end;
+
+
+procedure Exile(P, X, Y: Integer);
+var
+  X2, Y2, O, U: Integer;
+begin
+  if Players[P].Hero <= 0 then
+    Exit;
+
+  if States.GroupMember(Players[P].Hero, 0) <= 0 then
+    Exit;
+
+  if (TileOnBattlefield(X, Y))
+  and (Players[P].Hero > 0) then
+  begin
+    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    U := States.UnitAt(X, Y);
+    if U > 0 then
+      O := States.UnitOwner(U);
+    if (U > 0)
+    and (U = States.GroupMember(Players[O].Hero, 0))
+    and (not Players[O].HeroImmortal)
+    and ((Abs(X2 - X) <= EXILE_RADIUS)
+    and (Abs(Y2 - Y) <= EXILE_RADIUS)
+    and (Players[O].PlayersTeam <> Players[P].PlayersTeam))
+    or ((Abs(X2 - X) <= EXILE_ALLY_RADIUS)
+    and (Abs(Y2 - Y) <= EXILE_ALLY_RADIUS)
+    and (Players[O].PlayersTeam = Players[P].PlayersTeam))
+    and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
+    begin
+      TilesFieldLength[P] := TilesFieldLength[P] + 4;
+      SetLength(TilesFieldX[P], TilesFieldLength[P]);
+      SetLength(TilesFieldY[P], TilesFieldLength[P]);
+      SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
+      SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
+      SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
+  
+      TilesFieldX[P][Length(TilesFieldX[P]) - 4] := X2;
+      TilesFieldX[P][Length(TilesFieldX[P]) - 3] := X2;
+      TilesFieldX[P][Length(TilesFieldX[P]) - 2] := X2 - 1;
+      TilesFieldX[P][Length(TilesFieldX[P]) - 1] := X2 + 1;
+    
+      TilesFieldY[P][Length(TilesFieldY[P]) - 4] := Y2 + 1;
+      TilesFieldY[P][Length(TilesFieldY[P]) - 3] := Y2 - 1;
+      TilesFieldY[P][Length(TilesFieldY[P]) - 2] := Y2;
+      TilesFieldY[P][Length(TilesFieldY[P]) - 1] := Y2;
+
+      for I := 1 to 4 do
+        TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := WARRIOR_OBJECT4;
+    
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 11;
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 12;
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 13;
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 14;
+    
+      SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 4] := States.GameTime + 1;
+      SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 3] := States.GameTime + 2;
+      SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 2] := States.GameTime + 3;
+      SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 4;
+
+      for I := 1 to 4 do
+        if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
+          if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
+          or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
+          or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
+          or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7)
+          or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+            ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
+
+      Players[O].HeroExileTime := States.GameTime + EXILE_DELAY;
+      Players[P].LastUsedSkill := sExile;
+      Players[O].HeroExileGiver := P;
+      Players[P].FieldSkillDelay := Round(WARRIOR_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+      ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
+
+    end;
+  end;
+end;
+
 
 
 procedure SturdyArmor(P, X, Y: Integer);
@@ -8108,7 +8220,7 @@ begin
           sRevengeFromNowhere: Players[P].StolenSkillName := '<$26>';
 
           sFierySnake: Players[P].StolenSkillName := '<$46>';
-          sSturdyArmor: Players[P].StolenSkillName := '<$47>';
+          sExile: Players[P].StolenSkillName := '<$112>';
           sPowerWithin: Players[P].StolenSkillName := '<$48>';
 
           sRopesOfDeath: Players[P].StolenSkillName := '<$50>';
@@ -8373,6 +8485,17 @@ begin
                      Players[P].WineSkillDelay := Round(WARRIOR_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                    end;
 
+      sExile: if (U > 0)
+              and (InRange(O, 0, 7))
+              and (Abs(X - X2) <= EXILE_RADIUS)
+              and (Abs(Y - Y2) <= EXILE_RADIUS) then
+              begin
+                TempFieldSkillDelay := Players[P].FieldSkillDelay;
+                Exile(P, X, Y);
+                Players[P].FieldSkillDelay := TempFieldSkillDelay;
+                Players[P].WineSkillDelay := Round(WARRIOR_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+              end;
+
       sSturdyArmor: if (U > 0)
                     and (InRange(O, 0, 7))
                     and (Abs(X - X2) <= ARMOR_RADIUS)
@@ -8583,7 +8706,7 @@ begin
       22: DeafeningClatter(P, X, Y);
       23: WaveOfRage(P, X, Y);
       25: StealSkill(P, X, Y);
-      26: SturdyArmor(P, X, Y);
+      26: Exile(P, X, Y);
       27: FieryTrack(P, X, Y);
     end;
   end;
@@ -8812,6 +8935,8 @@ begin
         Players[P].TrackStartTime := 0;
         Players[P].TrackStopTime := 0;
         Players[P].SettingTrack := False;
+        Players[P].HeroExileTime := 0;
+        Players[P].HeroExileBackTime := 0;
 
         Players[P].PowerWithinCircleCycles := 0;
         Players[P].PowerWithinCircleTime := 0;
@@ -8824,6 +8949,9 @@ begin
 
           if Players[I].ScoutSilenceGiver = P then
             Players[I].ScoutSilenceGiver := -1;
+
+          if Players[I].HeroExileGiver = P then
+            Players[I].HeroExileGiver := -1;
 
         end;
 
@@ -10245,6 +10373,8 @@ begin
     Players[O].TrackStartTime := 0;
     Players[O].TrackStopTime := 0;
     Players[O].SettingTrack := False;
+    Players[O].HeroExileTime := 0;
+    Players[O].HeroExileBackTime := 0;
     Players[O].PowerWithinCircleCycles := 0;
     Players[O].PowerWithinCircleTime := 0;
 
@@ -10256,6 +10386,9 @@ begin
 
       if Players[I].ScoutSilenceGiver = O then
         Players[I].ScoutSilenceGiver := -1;
+
+      if Players[I].HeroExileGiver = O then
+        Players[I].HeroExileGiver := -1;
 
     end;
 
@@ -10556,6 +10689,56 @@ begin
       if (States.GameTime = Players[I1].ReChoiceTime)
       and (Players[I1].ReChoice) then
         EndReChoice(I1);
+
+      if (States.GameTime = Players[I1].HeroExileTime)
+      and (InRange(Players[I1].HeroExileGiver, 0, 7)) then
+      begin
+        if (InRange(Players[I1].WerewolfTime - States.GameTime, 0, 49))
+        and (InRange(Players[I1].TempHeroType, 14, 27)) then
+        begin
+          Players[I1].HeroType := Players[I1].TempHeroType;
+          Players[I1].WerewolfTime := 0;
+        end;
+        if States.GameTime <= Players[I1].MindTime then
+          Exit;
+        if (InRange(Players[I1].MindAppearTimeBack - States.GameTime, 0, 49))
+        and (InRange(Players[I1].HeroMindType, 14, 27))
+        and (InRange(Players[M[I1]].HeroMindType, 14, 27)) then
+        begin
+          Players[I1].HeroType := Players[I1].HeroMindType;
+          Players[M[I1]].HeroType := Players[M[I1]].HeroMindType;
+          Players[I1].TempHeroType := Players[I1].TempHeroMindType;
+          Players[I1].MindAppearTimeBack := 0;
+        end;
+        Players[I1].HeroExiled := True;
+        Players[I1].HeroExileX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
+        Players[I1].HeroExileY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+        Players[I1].HeroExileDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
+        Actions.GroupKillAll(Players[I1].Hero, True);
+        Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+        Players[I1].HeroExileBackTime := States.GameTime + EXILE_TIME;
+        Actions.MapTileSet(Players[I1].HeroExileX, Players[I1].HeroExileY, EXILE_TILE, States.KaMRandomI(4));
+        if I1 <> Players[I1].HeroExileGiver then
+        begin
+          Players[I1].PlayerStatusTime := States.GameTime + EXILE_TIME + 5;
+          Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$110> ' + '[$' + States.PlayerColorText(Players[I1].HeroExileGiver) + ']' + States.PlayerName(Players[I1].HeroExileGiver) + '[]';
+          Players[Players[I1].HeroExileGiver].PlayerStatusTime := States.GameTime + EXILE_TIME + 5;
+          Players[Players[I1].HeroExileGiver].PlayerStatus := Players[Players[I1].HeroExileGiver].PlayerStatus + '|<$111> ' + '[$' + States.PlayerColorText(I1) + ']' + States.PlayerName(I1) + '[]';
+        end;
+      end;
+
+      if States.GameTime < Players[I1].HeroExileBackTime then
+        if States.MapTileType(Players[I1].HeroExileX, Players[I1].HeroExileY) <> EXILE_TILE then
+          Actions.MapTileSet(Players[I1].HeroExileX, Players[I1].HeroExileY, EXILE_TILE, States.KaMRandomI(4));
+
+      if States.GameTime = Players[I1].HeroExileBackTime then
+      begin
+        Players[I1].HeroExiled := False;
+        Actions.GroupKillAll(Players[I1].Hero, True);
+        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].HeroExileX, Players[I1].HeroExileY, Players[I1].HeroExileDir, 1, 1);
+        Actions.MapTileSet(Players[I1].HeroExileX, Players[I1].HeroExileY, Tiles[Players[I1].HeroExileX][Players[I1].HeroExileY].TileType, Tiles[Players[I1].HeroExileX][Players[I1].HeroExileY].TileDirection);
+        Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
+      end;
 
       if Players[I1].HeroStunned then
       begin
