@@ -10881,6 +10881,10 @@ begin
           Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Skill := sTrack;
         end;
 
+      if (States.GameTime >= Players[I1].HeroExileTimeBack)
+      and (Players[I1].HeroExiled) then
+        Players[I1].HeroExiled := False;
+
       if (States.GameTime >= Players[I1].GravityTime)
       and (Players[I1].MovedByGravity) then
         Players[I1].MovedByGravity := False;
