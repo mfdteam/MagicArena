@@ -38,7 +38,7 @@ const
 
   WARRIOR_ROAD_DELAY = 110;
   WARRIOR_FIELD_DELAY = 150;
-  WARRIOR_WINE_DELAY = 280;
+  WARRIOR_WINE_DELAY = 350;
 
   KNIGHT_ROAD_DELAY = 130;
   KNIGHT_FIELD_DELAY = 150;
@@ -1689,7 +1689,7 @@ begin
     21: Result := '[$BA5555]<$81>[]';
     22: Result := '[$902F9D]<$51>[]';
     23: Result := '[$4040FF]<$22>[]';
-    26: Result := '[$528AAF]<$47>[]';
+    26: Result := '[$528AAF]<$112>[]';
     27: Result := '[$00CDCD]<$23>[]';
     25: Result := '[$CC7854]<$56>[]';
   end;
@@ -2460,7 +2460,8 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     if (Abs(X2 - X) <= IN_FEAR_RADIUS)
-    and (Abs(Y2 - Y) <= IN_FEAR_RADIUS) then
+    and (Abs(Y2 - Y) <= IN_FEAR_RADIUS)
+    and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
       U := States.UnitAt(X, Y);
       if U <> - 1 then
@@ -7630,7 +7631,8 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     if (Abs(X2 - X) <= SILENCE_SCOUT_RADIUS)
-    and (Abs(Y2 - Y) <= SILENCE_SCOUT_RADIUS) then
+    and (Abs(Y2 - Y) <= SILENCE_SCOUT_RADIUS)
+    and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
       U := States.UnitAt(X, Y);
       if U <> - 1 then
@@ -7711,7 +7713,8 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     if (Abs(X2 - X) <= MIND_RADIUS)
-    and (Abs(Y2 - Y) <= MIND_RADIUS) then
+    and (Abs(Y2 - Y) <= MIND_RADIUS)
+    and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
       U := States.UnitAt(X, Y);
       if U <> - 1 then
@@ -8297,7 +8300,8 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     if (Abs(X2 - X) <= STEAL_RADIUS)
-    and (Abs(Y2 - Y) <= STEAL_RADIUS) then
+    and (Abs(Y2 - Y) <= STEAL_RADIUS)
+    and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
       U := States.UnitAt(X, Y);
       if U <> - 1 then
