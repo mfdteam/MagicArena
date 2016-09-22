@@ -303,7 +303,7 @@ const
   SILENCE_SCOUT_TIME = 50;
   SILENCE_SCOUT_DELAY = 12;
   EXILE_TIME = 40;
-  EXILE_DELAY = 10;
+  EXILE_DELAY = 8;
   SHIELD_TIME = 100;
 
 //Game mechanics
@@ -6200,6 +6200,8 @@ begin
       Exit;
     if U > 0 then
       O := States.UnitOwner(U);
+    if O > 7 then
+      Exit;
     if (U > 0)
     and (U = States.GroupMember(Players[O].Hero, 0))
     and (not Players[O].HeroImmortal)
@@ -6231,10 +6233,10 @@ begin
       for I := 1 to 4 do
         TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := WARRIOR_OBJECT4;
     
-      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 11;
-      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 12;
-      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 13;
-      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 14;
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 5;
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 6;
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 7;
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 8;
     
       SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 4] := States.GameTime + 1;
       SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 3] := States.GameTime + 2;
