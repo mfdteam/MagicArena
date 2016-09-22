@@ -8581,6 +8581,12 @@ begin
   if Players[P].HeroReborn then
     Exit;
 
+  if States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P then
+    Exit;
+
+  if Players[P].HeroExiled then
+    Exit;
+
 //Use skills
 
   if (Players[P].Hero > 0)
@@ -8637,6 +8643,12 @@ begin
   if Players[P].HeroReborn then
     Exit;
 
+  if States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P then
+    Exit;
+
+  if Players[P].HeroExiled then
+    Exit;
+
 //Use skills
 
   if (Players[P].Hero > 0)
@@ -8691,6 +8703,12 @@ begin
     Exit;
 
   if Players[P].HeroReborn then
+    Exit;
+
+  if States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P then
+    Exit;
+
+  if Players[P].HeroExiled then
     Exit;
 
 //Use skills
