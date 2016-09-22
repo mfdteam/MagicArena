@@ -2313,9 +2313,11 @@ begin
 
     if Length(Zombies) > 0 then
       for K := 0 to Length(Zombies) - 1 do
-        if (Zombies[K].Owner = P)
-        and (InRange(Zombies[K].ZombieType, 1, 2)) then
-          ZombieStun(P, Zombies[K].ID);
+        if Zombies[K].ID > 0 then
+          if (Zombies[K].Owner = P)
+          and (InRange(Zombies[K].ZombieType, 1, 2)) then
+            if not States.UnitDead(Zombies[K].ID) then
+              ZombieStun(P, Zombies[K].ID);
 
     case Direction of
 
