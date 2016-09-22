@@ -6197,6 +6197,8 @@ begin
       O := States.UnitOwner(U);
     if O > 7 then
       Exit;
+    if States.MapTileObject(X, Y) = WARRIOR_OBJECT7 then
+      Exit;
     if (U > 0)
     and (U = States.GroupMember(Players[O].Hero, 0))
     and (not Players[O].HeroImmortal)
@@ -6205,8 +6207,7 @@ begin
     and (Players[O].PlayersTeam <> Players[P].PlayersTeam))
     or ((Abs(X2 - X) <= EXILE_ALLY_RADIUS)
     and (Abs(Y2 - Y) <= EXILE_ALLY_RADIUS)
-    and (Players[O].PlayersTeam = Players[P].PlayersTeam))
-    and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
+    and (Players[O].PlayersTeam = Players[P].PlayersTeam)) then
     begin
       TilesFieldLength[P] := TilesFieldLength[P] + 4;
       SetLength(TilesFieldX[P], TilesFieldLength[P]);
