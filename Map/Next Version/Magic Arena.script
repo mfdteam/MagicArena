@@ -327,6 +327,7 @@ const
   AVOID_FACTOR = 3;
   RECHARGE_FACTOR = 0.25;
   ZOMBIE_STORM_FACTOR = 20;
+  AI_IGNORE_FACTOR = 15;
   HEAL_CHECK_RADIUS = 4;
   HEAL_CHECK_TIME = 15;
   CLEAR_ARRAY_FACTOR = 5;
@@ -12068,6 +12069,52 @@ begin
 end;
 
 
+procedure AIIgnore(P: Integer);
+var
+  aX, aY: Integer;
+begin
+
+  if Players[P].Hero <= 0 then
+    Exit;
+
+  if (InRange(P, 0, 7))
+  and (Players[P].Hero > 0) then
+  begin
+
+    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+
+    if States.MapTileObject(aX, aY) = WARRIOR_OBJECT7 then
+    begin
+
+      if (InRange(P, 0, 3))
+      and (not States.PlayerAllianceCheck(Players[4].ZombiePlayer, P)) then
+        Actions.PlayerAllianceChange(Players[4].ZombiePlayer, P, True, True);
+
+      if (InRange(P, 4, 7))
+      and (not States.PlayerAllianceCheck(Players[0].ZombiePlayer, P)) then
+        Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, True, True);
+
+    end;
+
+    if States.MapTileObject(aX, aY) <> WARRIOR_OBJECT7 then
+    begin
+
+      if (InRange(P, 0, 3))
+      and (States.PlayerAllianceCheck(Players[4].ZombiePlayer, P)) then
+        Actions.PlayerAllianceChange(Players[4].ZombiePlayer, P, False, False);
+
+      if (InRange(P, 4, 7))
+      and (States.PlayerAllianceCheck(Players[0].ZombiePlayer, P)) then
+        Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, False, False);
+
+    end;
+
+  end;
+
+end;
+
+
 procedure AvoidDanger(P: Integer);
 var
   aX, aY, D: Integer;
@@ -13811,6 +13858,10 @@ begin
     if (States.GameTime mod AVOID_FACTOR = 0)
     and (States.Gametime > CHOOSE_HERO_TIMER) then
       AvoidDanger(I);
+
+  if States.GameTime mod AI_IGNORE_FACTOR = 0 then
+    for I := 0 to 7 do
+      AIIgnore(I);
 
   if not DEBUG_MODE then
     for I := 0 to 7 do
