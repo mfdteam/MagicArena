@@ -85,6 +85,8 @@ const
   TOWER_RADIUS = 5;
   EXILE_RADIUS = 3;
   EXILE_ALLY_RADIUS = 7;
+  SHIELD_RADIUS = 7;
+  SHIELD_AREA_RADIUS = 3;
 
   RAGE_RADIUS = 5;
   TOTEM_RADIUS = 4;
@@ -308,6 +310,7 @@ const
   SILENCE_SCOUT_DELAY = 12;
   EXILE_TIME = 40;
   EXILE_DELAY = 10;
+  SHIELD_TIME = 100;
 
 //Game mechanics
 
@@ -375,7 +378,7 @@ type
             sGravity, sDeadlyFireworks, sWerewolf,
             sDisorientation, sTrack, sRegen,
             sViseOfDeath, sSacrificialTeleport, sTower,
-            sFierySnake, sSturdyArmor, sExile, sPowerWithin,
+            sFierySnake, sSturdyArmor, sExile, sPowerWithin, sShield,
             sRopesOfDeath, sDeafeningClatter, sRagingSpurt,
             sMentalBurst, sSteal, sUniversal,
             sBoomerang, sSilence, sMind);
@@ -555,6 +558,7 @@ type
     TreeTime: Integer;
     TileType: Integer;
     TileDirection: Integer;
+    ShieldTime: Integer;
   end;
 
 
@@ -685,6 +689,7 @@ begin
     Tiles[aX][aY].TreeTime := 0;
     Tiles[aX][aY].TileType := States.MapTileType(aX, aY);
     Tiles[aX][aY].TileDirection := States.MapTileRotation(aX, aY);
+    Tiles[aX][aY].ShieldTime := 0;
   end;
 end;
 
@@ -1536,10 +1541,28 @@ begin
 end;
 
 
+function ShieldStatus(P: Integer): ANSIString;
+var
+  aX, aY: Integer;
+begin
+  Result := '';
+  if Players[P].Hero > 0 then
+  begin
+    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+  end;
+  if TileOnBattlefield(aX, aY) then
+    if (Tiles[aX][aY].ShieldTime > States.GameTime)
+    and (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7)
+    and (Tiles[aX][aY].Skill = sShield) then
+      Result := '|[$FCA986]<$113>[] (' + IntToStr((Tiles[aX][aY].ShieldTime - States.GameTime)/10) + ')';
+end;
+
+
 function StatusText(P: Integer): ANSIString;
 begin
   Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) {+ PrisonedStatus(P)} + WerewolfStatus(P)
-  + RegenStatus(P) + DDStatus(P) {+ IllusionStatus(P)} + SilenceStatus(P) + PreparingStatus(P) + ExileStatus(P)
+  + RegenStatus(P) + DDStatus(P) {+ IllusionStatus(P)} + SilenceStatus(P) + PreparingStatus(P) + ExileStatus(P) + ShieldStatus(P)
   + ReChargeStatus(P) + RogueStatus(P) + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + FieryTrackStatus(P) + GameplayStatus(P);
 end;
 
@@ -1615,7 +1638,7 @@ begin
 
     sFierySnake: Result := '<$46>';
     sExile: Result := '<$112>';
-    sPowerWithin: Result := '<$48>';
+    sShield: Result := '<$48>';
 
     sRopesOfDeath: Result := '<$50>';
     sDeafeningClatter: Result := '<$51>';
@@ -6295,6 +6318,126 @@ begin
 end;
 
 
+procedure Shield(P, X, Y: Integer);
+var
+  X2, Y2, aX, aY, C: Integer;
+begin
+  if Players[P].Hero <= 0 then
+    Exit;
+
+  if States.GroupMember(Players[P].Hero, 0) <= 0 then
+    Exit;
+
+  if (TileOnBattlefield(X, Y))
+  and (Players[P].Hero > 0) then
+  begin
+    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    if (Abs(X2 - X) <= SHIELD_RADIUS)
+    and (Abs(Y2 - Y) <= SHIELD_RADIUS) then
+    begin
+
+      if States.PlayerIsAI(P) then
+      begin
+        Players[P].CastingSkill := True;
+        Players[P].SkillTime := States.GameTime + 20;
+        Actions.GroupOrderHalt(Players[P].Hero);
+      end;
+
+      TilesWineLength[P] := TilesWineLength[P] + 33;
+      SetLength(TilesWineX[P], TilesWineLength[P]);
+      SetLength(TilesWineY[P], TilesWineLength[P]);
+      SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
+      SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
+      SetLength(TilesWineObjects[P], TilesWineLength[P]);
+    
+      TilesWineX[P][Length(TilesWineX[P]) - 8] := X2 + 1;
+      TilesWineX[P][Length(TilesWineX[P]) - 7] := X2 - 1;
+      TilesWineY[P][Length(TilesWineY[P]) - 6] := Y2 - 1;
+      TilesWineY[P][Length(TilesWineY[P]) - 5] := Y2 + 1; 
+    
+      TilesWineY[P][Length(TilesWineY[P]) - 8] := Y2;
+      TilesWineY[P][Length(TilesWineY[P]) - 7] := Y2;
+      TilesWineX[P][Length(TilesWineX[P]) - 6] := X2;
+      TilesWineX[P][Length(TilesWineX[P]) - 5] := X2; 
+    
+      TilesWineX[P][Length(TilesWineX[P]) - 4] := X2 + 1;
+      TilesWineX[P][Length(TilesWineX[P]) - 3] := X2 - 1;
+      TilesWineX[P][Length(TilesWineX[P]) - 2] := X2 - 1;
+      TilesWineX[P][Length(TilesWineX[P]) - 1] := X2 + 1;
+    
+      TilesWineY[P][Length(TilesWineY[P]) - 4] := Y2 + 1;
+      TilesWineY[P][Length(TilesWineY[P]) - 3] := Y2 - 1;
+      TilesWineY[P][Length(TilesWineY[P]) - 2] := Y2 + 1;
+      TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2 - 1;
+
+      for I := 1 to 8 do
+      begin
+        TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := WARRIOR_OBJECT6;
+        if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
+        begin
+          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
+          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := sShield;
+        end;
+      end;
+
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 9;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 11;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 13;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 15;
+
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 1;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 3;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 5;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 7;
+      
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 17;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 19;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 21;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 23;
+    
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 9;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 11;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 13;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 15;
+
+      for aX := X - SHIELD_AREA_RADIUS + 1 to X + SHIELD_AREA_RADIUS - 1 do
+      for aY := Y - SHIELD_AREA_RADIUS + 1 to Y + SHIELD_AREA_RADIUS - 1 do
+      begin
+        C := C + 1;
+        TilesWineX[P][Length(TilesWineX[P]) - (C + 8)] := aX;
+        TilesWineY[P][Length(TilesWineY[P]) - (C + 8)] := aY;
+      end;
+
+      for I := 9 to 33 do
+      begin
+        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := States.GameTime + 22 + SHIELD_TIME;
+        SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - I] := States.GameTime + 22;
+        TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := WARRIOR_OBJECT7;
+        if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
+        begin
+          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
+          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := sShield;
+          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ShieldTime := States.GameTime + 22 + SHIELD_TIME;
+        end;
+      end;
+
+      for I := 1 to 33 do
+        if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
+        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
+        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
+        or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+          ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
+
+      Players[P].LastUsedSkill := sShield;
+      Players[P].WineSkillDelay := Round(WARRIOR_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+      ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 13] + CLEAR_ARRAY_FACTOR;
+
+    end;
+  end;
+end;
+
+
 procedure PowerWithin(P, X, Y: Integer);
 var
   X2, Y2: Integer;
@@ -8221,7 +8364,7 @@ begin
 
           sFierySnake: Players[P].StolenSkillName := '<$46>';
           sExile: Players[P].StolenSkillName := '<$112>';
-          sPowerWithin: Players[P].StolenSkillName := '<$48>';
+          sShield: Players[P].StolenSkillName := '<$48>';
 
           sRopesOfDeath: Players[P].StolenSkillName := '<$50>';
           sDeafeningClatter: Players[P].StolenSkillName := '<$51>';
@@ -8510,6 +8653,8 @@ begin
 
       sPowerWithin: PowerWithin(P, X, Y);
 
+      sShield: Shield(P, X, Y);
+
       sRopesOfDeath: if (U > 0)
                      and (InRange(O, 0, 7))
                      and (Abs(X - X2) <= ROPE_RADIUS)
@@ -8762,7 +8907,7 @@ begin
       22: RagingSpurt(P, X, Y);
       23: TotemOfAncestors(P, X, Y);
       25: UseStolenSkill(P, X, Y, -1);
-      26: PowerWithin(P, X, Y);
+      26: Shield(P, X, Y);
       27: Regen(P, X, Y);
     end;
   end;
