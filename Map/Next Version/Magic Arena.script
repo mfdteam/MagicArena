@@ -717,6 +717,10 @@ begin
   for aY := MIN_Y to MAX_Y do
   begin
     aObj := States.MapTileObject(aX, aY);
+    if (aObj = WARRIOR_OBJECT7)
+    and (TileOnBattlefield(aX, aY))
+    and (States.GameTime > Tiles[aX][aY].ShieldTime) then
+      Actions.MapTileObjectSet(aX, aY, 255);
     if (aObj <> 255)
     and (not InRange(aObj, 149, 172))
     and (TileOnBattlefield(aX, aY))
@@ -1549,8 +1553,7 @@ begin
   end;
   if TileOnBattlefield(aX, aY) then
     if (Tiles[aX][aY].ShieldTime > States.GameTime)
-    and (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7)
-    and (Tiles[aX][aY].Skill = sShield) then
+    and (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7) then
       Result := '|[$FCA986]<$113>[] (' + IntToStr((Tiles[aX][aY].ShieldTime - States.GameTime)/10) + ')';
 end;
 
@@ -2021,6 +2024,9 @@ begin
     C := C + 1;
     TilesFieldX[P][Length(TilesFieldX[P]) - C] := aX;
     TilesFieldY[P][Length(TilesFieldY[P]) - C] := aY;
+    if Tiles[aX][aY].ShieldTime < States.GameTime + FENCE_TIME + 1 then
+      Tiles[aX][aY].ShieldTime := States.GameTime + FENCE_TIME + 1;
+    Tiles[aX][aY].ObjectRefreshTime := States.GameTime + FENCE_TIME + 2;
   end;
 
   for I := 1 to 9 do
@@ -2035,7 +2041,6 @@ begin
     if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
     or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
     or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
-    or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7)
     or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
       ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
 
@@ -6402,7 +6407,8 @@ begin
         begin
           Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
           Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := sShield;
-          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ShieldTime := States.GameTime + 22 + SHIELD_TIME;
+          if Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ShieldTime < States.GameTime + 22 + SHIELD_TIME then
+            Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ShieldTime := States.GameTime + 22 + SHIELD_TIME;
         end;
       end;
 
@@ -6410,7 +6416,6 @@ begin
         if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7)
         or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
           ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
@@ -10746,6 +10751,9 @@ begin
           C := C + 1;
           TilesFieldX[I1][Length(TilesFieldX[I1]) - C] := aX;
           TilesFieldY[I1][Length(TilesFieldY[I1]) - C] := aY;
+          if Tiles[aX][aY].ShieldTime < States.GameTime + FENCE_TIME + 1 then
+            Tiles[aX][aY].ShieldTime := States.GameTime + FENCE_TIME + 1;
+          Tiles[aX][aY].ObjectRefreshTime := States.GameTime + FENCE_TIME + 2;
         end;
 
         for I := 1 to 9 do
@@ -10759,7 +10767,6 @@ begin
           if (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]) = BARB_OBJECT3)
           or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]) = BOWMAN_ROCKET)
           or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]) = BOWMAN_OBJECT5)
-          or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]) = WARRIOR_OBJECT7)
           or (InRange(States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
             ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - I] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - I] + CLEANUP_TIME;
 
