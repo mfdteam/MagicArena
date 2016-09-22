@@ -1103,7 +1103,7 @@ begin
       SpawnY := 58 + I * 11;
       Direction := 2;
       TribuneY := 3;
-      TribuneX := 43 + 2 * I;
+      TribuneX := 42 + 2 * I;
       ZombiePlayer := 10;
       RoadPlayer := 8;
       PlayersTeam := 0;
@@ -1118,7 +1118,7 @@ begin
       SpawnY := 58 + ((I - 4) * 11);
       Direction := 6;
       TribuneY := 26;
-      TribuneX := 55 + ((I - 4) * 2);
+      TribuneX := 54 + ((I - 4) * 2);
       ZombiePlayer := 11;
       RoadPlayer := 9;
       PlayersTeam := 1;
@@ -1233,8 +1233,11 @@ begin
         SetLength(Zombies, Length(Zombies) + 1);
         Zombies[Length(Zombies) - 1].Owner := P;
         Zombies[Length(Zombies) - 1].ZombieType := 3;
-        Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
-        Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
+        if ZomboHero[P][I] > 0 then
+        begin
+          Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
+          Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
+        end;
         RuneTaken := True;
         Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
       end;
@@ -2446,9 +2449,12 @@ begin
       Zombie := Actions.GiveGroup(Players[P].ZombiePlayer, 14 + 9 * Byte(Players[P].DD), X, Y, States.KaMRandomI(8), 1, 1);
       SetLength(Zombies, Length(Zombies) + 1);
       Zombies[Length(Zombies) - 1].Owner := P;
-      Zombies[Length(Zombies) - 1].ID := States.GroupMember(Zombie, 0);
+      if Zombie > 0 then
+      begin
+        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Zombie, 0);
+        Actions.GroupHungerSet(Zombie, RUNE_ZOMBIE_LIFE);
+      end;
       Zombies[Length(Zombies) - 1].ZombieType := 1 + Byte(Players[P].DD);
-      Actions.GroupHungerSet(Zombie, RUNE_ZOMBIE_LIFE);
       Players[P].FieldSkillDelay := Round(SWORD_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Players[P].LastUsedSkill := sZombieSummon;
     end;
@@ -2477,7 +2483,7 @@ begin
     and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
       U := States.UnitAt(X, Y);
-      if U <> - 1 then
+      if U > 0 then
         O := States.UnitOwner(U);
 
       if InRange(States.UnitOwner(U), 8, 11) then
@@ -2487,23 +2493,23 @@ begin
         Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       end;
 
-      if (U <> - 1)
-      and (U = States.GroupMember(Players[O].Hero, 0))
-      and (not Players[O].HeroInFear)
-      and (not Players[O].HeroImmortal)
-      and (O <> P)
-      and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
-      begin
-        Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$74> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sFear);
-        Players[O].HeroInFear := True;
-        Players[O].HeroFearGiver := P;
-        Players[O].HeroInFearTime := States.GameTime + IN_FEAR_TIME;
-        if Players[O].Hero > 0 then
-          Actions.GroupBlockOrders(Players[O].Hero, True);
-        Players[P].LastUsedSkill := sFear;
-        Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-      end;
+      if (U > 0) then
+        if (U = States.GroupMember(Players[O].Hero, 0))
+        and (not Players[O].HeroInFear)
+        and (not Players[O].HeroImmortal)
+        and (O <> P)
+        and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
+        begin
+          Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+          Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$74> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sFear);
+          Players[O].HeroInFear := True;
+          Players[O].HeroFearGiver := P;
+          Players[O].HeroInFearTime := States.GameTime + IN_FEAR_TIME;
+          if Players[O].Hero > 0 then
+            Actions.GroupBlockOrders(Players[O].Hero, True);
+          Players[P].LastUsedSkill := sFear;
+          Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+        end;
     end;
   end;
 
@@ -6402,7 +6408,7 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     D := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     U := States.UnitAt(X, Y);
-    if U <> - 1 then
+    if U > 0 then
       O := States.UnitOwner(U);
     if ((Abs(X2 - X) <= ROPE_RADIUS)
     and (Abs(Y2 - Y) <= ROPE_RADIUS)
@@ -6418,7 +6424,7 @@ begin
         Actions.GroupOrderHalt(Players[P].Hero);
         Actions.GroupOrderWalk(Players[P].Hero, X2, Y2, D);
       end;
-      if (U <> - 1)
+      if (U > 0)
       and (InRange(O, 0, 7))
       and (O <> P)
       and (not Players[O].HeroImmortal)
@@ -7408,9 +7414,9 @@ begin
     and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
       U := States.UnitAt(X, Y);
-      if U <> - 1 then
+      if U > 0 then
         O := States.UnitOwner(U);
-      if (U <> - 1)
+      if (U > 0)
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroInFear)
       and (not Players[O].HeroStunned)
@@ -7490,7 +7496,7 @@ begin
     and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
       U := States.UnitAt(X, Y);
-      if U <> - 1 then
+      if U > 0 then
         O := States.UnitOwner(U);
       if (U <> - 1)
       and (U = States.GroupMember(Players[O].Hero, 0))
@@ -8077,9 +8083,9 @@ begin
     and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
       U := States.UnitAt(X, Y);
-      if U <> - 1 then
+      if U > 0 then
         O := States.UnitOwner(U);
-      if (U <> - 1)
+      if (U > 0)
       and ((U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroImmortal)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
