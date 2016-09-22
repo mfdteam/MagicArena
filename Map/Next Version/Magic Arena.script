@@ -74,7 +74,6 @@ const
   FIRE_RADIUS = 6;
   SHOCK_RADIUS = 6;
   REGEN_RADIUS = 6;
-  ARMOR_RADIUS = 7;
   ROPE_RADIUS = 5;
   ROPE_ALLY_RADIUS = 7;
   STEAL_RADIUS = 8;
@@ -98,7 +97,6 @@ const
   SILENCE_RADIUS = 8;
   DEAFENING_RADIUS = 4;
   MENTAL_RADIUS = 3;
-  POWER_RADIUS = 5;
   
   RAGE_CYCLES = 1;
   TOTEM_CYCLES = 5;
@@ -113,7 +111,6 @@ const
   MENTAL_CYCLES = 1;
   MENTAL_DISTANCE = 8;
   TEN_K_SPEARS_WAVES = 1;
-  POWER_CYCLES = 10;
 
 //Skills speed
 
@@ -292,8 +289,6 @@ const
   REGEN_DELAY = 90;
   SHOCK_TIME = 20;
   SKILL_RESPAWN_TIME = 1;
-  ARMOR_TIME = 50;
-  ARMOR_DELAY = 12;
   ROPE_DELAY = 14;
   DEAFENING_TIME = 50;
   SPURT_TIME = 35;
@@ -378,7 +373,7 @@ type
             sGravity, sDeadlyFireworks, sWerewolf,
             sDisorientation, sTrack, sRegen,
             sViseOfDeath, sSacrificialTeleport, sTower,
-            sFierySnake, sSturdyArmor, sExile, sPowerWithin, sShield,
+            sFierySnake, sExile, sShield,
             sRopesOfDeath, sDeafeningClatter, sRagingSpurt,
             sMentalBurst, sSteal, sUniversal,
             sBoomerang, sSilence, sMind);
@@ -434,8 +429,6 @@ type
     SkillCastY: Integer;
     SkillCastDir: Integer;
     SkillCastRespawnTime: Integer;
-    ArmorStartTime: Integer;
-    ArmorGiver: Integer;
     HeroSilent: Boolean;
     HeroSilentTime: Integer;
     HeroSilentStartTime: Integer;
@@ -511,8 +504,6 @@ type
     RebornTime: Integer;
     HeroReborn: Boolean;
     MovedToTribune: Boolean;
-    PowerWithinCircleCycles: Integer;
-    PowerWithinCircleTime: Integer;
     FireworkTime: Integer;
     FireworkX: Integer;
     FireworkY: Integer;
@@ -570,20 +561,20 @@ var
   ClearTilesWineTimes, SetTilesWineTimes, TilesWineX, TilesWineY, TilesWineObjects: array[0..11] of array of Integer;
   RageCircles, TotemCircles, ViseCircles, ExpCircles,
   FireworksCircles1, FireworksCircles2, FireworksCircles3, FireworksCircles4, 
-  FireworksCircles5, KnightCircles, RogueCircles, StolenRogueCircles, PowerWithinCircles: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of array of aCircle;
+  FireworksCircles5, KnightCircles, RogueCircles, StolenRogueCircles: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of array of aCircle;
   GravityCircles: array[0..11] of array of aCircle;
   RageCirclesCounter, TotemCirclesCounter, ViseCirclesCounter, ExpCirclesCounter,
   FireworksCircles1Counter, FireworksCircles2Counter, FireworksCircles3Counter, FireworksCircles4Counter, 
-  FireworksCircles5Counter, KnightCirclesCounter, RogueCirclesCounter, StolenRogueCirclesCounter, PowerWithinCirclesCounter: array[0..11] of Integer;
+  FireworksCircles5Counter, KnightCirclesCounter, RogueCirclesCounter, StolenRogueCirclesCounter: array[0..11] of Integer;
   TilesRoadLength, TilesFieldLength, TilesWineLength: array[0..11] of Integer;
   RageCirclesLength, TotemCirclesLength, ViseCirclesLength, ExpCirclesLength,
   FireworksCircles1Length, FireworksCircles2Length, FireworksCircles3Length, 
-  FireworksCircles4Length, FireworksCircles5Length, KnightCirclesLength, RogueCirclesLength, StolenRogueCirclesLength, PowerWithinCirclesLength: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
+  FireworksCircles4Length, FireworksCircles5Length, KnightCirclesLength, RogueCirclesLength, StolenRogueCirclesLength: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
   GravityCirclesLength, TimeToClearGravityArray: array[0..11] of Integer;
   TimeToClearRageArray, TimeToClearTotemArray, TimeToClearViseArray, TimeToClearExpArray,
   TimeToClearFireworks1Array, TimeToClearFireworks2Array, TimeToClearFireworks3Array, 
   TimeToClearFireworks4Array, TimeToClearFireworks5Array, TimeToClearKnightArray,
-  TimeToClearRogueArray, TimeToClearStolenRogueArray, TimeToClearPowerWithinArray: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
+  TimeToClearRogueArray, TimeToClearStolenRogueArray: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
   PikeObjects, ShieldObjects: array[0..7] of Integer;
   Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
   TeamChoice: array[0..1] of ANSIString;
@@ -930,7 +921,6 @@ begin
     KnightCirclesLength[I][K] := 0;
     RogueCirclesLength[I][K] := 0;
     StolenRogueCirclesLength[I][K] := 0;
-    PowerWithinCirclesLength[I][K] := 0;
   end;
 
   for I := 0 to 11 do
@@ -953,7 +943,6 @@ begin
     KnightCirclesCounter[I] := -1;
     RogueCirclesCounter[I] := -1;
     StolenRogueCirclesCounter[I] := -1;
-    PowerWithinCirclesCounter[I] := -1;
   end;
 
   for I := 8 to 9 do
@@ -1012,8 +1001,6 @@ begin
       SkillCastY := 0;
       SkillCastDir := 0;
       SkillCastRespawnTime := 0;
-      ArmorStartTime := 0;
-      ArmorGiver := -1;
       HeroSilent := False;
       HeroSilentTime := 0;
       HeroSilentStartTime := 0;
@@ -1091,8 +1078,6 @@ begin
       RebornTime := 0;
       HeroReborn := False;
       MovedToTribune := False;
-      PowerWithinCircleCycles := 0;
-      PowerWithinCircleTime := 0;
       FireworkTime := 0;
       FireworkX := 0;
       FireworkY := 0;
@@ -6305,83 +6290,6 @@ begin
 end;
 
 
-
-procedure SturdyArmor(P, X, Y: Integer);
-var
- X2, Y2, U, O: Integer;
-begin
-  if Players[P].Hero <= 0 then
-    Exit;
-
-  if States.GroupMember(Players[P].Hero, 0) <= 0 then
-    Exit;
-
-  if (TileOnBattlefield(X, Y))
-  and (Players[P].Hero > 0) then
-  begin
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    if (Abs(X2 - X) <= ARMOR_RADIUS)
-    and (Abs(Y2 - Y) <= ARMOR_RADIUS) then
-    begin
-      U := States.UnitAt(X, Y);
-      if U > 0 then
-        O := States.UnitOwner(U);
-      if (U > 0)
-      and (U = States.GroupMember(Players[O].Hero, 0))
-      and (not Players[O].HeroImmortal)
-      and (Players[P].PlayersTeam = Players[O].PlayersTeam) then
-      begin
-        TilesFieldLength[P] := TilesFieldLength[P] + 4;
-        SetLength(TilesFieldX[P], TilesFieldLength[P]);
-        SetLength(TilesFieldY[P], TilesFieldLength[P]);
-        SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
-        SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
-        SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
-  
-        TilesFieldX[P][Length(TilesFieldX[P]) - 4] := X2;
-        TilesFieldX[P][Length(TilesFieldX[P]) - 3] := X2;
-        TilesFieldX[P][Length(TilesFieldX[P]) - 2] := X2 - 1;
-        TilesFieldX[P][Length(TilesFieldX[P]) - 1] := X2 + 1;
-    
-        TilesFieldY[P][Length(TilesFieldY[P]) - 4] := Y2 + 1;
-        TilesFieldY[P][Length(TilesFieldY[P]) - 3] := Y2 - 1;
-        TilesFieldY[P][Length(TilesFieldY[P]) - 2] := Y2;
-        TilesFieldY[P][Length(TilesFieldY[P]) - 1] := Y2;
-
-        for I := 1 to 4 do
-          TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := WARRIOR_OBJECT4;
-    
-        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 11;
-        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 12;
-        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 13;
-        ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 14;
-    
-        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 4] := States.GameTime + 1;
-        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 3] := States.GameTime + 2;
-        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 2] := States.GameTime + 3;
-        SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 4;
-
-        for I := 1 to 4 do
-          if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
-            if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
-             or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
-             or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
-             or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
-               ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
-
-        Players[O].ArmorStartTime := States.GameTime + ARMOR_DELAY;
-        Players[O].ArmorGiver := P;
-        Players[P].LastUsedSkill := sSturdyArmor;
-        Players[P].FieldSkillDelay := Round(WARRIOR_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-        ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
-
-      end;
-    end;
-  end;
-end;
-
-
 procedure Shield(P, X, Y: Integer);
 var
   X2, Y2, aX, aY, C: Integer;
@@ -6500,157 +6408,6 @@ begin
 
     end;
   end;
-end;
-
-
-procedure PowerWithin(P, X, Y: Integer);
-var
-  X2, Y2: Integer;
-begin
-  if Players[P].Hero <= 0 then
-    Exit;
-
-  if States.GroupMember(Players[P].Hero, 0) <= 0 then
-    Exit;
-
-  if (TileOnBattlefield(X, Y))
-  and (Players[P].Hero > 0) then
-  begin
-
-    if States.PlayerIsAI(P) then
-    begin
-      Players[P].CastingSkill := True;
-      Players[P].SkillTime := States.GameTime + 20;
-      Actions.GroupOrderHalt(Players[P].Hero);
-    end;
-
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-
-    TilesWineLength[P] := TilesWineLength[P] + 8;
-    SetLength(TilesWineX[P], TilesWineLength[P]);
-    SetLength(TilesWineY[P], TilesWineLength[P]);
-    SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
-    SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
-    SetLength(TilesWineObjects[P], TilesWineLength[P]);
-
-    TilesWineX[P][Length(TilesWineX[P]) - 8] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 7] := X2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 6] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 5] := Y2 + 1; 
-    
-    TilesWineY[P][Length(TilesWineY[P]) - 8] := Y2;
-    TilesWineY[P][Length(TilesWineY[P]) - 7] := Y2;
-    TilesWineX[P][Length(TilesWineX[P]) - 6] := X2;
-    TilesWineX[P][Length(TilesWineX[P]) - 5] := X2; 
-    
-    TilesWineX[P][Length(TilesWineX[P]) - 4] := X2 + 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 3] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 2] := X2 - 1;
-    TilesWineX[P][Length(TilesWineX[P]) - 1] := X2 + 1;
-    
-    TilesWineY[P][Length(TilesWineY[P]) - 4] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 3] := Y2 - 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 2] := Y2 + 1;
-    TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2 - 1;
-
-    for I := 1 to 8 do
-    begin
-      TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := WARRIOR_OBJECT6;
-      if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
-      begin
-        Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
-        Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := sPowerWithin;
-      end;
-    end;
-
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 13;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 14;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 15;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 16;
-
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 1;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 2;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 3;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 4;
-      
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 17;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 18;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 19;
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 20;
-    
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 5;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 6;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 7;
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 8;
-
-    for I := 1 to 8 do
-      if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
-      or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
-      or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-      or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
-        ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
-
-    if States.PlayerIsAI(P) then
-    begin
-      Players[P].SkillCastDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
-      Players[P].SkillCastRespawnTime := States.GameTime + SKILL_RESPAWN_TIME;
-      Players[P].SkillCastX := X2;
-      Players[P].SkillCastY := Y2;
-      Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
-    end;
-
-    Players[P].LastUsedSkill := sPowerWithin;
-
-    Players[P].WineSkillDelay := Round(WARRIOR_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-
-    Players[P].PowerWithinCircleTime := States.GameTime + 20;
-
-  end;
-
-end;
-
-
-procedure DrawPowerWithinCircle(P: Integer);
-var
-  X2, Y2: Integer;
-begin
-  Players[P].PowerWithinCircleCycles := Players[P].PowerWithinCircleCycles + 1;
-  X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-  Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-  PowerWithinCirclesCounter[P] := PowerWithinCirclesCounter[P] + 1;
-  if PowerWithinCirclesCounter[P] = MAX_CIRCLES_AT_ONCE then
-    PowerWithinCirclesCounter[P] := 0;
-  PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] := PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] + POWER_RADIUS;
-  SetLength(PowerWithinCircles[P][PowerWithinCirclesCounter[P]], PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]]);
-
-  for I := PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] downto PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - POWER_RADIUS + 1 do
-  begin
-    PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - I].Obj := PikeObjects[P];
-    PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - I].X := X2;
-    PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - I].Y := Y2;
-    PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - I].AddTime := States.GameTime + Round(WARRIOR_WINE_SPEED * (PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - I));
-    Players[P].PowerWithinCircleTime := PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - I].AddTime + 3;
-    if I mod POWER_RADIUS > 0 then
-      PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - I].Radius := POWER_RADIUS - I mod POWER_RADIUS
-    else
-      PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - I].Radius := 0;
-
-  end; 
-       
-  for I := 0 to PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - 1 do 
-    if I mod POWER_RADIUS = 1 then
-      PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - I].Obj := 255;
-
-  if Players[P].PowerWithinCircleCycles = POWER_CYCLES then
-  begin
-    Players[P].PowerWithinCircleCycles := 0;
-    Players[P].PowerWithinCircleTime := 0;
-  end;
-
-  TimeToClearPowerWithinArray[P][PowerWithinCirclesCounter[P]] := PowerWithinCircles[P][PowerWithinCirclesCounter[P]][PowerWithinCirclesLength[P][PowerWithinCirclesCounter[P]] - 1].AddTime + CLEAR_ARRAY_FACTOR + 10;
-
 end;
 
 
@@ -8713,20 +8470,6 @@ begin
                 Players[P].WineSkillDelay := Round(WARRIOR_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
               end;
 
-      sSturdyArmor: if (U > 0)
-                    and (InRange(O, 0, 7))
-                    and (Abs(X - X2) <= ARMOR_RADIUS)
-                    and (Abs(Y - Y2) <= ARMOR_RADIUS)
-                    and (Players[P].PlayersTeam = Players[O].PlayersTeam) then
-                    begin
-                      TempFieldSkillDelay := Players[P].FieldSkillDelay;
-                      SturdyArmor(P, X, Y);
-                      Players[P].FieldSkillDelay := TempFieldSkillDelay;
-                      Players[P].WineSkillDelay := Round(WARRIOR_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-                    end;
-
-      sPowerWithin: PowerWithin(P, X, Y);
-
       sShield: Shield(P, X, Y);
 
       sRopesOfDeath: if (U > 0)
@@ -9156,9 +8899,6 @@ begin
         Players[P].HeroExileTime := 0;
         Players[P].HeroExileBackTime := 0;
 
-        Players[P].PowerWithinCircleCycles := 0;
-        Players[P].PowerWithinCircleTime := 0;
-
         for I := 0 to 7 do
         begin
 
@@ -9229,12 +8969,6 @@ begin
             if (FireworksCircles5[P][K][I].AddTime > States.GameTime)
             and (FireworksCircles5[P][K][I].Obj <> 255) then
               FireworksCircles5[P][K][I].Obj := SKILL_CANCEL_OBJ;
-
-        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-          for I := 0 to PowerWithinCirclesLength[P][K] - 1 do
-            if (PowerWithinCircles[P][K][I].AddTime > States.GameTime)
-            and (PowerWithinCircles[P][K][I].Obj <> 255) then
-              PowerWithinCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
@@ -9961,24 +9695,6 @@ begin
 end;
 
 
-procedure CheckPowerWithinCircles(P: Integer);
-begin
-  if States.PlayerEnabled(P) then
-    for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-    begin
-      if PowerWithinCirclesLength[P][K] > 0 then
-        for I := 0 to PowerWithinCirclesLength[P][K] - 1 do
-        begin
-          if TileOnBattlefield(PowerWithinCircles[P][K][I].X, PowerWithinCircles[P][K][I].Y) then
-          begin
-            if (States.GameTime = PowerWithinCircles[P][K][I].AddTime) then
-              SetCircle(P, PowerWithinCircles[P][K][I].X, PowerWithinCircles[P][K][I].Y, PowerWithinCircles[P][K][I].Radius, PowerWithinCircles[P][K][I].Obj, True, False, sPowerWithin);
-          end;
-        end;
-    end;
-end;
-
-
 procedure CheckFireworks1Circles(P: Integer);
 var
   aRelief, PosX, PosY: Integer;
@@ -10593,8 +10309,6 @@ begin
     Players[O].SettingTrack := False;
     Players[O].HeroExileTime := 0;
     Players[O].HeroExileBackTime := 0;
-    Players[O].PowerWithinCircleCycles := 0;
-    Players[O].PowerWithinCircleTime := 0;
 
     for I := 0 to 7 do
     begin
@@ -10666,12 +10380,6 @@ begin
         if (FireworksCircles5[O][K][I].AddTime > States.GameTime)
         and (FireworksCircles5[O][K][I].Obj <> 255)  then
           FireworksCircles5[O][K][I].Obj := SKILL_CANCEL_OBJ;
-
-    for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-      for I := 0 to PowerWithinCirclesLength[O][K] - 1 do
-        if (PowerWithinCircles[O][K][I].AddTime > States.GameTime)
-        and (PowerWithinCircles[O][K][I].Obj <> 255) then
-          PowerWithinCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
   end;
 
@@ -11116,9 +10824,6 @@ begin
         end;
       end;
 
-      if States.GameTime = Players[I1].PowerWithinCircleTime then
-        DrawPowerWithinCircle(I1);
-
       if States.GameTime = Players[I1].TrackStartTime then
       begin
         Players[I1].SettingTrack := True;
@@ -11173,14 +10878,6 @@ begin
       if (States.GameTime >= Players[I1].PreparingTime)
       and (Players[I1].Preparing) then
         Players[I1].Preparing := False;
-
-      if States.GameTime = Players[I1].ArmorStartTime then
-      begin
-        Players[I1].HeroImmortal := True;
-        Players[I1].HeroImmortalTime := States.GameTime + ARMOR_TIME;
-        Players[I1].PlayerStatusTime := States.GameTime + ARMOR_TIME + 5;
-        Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$70> ' + '[$' + States.PlayerColorText(Players[I1].ArmorGiver) + ']' + States.PlayerName(Players[I1].ArmorGiver) + '[]<$71> ' + SkillName(sSturdyArmor);
-      end;
 
       if States.GameTime = Players[I1].SpurtStartTime then
       begin
@@ -11882,12 +11579,6 @@ begin
       begin
         StolenRogueCirclesLength[I][K] := 0;
         SetLength(StolenRogueCircles[I][K], 0);
-      end;
-
-      if States.GameTime = TimeToClearPowerWithinArray[I][K] then
-      begin
-        PowerWithinCirclesLength[I][K] := 0;
-        SetLength(PowerWithinCircles[I][K], 0);
       end;
 
     end;
@@ -13273,97 +12964,6 @@ begin
       end;
     end;
 
-  if (States.KaMRandomI(10) > 8)
-  and (Players[P].FieldSkillDelay = 0)
-  and (Players[P].Hero > 0) then
-    if States.GroupMember(Players[P].Hero, 0) > 0 then
-    begin
-      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - ARMOR_RADIUS + 1) to (aX + ARMOR_RADIUS - 1) do
-      for Y := (aY - ARMOR_RADIUS + 1) to (aY + ARMOR_RADIUS - 1) do
-      begin
-        U := States.UnitAt(X, Y);
-        if (U > 0)
-        and (CanUseWineFieldSkill(X, Y)) then
-        begin
-          O := States.UnitOwner(U);
-          if (P <> -1)
-          and (CanUseSkillAgainstUnit(P, U))
-          and (not Players[O].HeroImmortal)
-          and (Players[P].PlayersTeam = Players[O].PlayersTeam)
-          and (States.KaMRandom > 0.1) then 
-          begin
-            SturdyArmor(P, X, Y);
-            Exit;
-          end;
-        end;
-      end;
-    end;
-
-  {if (States.KaMRandomI(10) > 7)
-  and (Players[P].WineSkillDelay = 0)
-  and (Players[P].Hero > 0) then
-    if States.GroupMember(Players[P].Hero, 0) > 0 then
-    begin
-      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - SILENCE_RADIUS + 1) to (aX + SILENCE_RADIUS - 1) do
-      for Y := (aY - SILENCE_RADIUS + 1) to (aY + SILENCE_RADIUS - 1) do
-      begin
-        U := States.UnitAt(X, Y);
-        if (U > 0)
-        and (not InRange(X, aX - 1, aX + 1))
-        and (not InRange(Y, aY - 1, aY + 1)) then
-        begin
-          O := States.UnitOwner(U);
-          if (P <> O)
-          and (CanUseSkillAgainstUnit(P, U))
-          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          and (States.KaMRandom > 0.1) then 
-          begin
-            CircleOfSilence(P, aX, aY);
-            Exit;
-          end;
-        end;
-      end;
-    end;}
-
-  if (States.KaMRandomI(10) > 7)
-  and (Players[P].WineSkillDelay = 0)
-  and (Players[P].Hero > 0) then
-    if States.GroupMember(Players[P].Hero, 0) > 0 then
-    begin
-      A := 0;
-      E := 0;
-      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - POWER_RADIUS + 1) to (aX + POWER_RADIUS - 1) do
-      for Y := (aY - POWER_RADIUS + 1) to (aY + POWER_RADIUS - 1) do
-      begin
-        U := States.UnitAt(X, Y);
-        if (U > 0)
-        and (not InRange(X, aX - 1, aX + 1))
-        and (not InRange(Y, aY - 1, aY + 1)) then
-        begin
-          O := States.UnitOwner(U);
-          if Players[P].PlayersTeam <> Players[O].PlayersTeam then
-            E := E + 1;
-          if Players[P].PlayersTeam = Players[O].PlayersTeam then
-            A := A + 1;
-          if (P <> O)
-          and (CanUseSkillAgainstUnit(P, U))
-          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          and (States.KaMRandom > 0.1)
-          and (E > A) then 
-          begin
-            PowerWithin(P, aX, aY);
-            Exit;
-          end;
-        end;
-      end;
-    end;
-
   AIWalk(P);
 
   if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
@@ -13778,9 +13378,6 @@ begin
 
   for N[16] := 0 to 7 do
     CheckRogueCircles(N[16]);
-
-  for N[19] := 0 to 7 do
-    CheckPowerWithinCircles(N[19]);
 
   for N[11] := 0 to 7 do
     CheckStolenRogueCircles(N[11]);
