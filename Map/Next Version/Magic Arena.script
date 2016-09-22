@@ -405,8 +405,6 @@ type
     ZombiePlayer: Integer;
     RoadPlayer: Integer;
     DefenceTime: Integer;
-    HeroPrisoned: Boolean;
-    HeroPrisonedTime: Integer;
     WerewolfTime: Integer;
     VagaX: Integer;
     VagaY: Integer;
@@ -420,7 +418,6 @@ type
     RespawnCheckTime: Integer;
     DDTime : Integer;
     DD: Boolean;
-    InIllusion: Boolean;
     PlayersTeam: Integer;
     TempPlayersTeam: Integer;
     CastingSkill: Boolean;
@@ -988,8 +985,6 @@ begin
       HeroInFear := False;
       HeroFearGiver := -1;
       DefenceTime := 0;
-      HeroPrisoned := False;
-      HeroPrisonedTime := 0;
       WerewolfTime := 0;
       VagaX := 0;
       VagaY := 0;
@@ -1003,7 +998,6 @@ begin
       RespawnCheckTime := -1;
       DDTime := 0;
       DD := False;
-      InIllusion := False;
       CastingSkill := False;
       SkillTime := 0;
       SkillCastX := 0;
@@ -1388,17 +1382,6 @@ begin
 end;
 
 
-function IllusionStatus(P: Integer): ANSIString;
-begin
-  if Players[P].InIllusion then
-    Result := '|[$FCA986]<$43>[]'
-
-  else
-
-    Result := '';
-end;
-
-
 function RegenStatus(P: Integer): ANSIString;
 begin
   if Players[P].RegenDelay - States.GameTime > 0 then
@@ -1450,17 +1433,6 @@ begin
   if Players[P].Preparing then
     Result := '';
 
-end;
-
-
-function PrisonedStatus(P: Integer): ANSIString;
-begin
-  if Players[P].HeroPrisoned then
-    Result := '|[$51AFEE]<$4>[]'
-
-  else
-
-    Result := '';
 end;
 
 
@@ -1560,9 +1532,9 @@ end;
 
 function StatusText(P: Integer): ANSIString;
 begin
-  Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) {+ PrisonedStatus(P)} + WerewolfStatus(P)
-  + RegenStatus(P) + DDStatus(P) {+ IllusionStatus(P)} + SilenceStatus(P) + PreparingStatus(P) + ExileStatus(P) + ShieldStatus(P)
-  + ReChargeStatus(P) + RogueStatus(P) + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + FieryTrackStatus(P) + GameplayStatus(P);
+  Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) + WerewolfStatus(P) + RegenStatus(P) + DDStatus(P)
+  + SilenceStatus(P) + PreparingStatus(P) + ExileStatus(P) + ShieldStatus(P) + ReChargeStatus(P) + RogueStatus(P)
+  + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + FieryTrackStatus(P) + GameplayStatus(P);
 end;
 
 
@@ -5529,7 +5501,7 @@ end;
 
 procedure Prison(P, X, Y: Integer);
 var
-  aX, aY, X1, Y1, X2, Y2, X3, Y3, G, O, Direction: Integer;
+  aX, aY, X1, Y1, X2, Y2, X3, Y3, Direction: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -5582,24 +5554,6 @@ begin
           ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + PRISON_TIME + 1;
           SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 1;
           TilesFieldObjects[P][Length(TilesFieldObjects[P]) - 1] := BOWMAN_OBJECT5;
-        end;
-      end;
-    end;
-
-    for aX := X2 to X3 do
-    for aY := Y2 to Y3 do
-    begin
-      if (TileOnBattlefield(aX, aY))      
-      and (((X - aX) * (X - aX) + (Y - aY) * (Y - aY)) <= (PRISON_RADIUS - 2) * (PRISON_RADIUS - 2)) then
-      begin
-        G := States.GroupAt(aX, aY);
-        if G > 0 then
-        begin
-          O := States.GroupOwner(G);
-          if (G = Players[O].Hero)
-          and (not Players[O].HeroPrisoned) then
-            Players[O].HeroPrisonedTime := States.GameTime + PRISON_TIME + 2;
-            Players[O].HeroPrisoned := True;
         end;
       end;
     end;
@@ -9336,20 +9290,17 @@ begin
   end;
 
   if aObj = RUNE_ILLUSION_OBJ then
+  for I := 0 to 3 do
   begin
-    Players[P].InIllusion := True;
-    for I := 0 to 3 do
-    begin
-      ZomboHero[P][I] := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
-      SetLength(Zombies, Length(Zombies) + 1);
-      Zombies[Length(Zombies) - 1].Owner := P;
-      Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
-      Zombies[Length(Zombies) - 1].ZombieType := 3;
-      Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
-      if TileOnRuneSpawn(aX, aY) then
-        RuneTaken := True;
-      Actions.MapTileObjectSet(aX, aY, 255);
-    end;
+    ZomboHero[P][I] := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
+    SetLength(Zombies, Length(Zombies) + 1);
+    Zombies[Length(Zombies) - 1].Owner := P;
+    Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
+    Zombies[Length(Zombies) - 1].ZombieType := 3;
+    Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
+    if TileOnRuneSpawn(aX, aY) then
+      RuneTaken := True;
+    Actions.MapTileObjectSet(aX, aY, 255);
   end;
 
   if aObj = RUNE_RECHARGE_OBJ then
@@ -10979,16 +10930,6 @@ begin
       if (States.GameTime >= Players[I1].DDTime)
       and (Players[I1].DD) then
         Players[I1].DD := False;
-
-      if (States.GameTime >= Players[I1].HeroPrisonedTime)
-      and (Players[I1].HeroPrisoned) then
-        Players[I1].HeroPrisoned := False;
-
-      if (ZomboHero[I1][0] = -1)
-      and (ZomboHero[I1][1] = -1) 
-      and (ZomboHero[I1][2] = -1) 
-      and (ZomboHero[I1][3] = -1) then
-        Players[I1].InIllusion := False;
 
       if (States.GameTime >= Players[I1].HeroStunnedTime)
       and (Players[I1].HeroStunned) then
