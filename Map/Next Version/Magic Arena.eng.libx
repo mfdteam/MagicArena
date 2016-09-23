@@ -45,7 +45,7 @@
 44:Double Damage!
 45:Next rune in
 46:Fiery Snake
-47:Sturdy Armor
+47:Exile 
 48:Shield of Darkness
 49:Silent!
 50:Ropes of Death
@@ -115,14 +115,14 @@
 205:You've chosen Bowman. This hero can kill another from any place, he is strong enough on far distance. In melee fight he can hone enemies, so you'll help your allies to kill them. But Bowman has weak damage in melee fight, also he is very vulnerable against Sword Fighter.
 206:You've chosen Pikeman. Hero is strong in melee combat, his ultimate cal kill through immortality, he also can block enemy's attacks and even to reach your enemy very fast... but the last feature costs 1 hp. Furthermore, the cooldowns is higher than normal. Because of this you should change tactics from aggressive to passive and back.
 207:You've chosen Axe Fighter. He's the most versatile hero, because he has 6 skills. He can move heroes, has good damage, and can heal your team when changes shape. But cooldowns are extremely big, and hero can't use all 6 spells at one moment, because when he is one shape, he can't cast spells from another shape.
-208:You've chosen Warrior. This hero can't be killed easily and he can become immortal or make teammate immortal. He is also strong in melee combat. But it's hard to reach your enemy.
+208:You've chosen Warrior. This hero can't be killed easily, because he can become exile enemy or ally from the Arena, and moreover, his ultimate can make all units in area immortal. But he can’t deal a lot of damage. Warrior can show himself well in cooperation with team.
 209:You've chosen Knight. This hero is fast by KaM nature. Knight has good fighting combo for single enemy, but it's hard enough to implement it. Furthermore, Knight almost doesn't have AoE damage.
 210:You've chosen Rogue. His main advantage is possibility of stealing enemies' spells, and sometimes cast them more often than enemy. But he has only 2 spells, though with short cooldowns. And don't forget about vulnerability against Sword Fighter and all types of illusions.
 211:You've chosen Scout. He is famous for his ability to capture enemies' minds giving your team strategic advantage. He is fast by his nature, but he has not the strongest damage and controll spells.
 301:Fiery Lance. Distance: 10x1 (10 - length, 1 - width), Cooldown: 8 seconds, Delay: short, Animation during the delay: 4 tiles, Speed: medium|Effects: -1 HP
 302:Cracking Earth. Distance: 8x1, Cooldown: 10 seconds, Delay: short, Animation: 4 tiles, Speed: slow, Effects: -1 HP, fissure lays on the ground for 6,5 seconds.
 303:Accurate Shot. Distance: 12x1, Cooldown: 9 seconds, Delay: short, Animation: 4 tiles, Speed: fast, Effects: -1 HP
-304:Spiked Earth. Distance: 8x1 and 4x1, Cooldown: 12 seconds, Delay: short, Duration: 6 seconds max (1 seconds path lays, 5 seconds after that, animation stun – 1.5 second), Animation: 4 tiles, Speed: slow, Effects: Stun
+304:Spiked Earth. Distance: 8x1 and 4x1 for zombies, Cooldown: 12 seconds, Delay: short, Duration: 6 seconds max (1 seconds path lays, 5 seconds after that, animation stun – 1.5 second), Animation: 4 tiles, Speed: slow, Effects: Stun
 305:Rocket. Radius: 48 tiles (whole map), Cooldown: 10 seconds, Delay: short, Animation: 4 tiles, Effects: -1 HP. Leaves a trail after itself. If kill someone, cause a burst in 3x3 area.
 306:Vise of Death. Radius: 5 tiles, Distance: 8x1, Cooldown: 15 seconds, Delay: -, Animation: -, Speed: fast, then medium, Effects: -1 HP. Block enemy's attack
 307:Gravity. Radius of using: 5 tiles, Radius of gravity field: 5 tiles, Cooldown: 15 seconds, Delay: -, Animation: -, Speed: happens instantly, Effects: violent gathering of heroes.
@@ -134,24 +134,24 @@
 401:Teleport. Radius: 5 tiles, Cooldown: 8 seconds, Delay: -, Animation: -, Effects: just teleport. Nothing more.
 402:Wave of Rage. Radius: from 2 to 5 tiles, Number of waves: 1, Cooldown: 17 seconds, Delay: -, Animation: -, Speed: fast, Effects: -1 HP. Block enemy's attack.
 403:Sudden Death. Your Radius of using: 7 tiles, Area of burst: 3x3, Cooldown: 16 seconds, Delay: long, Animation: 4 tiles, Effects: -1 HP
-404:Zombie Summon. Radius of summon: 3 tiles, Cooldown: 13 seconds, Zombies time of life: 3 minutes, Delay: -, Animation: -, Effects: Zombie can hit an enemy with his weapon, but enemy can't, and he has to kill them by a skill. The main feature: zombies can kill heroes through the immortality.
+404:Zombie Summon. Radius of summon: 3 tiles, Cooldown: 13 seconds, Zombies time of life: 3 minutes, Delay: -, Animation: -, Effects: Zombie can hit an enemy with his weapon, but enemy can't, and he has to kill them by a skill. 
 405:Prison. Radius of using: 6 tiles, Radius: 4 tiles, Duration: 6 seconds, Cooldown: 14 seconds, Delay: -, Animation: -, Effects: Heroes can't move in prison. None can destroy it.
 406:Sacrificial Teleport. Radius: 8 tiles, Cooldown: 17 seconds, Delay: -, Animation: -, Effects: Pikeman loses 1 HP, and teleports. You can't use it when you have 1 hp.
 407:Deadly Fireworks. Radius of the first burst: 5 tiles, Radius of the secondary bursts: 3 tiles, Radius of using: 6 tiles, Delay: very long, Animation: 4 tiles, Speed: fast, Cooldown: 18 seconds, Effects: -1 HP. Everyone can see where you are going to set fireworks.
-408:Sturdy Armor. Radius: 7 tiles, Immortality duration: 5 seconds, Cooldown: 16 seconds, Animation: 4 tiles (doesn't kill), Delay: short, Effect: Immortality is the same as rune's immortality of after respawn.
+408:Exile. Radius for allies: 7 tiles, for enemies: 3 tiles, Duration: 4 seconds, Cooldown: 15 seconds, Animation: 4 tiles (doesn't kill), Delay: short, Effect: Target disappears for the Arena
 409:Deafening Clatter. Radius: from 2 to 4 tiles, Cooldown: 15 seconds, Duration: 5 seconds, Animation: -, Delay: -, Speed: medium, Effect: stun. Can block enemy's attacks
 410:Spell Steal. Radius: 8 tiles, Cooldown: 9 seconds, Animation: 4 tiles (don't kill), Delay: short, Duration: 120 seconds, Effect: you steal a spell, and you can cast it by clicking wine field. Kills zombies and illusions with a 70% chance. 
 411:Silence. Radius: 6 tiles, Duration: 5 seconds, Cooldown: 15 seconds, Animation: 4 tiles (doesn't kill), Delay: short, Effect: target can't use spells
-413:Fiery Track. Duration: 10 seconds, Cooldown: 17 seconds, Delay: -, Animation: -, Effects: -1 HP
+413:Fiery Track. Duration: 7 seconds, Cooldown: 14 seconds, Delay: -, Animation: -, Effects: -1 HP
 501:10000 spears. Distance: 20x3, Cooldown: 25 seconds, Delay: long, Animation: 8 tiles, Speed: very fast, Effects: -1 HP.
-502:Totem of Ancestors. Radius of using: 7 tiles, Radius of waves: 4 tiles, Number of waves: 5, Cooldown: 35 seconds, Delay: long, Animation: 8 tiles (with the ability of escaping), Speed: slow, Effects: -1 HP. Totem can destroy Bowman's mine, if you'll place it just right on the mine (exactly totem, not its waves).
+502:Totem of Ancestors. Radius of using: 7 tiles, Radius of waves: 4 tiles, Number of waves: 5, Cooldown: 35 seconds, Delay: long, Animation: 8 tiles (with the ability of escaping), Speed: slow, Effects: -1 HP. Totem can destroy runes.
 503:Sniper Shot. Distance: 48x1 (whole map), Cooldown: 20 seconds, Delay: medium, Animation: 8 tiles, Speed: fast, Effects: -1 HP
 504:Fear. Radius: 5 tiles, Cooldown: 25 seconds, Delay: -, Animation: -, Duration: 8 seconds, Effects: Enemy can't use spells, and he wanders around, As while you stunned but storming, you go on storming and you can't use spells when feared. Kills zombies and illusions.
 505:Revenge from Nowhere. Distance: 16x1, Radius of explosion: 6 tiles, Number of explosions: 1, Cooldown: 25 seconds, Delay: medium, Animation: 8 tiles, Speed: fast, Effects: -1 HP.
-506:Infernal Tower. Radius of using: 5 tiles, Radius of spawning recruit: from 2 to 3 tiles, Cooldown: 30 seconds, Delay: -, Animation: -, Effects: -1 HP. Pierces immortality and blocks.
+506:Infernal Tower. Radius of using: 5 tiles, Radius of spawning recruit: 3 tiles, Cooldown: 30 seconds, Delay: -, Animation: -, Effects: -1 HP. Pierces blocks.
 507:Werewolf. Delay: short, Animation: -, Effect: you are the Vagabond, a new hero. When you are Vagabond, you can't use skills of Axe Fighter, Cooldown: 125 seconds, Duration: 45 seconds.
-508:Power Within. Number of waves: 10, Cooldown: 35 seconds, Animation: 8 tiles, Delay: medium, Effects: -1 hp. Block enemy's attacks
+508:Shield of darkness. AoE: 5x5, Cooldown: 30 seconds, Animation: 8 tiles, Delay: medium, Effects: every unit in area becomes immortal. 
 509:Raging Spurt. Distance: 12 tiles, Cooldown: 18 seconds, Animation: 8 tiles (doesn't kill), Delay: long, Speed: very fast, Effect: quick teleport, and -1 hp for anyone who is near Knight's direction. Immortality during the spurt.
 510:Your Winefield skill is stolen skill.
-511:Mind Control. Radius of using: 4 tiles, Duration: 15 seconds, Cooldown: 50 seconds, Animation: 8 tiled (can't kill), Delay: long, Effect: Scout captures the mind of enemy, and he can control him, but he can't control yourself. Your target is immortal.
+511:Mind Control. Radius of using: 4 tiles, Duration: 15 seconds, Cooldown: 50 seconds, Animation: 8 tiled (can't kill), Delay: long, Effect: Scout captures the mind of enemy, and he can control him, but he can't control himself. Your target is immortal.
 513:Regen. Radius of using: 6 tiles, Area: 3x3, Cooldown: 60 seconds, Delay: medium, Animation: 4 tiles, Duration: 5 seconds, Effects: +1 HP. You can get 1 HP once in 9 seconds. It means that you can earn 1 HP for 1 using the skill. Be careful: your enemies can steal your healing bushes.
