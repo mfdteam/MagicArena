@@ -545,6 +545,7 @@ type
     TileType: Integer;
     TileDirection: Integer;
     ShieldTime: Integer;
+    ImmortalTime: Integer;
   end;
 
 
@@ -679,6 +680,7 @@ begin
     Tiles[aX][aY].TileType := States.MapTileType(aX, aY);
     Tiles[aX][aY].TileDirection := States.MapTileRotation(aX, aY);
     Tiles[aX][aY].ShieldTime := 0;
+    Tiles[aX][aY].ImmortalTime := 0;
   end;
 end;
 
@@ -1524,9 +1526,18 @@ begin
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
   end;
   if TileOnBattlefield(aX, aY) then
+  begin
     if (Tiles[aX][aY].ShieldTime > States.GameTime)
+    and (Tiles[aX][aY].ShieldTime > Tiles[aX][aY].ImmortalTime)
     and (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7) then
       Result := '|[$FCA986]<$113>[] (' + IntToStr((Tiles[aX][aY].ShieldTime - States.GameTime)/10) + ')';
+
+    if (Tiles[aX][aY].ImmortalTime > States.GameTime)
+    and (Tiles[aX][aY].ShieldTime < Tiles[aX][aY].ImmortalTime)
+    and (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7) then
+      Result := '|[$FCA986]<$114>[] (' + IntToStr((Tiles[aX][aY].ImmortalTime - States.GameTime)/10) + ')';
+  end;
+
 end;
 
 
@@ -1933,6 +1944,49 @@ begin
 end;
 
 
+procedure CreateShield(P: Integer);
+var
+  C, aX, aY: Integer;
+begin
+  TilesFieldLength[P] := TilesFieldLength[P] + 9;
+  SetLength(TilesFieldX[P], TilesFieldLength[P]);
+  SetLength(TilesFieldY[P], TilesFieldLength[P]);
+  SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
+  SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
+  SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
+
+  for aX := Players[P].SpawnX - 1 to Players[P].SpawnX + 1 do
+  for aY := Players[P].SpawnY - 1 to Players[P].SpawnY + 1 do
+  begin
+    C := C + 1;
+    TilesFieldX[P][Length(TilesFieldX[P]) - C] := aX;
+    TilesFieldY[P][Length(TilesFieldY[P]) - C] := aY;
+    if Tiles[aX][aY].ImmortalTime < States.GameTime + FENCE_TIME + 1 then
+      Tiles[aX][aY].ImmortalTime := States.GameTime + FENCE_TIME + 1;
+    Tiles[aX][aY].ObjectRefreshTime := States.GameTime + FENCE_TIME + 2;
+  end;
+
+  for J := 1 to 9 do
+  begin
+    TilesFieldObjects[P][Length(TilesFieldObjects[P]) - J] := WARRIOR_OBJECT7;
+    Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - J]][TilesFieldY[P][Length(TilesFieldY[P]) - J]].Skill := sNone;
+    Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - J]][TilesFieldY[P][Length(TilesFieldY[P]) - J]].Owner := P;
+    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - J] := States.GameTime + 1 + FENCE_TIME;
+    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - J] := States.GameTime + 1;
+
+    if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - J], TilesFieldY[P][Length(TilesFieldY[P]) - J]) = BARB_OBJECT3)
+    or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - J], TilesFieldY[P][Length(TilesFieldY[P]) - J]) = BOWMAN_ROCKET)
+    or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - J], TilesFieldY[P][Length(TilesFieldY[P]) - J]) = BOWMAN_OBJECT5)
+    or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - J], TilesFieldY[P][Length(TilesFieldY[P]) - J]), SWORD_OBJECT, VAGA_OBJECT6)) then
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - J] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - J] + CLEANUP_TIME;
+
+  end;
+
+  ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 9] + CLEAR_ARRAY_FACTOR + 2;
+
+end;
+
+
 procedure StartReChoice(P: Integer);
 begin
   Actions.GroupKillAll(Players[P].Hero, True);
@@ -1949,7 +2003,7 @@ end;
 
 procedure EndReChoice(P: Integer);
 var
-  TH, aX, aY, C: Integer;
+  TH: Integer;
 begin
 
   if (InRange(P, 0, 3))
@@ -1961,6 +2015,7 @@ begin
     Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, True, True);
 
   TH := Players[P].Hero;
+  CreateShield(P);
   Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
   Actions.GroupKillAll(TH, True);
   Players[P].ReChoice := False;
@@ -1982,43 +2037,6 @@ begin
   Players[P].WerewolfTime := 0;
   Players[P].DDTime := 0;
   Players[P].ReChargeTime := 0;
-
-  TilesFieldLength[P] := TilesFieldLength[P] + 9;
-  SetLength(TilesFieldX[P], TilesFieldLength[P]);
-  SetLength(TilesFieldY[P], TilesFieldLength[P]);
-  SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
-  SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
-  SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
-
-  for aX := Players[P].SpawnX - 1 to Players[P].SpawnX + 1 do
-  for aY := Players[P].SpawnY - 1 to Players[P].SpawnY + 1 do
-  begin
-    C := C + 1;
-    TilesFieldX[P][Length(TilesFieldX[P]) - C] := aX;
-    TilesFieldY[P][Length(TilesFieldY[P]) - C] := aY;
-    if Tiles[aX][aY].ShieldTime < States.GameTime + FENCE_TIME + 1 then
-      Tiles[aX][aY].ShieldTime := States.GameTime + FENCE_TIME + 1;
-    Tiles[aX][aY].ObjectRefreshTime := States.GameTime + FENCE_TIME + 2;
-  end;
-
-  for I := 1 to 9 do
-  begin
-    TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := WARRIOR_OBJECT7;
-    Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Skill := sNone;
-    Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Owner := P;
-    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := States.GameTime + 1 + FENCE_TIME;
-    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 9] := States.GameTime + 1 + FENCE_TIME;
-    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - I] := States.GameTime + 1;
-
-    if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
-    or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
-    or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
-    or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
-      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
-
-  end;
-
-  ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 9] + CLEAR_ARRAY_FACTOR + 2;
 
 end;
 
@@ -10543,10 +10561,9 @@ begin
   for I := 0 to 7 do
     if Players[I].HeroChosen then
     begin
+      CreateShield(I);
       Players[I].Hero := Actions.GiveGroup(I, Players[I].HeroType, Players[I].SpawnX, Players[I].SpawnY, Players[I].Direction, 1, 1);
       Actions.GroupHungerSet(Players[I].Hero, States.UnitMaxHunger);
-      Players[I].HeroImmortal := True;
-      Players[I].HeroImmortalTime := States.GameTime + IMMORTAL_TIME;
       Actions.CinematicStart(I);
       Actions.CinematicPanTo(I, Players[I].SpawnX, Players[I].SpawnY, 0);
       Actions.CinematicEnd(I);
@@ -10568,7 +10585,7 @@ end;
 
 procedure CheckStatus;
 var
-  I1, aX, aY, C: Integer;
+  I1, aX, aY: Integer;
   TowersLeft, TowersRight: array of Integer;
 begin
 
@@ -10706,6 +10723,7 @@ begin
         and (not States.PlayerAllianceCheck(Players[0].ZombiePlayer, I1)) then
           Actions.PlayerAllianceChange(Players[0].ZombiePlayer, I1, True, True);
 
+        CreateShield(I1);
         Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].SpawnX, Players[I1].SpawnY, Players[I1].Direction, 1, 1);
         Actions.CinematicStart(I1);
@@ -10713,42 +10731,6 @@ begin
         Actions.CinematicEnd(I1);
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         Players[I1].HeroReborn := False;
-
-        TilesFieldLength[I1] := TilesFieldLength[I1] + 9;
-        SetLength(TilesFieldX[I1], TilesFieldLength[I1]);
-        SetLength(TilesFieldY[I1], TilesFieldLength[I1]);
-        SetLength(ClearTilesFieldTimes[I1], TilesFieldLength[I1]);
-        SetLength(SetTilesFieldTimes[I1], TilesFieldLength[I1]);
-        SetLength(TilesFieldObjects[I1], TilesFieldLength[I1]);
-
-        for aX := Players[I1].SpawnX - 1 to Players[I1].SpawnX + 1 do
-        for aY := Players[I1].SpawnY - 1 to Players[I1].SpawnY + 1 do
-        begin
-          C := C + 1;
-          TilesFieldX[I1][Length(TilesFieldX[I1]) - C] := aX;
-          TilesFieldY[I1][Length(TilesFieldY[I1]) - C] := aY;
-          if Tiles[aX][aY].ShieldTime < States.GameTime + FENCE_TIME + 1 then
-            Tiles[aX][aY].ShieldTime := States.GameTime + FENCE_TIME + 1;
-          Tiles[aX][aY].ObjectRefreshTime := States.GameTime + FENCE_TIME + 2;
-        end;
-
-        for I := 1 to 9 do
-        begin
-          TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - I] := WARRIOR_OBJECT7;
-          Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - I]][TilesFieldY[I1][Length(TilesFieldY[I1]) - I]].Skill := sNone;
-          Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - I]][TilesFieldY[I1][Length(TilesFieldY[I1]) - I]].Owner := I1;
-          ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - I] := States.GameTime + 1 + FENCE_TIME;
-          SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - I] := States.GameTime + 1;
-
-          if (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]) = BARB_OBJECT3)
-          or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]) = BOWMAN_ROCKET)
-          or (States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]) = BOWMAN_OBJECT5)
-          or (InRange(States.MapTileObject(TilesFieldX[I1][Length(TilesFieldX[I1]) - I], TilesFieldY[I1][Length(TilesFieldY[I1]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
-            ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - I] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - I] + CLEANUP_TIME;
-
-        end;
-
-        ClearFieldTilesArrayTime[I1] := ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 8] + CLEAR_ARRAY_FACTOR + 2;
 
       end;
 
