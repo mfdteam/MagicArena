@@ -337,6 +337,7 @@ const
   EFFECT_CHECK_FACTOR = 7;
   FENCE_TIME = 60;
   RECRUIT_HUNGER = 115;
+  VICTORY_DELAY = 100;
 
 //Battlefield
 
@@ -590,6 +591,8 @@ var
   FirstBlood: Boolean;
   RuneTaken: Boolean;
   RuneObject: Integer;
+  GameOver: Boolean;
+  VictoryTime: Integer;
 
 
 function InRange(Value, Min, Max: Integer): Boolean;
@@ -830,6 +833,9 @@ begin
   RuneObject := 255;
 
   FirstBlood := False;
+
+  GameOver := False;
+  VictoryTime := 0;
 
   LastAttacker := -1;
   LastAttackerUnitType := -1;
@@ -10200,7 +10206,15 @@ end;
 procedure OnPlayerVictory(P: Integer);
 begin
   if (InRange(P, 0, 7)) then
+  begin
     Actions.FogRevealAll(P);
+    if (Length(PlayersLeft) > 0)
+    and (Length(PlayersRight) > 0) then
+    begin
+      GameOver := True;
+      VictoryTime := States.GameTime + VICTORY_DELAY;
+    end;
+  end;
 end;
 
 
@@ -13285,6 +13299,10 @@ var
   N: array[0..19] of Integer;
   S1, S2, S3, S4, S5, S6, S7, S8: Integer;  
 begin
+
+  if (GameOver)
+  and (VictoryTime > 0) then
+    Exit;
 
   if InRange(States.GameTime, GAME_START_TIME + 3, GAME_START_TIME + 10) then
     for K := 0 to 7 do
