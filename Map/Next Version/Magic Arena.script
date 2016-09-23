@@ -9552,7 +9552,10 @@ begin
               or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_OBJECT5)
               or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = WARRIOR_OBJECT7)
               or (InRange(States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+              begin
                 ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] + CLEANUP_TIME + 5;
+                TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - I] := SKILL_CANCEL_OBJ;
+              end;
 
             end;
 
