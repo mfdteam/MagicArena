@@ -6687,6 +6687,7 @@ begin
     Players[P].LastUsedSkill := sRagingSpurt;
 
     Actions.GroupKillAll(Players[P].Hero, True);
+    Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
 
     Players[P].WineSkillDelay := Round(KNIGHT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
