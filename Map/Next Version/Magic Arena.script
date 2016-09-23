@@ -12054,7 +12054,8 @@ begin
           if (DX + DY <= (STORM_CHECK_RADIUS * STORM_CHECK_RADIUS))
           and ((D1 = D2)
           or (Abs(D1 - D2) = 4))
-          and (Z > 0) then
+          and (Z > 0)
+          and (States.MapTileObject(X1, Y1) <> WARRIOR_OBJECT7) then
             if (States.GroupType(Z) = 0)
             and (States.KaMRandom < STORM_CHANCE) then
               Actions.GroupOrderStorm(Z);
@@ -12096,7 +12097,8 @@ begin
           if (DX + DY <= (STORM_CHECK_RADIUS * STORM_CHECK_RADIUS))
           and ((D1 = D2)
           or (Abs(D1 - D2) = 4))
-          and (Z > 0) then
+          and (Z > 0)
+          and (States.MapTileObject(X1, Y1) <> WARRIOR_OBJECT7) then
             if (States.GroupType(Z) = 0)
             and (States.KaMRandom < STORM_CHANCE) then
               Actions.GroupOrderStorm(Z);
@@ -12128,7 +12130,8 @@ function CanUseSkillAgainstUnit(P, U: Integer): Boolean;
 begin
   Result := True;
   if InRange(States.UnitOwner(U), 0, 7) then
-    Result := not Players[States.UnitOwner(U)].HeroImmortal;  
+    Result := (not Players[States.UnitOwner(U)].HeroImmortal)
+    and (States.MapTileObject(States.UnitPositionX(U), States.UnitPositionY(U)) <> WARRIOR_OBJECT7);  
 end;
 
 
