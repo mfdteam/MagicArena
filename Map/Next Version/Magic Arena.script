@@ -335,7 +335,7 @@ const
   EFFECT_CHECK_FACTOR = 7;
   FENCE_TIME = 60;
   RECRUIT_HUNGER = 115;
-  VICTORY_DELAY = 100;
+  VICTORY_DELAY = 300;
 
 //Battlefield
 
@@ -6604,6 +6604,11 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
+    Players[P].KnightX := X2;
+    Players[P].KnightY := Y2;
+    Players[P].KnightAppearTime := States.GameTime + DELAY_OF_TURNING;
+    Players[P].KnightDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+
     if States.PlayerIsAI(P) then
     begin
       Players[P].CastingSkill := True;
@@ -6681,6 +6686,8 @@ begin
 
     Players[P].LastUsedSkill := sRagingSpurt;
 
+    Actions.GroupKillAll(Players[P].Hero, True);
+
     Players[P].WineSkillDelay := Round(KNIGHT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
     ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] + 2 * CLEAR_ARRAY_FACTOR;
@@ -6708,10 +6715,6 @@ begin
     R := States.KaMRandomI(SPURT_AI_RANDOM);
     Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     Players[P].CurrentSpurtLength := 0;
-    Players[P].KnightX := X2;
-    Players[P].KnightY := Y2;
-    Players[P].KnightAppearTime := States.GameTime + DELAY_OF_TURNING;
-    Players[P].KnightDir := Direction;
 
     case Direction of
 
@@ -6852,8 +6855,6 @@ begin
            end;
 
         end;
-
-    Actions.GroupKillAll(Players[P].Hero, True);
 
     Players[P].LastUsedSkill := sRagingSpurt;
 
@@ -13289,7 +13290,8 @@ var
 begin
 
   if (GameOver)
-  and (VictoryTime > 0) then
+  and (VictoryTime > 0)
+  and (States.GameTime > VictoryTime) then
     Exit;
 
   if InRange(States.GameTime, GAME_START_TIME + 3, GAME_START_TIME + 10) then
