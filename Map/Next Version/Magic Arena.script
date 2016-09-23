@@ -2074,6 +2074,7 @@ begin
         and (not Players[I].HeroChosen) then
         begin
           Players[I].HeroType := States.UnitType(States.UnitAt(X, Y));
+          Players[I].TempHeroType := Players[I].HeroType;
           Players[I].HeroChosen := True;
           Actions.GiveUnit(8, 13, 13, 14, 4);
           if InRange(I, 0, 3) then
