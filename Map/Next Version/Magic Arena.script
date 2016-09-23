@@ -222,8 +222,6 @@ const
   ROGUE_OBJECT2 = 192;
   ROGUE_OBJECT3 = 195;
 
-  SCOUT_OBJECT = 8;
-  SCOUT_OBJECT2 = 7;
   SCOUT_OBJECT3 = 211;
   SCOUT_OBJECT4 = 213;
   SCOUT_OBJECT5 = 19;
@@ -461,7 +459,6 @@ type
     MindX2: Integer;
     MindY2: Integer;
     MindDir2: Integer;
-    PikeAppearTime: Integer;
     PikeX: Integer;
     PikeY: Integer;
     PikeDir: Integer;
@@ -1047,7 +1044,6 @@ begin
       MindX2 := 0;
       MindY2 := 0;
       MindDir2 := 0;
-      PikeAppearTime := 0;
       PikeX := 0;
       PikeY := 0;
       PikeDir := 0;
@@ -6711,6 +6707,10 @@ begin
     R := States.KaMRandomI(SPURT_AI_RANDOM);
     Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     Players[P].CurrentSpurtLength := 0;
+    Players[P].KnightX := X2;
+    Players[P].KnightY := Y2;
+    Players[P].KnightAppearTime := States.GameTime + DELAY_OF_TURNING;
+    Players[P].KnightDir := Direction;
 
     case Direction of
 
@@ -6851,6 +6851,8 @@ begin
            end;
 
         end;
+
+    Actions.GroupKillAll(Players[P].Hero, True);
 
     Players[P].LastUsedSkill := sRagingSpurt;
 
@@ -10803,31 +10805,16 @@ begin
         end;
       end;
 
-      if States.GameTime = Players[I1].PikeAppearTime then  
+      if States.GameTime = Players[I1].KnightAppearTime then  
       begin
         if Players[I1].Hero > 0 then   
         begin
           Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].TempHeroType, Players[I1].PikeX, Players[I1].PikeY, Players[I1].PikeDir, 1, 1);
-          Players[I1].HeroType := Players[I1].TempHeroType;
-          Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-          if Players[I1].HP > 0 then
-          begin
-            Actions.FogCoverAll(I1);
-            Actions.FogRevealRect(I1, 1, 39, 70, 109);
-          end;
-        end;
-      end;
-
-      {if States.GameTime = Players[I1].KnightAppearTime then  
-      begin
-        if Players[I1].Hero > 0 then   
-        begin
           Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].TempHeroType, Players[I1].KnightX, Players[I1].KnightY, Players[I1].KnightDir, 1, 1);
           Players[I1].HeroType := Players[I1].TempHeroType;
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         end;
-      end;}
+      end;
 
       if (States.PlayerEnabled(I1))
       and (Players[I1].Hero > 0) then
