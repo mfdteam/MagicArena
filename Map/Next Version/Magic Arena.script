@@ -1535,7 +1535,7 @@ begin
     if (Tiles[aX][aY].ImmortalTime > States.GameTime)
     and (Tiles[aX][aY].ShieldTime < Tiles[aX][aY].ImmortalTime)
     and (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7) then
-      Result := '|[$FCA986]<$114>[] (' + IntToStr((Tiles[aX][aY].ImmortalTime - States.GameTime)/10) + ')';
+      Result := '|[$29E286]<$114>[] ' + IntToStr((Tiles[aX][aY].ImmortalTime - States.GameTime)/10);
   end;
 
 end;
