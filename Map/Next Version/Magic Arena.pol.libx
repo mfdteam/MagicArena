@@ -2,7 +2,7 @@
 1:Regeneracja!
 2:Ogłuszony!
 3:W strachu!
-5:Nieśmiertelność!
+5:Odporność do magii
 6:Wilkołak!
 7:Następne użycie za
 8:Grawitacja
@@ -26,7 +26,7 @@
 26:Zemsta znikąd
 27:Strzal snajpera
 28:Dziesięć tysięcy lanc
-29:Stężenie
+29:Piekielna wieża
 30:Totem przodków
 31:Regeneracja
 32:wybiera
@@ -44,8 +44,8 @@
 44:Podwójne uszkodzenie!
 45:Następna runa za 
 46:Ognisty wąż
-47:Mocna zbroja
-48:Sila duchu
+47:Wypędzenie
+48:Zasłona ciemności
 49:Wyciszony!
 50:Przyciąganie śmierci
 51:Głośny tupot
@@ -78,7 +78,7 @@
 80:Bumerang
 81:Milczenie
 83:Odrodzenie...
-84:Zabiłeś
+84:Zabił
 85:Ty ogłusził
 86:Uzdrowiłeś
 87:Ty przestraszył
@@ -92,3 +92,12 @@
 102:Kontrola rozumu
 103:Twoj rozum został schwytany:
 104:Wzięty pod kontrola:
+105:Ciebie zabiła Piekielna wieża, zbudowana graczem
+106:Twoja Piekielna wieża zabiła
+107:Ciebie zabił zmodyfikowany zombie, nazywany graczem
+108:Twój zmodyfikowany zombie zabił
+109:Wypędzony!
+110:Ciebie wypędził
+111:Ty wypędził
+112:Wypędzenie
+113:Chroniony przez zasłonę ciemności
