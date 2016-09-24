@@ -3,7 +3,7 @@
 2:Stunned!
 3:In Fear!
 4:Imprisoned!
-5:Immortal!
+5:Magic Immunity!
 6:Werewolf!
 7:Next in
 8:Gravity
@@ -137,12 +137,12 @@
 404:Zombie Summon. Radius of summon: 3 tiles, Cooldown: 13 seconds, Zombies time of life: 3 minutes, Delay: -, Animation: -, Effects: Zombie can hit an enemy with his weapon, but enemy can't, and he has to kill them by a skill. 
 405:Prison. Radius of using: 6 tiles, Radius: 4 tiles, Duration: 6 seconds, Cooldown: 14 seconds, Delay: -, Animation: -, Effects: Heroes can't move in prison. None can destroy it.
 406:Sacrificial Teleport. Radius: 8 tiles, Cooldown: 17 seconds, Delay: -, Animation: -, Effects: Pikeman loses 1 HP, and teleports. You can't use it when you have 1 hp.
-407:Deadly Fireworks. Radius of the first burst: 5 tiles, Radius of the secondary bursts: 3 tiles, Radius of using: 6 tiles, Delay: very long, Animation: 4 tiles, Speed: fast, Cooldown: 18 seconds, Effects: -1 HP. Everyone can see where you are going to set fireworks.
+407:Deadly Fireworks. Radius of the first burst: 5 tiles, Radius of the secondary bursts: 4 tiles, Radius of using: 6 tiles, Delay: very long, Animation: 4 tiles, Speed: fast, Cooldown: 18 seconds, Effects: -1 HP. Everyone can see where you are going to set fireworks.
 408:Exile. Radius for allies: 7 tiles, for enemies: 3 tiles, Duration: 4 seconds, Cooldown: 15 seconds, Animation: 4 tiles (doesn't kill), Delay: short, Effect: Target disappears from the Arena
 409:Deafening Clatter. Radius: from 2 to 4 tiles, Cooldown: 15 seconds, Duration: 5 seconds, Animation: -, Delay: -, Speed: medium, Effect: stun. Can block enemy's attacks
 410:Spell Steal. Radius: 8 tiles, Cooldown: 9 seconds, Animation: 4 tiles (don't kill), Delay: short, Duration: 120 seconds, Effect: you steal a spell, and you can cast it by clicking wine field. Kills zombies and illusions with a 70% chance. 
 411:Silence. Radius: 6 tiles, Duration: 5 seconds, Cooldown: 15 seconds, Animation: 4 tiles (doesn't kill), Delay: short, Effect: target can't use spells
-413:Fiery Track. Duration: 7 seconds, Cooldown: 14 seconds, Delay: -, Animation: -, Effects: -1 HP
+413:Fiery Track. Duration: 10 seconds, Cooldown: 14 seconds, Delay: -, Animation: -, Effects: -1 HP
 501:10000 spears. Distance: 20x3, Cooldown: 25 seconds, Delay: long, Animation: 8 tiles, Speed: very fast, Effects: -1 HP.
 502:Totem of Ancestors. Radius of using: 7 tiles, Radius of waves: 4 tiles, Number of waves: 5, Cooldown: 35 seconds, Delay: long, Animation: 8 tiles (with the ability of escaping), Speed: slow, Effects: -1 HP. Totem can destroy runes.
 503:Sniper Shot. Distance: 48x1 (whole map), Cooldown: 20 seconds, Delay: medium, Animation: 8 tiles, Speed: fast, Effects: -1 HP
