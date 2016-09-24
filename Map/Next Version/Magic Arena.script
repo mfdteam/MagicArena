@@ -8924,6 +8924,20 @@ begin
         Players[P].HeroExileTime := 0;
         Players[P].HeroExileBackTime := 0;
 
+        if (InRange(Players[P].WerewolfTime - States.GameTime, 0, 49))
+        and (InRange(Players[P].TempHeroType, 14, 27)) then
+        begin
+          Players[P].HeroType := Players[P].TempHeroType;
+          Players[P].WerewolfTime := 0;
+        end;
+
+        if (InRange(Players[P].MindAppearTimeBack - States.GameTime, 0, 49))
+        and (InRange(Players[P].TempHeroType, 14, 27)) then
+        begin
+          Players[P].HeroType := Players[P].TempHeroType;
+          Players[P].MindAppearTimeBack := 0;
+        end;
+
         for I := 0 to 7 do
         begin
 
@@ -10305,6 +10319,20 @@ begin
       Players[O].MindTime2 := 0;
       Players[O].WineSkillDelay := 500;
     end;
+
+    if (InRange(Players[O].WerewolfTime - States.GameTime, 0, 49))
+    and (InRange(Players[O].TempHeroType, 14, 27)) then
+    begin
+      Players[O].HeroType := Players[O].TempHeroType;
+      Players[O].WerewolfTime := 0;
+    end;
+
+    if (InRange(Players[O].MindAppearTimeBack - States.GameTime, 0, 49))
+    and (InRange(Players[O].TempHeroType, 14, 27)) then
+    begin
+      Players[O].HeroType := Players[O].TempHeroType;
+      Players[O].MindAppearTimeBack := 0;
+    end;
     
     if TilesRoadLength[O] > 0 then
       if (Players[O].HeroType <> 23)
@@ -11085,13 +11113,13 @@ begin
         begin
           if Players[M[I1]].HP > 0 then
           begin
-            Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
-            Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
+            Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0)) >= MIN_Y) + Players[M[I1]].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0)) < MIN_Y);
+            Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0)) >= MIN_Y) + Players[M[I1]].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0)) < MIN_Y);
           end;
           if Players[M[I1]].HP <= 0 then
           begin
-            Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
-            Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+            Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) >= MIN_Y) + Players[I1].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) < MIN_Y);
+            Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) >= MIN_Y) + Players[I1].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) < MIN_Y);
           end;
           Players[I1].MindDir2 := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
           Actions.GroupKillAll(Players[M[I1]].Hero, True);
