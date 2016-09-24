@@ -2114,6 +2114,15 @@ var
   X1, X2, Y1, Y2, Desync, Dir: Integer;
 begin
 
+  if U <= 0 then
+    Exit;
+
+  if States.UnitsGroup(U) <= 0 then
+    Exit;
+
+  if States.GroupDead(States.UnitsGroup(U)) then
+    Exit;
+
   X2 := States.UnitPositionX(U);
   Y2 := States.UnitPositionY(U);
 
@@ -2337,7 +2346,7 @@ begin
 
     if Length(Zombies) > 0 then
       for K := 0 to Length(Zombies) - 1 do
-        if Zombies[K].ID > 0 then
+        if not States.UnitDead(Zombies[K].ID) then
           if (Zombies[K].Owner = P)
           and (InRange(Zombies[K].ZombieType, 1, 2)) then
             if not States.UnitDead(Zombies[K].ID) then
@@ -2514,7 +2523,8 @@ begin
         Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       end;
 
-      if (U > 0) then
+      if (U > 0)
+      and (InRange(O, 0, 7)) then 
         if (U = States.GroupMember(Players[O].Hero, 0))
         and (not Players[O].HeroInFear)
         and (not Players[O].HeroImmortal)
@@ -10274,7 +10284,7 @@ procedure OnUnitDied(aID, aKiller: Integer);
 var
   O, aX, aY, X, Y: Integer;
 begin
-  if aID < 0 then
+  if aID <= 0 then
     Exit;
 
   if States.GameTime > GAME_START_TIME then
@@ -10451,12 +10461,6 @@ begin
           FireworksCircles5[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
   end;
-
-  for I := 0 to 7 do
-  for K := 0 to 3 do
-    if ZomboHero[I][K] > 0 then
-      if aID = States.GroupMember(ZomboHero[I][K], 0) then
-        ZomboHero[I][K] := -1;
 
   if (InRange(aKiller, 9, 11))
   and (InRange(States.UnitOwner(aID), 0, 7))
@@ -12130,6 +12134,8 @@ begin
   if not InRange(UT, 15, 27) then
     Exit;
   if Players[P].Hero <= 0 then
+    Exit;
+  if States.GroupOwner(Players[P].Hero) <> P then
     Exit;
   if States.PlayerEnabled(P) then
     if States.PlayerIsAI(P) then
