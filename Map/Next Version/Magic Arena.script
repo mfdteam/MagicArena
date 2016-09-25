@@ -6459,7 +6459,8 @@ begin
       and (InRange(O, 0, 7))
       and (O <> P)
       and (not Players[O].HeroImmortal)
-      and (U = States.GroupMember(Players[O].Hero, 0)) then
+      and (U = States.GroupMember(Players[O].Hero, 0))
+      and (States.MapTileObject(X2, Y2) <> WARRIOR_OBJECT7) then
       begin
         TilesRoadLength[P] := TilesRoadLength[P] + 4;
         SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -10147,7 +10148,7 @@ end;
 
 procedure CheckGravityCircles(P: Integer);
 var
-  X, Y, O, U, G, UT, CC, OT, HT, ZT: Integer;
+  X, Y, O, U, G, UT, CC, OT, HT, ZT, aX, aY: Integer;
 begin
   if States.PlayerEnabled(P) then
     if GravityCirclesLength[P] > 0 then
@@ -10165,12 +10166,15 @@ begin
               if (((X - GravityCircles[P][CC].X) * (X - GravityCircles[P][CC].X) + (Y - GravityCircles[P][CC].Y) * (Y - GravityCircles[P][CC].Y)) <= GravityCircles[P][CC].Radius * GravityCircles[P][CC].Radius) then
               begin
                 U := States.UnitAt(X, Y);
-                if U <> -1 then
+                if U > 0 then
                 begin
                   O := States.UnitOwner(U);
                   UT := States.UnitType(U);
+                  aX := States.UnitPositionX(U);
+                  aY := States.UnitPositionY(U);
                   if (InRange(O, 0, 7))
-                  and (not Players[O].HeroImmortal) then
+                  and (not Players[O].HeroImmortal)
+                  and (States.MapTileObject(aX, aY) <> WARRIOR_OBJECT7) then
                   begin
                     Actions.GroupKillAll(Players[O].Hero, True);
                     Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8), 1, 1);
@@ -10198,7 +10202,8 @@ begin
                           HT := States.UnitHunger(Zombies[I].ID);
                           ZT := Zombies[I].ZombieType;
                         end;
-                      if InRange(UT, 14, 27) then
+                      if (InRange(UT, 14, 27))
+                      and (States.MapTileObject(aX, aY) <> WARRIOR_OBJECT7) then
                       begin
                         Actions.GroupKillAll(States.UnitsGroup(U), True);
                         G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8), 1, 1);
@@ -10211,7 +10216,8 @@ begin
                         Exit;
                       end
                       else
-                        if UT = 13 then
+                        if (UT = 13)
+                        and (States.MapTileObject(aX, aY) <> WARRIOR_OBJECT7) then
                         begin
                           Actions.UnitKill(U, True);
                           G := Actions.GiveUnit(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8));
