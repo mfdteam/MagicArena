@@ -10850,7 +10850,7 @@ begin
         and (Players[I1].HP > 0) then
         begin
           Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].SpawnX, Players[I1].SpawnY, Players[I1].Direction, 1, 1);
+          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].LastX, Players[I1].LastY, Players[I1].LastDir, 1, 1);
         end;
       end;
 
