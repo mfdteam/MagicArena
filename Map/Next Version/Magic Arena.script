@@ -11113,27 +11113,25 @@ begin
           
           if (Players[M[I1]].HeroReborn = False) then
           begin
-          Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
-          Actions.CinematicStart(I1);
-          Actions.CinematicPanTo(I1, Players[I1].MindX2, Players[I1].MindY2, 0);
-          Actions.CinematicEnd(I1);
+            Actions.GroupKillAll(Players[I1].Hero, True);
+            Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
+            Actions.CinematicStart(I1);
+            Actions.CinematicPanTo(I1, Players[I1].MindX2, Players[I1].MindY2, 0);
+            Actions.CinematicEnd(I1);
           end;
           if (Players[I1].HeroReborn = False) then
           begin
-          Actions.GroupKillAll(Players[M[I1]].Hero, True);
-          Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
-          Actions.CinematicStart(M[I1]);
-          Actions.CinematicPanTo(M[I1], Players[I1].MindX, Players[I1].MindY, 0);
-          Actions.CinematicEnd(M[I1]);
+            Actions.GroupKillAll(Players[M[I1]].Hero, True);
+            Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
+            Actions.CinematicStart(M[I1]);
+            Actions.CinematicPanTo(M[I1], Players[I1].MindX, Players[I1].MindY, 0);
+            Actions.CinematicEnd(M[I1]);
           end;
           
           Players[I1].SpawnX := Players[I1].TempSpawnX;
           Players[I1].SpawnY := Players[I1].TempSpawnY;
           Players[M[I1]].SpawnX := Players[M[I1]].TempSpawnX;
           Players[M[I1]].SpawnY := Players[M[I1]].TempSpawnY;
-          //Players[M[I1]].TribuneX := Players[I1].TempTribuneX;
-          //Players[M[I1]].TribuneY := Players[I1].TempTribuneY;
           Players[M[I1]].LastX := Players[M[I1]].TempLastX;
           Players[M[I1]].LastY := Players[M[I1]].TempLastY;
           Players[I1].Direction := Players[I1].TempDirection;
