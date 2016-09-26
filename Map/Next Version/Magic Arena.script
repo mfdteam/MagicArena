@@ -400,6 +400,7 @@ type
     HeroInFear: Boolean;
     HeroFearGiver: Integer;
     ZombiePlayer: Integer;
+    TempZombiePlayer: Integer;
     DefenceTime: Integer;
     WerewolfTime: Integer;
     VagaX: Integer;
@@ -513,6 +514,8 @@ type
     HeroExiled: Boolean;
     LastX: Integer;
     LastY: Integer;
+    TempLastX: Integer;
+    TempLastY: Integer;
     LastDir: Integer;
   end;
 
