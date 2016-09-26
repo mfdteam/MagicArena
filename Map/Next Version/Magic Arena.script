@@ -377,6 +377,8 @@ type
   aPlayer = Record
     SpawnX: Integer;
     SpawnY: Integer;
+    TempSpawnX: Integer;
+    TempSpawnY: Integer;
     Hero: Integer;
     HeroType: Integer;
     HeroMindType: Integer;
@@ -389,6 +391,7 @@ type
     FieldSkillDelay: Integer;
     WineSkillDelay: Integer;
     Direction: Integer;
+    TempDirection: Integer;
     TribuneX: Integer;
     TribuneY: Integer;
     HeroStunnedTime: Integer;
@@ -494,6 +497,8 @@ type
     CurrentSpurtLength: Integer;
     RebornTime: Integer;
     HeroReborn: Boolean;
+    TempHeroReborn: Boolean;
+    TempRebornTime: Integer;
     MovedToTribune: Boolean;
     FireworkTime: Integer;
     FireworkX: Integer;
@@ -10941,6 +10946,25 @@ begin
         for K := 0 to Length(Zombies) - 1 do
           if Zombies[K].Owner = M[I1] then
             Zombies[K].Owner := -1;
+        Players[I1].TempSpawnX := Players[I1].SpawnX;
+        Players[I1].TempSpawnY := Players[I1].SpawnY;
+        Players[M[I1]].TempSpawnX := Players[M[I1]].SpawnX;
+        Players[M[I1]].TempSpawnY := Players[M[I1]].SpawnY;
+        Players[I1].SpawnX := Players[M[I1]].SpawnX;
+        Players[I1].SpawnY := Players[M[I1]].SpawnY;
+        Players[M[I1]].SpawnX := Players[I1].TempSpawnX;
+        Players[M[I1]].SpawnY := Players[I1].TempSpawnY;
+        Players[I1].TempDirection := Players[I1].Direction;
+        Players[M[I1]].TempDirection := Players[M[I1]].Direction;
+        Players[I1].Direction := Players[M[I1]].Direction;
+        Players[M[I1]].Direction := Players[I1].TempDirection;
+        Players[M[I1]].TempLastX := Players[M[I1]].LastX;
+        Players[M[I1]].TempLastY := Players[M[I1]].LastY;
+        Players[M[I1]].LastX := Players[I1].LastX;
+        Players[M[I1]].LastY := Players[I1].LastY;
+        Players[M[I1]].TempZombiePlayer := Players[M[I1]].ZombiePlayer;
+        Players[M[I1]].ZombiePlayer := Players[I1].ZombiePlayer;
+        
         Players[M[I1]].MindStunned := True;
         Players[I1].CaptureMind := True;
         Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME - 30; 
@@ -11014,6 +11038,8 @@ begin
         Players[I1].PreparingTime := Players[M[I1]].PreparingTime;
         Players[I1].HeroInFear := Players[M[I1]].HeroInFear;
         Players[I1].HeroInFearTime := Players[M[I1]].HeroInFearTime;
+        Players[I1].HeroReborn := Players[M[I1]].HeroReborn;
+        Players[I1].RebornTime := Players[M[I1]].RebornTime;
         Players[I1].RoadSkillDelay := Players[M[I1]].RoadSkillDelay;
         Players[I1].FieldSkillDelay := Players[M[I1]].FieldSkillDelay;
         Players[I1].WineSkillDelay := Players[M[I1]].WineSkillDelay;
@@ -11084,18 +11110,35 @@ begin
           Players[I1].HeroType := Players[I1].HeroMindType;
           Players[M[I1]].HeroType := Players[M[I1]].HeroMindType;
           Players[I1].TempHeroType := Players[I1].TempHeroMindType;
+          
+          if (Players[M[I1]].HeroReborn = False) then
+          begin
           Actions.GroupKillAll(Players[I1].Hero, True);
           Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
-          Actions.GroupKillAll(Players[M[I1]].Hero, True);
-          Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
-
-          Actions.CinematicStart(M[I1]);
-          Actions.CinematicPanTo(M[I1], Players[I1].MindX, Players[I1].MindY, 0);
-          Actions.CinematicEnd(M[I1]);
-
           Actions.CinematicStart(I1);
           Actions.CinematicPanTo(I1, Players[I1].MindX2, Players[I1].MindY2, 0);
           Actions.CinematicEnd(I1);
+          end;
+          if (Players[I1].HeroReborn = False) then
+          begin
+          Actions.GroupKillAll(Players[M[I1]].Hero, True);
+          Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
+          Actions.CinematicStart(M[I1]);
+          Actions.CinematicPanTo(M[I1], Players[I1].MindX, Players[I1].MindY, 0);
+          Actions.CinematicEnd(M[I1]);
+          end;
+          
+          Players[I1].SpawnX := Players[I1].TempSpawnX;
+          Players[I1].SpawnY := Players[I1].TempSpawnY;
+          Players[M[I1]].SpawnX := Players[M[I1]].TempSpawnX;
+          Players[M[I1]].SpawnY := Players[M[I1]].TempSpawnY;
+          //Players[M[I1]].TribuneX := Players[I1].TempTribuneX;
+          //Players[M[I1]].TribuneY := Players[I1].TempTribuneY;
+          Players[M[I1]].LastX := Players[M[I1]].TempLastX;
+          Players[M[I1]].LastY := Players[M[I1]].TempLastY;
+          Players[I1].Direction := Players[I1].TempDirection;
+          Players[M[I1]].Direction := Players[M[I1]].TempDirection;
+          Players[M[I1]].ZombiePlayer:= Players[M[I1]].TempZombiePlayer;
 
           Players[M[I1]].RoadSkillDelay := Players[I1].RoadSkillDelay;
           Players[M[I1]].FieldSkillDelay := Players[I1].FieldSkillDelay;
@@ -11161,6 +11204,12 @@ begin
           end;
           Players[M[I1]].HeroInFear := Players[I1].HeroInFear;
           Players[M[I1]].HeroInFearTime := Players[I1].HeroInFearTime;
+          Players[I1].TempHeroReborn := Players[M[I1]].HeroReborn;
+          Players[I1].TempRebornTime := Players[M[I1]].RebornTime;
+          Players[M[I1]].HeroReborn := Players[I1].HeroReborn;
+          Players[M[I1]].RebornTime := Players[I1].RebornTime;
+          Players[I1].HeroReborn :=  Players[I1].TempHeroReborn;
+          Players[I1].RebornTime := Players[I1].TempRebornTime;
           Players[M[I1]].HeroStunned := Players[I1].HeroStunned;
           Players[M[I1]].HeroStunnedTime := Players[I1].HeroStunnedTime;
           Players[I1].PlayersTeam := Players[I1].TempPlayersTeam;
