@@ -397,7 +397,6 @@ type
     HeroInFear: Boolean;
     HeroFearGiver: Integer;
     ZombiePlayer: Integer;
-    RoadPlayer: Integer;
     DefenceTime: Integer;
     WerewolfTime: Integer;
     VagaX: Integer;
@@ -1109,7 +1108,6 @@ begin
       TribuneY := 3;
       TribuneX := 42 + 2 * I;
       ZombiePlayer := 10;
-      RoadPlayer := 8;
       PlayersTeam := 0;
     end;
   end;
@@ -1124,7 +1122,6 @@ begin
       TribuneY := 26;
       TribuneX := 54 + ((I - 4) * 2);
       ZombiePlayer := 11;
-      RoadPlayer := 9;
       PlayersTeam := 1;
     end;
   end;
