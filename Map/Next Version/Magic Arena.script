@@ -385,6 +385,8 @@ type
     TempHeroMindType: Integer;
     HeroImmortal: Boolean;
     HeroImmortalTime: Integer;
+    TempHeroImmortal: Boolean;
+    TempHeroImmortalTime: Integer;
     HeroChosen: Boolean;
     HP: Integer;
     RoadSkillDelay: Integer;
@@ -415,6 +417,8 @@ type
     RespawnCheckTime: Integer;
     DDTime : Integer;
     DD: Boolean;
+    TempDDTime : Integer;
+    TempDD: Boolean;
     PlayersTeam: Integer;
     TempPlayersTeam: Integer;
     CastingSkill: Boolean;
@@ -10981,6 +10985,10 @@ begin
         Players[I1].TempStolenSkillName := Players[I1].StolenSkillName;
         Players[I1].TempReCharge := Players[I1].ReCharge;
         Players[I1].TempReChargeTime := Players[I1].ReChargeTime;
+        Players[I1].TempDD := Players[I1].DD;
+        Players[I1].TempDDTime := Players[I1].DDTime;
+        Players[I1].TempHeroImmortal :=  Players[I1].HeroImmortal;
+        Players[I1].TempHeroImmortalTime := Players[I1].HeroImmortalTime;
 
         Players[I1].MindX := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
         Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
@@ -11029,7 +11037,6 @@ begin
         Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
         Actions.GroupBlockOrders(Players[M[I1]].Hero, True);
         Actions.GroupOrderHalt(Players[M[I1]].Hero);  
-        Players[I1].HeroImmortal := True;
  
         Players[I1].LastUsedSkill := sMind;
         Players[I1].StolenSkill := Players[M[I1]].StolenSkill;
@@ -11037,6 +11044,10 @@ begin
         Players[I1].StolenSkillName := Players[M[I1]].StolenSkillName;
         Players[I1].ReCharge := Players[M[I1]].ReCharge;
         Players[I1].ReChargeTime := Players[M[I1]].ReChargeTime;
+        Players[I1].DD := Players[M[I1]].DD;
+        Players[I1].DDTime := Players[M[I1]].DDTime;
+        Players[M[I1]].HeroImmortal := Players[I1].HeroImmortal;
+        Players[M[I1]].HeroImmortalTime := Players[I1].HeroImmortalTime;
         Players[I1].Preparing := Players[M[I1]].Preparing;
         Players[I1].PreparingTime := Players[M[I1]].PreparingTime;
         Players[I1].HeroInFear := Players[M[I1]].HeroInFear;
@@ -11051,6 +11062,7 @@ begin
         if Players[M[I1]].PlayersTeam = 1 then
           Players[I1].PlayersTeam := 0;
   
+        Players[I1].HeroImmortal := True;
         Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME - 27;
         Players[I1].HeroImmortalTime := States.GameTime + CAPTURE_MIND_TIME - 27;
       end;
@@ -11158,6 +11170,12 @@ begin
           Players[I1].ReCharge := Players[I1].TempReCharge;
           Players[M[I1]].ReChargeTime := Players[I1].ReChargeTime;
           Players[I1].ReChargeTime := Players[I1].TempReChargeTime;
+          Players[M[I1]].DD := Players[I1].DD;
+          Players[I1].DD := Players[I1].TempDD;
+          Players[M[I1]].DDTime := Players[I1].DDTime;
+          Players[I1].DDTime := Players[I1].TempDDTime;
+          Players[I1].HeroImmortal :=  Players[I1].TempHeroImmortal;
+          Players[I1].HeroImmortalTime := Players[I1].TempHeroImmortalTime;
           Players[M[I1]].Preparing := Players[I1].Preparing;
           Players[M[I1]].PreparingTime := Players[I1].PreparingTime;
           if Players[I1].Preparing then
