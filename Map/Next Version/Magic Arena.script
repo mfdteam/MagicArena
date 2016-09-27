@@ -10681,7 +10681,7 @@ begin
         Players[I1].HeroExileY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].HeroExileDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
         Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+        Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER - Byte(States.PlayerIsAI(I1)), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         Players[I1].HeroExileBackTime := States.GameTime + EXILE_TIME;
         Actions.MapTileSet(Players[I1].HeroExileX, Players[I1].HeroExileY, EXILE_TILE, States.KaMRandomI(4));
         if I1 <> Players[I1].HeroExileGiver then
