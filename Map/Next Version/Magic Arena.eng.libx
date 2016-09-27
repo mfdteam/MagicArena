@@ -1,4 +1,4 @@
-﻿0:Choose your Hero! Place a road plan in the tile UNDER one of AI soldiers.
+﻿0:Choose your Hero! Place a road plan in the tile UNDER one of AI soldiers or Recruit. If you place road plan under Recruit, your Hero will be chosen randomly.
 1:Regen!
 2:Stunned!
 3:In Fear!
@@ -38,7 +38,7 @@
 37:Winefield Skill
 38:Time to choose Hero
 39:HP
-40:[$0080FF]place road in the tile WHERE CHOSEN AI SOLDIER STAYS. |Otherwise Hero will be chosen randomly[]
+40:[$0080FF]place road in the tile WHERE CHOSEN AI SOLDIER STAYS. |For random choice, place road plan under Recruit |or wait until battle begins[]
 41:Your team
 42:Hero
 43:Illusion!
