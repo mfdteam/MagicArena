@@ -2113,6 +2113,19 @@ begin
         and (not Players[I].HeroChosen) then
         begin
           Players[I].HeroType := States.UnitType(States.UnitAt(X, Y));
+          if Players[I].HeroType = 13 then
+          begin
+            case States.KaMRandomI(8) of
+              0: Players[I].HeroType := 16;
+              1: Players[I].HeroType := 23;
+              2: Players[I].HeroType := 18;
+              3: Players[I].HeroType := 19;
+              4: Players[I].HeroType := 26;
+              5: Players[I].HeroType := 17;
+              6: Players[I].HeroType := 22;
+              7: Players[I].HeroType := 20;
+            end;
+          end;
           Players[I].TempHeroType := Players[I].HeroType;
           Players[I].HeroChosen := True;
           Actions.GiveUnit(8, 13, 13, 14, 4);
