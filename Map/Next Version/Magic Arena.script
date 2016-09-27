@@ -2076,6 +2076,7 @@ begin
   and (not Players[P].CaptureMind)
   and (not Players[P].HeroStunned)
   and (not Players[P].Preparing)
+  and (Players[P].HeroType <> 27)
   and (Players[P].HP > 0) then
     StartReChoice(P);
   if (HT = 21)
