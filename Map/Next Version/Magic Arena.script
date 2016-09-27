@@ -8497,6 +8497,8 @@ end;
 
 
 procedure OnPlanRoadPlaced(P, X, Y: Integer);
+var
+  C: Integer;
 begin
 
   Actions.PlanRemove(P, X, Y);
@@ -8577,12 +8579,19 @@ begin
       26: FierySnake(P, X, Y, -1);
       27: Disorientation(P, X, Y);
     end;
+
+  for C := 0 to TilesRoadLength[P] - 1 do
+    if States.MapTileObject(TilesRoadX[P][C], TilesRoadY[P][C]) = WARRIOR_OBJECT7 then
+      SetTilesRoadTimes[P][C] := 0;
+
   end;
 
 end;
 
 
 procedure OnPlanFieldPlaced(P, X, Y: Integer);
+var
+  C: Integer;
 begin
 
   Actions.PlanRemove(P, X, Y);
@@ -8639,12 +8648,19 @@ begin
       26: Exile(P, X, Y);
       27: FieryTrack(P, X, Y);
     end;
+
+  for C := 0 to TilesFieldLength[P] - 1 do
+    if States.MapTileObject(TilesFieldX[P][C], TilesFieldY[P][C]) = WARRIOR_OBJECT7 then
+      SetTilesFieldTimes[P][C] := 0;
+
   end;
 
 end;
 
   
 procedure OnPlanWinefieldPlaced(P, X, Y: Integer);
+var
+  C: Integer;
 begin
 
   Actions.PlanRemove(P, X, Y);
@@ -8701,6 +8717,11 @@ begin
       26: Shield(P, X, Y);
       27: Regen(P, X, Y);
     end;
+
+  for C := 0 to TilesWineLength[P] - 1 do
+    if States.MapTileObject(TilesWineX[P][C], TilesWineY[P][C]) = WARRIOR_OBJECT7 then
+      SetTilesWineTimes[P][C] := 0;
+
   end;
 
 end;
