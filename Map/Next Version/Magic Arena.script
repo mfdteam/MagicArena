@@ -10244,9 +10244,12 @@ begin
       if TileOnBattlefield(X, Y) then
         Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
 
-    Players[O].LastX := aX;
-    Players[O].LastY := aY;
-    Players[O].LastDir := States.UnitDirection(aID);
+    if TileOnBattlefield(aX, aY) then
+    begin
+      Players[O].LastX := aX;
+      Players[O].LastY := aY;
+      Players[O].LastDir := States.UnitDirection(aID);
+    end;
 
   end;
 
