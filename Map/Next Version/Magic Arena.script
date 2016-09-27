@@ -8414,7 +8414,8 @@ begin
       sExile: if (U > 0)
               and (InRange(O, 0, 7))
               and (Abs(X - X2) <= EXILE_RADIUS)
-              and (Abs(Y - Y2) <= EXILE_RADIUS) then
+              and (Abs(Y - Y2) <= EXILE_RADIUS)
+              and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
               begin
                 TempFieldSkillDelay := Players[P].FieldSkillDelay;
                 Exile(P, X, Y);
@@ -8427,7 +8428,8 @@ begin
       sRopesOfDeath: if (U > 0)
                      and (InRange(O, 0, 7))
                      and (Abs(X - X2) <= ROPE_RADIUS)
-                     and (Abs(Y - Y2) <= ROPE_RADIUS) then
+                     and (Abs(Y - Y2) <= ROPE_RADIUS)
+                     and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
                      begin
                        TempRoadSkillDelay := Players[P].RoadSkillDelay;
                        RopesOfDeath(P, X, Y);
@@ -8450,7 +8452,8 @@ begin
               and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
               and (InRange(O, 0, 7))
               and (Abs(X - X2) <= STEAL_RADIUS)
-              and (Abs(Y - Y2) <= STEAL_RADIUS) then
+              and (Abs(Y - Y2) <= STEAL_RADIUS)
+              and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
               begin
                 TempFieldSkillDelay := Players[P].FieldSkillDelay;
                 StealSkill(P, X, Y);
@@ -8469,7 +8472,8 @@ begin
                 and (InRange(O, 0, 7))
                 and (Abs(X - X2) <= SILENCE_SCOUT_RADIUS)
                 and (Abs(Y - Y2) <= SILENCE_SCOUT_RADIUS)
-                and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
+                and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+                and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
                 begin
                   TempFieldSkillDelay := Players[P].FieldSkillDelay;
                   Silence(P, X, Y);
