@@ -336,6 +336,7 @@ const
   FENCE_TIME = 60;
   RECRUIT_HUNGER = 115;
   VICTORY_DELAY = 300;
+  TOWERS_CHECK_FACTOR = 10;
 
 //Battlefield
 
@@ -10633,26 +10634,29 @@ begin
 end;
 
 
+procedure CheckTowers;
+var
+  TowersLeft, TowersRight: array of Integer;
+  U, O, X, aX, aY: Integer;
+begin
+  TowersLeft := States.PlayerGetAllHouses(10);
+  TowersRight := States.PlayerGetAllHouses(11);
+
+  if Length(TowersLeft) > 0 then
+    for I := 0 to Length(TowersLeft) - 1 do
+      Actions.HouseAddDamage(TowersLeft[I], 3);
+
+  if Length(TowersRight) > 0 then
+    for K := 0 to Length(TowersRight) - 1 do
+      Actions.HouseAddDamage(TowersRight[K], 3);
+
+end;
+
+
 procedure CheckStatus;
 var
   I1, aX, aY: Integer;
-  TowersLeft, TowersRight: array of Integer;
 begin
-
-  if States.GameTime mod 10 = 0 then
-  begin
-    TowersLeft := States.PlayerGetAllHouses(10);
-    TowersRight := States.PlayerGetAllHouses(11);
-
-      if Length(TowersLeft) > 0 then
-        for I := 0 to Length(TowersLeft) - 1 do
-          Actions.HouseAddDamage(TowersLeft[I], 3);
-
-      if Length(TowersRight) > 0 then
-        for K := 0 to Length(TowersRight) - 1 do
-          Actions.HouseAddDamage(TowersRight[K], 3);
-
-  end;
 
   if (RuneTaken)
   and (States.MapTileObject(RUNE_X, RUNE_Y) = RuneObject) then
@@ -13599,6 +13603,9 @@ begin
   if States.GameTime mod AI_IGNORE_FACTOR = 0 then
     for I := 0 to 7 do
       AIIgnore(I);
+
+  if States.GameTime mod TOWERS_CHECK_FACTOR = 0 then
+    CheckTowers;
 
   if not DEBUG_MODE then
     for I := 0 to 7 do
