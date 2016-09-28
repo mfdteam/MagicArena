@@ -2180,8 +2180,7 @@ begin
   if States.GameTime > CHOOSE_HERO_TIMER then
     Exit;
 
-  if (InRange(X, 16, 21))
-  and (InRange(Y, 17, 18)) then
+  if TileOnChoiceArea(X, Y) then
     for I := 0 to 7 do
       if States.PlayerEnabled(I) then
         if (States.PlayerIsAI(I))
@@ -8890,10 +8889,10 @@ end;
 procedure OnHouseDestroyed(H, D: Integer);
 var
   Units: array of Integer;
-  O: Integer;
+  Owner: Integer;
 begin
-  O := States.HouseOwner(H);
-  Units := States.PlayerGetAllUnits(O);
+  Owner := States.HouseOwner(H);
+  Units := States.PlayerGetAllUnits(Owner);
   if Length(Units) > 0 then
     for I := 0 to Length(Units) - 1 do
       if (States.UnitType(Units[I]) = 13)
