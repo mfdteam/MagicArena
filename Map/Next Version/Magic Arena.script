@@ -7795,10 +7795,10 @@ begin
         Players[P].MindX := X;
         Players[P].MindY := Y;
         Players[P].MindDir := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
-        Players[P].MindX2 := X2;
-        Players[P].MindY2 := Y2;
-        Players[P].MindDir2 := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
-
+        Players[M[P]].MindX := X2;
+        Players[M[P]].MindY := Y2;
+        Players[M[P]].MindDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+        
         Actions.GroupKillAll(Players[P].Hero, True);
         Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
         Actions.GroupKillAll(Players[O].Hero, True);
