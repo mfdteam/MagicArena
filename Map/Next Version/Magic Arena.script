@@ -229,6 +229,7 @@ const
   SCOUT_OBJECT7 = 112;
 
   CIRCLE_FILL_OBJ = 17;
+  UNIVERSAL_KILL_OBJ = 180;
 
   EXILE_TILE = 122;
 
@@ -372,6 +373,10 @@ type
             sRopesOfDeath, sDeafeningClatter, sRagingSpurt,
             sMentalBurst, sSteal, sUniversal,
             sBoomerang, sSilence, sMind);
+
+
+type
+  aObjectType = (otKill, otStun, otRegen, otSave, otNeutral);
 
 
 type
@@ -648,6 +653,67 @@ begin
   and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7)
   and (not InRange(States.MapTileObject(X, Y), SHIELD_OBJECT, SHIELD_OBJECT8))
   and (not InRange(States.MapTileObject(X, Y), SWORD_OBJECT, VAGA_OBJECT6));
+
+end;
+
+
+function ObjectType(aObj: Integer): aObjectType;
+begin
+
+  Result := otNeutral;
+
+  if (aObj = LANCE_OBJECT)
+  or (aObj = LANCE_OBJECT2)
+  or (aObj = LANCE_OBJECT3)
+  or (aObj = BARB_OBJECT)
+  or (aObj = BARB_OBJECT2)
+  or (aObj = BARB_OBJECT3)
+  or (aObj = BARB_OBJECT4)
+  or (aObj = BARB_OBJECT5)
+  or (aObj = XBOW_OBJECT)
+  or (aObj = XBOW_OBJECT2)
+  or (aObj = XBOW_OBJECT3)
+  or (aObj = PIKE_OBJECT)
+  or (aObj = PIKE_OBJECT2)
+  or (aObj = PIKE_OBJECT3)
+  or (aObj = PIKE_OBJECT4)
+  or (aObj = PIKE_OBJECT5)
+  or (aObj = PIKE_OBJECT6)
+  or (aObj = PIKE_OBJECT7)
+  or (aObj = PIKE_OBJECT8)
+  or (aObj = PIKE_OBJECT9)
+  or (aObj = BOWMAN_OBJECT)
+  or (aObj = BOWMAN_OBJECT2)
+  or (aObj = BOWMAN_OBJECT3)
+  or (aObj = BOWMAN_OBJECT4)
+  or (aObj = BOWMAN_ROCKET)
+  or (aObj = BOWMAN_ROCKET2)
+  or (aObj = AXE_OBJECT2)
+  or (aObj = AXE_OBJECT3)
+  or (aObj = WARRIOR_OBJECT3)
+  or (aObj = WARRIOR_OBJECT)
+  or (aObj = WARRIOR_OBJECT2)
+  or (aObj = WARRIOR_OBJECT5)
+  or (aObj = WARRIOR_OBJECT6)
+  or (aObj = KNIGHT_OBJECT4)
+  or (aObj = ROGUE_OBJECT)
+  or (aObj = ROGUE_OBJECT2)
+  or (aObj = CIRCLE_FILL_OBJ)
+  or (aObj = SCOUT_OBJECT3)
+  or (aObj = VAGA_OBJECT8)
+  or (aObj = SCOUT_OBJECT5)
+  or (aObj = SCOUT_OBJECT6)
+  or (aObj = UNIVERSAL_KILL_OBJ) then
+    Result := otKill;
+
+  if aObj = VAGA_OBJECT then
+    Result := otRegen;
+
+  if InRange(aObj, SWORD_OBJECT, VAGA_OBJECT6) then
+    Result := otStun;
+
+  if aObj = WARRIOR_OBJECT7 then
+    Result := otSave;
 
 end;
 
@@ -1832,10 +1898,13 @@ begin
       and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6))
       and (fSkill <> sDeadlyFireworks) then
       begin
-        Tree := (aObj = 255) and (InRange(States.MapTileObject(PosX, PosY), 149, 172));
+        Tree := (aObj = 255)
+        and (InRange(States.MapTileObject(PosX, PosY), 149, 172));
         if not Tree then
         begin
-          Actions.MapTileObjectSet(PosX, PosY, aObj);
+          if not Actions.MapTileObjectSet(PosX, PosY, aObj) then
+            if ObjectType(aObj) = otKill then
+              Actions.MapTileObjectSet(PosX, PosY, UNIVERSAL_KILL_OBJ);
           if (Tiles[PosX][PosY].Owner <> P)
           and (Tiles[PosX][PosY].Skill <> sTrack)
           and (Tiles[PosX][PosY].Skill <> sDeadlyFireworks) then
@@ -1850,7 +1919,9 @@ begin
         end;
         if not aSaveCracking then
           if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
-            Actions.MapTileObjectSet(PosX, PosY, aObj);
+            if not Actions.MapTileObjectSet(PosX, PosY, aObj) then
+              if ObjectType(aObj) = otKill then
+                Actions.MapTileObjectSet(PosX, PosY, UNIVERSAL_KILL_OBJ);
   end;
 
   if fSkill = sDeadlyFireworks then
@@ -1875,10 +1946,13 @@ begin
         and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6))
         and (not InRange(States.MapTileObject(PosX, PosY), SHIELD_OBJECT, SHIELD_OBJECT8)) then
         begin
-          Tree := (aObj = 255) and (InRange(States.MapTileObject(PosX, PosY), 149, 172));
+          Tree := (aObj = 255)
+          and (InRange(States.MapTileObject(PosX, PosY), 149, 172));
           if not Tree then
           begin
-            Actions.MapTileObjectSet(PosX, PosY, aObj);
+            if not Actions.MapTileObjectSet(PosX, PosY, aObj) then
+              if ObjectType(aObj) = otKill then
+                Actions.MapTileObjectSet(PosX, PosY, UNIVERSAL_KILL_OBJ);
             if (Tiles[PosX][PosY].Skill = sNone)
             or (Tiles[PosX][PosY].Skill = sGravity) then
             begin
@@ -1892,7 +1966,9 @@ begin
         end;
         if not aSaveCracking then
           if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
-            Actions.MapTileObjectSet(PosX, PosY, aObj);
+            if not Actions.MapTileObjectSet(PosX, PosY, aObj) then
+              if ObjectType(aObj) = otKill then
+                Actions.MapTileObjectSet(PosX, PosY, UNIVERSAL_KILL_OBJ);
     end;
   end;
 
@@ -1952,7 +2028,8 @@ begin
         and (States.MapTileObject(PosX, PosY) <> VAGA_OBJECT8)
         and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6)) then
         begin
-          Tree := (aObj = 255) and (InRange(States.MapTileObject(PosX, PosY), 149, 172));
+          Tree := (aObj = 255)
+          and (InRange(States.MapTileObject(PosX, PosY), 149, 172));
           if not Tree then
             Actions.MapTileObjectSet(PosX, PosY, 255);
         end;
@@ -8834,48 +8911,7 @@ begin
   if aObj = -1 then
     Exit;
 
-  if (aObj = LANCE_OBJECT)
-  or (aObj = LANCE_OBJECT2)
-  or (aObj = LANCE_OBJECT3)
-  or (aObj = BARB_OBJECT)
-  or (aObj = BARB_OBJECT2)
-  or (aObj = BARB_OBJECT3)
-  or (aObj = BARB_OBJECT4)
-  or (aObj = BARB_OBJECT5)
-  or (aObj = XBOW_OBJECT)
-  or (aObj = XBOW_OBJECT2)
-  or (aObj = XBOW_OBJECT3)
-  or (aObj = PIKE_OBJECT)
-  or (aObj = PIKE_OBJECT2)
-  or (aObj = PIKE_OBJECT3)
-  or (aObj = PIKE_OBJECT4)
-  or (aObj = PIKE_OBJECT5)
-  or (aObj = PIKE_OBJECT6)
-  or (aObj = PIKE_OBJECT7)
-  or (aObj = PIKE_OBJECT8)
-  or (aObj = PIKE_OBJECT9)
-  or (aObj = BOWMAN_OBJECT)
-  or (aObj = BOWMAN_OBJECT2)
-  or (aObj = BOWMAN_OBJECT3)
-  or (aObj = BOWMAN_OBJECT4)
-  or (aObj = BOWMAN_ROCKET)
-  or (aObj = BOWMAN_ROCKET2)
-  or (aObj = AXE_OBJECT2)
-  or (aObj = AXE_OBJECT3)
-  or (aObj = WARRIOR_OBJECT3)
-  or (aObj = WARRIOR_OBJECT)
-  or (aObj = WARRIOR_OBJECT2)
-  or (aObj = WARRIOR_OBJECT5)
-  or (aObj = WARRIOR_OBJECT6)
-  or (aObj = WARRIOR_OBJECT6 + 1)
-  or (aObj = KNIGHT_OBJECT4)
-  or (aObj = ROGUE_OBJECT)
-  or (aObj = ROGUE_OBJECT2)
-  or (aObj = CIRCLE_FILL_OBJ)
-  or (aObj = SCOUT_OBJECT3)
-  or (aObj = VAGA_OBJECT8)
-  or (aObj = SCOUT_OBJECT5)
-  or (aObj = SCOUT_OBJECT6) then
+  if ObjectType(aObj) = otKill then
   begin
     T := Players[P].HeroType;
     if (not States.PlayerDefeated(P))
@@ -9494,48 +9530,7 @@ begin
       if TileOnBattlefield(aX, aY) then
       begin
         aObj := States.MapTileObject(aX, aY);
-        if (aObj = LANCE_OBJECT)
-        or (aObj = LANCE_OBJECT2)
-        or (aObj = LANCE_OBJECT3)
-        or (aObj = BARB_OBJECT)
-        or (aObj = BARB_OBJECT2)
-        or (aObj = BARB_OBJECT3)
-        or (aObj = BARB_OBJECT4)
-        or (aObj = BARB_OBJECT5)
-        or (aObj = XBOW_OBJECT)
-        or (aObj = XBOW_OBJECT2)
-        or (aObj = XBOW_OBJECT3)
-        or (aObj = PIKE_OBJECT)
-        or (aObj = PIKE_OBJECT2)
-        or (aObj = PIKE_OBJECT3)
-        or (aObj = PIKE_OBJECT4)
-        or (aObj = PIKE_OBJECT5)
-        or (aObj = PIKE_OBJECT6)
-        or (aObj = PIKE_OBJECT7)
-        or (aObj = PIKE_OBJECT8)
-        or (aObj = PIKE_OBJECT9)
-        or (aObj = BOWMAN_OBJECT)
-        or (aObj = BOWMAN_OBJECT2)
-        or (aObj = BOWMAN_OBJECT3)
-        or (aObj = BOWMAN_OBJECT4)
-        or (aObj = BOWMAN_ROCKET)
-        or (aObj = BOWMAN_ROCKET2)
-        or (aObj = AXE_OBJECT2)
-        or (aObj = AXE_OBJECT3)
-        or (aObj = WARRIOR_OBJECT3)
-        or (aObj = WARRIOR_OBJECT)
-        or (aObj = WARRIOR_OBJECT2)
-        or (aObj = WARRIOR_OBJECT5)
-        or (aObj = WARRIOR_OBJECT6)
-        or (aObj = WARRIOR_OBJECT6 + 1)
-        or (aObj = KNIGHT_OBJECT4)
-        or (aObj = ROGUE_OBJECT)
-        or (aObj = ROGUE_OBJECT2)
-        or (aObj = CIRCLE_FILL_OBJ)
-        or (aObj = SCOUT_OBJECT3)
-        or (aObj = VAGA_OBJECT8)
-        or (aObj = SCOUT_OBJECT5)
-        or (aObj = SCOUT_OBJECT6) then
+        if ObjectType(aObj) = otKill then
         begin
           Actions.UnitKill(AIUnits[K], False);
 
@@ -9615,48 +9610,8 @@ begin
   if TileOnBattlefield(X, Y) then
   begin
     aObj := States.MapTileobject(X, Y);
-    Result := ((aObj = LANCE_OBJECT)
-              or (aObj = LANCE_OBJECT2)
-              or (aObj = LANCE_OBJECT3)
-              or (aObj = BARB_OBJECT)
-              or (aObj = BARB_OBJECT2)
-              or (aObj = BARB_OBJECT3)
-              or (aObj = BARB_OBJECT4)
-              or (aObj = BARB_OBJECT5)
-              or (aObj = XBOW_OBJECT)
-              or (aObj = XBOW_OBJECT2)
-              or (aObj = XBOW_OBJECT3)
-              or (aObj = PIKE_OBJECT)
-              or (aObj = PIKE_OBJECT2)
-              or (aObj = PIKE_OBJECT3)
-              or (aObj = PIKE_OBJECT4)
-              or (aObj = PIKE_OBJECT5)
-              or (aObj = PIKE_OBJECT6)
-              or (aObj = PIKE_OBJECT7)
-              or (aObj = PIKE_OBJECT8)
-              or (aObj = PIKE_OBJECT9)
-              or (aObj = BOWMAN_OBJECT)
-              or (aObj = BOWMAN_OBJECT2)
-              or (aObj = BOWMAN_OBJECT3)
-              or (aObj = BOWMAN_OBJECT4)
-              or (aObj = BOWMAN_ROCKET)
-              or (aObj = BOWMAN_ROCKET2)
-              or (aObj = AXE_OBJECT2)
-              or (aObj = AXE_OBJECT3)
-              or (aObj = VAGA_OBJECT8)
-              or (aObj = WARRIOR_OBJECT3)
-              or (aObj = WARRIOR_OBJECT)
-              or (aObj = WARRIOR_OBJECT2)
-              or (aObj = WARRIOR_OBJECT5)
-              or (aObj = WARRIOR_OBJECT6)
-              or (aObj = WARRIOR_OBJECT6 + 1)
-              or (aObj = KNIGHT_OBJECT4)
-              or (aObj = ROGUE_OBJECT)
-              or (aObj = ROGUE_OBJECT2)
-              or (aObj = CIRCLE_FILL_OBJ)
-              or (aObj = SCOUT_OBJECT3)
-              or (aObj = SCOUT_OBJECT6)
-              or (aObj = SCOUT_OBJECT5));
+    Result := (ObjectType(aObj) = otKill)
+              or (ObjectType(aObj) = otStun);
 
     Result := Result and (not aObj = PikeObjects[P]);
 
@@ -10637,7 +10592,6 @@ end;
 procedure CheckTowers;
 var
   TowersLeft, TowersRight: array of Integer;
-  U, O, X, aX, aY: Integer;
 begin
   TowersLeft := States.PlayerGetAllHouses(10);
   TowersRight := States.PlayerGetAllHouses(11);
@@ -11402,7 +11356,9 @@ begin
 
         if States.GameTime = SetTilesRoadTimes[P][K] then
           if CanPlaceObject(TilesRoadX[P][K], TilesRoadY[P][K]) then
-            Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], TilesRoadObjects[P][K]);
+            if not Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], TilesRoadObjects[P][K]) then
+              if ObjectType(TilesRoadObjects[P][K]) = otKill then
+                Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], UNIVERSAL_KILL_OBJ);
       end;
     end;
 end;
@@ -11480,7 +11436,9 @@ begin
         if States.GameTime = SetTilesFieldTimes[P][K] then
         begin
           if CanPlaceObject(TilesFieldX[P][K], TilesFieldY[P][K]) then
-            Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], TilesFieldObjects[P][K]);
+            if not Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], TilesFieldObjects[P][K]) then
+              if ObjectType(TilesFieldObjects[P][K]) = otKill then
+                Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], UNIVERSAL_KILL_OBJ);
           if (P = 8)
           and (CHANGE_RELIEF) then
             for C := 0 to 1 + States.KaMRandomI(3) do 
@@ -11553,7 +11511,9 @@ begin
 
         if States.GameTime = SetTilesWineTimes[P][K] then
           if CanPlaceObject(TilesWineX[P][K], TilesWineY[P][K]) then
-            Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], TilesWineObjects[P][K]);
+            if not Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], TilesWineObjects[P][K]) then
+              if ObjectType(TilesWineObjects[P][K]) = otKill then
+                Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], UNIVERSAL_KILL_OBJ);
 
         if States.GameTime = ClearTilesWineTimes[P][K] + CLEAR_ARRAY_FACTOR - 1 then
           Tiles[TilesWineX[P][K]][TilesWineY[P][K]].Skill := sNone;
