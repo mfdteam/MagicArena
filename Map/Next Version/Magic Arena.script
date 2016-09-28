@@ -466,9 +466,6 @@ type
     MindX: Integer;
     MindY: Integer;
     MindDir: Integer;
-    MindX2: Integer;
-    MindY2: Integer;
-    MindDir2: Integer;
     PikeX: Integer;
     PikeY: Integer;
     PikeDir: Integer;
@@ -1129,9 +1126,6 @@ begin
       MindX := 0;
       MindY := 0;
       MindDir := 0;
-      MindX2 := 0;
-      MindY2 := 0;
-      MindDir2 := 0;
       PikeX := 0;
       PikeY := 0;
       PikeDir := 0;
@@ -9661,10 +9655,10 @@ begin
   for I := 0 to 7 do
     if States.PlayerEnabled(I) then
     begin
-      if Players[I].HP = 0 then
+      if (Players[I].HP = 0) and not (Players[I].CaptureMind) then
         Actions.PlayerDefeat(I);
     end;
-
+  
   for J := 0 to 3 do
     if States.PlayerEnabled(J) then
       if not States.PlayerDefeated(J) then
@@ -9690,7 +9684,8 @@ begin
   for I := 0 to 7 do
     if States.PlayerEnabled(I) then
       if (Players[I].HP = 0)
-      and (Players[I].Hero > 0) then
+      and (Players[I].Hero > 0)
+      and not (Players[I].CaptureMind) then
       begin
         if (States.UnitPositionX(States.GroupMember(Players[I].Hero, 0)) <> Players[I].TribuneX)
         and (States.UnitPositionY(States.GroupMember(Players[I].Hero, 0)) <> Players[I].TribuneY) then
@@ -9700,7 +9695,7 @@ begin
           Actions.GroupHungerSet(Players[I].Hero, States.UnitMaxHunger);
         end;
       end;
-
+      
 end;
 
 
@@ -10662,8 +10657,22 @@ begin
       begin
         Players[I1].HeroReborn := False;
         Players[I1].RebornTime := 0;
-        if not Players[I1].MovedToTribune then
+        if Players[I1].CaptureMind then
         begin
+          Players[M[I1]].HeroReborn := False;
+          Players[M[I1]].RebornTime := 0;
+        end;
+        if not (Players[I1].MovedToTribune) and not (Players[I1].CaptureMind) then
+        begin
+          if Players[I1].MindStunned then
+          begin
+            Players[I1].HeroType := Players[I1].HeroMindType;
+            Players[M[I1]].MindX := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
+            Players[M[I1]].MindY := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
+            Players[M[I1]].MindDir := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
+            Players[I1].StunnedMindTime := States.GameTime + 1;
+            Players[M2[I1]].CaptureMindTime := States.GameTime + 1;
+          end;
           Actions.FogRevealAll(I1);
           Actions.CinematicStart(I1);
           Actions.CinematicPanTo(I1, Players[I1].TribuneX, Players[I1].TribuneY, 0);
@@ -10997,7 +11006,7 @@ begin
       if States.GameTime = Players[I1].MindTime then
       begin
         Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
+        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[M[I1]].MindX, Players[M[I1]].MindY, Players[M[I1]].MindDir, 1, 1);
         Actions.GroupKillAll(Players[M[I1]].Hero, True);
         Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
         Actions.GroupBlockOrders(Players[I1].Hero, True);
@@ -11056,13 +11065,6 @@ begin
         Players[I1].TempHeroImmortal :=  Players[I1].HeroImmortal;
         Players[I1].TempHeroImmortalTime := Players[I1].HeroImmortalTime;
 
-        Players[I1].MindX := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
-        Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
-        Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
-        Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
-        Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
-        Players[I1].MindDir2 := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
-
         Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         Actions.GroupKillAll(Players[M[I1]].Hero, True);
@@ -11097,7 +11099,7 @@ begin
         Players[M[I1]].HeroStunned := True;
         Players[M[I1]].HeroType := Players[I1].HeroMindType;
         Actions.GroupKillAll(Players[M[I1]].Hero, True);
-        Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
+        Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[M[I1]].MindX, Players[M[I1]].MindY, Players[M[I1]].MindDir, 1, 1);
 
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
@@ -11135,48 +11137,26 @@ begin
 
       if States.GameTime = Players[I1].CaptureMindTime then
       begin
-        Actions.FogCoverAll(I1);
-        Actions.FogRevealRect(I1, 1, 39, 70, 109);
-        Actions.FogCoverAll(M[I1]);
-        Actions.FogRevealRect(M[I1], 1, 39, 70, 109);
-        if Players[I1].Hero > 0 then
+        if Players[M[I1]].HP > 0 then 
         begin
-          Players[I1].MindX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
-          Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
-          Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
-          Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
-        end;
-        if Players[M[I1]].Hero > 0 then
-        begin
-          if Players[M[I1]].HP > 0 then
-          begin
-            Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0)) >= MIN_Y) + Players[M[I1]].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0)) < MIN_Y);
-            Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0)) >= MIN_Y) + Players[M[I1]].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0)) < MIN_Y);
-          end;
-          if Players[M[I1]].HP <= 0 then
-          begin
-            Players[I1].MindX2 := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) >= MIN_Y) + Players[I1].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) < MIN_Y);
-            Players[I1].MindY2 := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) >= MIN_Y) + Players[I1].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) < MIN_Y);
-          end;
-          Players[I1].MindDir2 := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
+          Actions.FogCoverAll(I1);
+          Actions.FogRevealRect(I1, 1, 39, 70, 109);
+          Actions.FogCoverAll(M[I1]);
+          Actions.FogRevealRect(M[I1], 1, 39, 70, 109);
+          Players[M[I1]].MindX := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
+          Players[M[I1]].MindY := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
+          Players[M[I1]].MindDir := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
           Actions.GroupKillAll(Players[M[I1]].Hero, True);
-          Players[M[I1]].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
         end;
+        Players[I1].MindX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
+        Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+        Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
+        Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
       end;
 
       if States.GameTime = Players[I1].MindAppearTimeBack then
       begin
-        Actions.FogCoverAll(I1);
-        Actions.FogRevealRect(I1, 1, 39, 70, 109);
-        Actions.FogCoverAll(M[I1]);
-        Actions.FogRevealRect(M[I1], 1, 39, 70, 109);
-        if Players[M[I1]].HP = 0 then 
-        begin
-          Players[I1].MindX2 := Players[I1].MindX;
-          Players[I1].MindY2 := Players[I1].MindY;
-        end;
         Players[I1].CaptureMind := False;
         Players[M[I1]].MindStunned := False;
         if (Players[I1].Hero > 0)
@@ -11194,15 +11174,13 @@ begin
           
           if (Players[M[I1]].HeroReborn = False) then
           begin
-            Actions.GroupKillAll(Players[I1].Hero, True);
-            Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].MindX2, Players[I1].MindY2, Players[I1].MindDir2, 1, 1);
+            Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[M[I1]].MindX, Players[M[I1]].MindY, Players[M[I1]].MindDir, 1, 1);
             Actions.CinematicStart(I1);
-            Actions.CinematicPanTo(I1, Players[I1].MindX2, Players[I1].MindY2, 0);
+            Actions.CinematicPanTo(I1, Players[M[I1]].MindX, Players[M[I1]].MindY, 0);
             Actions.CinematicEnd(I1);
           end;
           if (Players[I1].HeroReborn = False) then
           begin
-            Actions.GroupKillAll(Players[M[I1]].Hero, True);
             Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
             Actions.CinematicStart(M[I1]);
             Actions.CinematicPanTo(M[I1], Players[I1].MindX, Players[I1].MindY, 0);
