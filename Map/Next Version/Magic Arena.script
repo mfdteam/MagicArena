@@ -3466,9 +3466,10 @@ begin
         0,1: begin
                for Y1 := Y2 - 2 downto Y2 - 22 do
                for X1 := X2 - 1 to X2 + 1 do
+               begin
+                 Desync := Desync + 1;
                  if TileOnBattlefield(X1, Y1) then
                  begin
-                   Desync := Desync + 1;
                    TilesWineLength[P] := TilesWineLength[P] + 1;
                    SetLength(TilesWineX[P], TilesWineLength[P]);
                    SetLength(TilesWineY[P], TilesWineLength[P]);
@@ -3484,14 +3485,16 @@ begin
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := s10kSpears;
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                  end;
+               end;
              end;
 
         2,3: begin
                for X1 := X2 + 2 to X2 + 22 do
                for Y1 := Y2 - 1 to Y2 + 1 do
+               begin
+                 Desync := Desync + 1;
                  if TileOnBattlefield(X1, Y1) then
                  begin
-                   Desync := Desync + 1;
                    TilesWineLength[P] := TilesWineLength[P] + 1;
                    SetLength(TilesWineX[P], TilesWineLength[P]);
                    SetLength(TilesWineY[P], TilesWineLength[P]);
@@ -3507,14 +3510,16 @@ begin
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := s10kSpears;
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                  end;
+               end;
              end;
 
         4,5: begin
                for Y1 := Y2 + 2 to Y2 + 22 do
                for X1 := X2 - 1 to X2 + 1 do
+               begin
+                 Desync := Desync + 1;
                  if TileOnBattlefield(X1, Y1) then
                  begin
-                   Desync := Desync + 1;
                    TilesWineLength[P] := TilesWineLength[P] + 1;
                    SetLength(TilesWineX[P], TilesWineLength[P]);
                    SetLength(TilesWineY[P], TilesWineLength[P]);
@@ -3530,14 +3535,16 @@ begin
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := s10kSpears;
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                  end;
+               end;
              end;
 
         6,7:  begin
                for X1 := X2 - 2 downto X2 - 22 do
                for Y1 := Y2 - 1 to Y2 + 1 do
+               begin
+                 Desync := Desync + 1;
                  if TileOnBattlefield(X1, Y1) then
                  begin
-                   Desync := Desync + 1;
                    TilesWineLength[P] := TilesWineLength[P] + 1;
                    SetLength(TilesWineX[P], TilesWineLength[P]);
                    SetLength(TilesWineY[P], TilesWineLength[P]);
@@ -3553,6 +3560,7 @@ begin
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := s10kSpears;
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                  end;
+               end;
              end;
         end;
 
@@ -6090,6 +6098,8 @@ begin
              for Y1 := Y2 - 2 downto Y2 - 13 do
              for X1 := X2 - 1 to X2 + 1 do
              begin
+               Desync := Desync + 1;
+
                if X1 = X2 - 1 then
                  DX1 := DX1 + 1;                  
 
@@ -6101,7 +6111,6 @@ begin
 
                if TileOnBattlefield(X1, Y1) then
                begin
-                 Desync := Desync + 1;
 
                  if R = 0 then
                    Place := ((X1 = X2 - 1)
@@ -6144,6 +6153,8 @@ begin
              for X1 := X2 + 2 to X2 + 13 do
              for Y1 := Y2 - 1 to Y2 + 1 do
              begin
+               Desync := Desync + 1;
+
                if Y1 = Y2 - 1 then
                  DY1 := DY1 + 1;
 
@@ -6155,7 +6166,6 @@ begin
 
                if TileOnBattlefield(X1, Y1) then
                begin
-                 Desync := Desync + 1;
 
                  if R = 0 then
                    Place := ((Y1 = Y2 - 1)
@@ -6198,6 +6208,8 @@ begin
              for Y1 := Y2 + 2 to Y2 + 13 do
              for X1 := X2 - 1 to X2 + 1 do
              begin
+               Desync := Desync + 1;
+
                if X1 = X2 - 1 then
                  DX1 := DX1 + 1;
 
@@ -6209,7 +6221,6 @@ begin
 
                if TileOnBattlefield(X1, Y1) then
                begin
-                 Desync := Desync + 1;
 
                  if R = 0 then
                    Place := ((X1 = X2 - 1)
@@ -6252,6 +6263,8 @@ begin
              for X1 := X2 - 2 downto X2 - 13 do
              for Y1 := Y2 - 1 to Y2 + 1 do
              begin
+               Desync := Desync + 1;
+
                if Y1 = Y2 - 1 then
                  DY1 := DY1 + 1;
 
@@ -6263,7 +6276,6 @@ begin
 
                if TileOnBattlefield(X1, Y1) then
                begin
-                 Desync := Desync + 1;
 
                  if R = 0 then
                    Place := ((Y1 = Y2 - 1)
@@ -7132,9 +7144,10 @@ begin
       0,1: begin
 
              for Y1 := Y2 - 2 downto Y2 - BOOMERANG_LENGTH do
+             begin
+               Desync := Desync + 1;
                if TileOnBattlefield(DX1, Y1) then
                begin
-                 Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
                  SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7150,10 +7163,12 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
+             end;
+
+             Desync := Desync + 1;
 
              if TileOnBattlefield(X2, Y2 - BOOMERANG_LENGTH - 1) then
              begin
-               Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
                SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7171,9 +7186,10 @@ begin
              end;
 
              for Y1 := Y2 - BOOMERANG_LENGTH to Y2 - 2 do
+             begin
+               Desync := Desync + 1;
                if TileOnBattlefield(DX2, Y1) then
                begin
-                 Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
                  SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7189,10 +7205,12 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
+             end;
+
+             Desync := Desync + 1;
 
              if TileOnBattlefield(X2, Y2 - 1) then
              begin
-               Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
                SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7214,9 +7232,10 @@ begin
       2,3: begin
 
              for X1 := X2 + 2 to X2 + BOOMERANG_LENGTH do
+             begin
+               Desync := Desync + 1;
                if TileOnBattlefield(X1, DY1) then
                begin
-                 Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
                  SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7232,10 +7251,12 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
+             end;
+
+             Desync := Desync + 1;
 
              if TileOnBattlefield(X2 + BOOMERANG_LENGTH + 1, Y2) then
              begin
-               Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
                SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7253,9 +7274,10 @@ begin
              end;
 
              for X1 := X2 + BOOMERANG_LENGTH downto X2 + 2 do
+             begin
+               Desync := Desync + 1;
                if TileOnBattlefield(X1, DY2) then
                begin
-                 Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
                  SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7271,10 +7293,12 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
+             end;
+
+             Desync := Desync + 1;
 
              if TileOnBattlefield(X2 + 1, Y2) then
              begin
-               Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
                SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7296,9 +7320,10 @@ begin
       4,5: begin
 
              for Y1 := Y2 + 2 to Y2 + BOOMERANG_LENGTH do
+             begin
+               Desync := Desync + 1;
                if TileOnBattlefield(DX1, Y1) then
                begin
-                 Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
                  SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7314,10 +7339,12 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
+             end;
+
+             Desync := Desync + 1;
 
              if TileOnBattlefield(X2, Y2 + BOOMERANG_LENGTH + 1) then
              begin
-               Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
                SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7335,9 +7362,10 @@ begin
              end;
 
              for Y1 := Y2 + BOOMERANG_LENGTH downto Y2 + 2 do
+             begin
+               Desync := Desync + 1;
                if TileOnBattlefield(DX2, Y1) then
                begin
-                 Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
                  SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7353,10 +7381,12 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
+             end;
+
+             Desync := Desync + 1;
 
              if TileOnBattlefield(X2, Y2 + 1) then
              begin
-               Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
                SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7378,9 +7408,10 @@ begin
       6,7: begin
 
              for X1 := X2 - 2 downto X2 - BOOMERANG_LENGTH do
+             begin
+               Desync := Desync + 1;
                if TileOnBattlefield(X1, DY1) then
                begin
-                 Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
                  SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7396,10 +7427,12 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
+             end;
+
+             Desync := Desync + 1;
 
              if TileOnBattlefield(X2 - BOOMERANG_LENGTH - 1, Y2) then
              begin
-               Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
                SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7417,9 +7450,10 @@ begin
              end;
 
              for X1 := X2 - BOOMERANG_LENGTH to X2 - 2 do
+             begin
+               Desync := Desync + 1;
                if TileOnBattlefield(X1, DY2) then
                begin
-                 Desync := Desync + 1;
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
                  SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -7435,10 +7469,12 @@ begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
+             end;
+
+             Desync := Desync + 1;
 
              if TileOnBattlefield(X2 - 1, Y2) then
              begin
-               Desync := Desync + 1;
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
                SetLength(TilesRoadY[P], TilesRoadLength[P]);
