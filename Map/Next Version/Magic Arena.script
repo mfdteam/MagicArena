@@ -818,15 +818,15 @@ end;
 
 procedure AIHeroChoice(P: Integer);
 begin
-  case States.KaMRandomI(8) of
+  case States.KaMRandomI(6) of
     0: Players[P].HeroType := 16;
     1: Players[P].HeroType := 23;
     2: Players[P].HeroType := 18;
     3: Players[P].HeroType := 19;
-    4: Players[P].HeroType := 26;
-    5: Players[P].HeroType := 17;
-    6: Players[P].HeroType := 22;
-    7: Players[P].HeroType := 20;
+    4: Players[P].HeroType := 17;
+    5: Players[P].HeroType := 22;
+    //6: Players[P].HeroType := 20;
+    //7: Players[P].HeroType := 26;
   end;
 
   Players[P].TempHeroType := Players[P].HeroType;
@@ -13675,7 +13675,8 @@ begin
 
       if Players[I].Hero > 0 then
         if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if AICanUseSkills(I, 20) then
+          if (AICanUseSkills(I, 20))
+          and (DEBUG_MODE) then
             AIPikeman(I);
 
       if Players[I].Hero > 0 then
@@ -13685,7 +13686,8 @@ begin
 
       if Players[I].Hero > 0 then
         if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if AICanUseSkills(I, 26) then
+          if (AICanUseSkills(I, 26))
+          and (DEBUG_MODE) then
             AIWarrior(I);
 
       if Players[I].Hero > 0 then
