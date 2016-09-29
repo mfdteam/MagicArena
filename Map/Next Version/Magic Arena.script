@@ -9017,6 +9017,13 @@ begin
           Players[P].MindTime2 := 0;
           Players[P].WineSkillDelay := 500;
         end;
+        
+        if States.GameTime < Players[M2[P]].MindTime2 then
+        begin
+          Players[M2[P]].MindTime2 := 0;
+          Players[M2[P]].WineSkillDelay := 500;
+          Actions.GroupBlockOrders(Players[M2[P]].Hero, False);
+        end;
 
         if TilesRoadLength[P] > 0 then
           if (Players[P].HeroType <> 23)
@@ -9050,6 +9057,19 @@ begin
               begin
                 SetTilesWineTimes[P][I] := 0;
                 TilesWineObjects[P][I] := SKILL_CANCEL_OBJ;
+              end;
+              
+        if TilesWineLength[M2[P]] > 0 then
+          if ((Players[M2[P]].HeroType <> 25)
+          and (Players[M2[P]].LastUsedSkill <> sCrackingEarth))
+          or ((Players[M2[P]].HeroType = 25)
+          and (Players[M2[P]].LastUsedSkill = sCrackingEarth)
+          and (States.GameTime < Players[M2[P]].CrackingStartTime))  then
+            for I := 0 to TilesWineLength[M2[P]] - 1 do
+              if SetTilesWineTimes[M2[P]][I] > States.GameTime then
+              begin
+                SetTilesWineTimes[M2[P]][I] := 0;
+                TilesWineObjects[M2[P]][I] := SKILL_CANCEL_OBJ;
               end;
 
         Players[P].TrackStartTime := 0;
@@ -10404,6 +10424,13 @@ begin
       Players[O].MindTime2 := 0;
       Players[O].WineSkillDelay := 500;
     end;
+    
+    if States.GameTime < Players[M2[O]].MindTime2 then
+    begin
+      Players[M2[O]].MindTime2 := 0;
+      Players[M2[O]].WineSkillDelay := 500;
+      Actions.GroupBlockOrders(Players[M2[O]].Hero, False);
+    end;
 
     if (InRange(Players[O].WerewolfTime - States.GameTime, 0, 49))
     and (InRange(Players[O].TempHeroType, 14, 27)) then
@@ -10451,6 +10478,19 @@ begin
           begin
             SetTilesWineTimes[O][I] := 0;
             TilesWineObjects[O][I] := SKILL_CANCEL_OBJ;
+          end;
+          
+    if TilesWineLength[M2[O]] > 0 then
+      if ((Players[M2[O]].HeroType <> 25)
+      and (Players[M2[O]].LastUsedSkill <> sCrackingEarth))
+      or ((Players[M2[O]].HeroType = 25)
+      and (Players[M2[O]].LastUsedSkill = sCrackingEarth)
+      and (States.GameTime < Players[M2[O]].CrackingStartTime)) then
+        for I := 0 to TilesWineLength[M2[O]] - 1 do
+          if SetTilesWineTimes[M2[O]][I] > States.GameTime then
+          begin
+            SetTilesWineTimes[M2[O]][I] := 0;
+            TilesWineObjects[M2[O]][I] := SKILL_CANCEL_OBJ;
           end;
 
   end;
