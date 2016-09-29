@@ -6747,10 +6747,13 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
-    Players[P].KnightX := X2;
-    Players[P].KnightY := Y2;
-    Players[P].KnightAppearTime := States.GameTime + DELAY_OF_TURNING;
-    Players[P].KnightDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+    if not States.PlayerIsAI(P) then
+    begin
+      Players[P].KnightX := X2;
+      Players[P].KnightY := Y2;
+      Players[P].KnightAppearTime := States.GameTime + DELAY_OF_TURNING;
+      Players[P].KnightDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+    end;
 
     if States.PlayerIsAI(P) then
     begin
@@ -6829,8 +6832,11 @@ begin
 
     Players[P].LastUsedSkill := sRagingSpurt;
 
-    Actions.GroupKillAll(Players[P].Hero, True);
-    Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+    if not States.PlayerIsAI(P) then
+    begin
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+    end;
 
     Players[P].WineSkillDelay := Round(KNIGHT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -8919,11 +8925,11 @@ begin
   if States.GroupMember(Players[P].Hero, 0) <= 0 then
     Exit;
   if Players[P].Hero > 0 then
-  if not States.GroupDead(Players[P].Hero) then
-  begin
-    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-  end;
+    if not States.GroupDead(Players[P].Hero) then
+    begin
+      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    end;
   if aX <= 0 then
     Exit;
   if aY <= 0 then
