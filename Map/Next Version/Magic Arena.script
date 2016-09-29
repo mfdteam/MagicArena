@@ -229,6 +229,7 @@ const
   UNIVERSAL_KILL_OBJ = 180;
 
   EXILE_TILE = 122;
+  INFERNAL_TILE = 155;
 
 //Runes
 
@@ -557,6 +558,7 @@ type
     TileDirection: Integer;
     ShieldTime: Integer;
     ImmortalTime: Integer;
+    InfernalTime: Integer;
   end;
 
 
@@ -764,6 +766,7 @@ begin
     Tiles[aX][aY].TileDirection := States.MapTileRotation(aX, aY);
     Tiles[aX][aY].ShieldTime := 0;
     Tiles[aX][aY].ImmortalTime := 0;
+    Tiles[aX][aY].InfernalTime := 0;
   end;
 end;
 
@@ -793,6 +796,9 @@ begin
   for aX := MIN_X to MAX_X do
   for aY := MIN_Y to MAX_Y do
   begin
+    if (States.MapTileType(aX, aY) = Tiles[aX][aY].TileType)
+    and (States.MapTileRotation(aX, aY) <> Tiles[aX][aY].TileDirection) then
+      Actions.MapTileSet(aX, aY, Tiles[aX][aY].TileType, Tiles[aX][aY].TileDirection);
     aObj := States.MapTileObject(aX, aY);
     if (aObj = WARRIOR_OBJECT7)
     and (TileOnBattlefield(aX, aY))
@@ -807,6 +813,23 @@ begin
         Actions.MapTileObjectSet(aX, aY, 255);
   end;
 
+end;
+
+
+procedure CheckInfernal;
+var
+  aX, aY: Integer;
+begin
+  for aX := MIN_X to MAX_X do
+  for aY := MIN_Y to MAX_Y do
+  begin
+    if (States.GameTime > Tiles[aX][aY].InfernalTime)
+    and (States.MapTileType(aX, aY) = INFERNAL_TILE) then
+      Actions.MapTileSet(aX, aY, Tiles[aX][aY].TileType, Tiles[aX][aY].TileDirection);
+    if (States.GameTime < Tiles[aX][aY].InfernalTime)
+    and (States.MapTileType(aX, aY) <> INFERNAL_TILE) then
+      Actions.MapTileSet(aX, aY, INFERNAL_TILE, States.KaMRandomI(4));
+  end;
 end;
 
 
@@ -2183,15 +2206,13 @@ begin
           Players[I].HeroType := States.UnitType(States.UnitAt(X, Y));
           if Players[I].HeroType = 13 then
           begin
-            case States.KaMRandomI(8) of
-              0: Players[I].HeroType := 16;
-              1: Players[I].HeroType := 23;
-              2: Players[I].HeroType := 18;
-              3: Players[I].HeroType := 19;
-              4: Players[I].HeroType := 26;
-              5: Players[I].HeroType := 17;
-              6: Players[I].HeroType := 22;
-              7: Players[I].HeroType := 20;
+            case States.KaMRandomI(6) of
+              0: Players[P].HeroType := 16;
+              1: Players[P].HeroType := 23;
+              2: Players[P].HeroType := 18;
+              3: Players[P].HeroType := 19;
+              4: Players[P].HeroType := 17;
+              5: Players[P].HeroType := 22;
             end;
           end;
           Players[I].TempHeroType := Players[I].HeroType;
@@ -4324,7 +4345,7 @@ end;
 
 procedure InfernalTower(P, X, Y: Integer);
 var
-  X2, Y2, Recruit, Tower: Integer;
+  X2, Y2, Recruit, Tower, aX: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4351,6 +4372,14 @@ begin
       Tower := Actions.GiveHouse(Players[P].ZombiePlayer, 17, X, Y);
       if Tower > 0 then
       begin
+        for aX := X - 2 to X + 1 do
+          if TileOnBattlefield(aX, Y + 1) then
+          begin
+            Actions.MapTileSet(aX, Y + 1, INFERNAL_TILE, States.KaMRandomI(4));
+            Tiles[aX][Y + 1].Owner := P;
+            Tiles[aX][Y + 1].Skill := sTower;
+            Tiles[aX][Y + 1].InfernalTime := States.GameTime + RECRUIT_HUNGER + 25;
+          end;
         Recruit := Actions.GiveUnit(Players[P].ZombiePlayer, 13, X, Y + 3, States.KaMRandomI(8));
         SetLength(Zombies, Length(Zombies) + 1);
         Zombies[Length(Zombies) - 1].Owner := P;
@@ -8906,18 +8935,20 @@ var
   X1, Y1: Integer;
 begin
   Actions.MapTileObjectSet(X, Y, 255);
-  for X1 := X - 1 to X do
-  for Y1 := Y - 1 to Y do
-  begin
-    Actions.GiveRoad(10, X1, Y1);
-    Actions.RemoveRoad(X1, Y1);
-  end;
+  for X1 := X - 2 to X + 1 do
+  for Y1 := Y - 1 to Y + 1 do
+    if TileOnBattlefield(X1, Y1) then
+    begin
+      Actions.GiveRoad(10, X1, Y1);
+      Actions.RemoveRoad(X1, Y1);
+      Actions.MapTileSet(X1, Y1, Tiles[X1][Y1].TileType, Tiles[X1][Y].TileDirection);
+    end;
 end;
 
 
 procedure CheckTiles(P: Integer);
 var
-  T, aX, aY, aObj: Integer;
+  T, aX, aY, aObj, aTile, aTime: Integer;
 begin
   aObj := -1;
   if Players[P].Hero <= 0 then
@@ -8937,13 +8968,25 @@ begin
   if (TileOnBattlefield(aX, aY))
   or ((aX = RUNE_X)
   and (aY = RUNE_Y)) then
+  begin
     aObj := States.MapTileObject(aX, aY);
+    aTile := States.MapTileType(aX, aY);
+    if Tiles[aX][aY].ShieldTime > Tiles[aX][aY].ImmortalTime then
+      aTime := Tiles[aX][aY].ShieldTime;
+    if Tiles[aX][aY].ShieldTime <= Tiles[aX][aY].ImmortalTime then
+      aTime := Tiles[aX][aY].ImmortalTime;
+  end;
   if aObj = PikeObjects[P] then
     Exit;
   if aObj = -1 then
     Exit;
 
-  if ObjectType(aObj) = otKill then
+  if (aTile = INFERNAL_TILE)
+  and (aTime > States.GameTime) then
+    Exit;
+
+  if (ObjectType(aObj) = otKill)
+  or (aTile = INFERNAL_TILE) then
   begin
     T := Players[P].HeroType;
     if (not States.PlayerDefeated(P))
@@ -9546,7 +9589,7 @@ end;
 procedure CheckTilesForAI;
 var
   AIUnits: array of Integer;
-  aObj, aX, aY: Integer;
+  aObj, aX, aY, aTile: Integer;
 begin
   aObj := -1;
   for I := 9 to 11 do
@@ -9562,7 +9605,10 @@ begin
       if TileOnBattlefield(aX, aY) then
       begin
         aObj := States.MapTileObject(aX, aY);
-        if ObjectType(aObj) = otKill then
+        aTile := States.MapTileType(aX, aY);
+        if (ObjectType(aObj) = otKill)
+        or ((aTile = INFERNAL_TILE)
+        and (States.UnitType(AIUnits[K]) <> 13)) then
         begin
           Actions.UnitKill(AIUnits[K], False);
 
@@ -9643,10 +9689,30 @@ begin
   begin
     aObj := States.MapTileobject(X, Y);
     Result := (ObjectType(aObj) = otKill)
-              or (ObjectType(aObj) = otStun);
+              or (ObjectType(aObj) = otStun)
+              or (States.MapTileType(X, Y) = INFERNAL_TILE);
 
     Result := Result and (not aObj = PikeObjects[P]);
 
+  end;
+end;
+
+
+function TileHasEnemyTower(P, X, Y: Integer): Boolean;
+var
+  aHouse, O, HT: Integer;
+begin
+  Result := False;
+  if TileOnBattlefield(X, Y) then
+  begin
+    aHouse := States.HouseAt(X, Y);
+    if aHouse > 0 then
+    begin
+      HT := States.HouseType(aHouse);
+      O := States.HouseOwner(aHouse);
+    end;
+    Result := (HT = 17)
+    and (Players[P].PlayersTeam <> Players[O].PlayersTeam);
   end;
 end;
 
@@ -10628,6 +10694,8 @@ var
 begin
   TowersLeft := States.PlayerGetAllHouses(10);
   TowersRight := States.PlayerGetAllHouses(11);
+
+  CheckInfernal;
 
   if Length(TowersLeft) > 0 then
     for I := 0 to Length(TowersLeft) - 1 do
@@ -12005,6 +12073,34 @@ begin
       end;
 
     end;
+
+  end;
+
+end;
+
+
+procedure AvoidTowers(P: Integer);
+var
+  aX, aY, X1, Y1: Integer;
+begin
+  if Players[P].Hero <= 0 then
+    Exit;
+
+  if not States.PlayerIsAI(I) then
+    Exit;
+
+  if (InRange(P, 0, 7))
+  and (Players[P].Hero > 0) then
+  begin
+
+    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+
+    if not Players[P].CastingSkill then
+      for X1 := aX - 6 to aX + 6 do
+      for Y1 := aY - 6 to aY + 6 do
+        if TileHasEnemyTower(P, X1, Y1) then
+          Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5) - States.KaMRandomI(5), aY + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8));
 
   end;
 
@@ -13571,10 +13667,22 @@ begin
   if States.GameTime mod PLANT_TREES_TIME = 0 then
     PlantTrees;
 
-  for I := 0 to 11 do
+  for I := 0 to 7 do
     if (States.GameTime mod AVOID_FACTOR = 0)
     and (States.Gametime > CHOOSE_HERO_TIMER) then
       AvoidDanger(I);
+
+  for I := 0 to 3 do
+    if (States.GameTime mod AVOID_FACTOR = 0)
+    and (States.Gametime > CHOOSE_HERO_TIMER)
+    and (Length(States.PlayerGetAllHouses(Players[4].ZombiePlayer)) > 0) then
+      AvoidTowers(I);
+
+  for I := 4 to 7 do
+    if (States.GameTime mod AVOID_FACTOR = 0)
+    and (States.Gametime > CHOOSE_HERO_TIMER)
+    and (Length(States.PlayerGetAllHouses(Players[0].ZombiePlayer)) > 0) then
+      AvoidTowers(I);
 
   if States.GameTime mod AI_IGNORE_FACTOR = 0 then
     for I := 0 to 7 do
