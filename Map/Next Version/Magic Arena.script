@@ -8716,7 +8716,8 @@ begin
     EndReChoice(P);
 
   if Players[P].HP <= 0 then
-    Exit;
+    if not Players[P].CaptureMind then
+      Exit;
 
   if Players[P].Hero <= 0 then
     Exit;
@@ -8785,7 +8786,8 @@ begin
   Actions.PlanRemove(P, X, Y);
 
   if Players[P].HP <= 0 then
-    Exit;
+    if not Players[P].CaptureMind then
+      Exit;
 
   if Players[P].Hero <= 0 then
     Exit;
@@ -8854,7 +8856,8 @@ begin
   Actions.PlanRemove(P, X, Y);
 
   if Players[P].HP <= 0 then
-    Exit;
+    if not Players[P].CaptureMind then
+      Exit;
 
   if Players[P].Hero <= 0 then
     Exit;
