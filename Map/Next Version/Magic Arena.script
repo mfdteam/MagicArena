@@ -424,7 +424,6 @@ type
     TempDDTime : Integer;
     TempDD: Boolean;
     PlayersTeam: Integer;
-    TempPlayersTeam: Integer;
     CastingSkill: Boolean;
     SkillTime: Integer;
     SkillCastX: Integer;
@@ -1143,7 +1142,6 @@ begin
       TempStolenSkill := sNone;
       TempStolenSkillName := '';
       TempStolenSkillTime := 0;
-      TempPlayersTeam := -1;
       MindAppearTime := 0;
       MindAppearTimeBack := 0;
       MindX := 0;
@@ -11180,7 +11178,6 @@ begin
         Players[I1].CaptureMind := True;
         Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME - 30; 
         Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME - 30;
-        Players[I1].TempPlayersTeam := Players[I1].PlayersTeam;
         Players[I1].HeroMindType := Players[I1].HeroType;
         Players[M[I1]].HeroMindType := Players[M[I1]].HeroType;
         Players[I1].TempHeroMindType := Players[I1].TempHeroType;
@@ -11249,8 +11246,6 @@ begin
         Players[I1].PreparingTime := Players[M[I1]].PreparingTime;
         Players[I1].HeroInFear := Players[M[I1]].HeroInFear;
         Players[I1].HeroInFearTime := Players[M[I1]].HeroInFearTime;
-        Players[I1].HeroReborn := Players[M[I1]].HeroReborn;
-        Players[I1].RebornTime := Players[M[I1]].RebornTime;
         Players[I1].RoadSkillDelay := Players[M[I1]].RoadSkillDelay;
         Players[I1].FieldSkillDelay := Players[M[I1]].FieldSkillDelay;
         Players[I1].WineSkillDelay := Players[M[I1]].WineSkillDelay;
@@ -11258,7 +11253,6 @@ begin
           Players[I1].PlayersTeam := 1;
         if Players[M[I1]].PlayersTeam = 1 then
           Players[I1].PlayersTeam := 0;
-  
         Players[I1].HeroImmortal := True;
         Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME - 27;
         Players[I1].HeroImmortalTime := States.GameTime + CAPTURE_MIND_TIME - 27;
@@ -11301,7 +11295,7 @@ begin
           Players[M[I1]].HeroType := Players[M[I1]].HeroMindType;
           Players[I1].TempHeroType := Players[I1].TempHeroMindType;
           
-          if (Players[M[I1]].HeroReborn = False) then
+          if (Players[M[I1]].HeroReborn = False) and (Players[M[I1]].HeroExiled = False) then
           begin
             Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[M[I1]].MindX, Players[M[I1]].MindY, Players[M[I1]].MindDir, 1, 1);
             Actions.CinematicStart(I1);
@@ -11404,9 +11398,20 @@ begin
           Players[I1].RebornTime := Players[I1].TempRebornTime;
           Players[M[I1]].HeroStunned := Players[I1].HeroStunned;
           Players[M[I1]].HeroStunnedTime := Players[I1].HeroStunnedTime;
-          Players[I1].PlayersTeam := Players[I1].TempPlayersTeam;
+          Players[I1].HeroExileTime := Players[M[I1]].HeroExileTime;
+          Players[I1].HeroExileBackTime := Players[M[I1]].HeroExileBackTime;
+          Players[I1].HeroExileX := Players[M[I1]].HeroExileX;
+          Players[I1].HeroExileY := Players[M[I1]].HeroExileY;
+          Players[I1].HeroExileGiver := Players[M[I1]].HeroExileGiver;
+          Players[I1].HeroExileDir := Players[M[I1]].HeroExileDir;
+          Players[I1].HeroExiled := Players[M[I1]].HeroExiled;
+          Players[M[I1]].HeroExileBackTime := 0;
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
           Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
+          if Players[I1].PlayersTeam = 0 then
+            Players[M[I1]].PlayersTeam := 1;
+          if Players[I1].PlayersTeam = 1 then
+            Players[M[I1]].PlayersTeam := 0;
           Players[M[I1]].HeroImmortal := True;
           Players[M[I1]].HeroImmortalTime := States.GameTime + 20;
           if Length(Zombies) > 0 then
