@@ -6381,6 +6381,17 @@ begin
       Exit;
     if States.MapTileObject(X, Y) = WARRIOR_OBJECT7 then
       Exit;
+    if States.GameTime < Players[O].MindTime2 then
+    begin
+      Players[O].MindTime2 := 0;
+      Players[O].WineSkillDelay := 500;
+    end;
+    if States.GameTime < Players[M2[O]].MindTime2 then
+    begin
+      Players[M2[O]].MindTime2 := 0;
+      Players[M2[O]].WineSkillDelay := 500;
+      Actions.GroupBlockOrders(Players[M2[O]].Hero, False);
+    end;
     if (U > 0)
     and (U = States.GroupMember(Players[O].Hero, 0))
     and (not Players[O].HeroImmortal)
@@ -6389,6 +6400,7 @@ begin
     and (Players[O].PlayersTeam <> Players[P].PlayersTeam))
     or ((Abs(X2 - X) <= EXILE_ALLY_RADIUS)
     and (Abs(Y2 - Y) <= EXILE_ALLY_RADIUS)
+    and (not Players[O].HeroImmortal)
     and (Players[O].PlayersTeam = Players[P].PlayersTeam)) then
     begin
       TilesFieldLength[P] := TilesFieldLength[P] + 4;
