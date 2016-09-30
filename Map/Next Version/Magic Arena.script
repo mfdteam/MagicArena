@@ -241,16 +241,17 @@ const
   RUNE_REGEN_OBJ = 7;
   RUNE_DOUBLE_OBJ = 105;
   RUNE_ILLUSION_OBJ = 203;
-  RUNE_IMMORTAL_OBJ = 63;
+  RUNE_MAGIC_IMMUNITY_OBJ = 63;
   RUNE_RECHARGE_OBJ = 88;
   RUNE_DOUBLE_TIME = 300;
-  RUNE_IMMORTAL_TIME = 200;
+  RUNE_MAGIC_IMMUNITY_TIME = 200;
   RUNE_ILLUSION_TIME = 1800;
   RUNE_RECHARGE_TIME = 600;
 
 //Animation
 
-  IMMORTAL_ANIMATION = 20;
+  MAGIC_IMMUNITY_ANIMATION = 20;
+  TOTAL_IMMUNITY_ANIMATION = 33;
   DOUBLE_ANIMATION = 28;
   SILENCE_ANIMATION = 14;
   FEAR_ANIMATION = 220;
@@ -261,8 +262,8 @@ const
 
 //Player stats
 
-  IMMORTAL_TIME = 60;
-  RECHOICE_IMMORTAL_TIME = 60;
+  MAGIC_IMMUNITY_TIME = 60;
+  TOTAL_IMMUNITY_TIME = 60;
   STUNNED_TIME = 50;
   STUNNED_ANIMATION_TIME = 15;
   IN_FEAR_TIME = 80;
@@ -387,10 +388,10 @@ type
     HeroType: Integer;
     HeroMindType: Integer;
     TempHeroMindType: Integer;
-    HeroImmortal: Boolean;
-    HeroImmortalTime: Integer;
-    TempHeroImmortal: Boolean;
-    TempHeroImmortalTime: Integer;
+    HeroMagicImmunity: Boolean;
+    HeroMagicImmunityTime: Integer;
+    TempHeroMagicImmunity: Boolean;
+    TempHeroMagicImmunityTime: Integer;
     HeroChosen: Boolean;
     HP: Integer;
     RoadSkillDelay: Integer;
@@ -521,6 +522,10 @@ type
     TempLastX: Integer;
     TempLastY: Integer;
     LastDir: Integer;
+    HeroTotalImmunity: Boolean;
+    HeroTotalImmunityTime: Integer;
+    TempHeroTotalImmunity: Boolean;
+    TempHeroTotalImmunityTime: Integer;
   end;
 
 
@@ -1077,13 +1082,13 @@ begin
     begin
       Hero := -1;
       HeroType := -1;
-      HeroImmortal := False;
+      HeroMagicImmunity := False;
       HeroChosen := False;
       HP := START_HP;
       RoadSkillDelay := 0;
       FieldSkillDelay := 0;
       WineSkillDelay := 0;
-      HeroImmortalTime := 0;
+      HeroMagicImmunityTime := 0;
       HeroStunnedTime := 0;
       HeroStunned := False;
       HeroInFearTime := 0;
@@ -1197,6 +1202,8 @@ begin
       LastX := 0;
       LastY := 0;
       LastDir := -1;
+      HeroTotalImmunity := False;
+      HeroTotalImmunityTime := 0;
     end;
   end;
 
@@ -1265,7 +1272,7 @@ begin
     0..2:    Result := RUNE_REGEN_OBJ;
     3..5:    Result := RUNE_DOUBLE_OBJ;
     6..8:    Result := RUNE_ILLUSION_OBJ;
-    9..11:   Result := RUNE_IMMORTAL_OBJ;
+    9..11:   Result := RUNE_MAGIC_IMMUNITY_OBJ;
     12..14:  Result := RUNE_RECHARGE_OBJ;
   end;
 end;
@@ -1345,10 +1352,10 @@ begin
         Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
       end;
 
-    RUNE_IMMORTAL_OBJ:
+    RUNE_MAGIC_IMMUNITY_OBJ:
     begin
-      Players[P].HeroImmortal := True;
-      Players[P].HeroImmortalTime := States.GameTime + RUNE_IMMORTAL_TIME;
+      Players[P].HeroMagicImmunity := True;
+      Players[P].HeroMagicImmunityTime := States.GameTime + RUNE_MAGIC_IMMUNITY_TIME;
       RuneTaken := True;
       Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
     end;
@@ -1523,9 +1530,9 @@ end;
 
 function ImmortalStatus(P: Integer): ANSIString;
 begin
-  if (Players[P].HeroImmortal)
+  if (Players[P].HeroMagicImmunity)
   and not (Players[P].CaptureMind) then
-    Result := '|[$1515DF]<$5>[] (' + IntToStr((Players[P].HeroImmortalTime - States.GameTime)/10) + ')'
+    Result := '|[$1515DF]<$5>[] (' + IntToStr((Players[P].HeroMagicImmunityTime - States.GameTime)/10) + ')'
 
   else
 
@@ -1534,6 +1541,17 @@ begin
   if Players[P].Preparing then
     Result := '';
 
+end;
+
+
+function TotalImmunityStatus(P: Integer): ANSIString;
+begin
+  if Players[P].HeroTotalImmunity then
+    Result := '|[$2235EF]<$116>[] (' + IntToStr((Players[P].HeroTotalImmunityTime - States.GameTime)/10) + ')'
+
+  else
+
+    Result := '';
 end;
 
 
@@ -1644,7 +1662,7 @@ function StatusText(P: Integer): ANSIString;
 begin
   Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) + WerewolfStatus(P) + RegenStatus(P) + DDStatus(P)
   + SilenceStatus(P) + PreparingStatus(P) + ExileStatus(P) + ShieldStatus(P) + ReChargeStatus(P) + RogueStatus(P)
-  + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + FieryTrackStatus(P) + GameplayStatus(P);
+  + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + FieryTrackStatus(P) + TotalImmunityStatus(P) + GameplayStatus(P);
 end;
 
 
@@ -2125,7 +2143,8 @@ begin
     Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, True, True);
 
   TH := Players[P].Hero;
-  CreateShield(P);
+  Players[P].HeroTotalImmunity := True;
+  Players[P].HeroTotalImmunityTime := States.GameTime + TOTAL_IMMUNITY_TIME;
   Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
   Actions.GroupKillAll(TH, True);
   Players[P].ReChoice := False;
@@ -2648,7 +2667,8 @@ begin
       and (InRange(O, 0, 7)) then 
         if (U = States.GroupMember(Players[O].Hero, 0))
         and (not Players[O].HeroInFear)
-        and (not Players[O].HeroImmortal)
+        and (not Players[O].HeroMagicImmunity)
+        and (not Players[O].HeroTotalImmunity)
         and (O <> P)
         and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
         begin
@@ -6392,13 +6412,15 @@ begin
     end;
     if (U > 0)
     and (U = States.GroupMember(Players[O].Hero, 0))
-    and (not Players[O].HeroImmortal)
+    and (not Players[O].HeroMagicImmunity)
+    and (not Players[O].HeroTotalImmunity)
     and ((Abs(X2 - X) <= EXILE_RADIUS)
     and (Abs(Y2 - Y) <= EXILE_RADIUS)
     and (Players[O].PlayersTeam <> Players[P].PlayersTeam))
     or ((Abs(X2 - X) <= EXILE_ALLY_RADIUS)
     and (Abs(Y2 - Y) <= EXILE_ALLY_RADIUS)
-    and (not Players[O].HeroImmortal)
+    and (not Players[O].HeroMagicImmunity)
+    and (not Players[O].HeroTotalImmunity)
     and (Players[O].PlayersTeam = Players[P].PlayersTeam)) then
     begin
       TilesFieldLength[P] := TilesFieldLength[P] + 4;
@@ -6611,7 +6633,8 @@ begin
       if (U > 0)
       and (InRange(O, 0, 7))
       and (O <> P)
-      and (not Players[O].HeroImmortal)
+      and (not Players[O].HeroMagicImmunity)
+      and (not Players[O].HeroTotalImmunity)
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (States.MapTileObject(X2, Y2) <> WARRIOR_OBJECT7) then
       begin
@@ -7568,7 +7591,8 @@ begin
       and (not Players[O].HeroInFear)
       and (not Players[O].HeroStunned)
       and (not Players[O].HeroSilent)
-      and (not Players[O].HeroImmortal)
+      and (not Players[O].HeroMagicImmunity)
+      and (not Players[O].HeroTotalImmunity)
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
@@ -7648,7 +7672,8 @@ begin
       if (U <> - 1)
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroInFear)
-      and (not Players[O].HeroImmortal)
+      and (not Players[O].HeroMagicImmunity)
+      and (not Players[O].HeroTotalImmunity)
       and (not Players[O].MindStunned)
       and (not Players[P].CaptureMind)
       and (not Players[P].MindStunned)
@@ -8234,7 +8259,8 @@ begin
         O := States.UnitOwner(U);
       if (U > 0)
       and ((U = States.GroupMember(Players[O].Hero, 0))
-      and (not Players[O].HeroImmortal)
+      and (not Players[O].HeroMagicImmunity)
+      and (not Players[O].HeroTotalImmunity)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
       or (InRange(O, 8, 11))) then
       begin
@@ -9003,7 +9029,8 @@ begin
   begin
     T := Players[P].HeroType;
     if (not States.PlayerDefeated(P))
-    and (not Players[P].HeroImmortal) then
+    and (not Players[P].HeroMagicImmunity)
+    and (not Players[P].HeroTotalImmunity) then
     begin
       if Players[P].HP > 0 then
       begin 
@@ -9412,7 +9439,8 @@ begin
   end;
 
   if (aObj = BOWMAN_ROCKET)
-  and (not Players[P].HeroImmortal) then
+  and (not Players[P].HeroMagicImmunity)
+  and (not Players[P].HeroTotalImmunity) then
   begin
     ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := 0;
     TilesRoadLength[Tiles[aX][aY].Owner] := TilesRoadLength[Tiles[aX][aY].Owner] + 9;
@@ -9483,12 +9511,12 @@ begin
     end;
   end;
 
-  if aObj = RUNE_IMMORTAL_OBJ then
+  if aObj = RUNE_MAGIC_IMMUNITY_OBJ then
   begin
-    if States.GameTime > Players[P].HeroImmortalTime then
+    if States.GameTime > Players[P].HeroMagicImmunityTime then
     begin
-      Players[P].HeroImmortal := True;
-      Players[P].HeroImmortalTime := States.GameTime + RUNE_IMMORTAL_TIME;
+      Players[P].HeroMagicImmunity := True;
+      Players[P].HeroMagicImmunityTime := States.GameTime + RUNE_MAGIC_IMMUNITY_TIME;
       if InRange(Tiles[aX][aY].Owner, 0, 7)
       and (not TileOnRuneSpawn(aX, aY))
       and (not RuneTaken) then
@@ -9531,7 +9559,8 @@ begin
   if InRange(aObj, SWORD_OBJECT1, SWORD_OBJECT1 + 2) then
   begin
     if (not States.PlayerDefeated(P))
-    and (not Players[P].HeroImmortal) then
+    and (not Players[P].HeroMagicImmunity)
+    and (not Players[P].HeroTotalImmunity) then
     begin
       if Players[P].Hero > 0 then
       begin
@@ -9553,7 +9582,8 @@ begin
   if aObj = SWORD_OBJECT then
   begin
     if (not States.PlayerDefeated(P))
-    and (not Players[P].HeroImmortal) then
+    and (not Players[P].HeroMagicImmunity)
+    and (not Players[P].HeroTotalImmunity) then
     begin
       if Players[P].Hero > 0 then
       begin
@@ -9575,7 +9605,8 @@ begin
   if aObj = VAGA_OBJECT6 then
   begin
     if (not States.PlayerDefeated(P))
-    and (not Players[P].HeroImmortal) then
+    and (not Players[P].HeroMagicImmunity)
+    and (not Players[P].HeroTotalImmunity) then
     begin
       if Players[P].Hero > 0 then
       begin
@@ -9597,7 +9628,8 @@ begin
   if aObj = KNIGHT_OBJECT3 then
   begin
     if (not States.PlayerDefeated(P))
-    and (not Players[P].HeroImmortal) then
+    and (not Players[P].HeroMagicImmunity)
+    and (not Players[P].HeroTotalImmunity) then
     begin
       if Players[P].Hero > 0 then
       begin
@@ -10269,7 +10301,8 @@ begin
                   aX := States.UnitPositionX(U);
                   aY := States.UnitPositionY(U);
                   if (InRange(O, 0, 7))
-                  and (not Players[O].HeroImmortal)
+                  and (not Players[O].HeroMagicImmunity)
+                  and (not Players[O].HeroTotalImmunity)
                   and (States.MapTileObject(aX, aY) <> WARRIOR_OBJECT7) then
                   begin
                     Actions.GroupKillAll(Players[O].Hero, True);
@@ -10719,7 +10752,8 @@ begin
   for I := 0 to 7 do
     if Players[I].HeroChosen then
     begin
-      CreateShield(I);
+      Players[I].HeroTotalImmunity := True;
+      Players[I].HeroTotalImmunityTime := States.GameTime + TOTAL_IMMUNITY_TIME;
       Players[I].Hero := Actions.GiveGroup(I, Players[I].HeroType, Players[I].SpawnX, Players[I].SpawnY, Players[I].Direction, 1, 1);
       Actions.GroupHungerSet(Players[I].Hero, States.UnitMaxHunger);
       Actions.CinematicStart(I);
@@ -10899,7 +10933,8 @@ begin
         and (not States.PlayerAllianceCheck(Players[0].ZombiePlayer, I1)) then
           Actions.PlayerAllianceChange(Players[0].ZombiePlayer, I1, True, True);
 
-        CreateShield(I1);
+        Players[I1].HeroTotalImmunity := True;
+        Players[I1].HeroTotalImmunityTime := States.GameTime + TOTAL_IMMUNITY_TIME;
         Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].SpawnX, Players[I1].SpawnY, Players[I1].Direction, 1, 1);
         Actions.CinematicStart(I1);
@@ -11051,10 +11086,10 @@ begin
       if States.GameTime = Players[I1].SpurtStartTime then
       begin
         StartSpurt(I1);
-        if not Players[I1].HeroImmortal then
+        if not Players[I1].HeroMagicImmunity then
         begin
-          Players[I1].HeroImmortalTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
-          Players[I1].HeroImmortal := True;
+          Players[I1].HeroMagicImmunityTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
+          Players[I1].HeroMagicImmunity := True;
         end;
         Players[I1].Preparing := True;
         Players[I1].PreparingTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
@@ -11091,9 +11126,13 @@ begin
       if States.GameTime = Players[I1].SkillTime then
         Players[I1].CastingSkill := False;
 
-      if (States.GameTime >= Players[I1].HeroImmortalTime)
-      and (Players[I1].HeroImmortal) then
-        Players[I1].HeroImmortal := False;
+      if (States.GameTime >= Players[I1].HeroMagicImmunityTime)
+      and (Players[I1].HeroMagicImmunity) then
+        Players[I1].HeroMagicImmunity := False;
+
+      if (States.GameTime >= Players[I1].HeroTotalImmunityTime)
+      and (Players[I1].HeroTotalImmunity) then
+        Players[I1].HeroTotalImmunity := False;
 
       if (States.GameTime >= Players[I1].DDTime)
       and (Players[I1].DD) then
@@ -11188,8 +11227,10 @@ begin
         Players[I1].TempReChargeTime := Players[I1].ReChargeTime;
         Players[I1].TempDD := Players[I1].DD;
         Players[I1].TempDDTime := Players[I1].DDTime;
-        Players[I1].TempHeroImmortal :=  Players[I1].HeroImmortal;
-        Players[I1].TempHeroImmortalTime := Players[I1].HeroImmortalTime;
+        Players[I1].TempHeroMagicImmunity :=  Players[I1].HeroMagicImmunity;
+        Players[I1].TempHeroMagicImmunityTime := Players[I1].HeroMagicImmunityTime;
+        Players[I1].TempHeroTotalImmunity :=  Players[I1].HeroTotalImmunity;
+        Players[I1].TempHeroTotalImmunityTime := Players[I1].HeroTotalImmunityTime;
 
         Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
@@ -11240,8 +11281,10 @@ begin
         Players[I1].ReChargeTime := Players[M[I1]].ReChargeTime;
         Players[I1].DD := Players[M[I1]].DD;
         Players[I1].DDTime := Players[M[I1]].DDTime;
-        Players[M[I1]].HeroImmortal := Players[I1].HeroImmortal;
-        Players[M[I1]].HeroImmortalTime := Players[I1].HeroImmortalTime;
+        Players[M[I1]].HeroMagicImmunity := Players[I1].HeroMagicImmunity;
+        Players[M[I1]].HeroMagicImmunityTime := Players[I1].HeroMagicImmunityTime;
+        Players[M[I1]].HeroTotalImmunity := Players[I1].HeroTotalImmunity;
+        Players[M[I1]].HeroTotalImmunityTime := Players[I1].HeroTotalImmunityTime;
         Players[I1].Preparing := Players[M[I1]].Preparing;
         Players[I1].PreparingTime := Players[M[I1]].PreparingTime;
         Players[I1].HeroInFear := Players[M[I1]].HeroInFear;
@@ -11253,9 +11296,9 @@ begin
           Players[I1].PlayersTeam := 1;
         if Players[M[I1]].PlayersTeam = 1 then
           Players[I1].PlayersTeam := 0;
-        Players[I1].HeroImmortal := True;
+        Players[I1].HeroMagicImmunity := True;
         Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME - 27;
-        Players[I1].HeroImmortalTime := States.GameTime + CAPTURE_MIND_TIME - 27;
+        Players[I1].HeroMagicImmunityTime := States.GameTime + CAPTURE_MIND_TIME - 27;
       end;
 
       if States.GameTime = Players[I1].CaptureMindTime then
@@ -11341,8 +11384,10 @@ begin
           Players[I1].DD := Players[I1].TempDD;
           Players[M[I1]].DDTime := Players[I1].DDTime;
           Players[I1].DDTime := Players[I1].TempDDTime;
-          Players[I1].HeroImmortal :=  Players[I1].TempHeroImmortal;
-          Players[I1].HeroImmortalTime := Players[I1].TempHeroImmortalTime;
+          Players[I1].HeroMagicImmunity :=  Players[I1].TempHeroMagicImmunity;
+          Players[I1].HeroMagicImmunityTime := Players[I1].TempHeroMagicImmunityTime;
+          Players[I1].HeroTotalImmunity :=  Players[I1].TempHeroTotalImmunity;
+          Players[I1].HeroTotalImmunityTime := Players[I1].TempHeroTotalImmunityTime;
           Players[M[I1]].Preparing := Players[I1].Preparing;
           Players[M[I1]].PreparingTime := Players[I1].PreparingTime;
           if Players[I1].Preparing then
@@ -11412,8 +11457,8 @@ begin
             Players[M[I1]].PlayersTeam := 1;
           if Players[I1].PlayersTeam = 1 then
             Players[M[I1]].PlayersTeam := 0;
-          Players[M[I1]].HeroImmortal := True;
-          Players[M[I1]].HeroImmortalTime := States.GameTime + 20;
+          Players[M[I1]].HeroMagicImmunity := True;
+          Players[M[I1]].HeroMagicImmunityTime := States.GameTime + 20;
           if Length(Zombies) > 0 then
           for K := 0 to Length(Zombies) - 1 do
             if Zombies[K].Owner = -1 then
@@ -11811,7 +11856,8 @@ begin
     if TileOnBattlefield(X, Y) then
     begin
       Tile := States.MapTileType(X, Y);
-      if (Tile = IMMORTAL_ANIMATION)
+      if (Tile = MAGIC_IMMUNITY_ANIMATION)
+      or (Tile = TOTAL_IMMUNITY_ANIMATION)
       or (Tile = DOUBLE_ANIMATION)
       or (Tile = RECHARGE_ANIMATION)
       or (Tile = MIND_ANIMATION)
@@ -11823,8 +11869,10 @@ begin
 
   if States.MapTileType(aX, aY) = Tiles[aX][aY].TileType then
   begin
-    if Players[P].HeroImmortal then
-      Actions.MapTileSet(aX, aY, IMMORTAL_ANIMATION, States.KaMRandomI(4));
+    if Players[P].HeroMagicImmunity then
+      Actions.MapTileSet(aX, aY, MAGIC_IMMUNITY_ANIMATION, States.KaMRandomI(4));
+    if Players[P].HeroTotalImmunity then
+      Actions.MapTileSet(aX, aY, TOTAL_IMMUNITY_ANIMATION, States.KaMRandomI(4));
     if Players[P].DD then
       Actions.MapTileSet(aX, aY, DOUBLE_ANIMATION, States.KaMRandomI(4));
     if Players[P].ReCharge then
@@ -11946,8 +11994,8 @@ begin
   and (Players[P].Hero = -1) then
   begin
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
-    Players[P].HeroImmortal := True;
-    Players[P].HeroImmortalTime := States.GameTime + IMMORTAL_TIME;
+    Players[P].HeroTotalImmunity := True;
+    Players[P].HeroTotalImmunityTime := States.GameTime + TOTAL_IMMUNITY_TIME;
     Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
     Actions.CinematicStart(P);
     Actions.CinematicPanTo(P, Players[P].SpawnX, Players[P].SpawnY, 0);
@@ -12019,7 +12067,8 @@ begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
-    if States.MapTileObject(aX, aY) = WARRIOR_OBJECT7 then
+    if (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7)
+    or (Players[P].HeroTotalImmunity) then
     begin
 
       if (InRange(P, 0, 3))
@@ -12032,7 +12081,8 @@ begin
 
     end;
 
-    if States.MapTileObject(aX, aY) <> WARRIOR_OBJECT7 then
+    if (States.MapTileObject(aX, aY) <> WARRIOR_OBJECT7)
+    and (not Players[P].HeroTotalImmunity) then
     begin
 
       if (InRange(P, 0, 3))
@@ -12366,7 +12416,8 @@ function CanUseSkillAgainstUnit(P, U: Integer): Boolean;
 begin
   Result := True;
   if InRange(States.UnitOwner(U), 0, 7) then
-    Result := (not Players[States.UnitOwner(U)].HeroImmortal)
+    Result := (not Players[States.UnitOwner(U)].HeroMagicImmunity)
+    and (not Players[States.UnitOwner(U)].HeroTotalImmunity)
     and (States.MapTileObject(States.UnitPositionX(U), States.UnitPositionY(U)) <> WARRIOR_OBJECT7);  
 end;
 
