@@ -337,6 +337,7 @@ const
   RECRUIT_HUNGER = 115;
   VICTORY_DELAY = 300;
   TOWERS_CHECK_FACTOR = 10;
+  TOWERS_TILES_FACTOR = 2;
 
 //Battlefield
 
@@ -562,7 +563,6 @@ type
     TileDirection: Integer;
     ShieldTime: Integer;
     ImmortalTime: Integer;
-    InfernalTime: Integer;
   end;
 
 
@@ -770,7 +770,6 @@ begin
     Tiles[aX][aY].TileDirection := States.MapTileRotation(aX, aY);
     Tiles[aX][aY].ShieldTime := 0;
     Tiles[aX][aY].ImmortalTime := 0;
-    Tiles[aX][aY].InfernalTime := 0;
   end;
 end;
 
@@ -817,23 +816,6 @@ begin
         Actions.MapTileObjectSet(aX, aY, 255);
   end;
 
-end;
-
-
-procedure CheckInfernal;
-var
-  aX, aY: Integer;
-begin
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
-  begin
-    if (States.GameTime > Tiles[aX][aY].InfernalTime)
-    and (States.MapTileType(aX, aY) = INFERNAL_TILE) then
-      Actions.MapTileSet(aX, aY, Tiles[aX][aY].TileType, Tiles[aX][aY].TileDirection);
-    if (States.GameTime < Tiles[aX][aY].InfernalTime)
-    and (States.MapTileType(aX, aY) <> INFERNAL_TILE) then
-      Actions.MapTileSet(aX, aY, INFERNAL_TILE, States.KaMRandomI(4));
-  end;
 end;
 
 
@@ -4363,7 +4345,7 @@ end;
 
 procedure InfernalTower(P, X, Y: Integer);
 var
-  X2, Y2, Recruit, Tower, aX: Integer;
+  X2, Y2, Recruit, Tower, aX, aY: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4391,12 +4373,11 @@ begin
       if Tower > 0 then
       begin
         for aX := X - 2 to X + 1 do
-          if TileOnBattlefield(aX, Y + 1) then
+        for aY := Y - 2 to Y + 1 do
+          if TileOnBattlefield(aX, aY) then
           begin
-            Actions.MapTileSet(aX, Y + 1, INFERNAL_TILE, States.KaMRandomI(4));
-            Tiles[aX][Y + 1].Owner := P;
-            Tiles[aX][Y + 1].Skill := sTower;
-            Tiles[aX][Y + 1].InfernalTime := States.GameTime + RECRUIT_HUNGER + 25;
+            Tiles[aX][aY].Owner := P;
+            Tiles[aX][aY].Skill := sTower;
           end;
         Recruit := Actions.GiveUnit(Players[P].ZombiePlayer, 13, X, Y + 3, States.KaMRandomI(8));
         SetLength(Zombies, Length(Zombies) + 1);
@@ -8975,7 +8956,7 @@ var
 begin
   Actions.MapTileObjectSet(X, Y, 255);
   for X1 := X - 2 to X + 1 do
-  for Y1 := Y - 1 to Y + 1 do
+  for Y1 := Y - 2 to Y + 1 do
     if TileOnBattlefield(X1, Y1) then
     begin
       Actions.GiveRoad(10, X1, Y1);
@@ -8990,6 +8971,7 @@ var
   T, aX, aY, aObj, aTile, aTime: Integer;
 begin
   aObj := -1;
+  aTile := -1;
   if Players[P].Hero <= 0 then
     Exit;
   if States.GroupMember(Players[P].Hero, 0) <= 0 then
@@ -9019,6 +9001,8 @@ begin
     Exit;
   if aObj = -1 then
     Exit;
+  if aTile = -1 then
+    Exit;
 
   if (aTile = INFERNAL_TILE)
   and (aTime > States.GameTime) then
@@ -9046,8 +9030,6 @@ begin
         Players[P].PreparingTime := 0;
         Players[P].DDTime := 0;
         Players[P].ReChargeTime := 0;
-
-        Actions.MapTileSet(aX, aY, Tiles[aX][aY].TileType, Tiles[aX][aY].TileDirection);
 
         if States.GameTime < Players[P].MindTime2 then
         begin
@@ -9202,7 +9184,8 @@ begin
 
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
-          if SkillName(Tiles[aX][aY].Skill) <> '' then
+          if (SkillName(Tiles[aX][aY].Skill) <> '')
+          and (Tiles[aX][aY].Skill <> sTower) then
           begin
             if Tiles[aX][aY].Owner <> P then
             begin
@@ -9221,6 +9204,27 @@ begin
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
+            end;
+          end;
+          if Tiles[aX][aY].Skill = sTower then
+          begin
+            if Tiles[aX][aY].Owner <> P then
+            begin
+              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[Tiles[aX][aY].Owner].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$118> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner);
+              Players[Tiles[aX][aY].Owner].PlayerStatus := Players[Tiles[aX][aY].Owner].PlayerStatus + '|<$119> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P);
+            end;
+            if ((Tiles[aX][aY].Owner = P)
+            and (not Players[P].CaptureMind)
+            and (not Players[P].MindStunned))
+            or ((Players[P].CaptureMind)
+            and (Tiles[aX][aY].Owner = M[P]))
+            or ((Players[P].MindStunned)
+            and (Tiles[aX][aY].Owner = M[P])) then
+            begin
+              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$117>';
             end;
           end;
           if (P <> Tiles[aX][aY].Owner)
@@ -10438,7 +10442,8 @@ begin
     for X := aX - ANIMATION_CHECK_RADIUS to aX + ANIMATION_CHECK_RADIUS do
     for Y := aY - ANIMATION_CHECK_RADIUS to aY + ANIMATION_CHECK_RADIUS do
       if TileOnBattlefield(X, Y) then
-        Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
+        if not InRange(States.MapTileType(X, Y), INFERNAL_TILE - 3, INFERNAL_TILE) then
+          Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
 
     if TileOnBattlefield(aX, aY) then
     begin
@@ -10782,8 +10787,6 @@ begin
   TowersLeft := States.PlayerGetAllHouses(10);
   TowersRight := States.PlayerGetAllHouses(11);
 
-  CheckInfernal;
-
   if Length(TowersLeft) > 0 then
     for I := 0 to Length(TowersLeft) - 1 do
       Actions.HouseAddDamage(TowersLeft[I], 3);
@@ -10791,6 +10794,57 @@ begin
   if Length(TowersRight) > 0 then
     for K := 0 to Length(TowersRight) - 1 do
       Actions.HouseAddDamage(TowersRight[K], 3);
+
+end;
+
+
+procedure CheckTowersTiles;
+var
+  TowersLeft, TowersRight: array of Integer;
+  X, Y, X1, Y1: Integer;
+begin
+  TowersLeft := States.PlayerGetAllHouses(10);
+  TowersRight := States.PlayerGetAllHouses(11);
+
+  if Length(TowersLeft) > 0 then
+    for I := 0 to Length(TowersLeft) - 1 do
+    begin
+      X := States.HousePositionX(TowersLeft[I]);
+      Y := States.HousePositionY(TowersLeft[I]);
+      for X1 := X - 2 to X + 1 do
+      for Y1 := Y - 2 to Y + 1 do
+        if TileOnBattlefield(X1, Y1) then
+        begin
+          if InRange(States.HouseDamage(TowersLeft[I]), 200, 210) then
+            Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 3, Tiles[X1][Y1].TileDirection);
+          if InRange(States.HouseDamage(TowersLeft[I]), 211, 220) then
+            Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 2, Tiles[X1][Y1].TileDirection);
+          if InRange(States.HouseDamage(TowersLeft[I]), 221, 230) then
+            Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 1, Tiles[X1][Y1].TileDirection);
+          if InRange(States.HouseDamage(TowersLeft[I]), 231, 250) then
+            Actions.MapTileSet(X1, Y1, INFERNAL_TILE, Tiles[X1][Y1].TileDirection);
+        end;
+    end;
+
+  if Length(TowersRight) > 0 then
+    for K := 0 to Length(TowersRight) - 1 do
+    begin
+      X := States.HousePositionX(TowersRight[K]);
+      Y := States.HousePositionY(TowersRight[K]);
+      for X1 := X - 2 to X + 1 do
+      for Y1 := Y - 2 to Y + 1 do
+        if TileOnBattlefield(X1, Y1) then
+        begin
+          if InRange(States.HouseDamage(TowersRight[K]), 200, 212) then
+            Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 3, Tiles[X1][Y1].TileDirection);
+          if InRange(States.HouseDamage(TowersRight[K]), 213, 224) then
+            Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 2, Tiles[X1][Y1].TileDirection);
+          if InRange(States.HouseDamage(TowersRight[K]), 225, 236) then
+            Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 1, Tiles[X1][Y1].TileDirection);
+          if InRange(States.HouseDamage(TowersRight[K]), 237, 250) then
+            Actions.MapTileSet(X1, Y1, INFERNAL_TILE, Tiles[X1][Y1].TileDirection);
+        end;
+    end;
 
 end;
 
@@ -13807,6 +13861,9 @@ begin
 
   if States.GameTime mod TOWERS_CHECK_FACTOR = 0 then
     CheckTowers;
+
+  if States.GameTime mod TOWERS_TILES_FACTOR = 0 then
+    CheckTowersTiles;
 
   if not DEBUG_MODE then
     for I := 0 to 7 do
