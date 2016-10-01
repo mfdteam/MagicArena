@@ -6931,10 +6931,21 @@ begin
                SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X2;
-               TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-               TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
+               if (Players[P].HeroType = 25)
+               and (Players[P].SettingTrack) then
+               begin
+                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := VAGA_OBJECT8;
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := Players[P].TrackStopTime + 3;
+                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1 + 1;
+               end
+               else
+               begin
+                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
+               end;
                SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                SpurtX[P][Desync - 1] := X2;
                SpurtY[P][Desync - 1] := Y1;
@@ -6964,11 +6975,22 @@ begin
                SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
                SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
-               TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-               TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
+               if (Players[P].HeroType = 25)
+               and (Players[P].SettingTrack) then
+               begin
+                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := VAGA_OBJECT8;
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := Players[P].TrackStopTime + 3;
+                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1 - 1;
+               end
+               else
+               begin
+                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
+               end;
                SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                SpurtX[P][Desync - 1] := X1;
                SpurtY[P][Desync - 1] := Y2;
@@ -6999,10 +7021,21 @@ begin
                SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X2;
-               TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-               TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
+               if (Players[P].HeroType = 25)
+               and (Players[P].SettingTrack) then
+               begin
+                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := VAGA_OBJECT8;
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := Players[P].TrackStopTime + 3;
+                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1 - 1;
+               end
+               else
+               begin
+                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
+               end;
                SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                SpurtX[P][Desync - 1] := X2;
                SpurtY[P][Desync - 1] := Y1;
@@ -7032,11 +7065,22 @@ begin
                SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
                SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
-               TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-               TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
+               if (Players[P].HeroType = 25)
+               and (Players[P].SettingTrack) then
+               begin
+                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := VAGA_OBJECT8;
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := Players[P].TrackStopTime + 3;
+                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1 + 1;
+               end
+               else
+               begin
+                 TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
+               end;
                SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
                SpurtX[P][Desync - 1] := X1;
                SpurtY[P][Desync - 1] := Y2;
