@@ -10551,7 +10551,7 @@ begin
       Players[M2[O]].MindTime2 := 0;
       Players[M2[O]].WineSkillDelay := 500;
       Players[M2[O]].CaptureMind := False;
-      Players[P].MindStunned := False;
+      Players[O].MindStunned := False;
       Actions.GroupBlockOrders(Players[M2[O]].Hero, False);
     end;
 
