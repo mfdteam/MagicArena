@@ -390,7 +390,6 @@ type
     Hero: Integer;
     HeroType: Integer;
     HeroMindType: Integer;
-    TempHeroMindType: Integer;
     HeroMagicImmunity: Boolean;
     HeroMagicImmunityTime: Integer;
     TempHeroMagicImmunity: Boolean;
@@ -1129,7 +1128,6 @@ begin
       MindStunned := False;
       StunnedMindTime := 0;
       HeroMindType := -1;
-      TempHeroMindType := -1;
       TempStolenSkill := sNone;
       TempStolenSkillName := '';
       TempStolenSkillTime := 0;
@@ -6389,11 +6387,15 @@ begin
     begin
       Players[O].MindTime2 := 0;
       Players[O].WineSkillDelay := 500;
+      Players[O].CaptureMind := False;
+      Players[M[O]].MindStunned := False;
     end;
     if States.GameTime < Players[M2[O]].MindTime2 then
     begin
       Players[M2[O]].MindTime2 := 0;
       Players[M2[O]].WineSkillDelay := 500;
+      Players[M2[O]].CaptureMind := False;
+      Players[O].MindStunned := False;
       Actions.GroupBlockOrders(Players[M2[O]].Hero, False);
     end;
     if (U > 0)
@@ -9097,12 +9099,16 @@ begin
         begin
           Players[P].MindTime2 := 0;
           Players[P].WineSkillDelay := 500;
+          Players[P].CaptureMind := False;
+          Players[M[P]].MindStunned := False;
         end;
         
         if States.GameTime < Players[M2[P]].MindTime2 then
         begin
           Players[M2[P]].MindTime2 := 0;
           Players[M2[P]].WineSkillDelay := 500;
+          Players[M2[P]].CaptureMind := False;
+          Players[P].MindStunned := False;
           Actions.GroupBlockOrders(Players[M2[P]].Hero, False);
         end;
 
@@ -10536,12 +10542,16 @@ begin
     begin
       Players[O].MindTime2 := 0;
       Players[O].WineSkillDelay := 500;
+      Players[O].CaptureMind := False;
+      Players[M[O]].MindStunned := False;
     end;
     
     if States.GameTime < Players[M2[O]].MindTime2 then
     begin
       Players[M2[O]].MindTime2 := 0;
       Players[M2[O]].WineSkillDelay := 500;
+      Players[M2[O]].CaptureMind := False;
+      Players[P].MindStunned := False;
       Actions.GroupBlockOrders(Players[M2[O]].Hero, False);
     end;
 
