@@ -11972,6 +11972,24 @@ begin
 end;
 
 
+procedure CheckAlliances(P: Integer);
+begin
+
+  if (InRange(P, 0, 3))
+  and (not Players[P].CaptureMind)
+  and (not Players[P].MindStunned) then
+    if not States.PlayerAllianceCheck(Players[P].ZombiePlayer, P) then
+      Actions.PlayerAllianceChange(Players[P].ZombiePlayer, P, True, True);
+
+  if (InRange(P, 4, 7))
+  and (not Players[P].CaptureMind)
+  and (not Players[P].MindStunned) then
+    if not States.PlayerAllianceCheck(Players[P].ZombiePlayer, P) then
+      Actions.PlayerAllianceChange(Players[P].ZombiePlayer, P, True, True);
+
+end;
+
+
 procedure ClearDefence(P: Integer);
 var
   aX, aY: Integer;
@@ -13717,10 +13735,12 @@ begin
     CheckTileCleanup(True);
 
   for I := 0 to 7 do
-  begin
-    CheckDelays(I);
-    CheckStolenSkillTime(I);
-  end;
+    if States.PlayerEnabled(I) then
+    begin
+      CheckDelays(I);
+      CheckStolenSkillTime(I);
+      CheckAlliances(I);
+    end;
 
   for N[13] := 0 to 11 do
     if (States.PlayerEnabled(N[13])) then
