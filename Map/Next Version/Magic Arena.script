@@ -288,7 +288,7 @@ const
   SPURT_AI_FACTOR = 8;
   SPURT_AI_RANDOM = 5;
   STOLEN_SKILL_TIME = 1200;
-  CAPTURE_MIND_TIME = 200;
+  CAPTURE_MIND_TIME = 169;
   TRACK_TIME = 100;
   TRACK_DELAY = 3;
   TRACK_FACTOR = 3;
@@ -465,6 +465,7 @@ type
     CaptureMindTime: Integer;
     MindStunned: Boolean;
     StunnedMindTime: Integer;
+    MindMagicImmunity: Integer;
     MindAppearTime: Integer;
     MindAppearTimeBack: Integer;
     MindX: Integer;
@@ -1132,6 +1133,7 @@ begin
       TempStolenSkill := sNone;
       TempStolenSkillName := '';
       TempStolenSkillTime := 0;
+      MindMagicImmunity := 0;
       MindAppearTime := 0;
       MindAppearTimeBack := 0;
       MindX := 0;
@@ -1586,7 +1588,7 @@ end;
 
 function MindStatus(P: Integer): ANSIString;
 begin
-  if (Players[P].CaptureMind) and (Players[P].CaptureMindTime > 0) then
+  if (Players[P].CaptureMind) and (Players[P].CaptureMindTime - States.GameTime > 0) then
     Result := '|[$11FF11]<$104>[] ' + '[$' + States.PlayerColorText(M[P]) + ']' + States.PlayerName(M[P]) + '[$FFFFFF]; <$39>: ' + HPColor(M[P]) + IntToStr(Players[M[P]].HP) + '[$FFFFFF] (' + IntToStr((Players[P].CaptureMindTime - States.GameTime)/10) + ')' 
 
   else
@@ -1597,7 +1599,7 @@ end;
 
 function MindStunnedStatus(P: Integer): ANSIString;
 begin
-  if (Players[P].MindStunned) and (Players[P].StunnedMindTime > 0)  then
+  if (Players[P].MindStunned) and (Players[P].StunnedMindTime - States.GameTime > 0)  then
     Result := '|[$0050FF]<$103>[] (' + IntToStr((Players[P].StunnedMindTime - States.GameTime)/10) + ')'
 
   else
@@ -11289,14 +11291,9 @@ begin
         Players[M[I1]].TempLastY := Players[M[I1]].LastY;
         Players[M[I1]].LastX := Players[I1].LastX;
         Players[M[I1]].LastY := Players[I1].LastY;
-        //Players[M[I1]].TempZombiePlayer := Players[M[I1]].ZombiePlayer;
-        //Players[M[I1]].ZombiePlayer := Players[I1].ZombiePlayer;
         
-        Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME - 30; 
-        Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME - 30;
         Players[I1].HeroMindType := Players[I1].HeroType;
         Players[M[I1]].HeroMindType := Players[M[I1]].HeroType;
-        Players[I1].TempHeroMindType := Players[I1].TempHeroType;
         Players[I1].TempStolenSkill := Players[I1].StolenSkill;
         Players[I1].TempStolenSkillTime := Players[I1].StolenSkillTime;
         Players[I1].TempStolenSkillName := Players[I1].StolenSkillName;
@@ -11333,10 +11330,9 @@ begin
           Players[M[I1]].HeroMindType := 15;
         end;
 
-        Players[I1].HeroType := Players[M[I1]].HeroType
+        Players[I1].HeroType := Players[M[I1]].HeroMindType;
         Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(I1, Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
-        Players[I1].TempHeroType := Players[M[I1]].TempHeroType;
         Players[I1].HeroStunned := Players[M[I1]].HeroStunned;
         Players[I1].HeroStunnedTime := Players[M[I1]].HeroStunnedTime;
         Players[M[I1]].HeroStunned := True;
@@ -11373,8 +11369,17 @@ begin
         if Players[M[I1]].PlayersTeam = 1 then
           Players[I1].PlayersTeam := 0;
         Players[I1].HeroMagicImmunity := True;
-        Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME - 27;
-        Players[I1].HeroMagicImmunityTime := States.GameTime + CAPTURE_MIND_TIME - 27;
+        Players[I1].HeroMagicImmunityTime := States.GameTime + CAPTURE_MIND_TIME;
+        Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
+        Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME; 
+        Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME;
+        Players[I1].MindMagicImmunity := States.GameTime + CAPTURE_MIND_TIME - 10;
+      end;
+      
+      if States.GameTime = Players[I1].MindMagicImmunity then
+      begin
+        Players[M[I1]].HeroMagicImmunity := True;
+        Players[M[I1]].HeroMagicImmunityTime := States.GameTime + 10;
       end;
 
       if States.GameTime = Players[I1].CaptureMindTime then
@@ -11396,6 +11401,8 @@ begin
         Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
         Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+        Players[I1].HeroType := Players[I1].HeroMindType;
+        Players[M[I1]].HeroType := Players[M[I1]].HeroMindType;
         Players[I1].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
       end;
 
@@ -11403,8 +11410,6 @@ begin
       begin
         Players[I1].CaptureMind := False;
         Players[M[I1]].MindStunned := False;
-        Players[I1].CaptureMindTime := 0;
-        Players[M[I1]].StunnedMindTime := 0;
         if (Players[I1].Hero > 0)
         and (Players[M[I1]].Hero > 0) then
         begin
@@ -11413,11 +11418,7 @@ begin
             Players[M[I1]].WerewolfTime := Players[I1].WerewolfTime;
             Players[I1].WerewolfTime := 0;
             Players[M[I1]].HeroMindType := 27;
-          end;
-          Players[I1].HeroType := Players[I1].HeroMindType;
-          Players[M[I1]].HeroType := Players[M[I1]].HeroMindType;
-          Players[I1].TempHeroType := Players[I1].TempHeroMindType;
-          
+          end;          
           if (Players[M[I1]].HeroReborn = False) and (Players[M[I1]].HeroExiled = False) then
           begin
             Actions.GroupKillAll(Players[I1].Hero, True);
@@ -11443,7 +11444,6 @@ begin
           Players[M[I1]].LastY := Players[M[I1]].TempLastY;
           Players[I1].Direction := Players[I1].TempDirection;
           Players[M[I1]].Direction := Players[M[I1]].TempDirection;
-          //Players[M[I1]].ZombiePlayer:= Players[M[I1]].TempZombiePlayer;
 
           Players[M[I1]].RoadSkillDelay := Players[I1].RoadSkillDelay;
           Players[M[I1]].FieldSkillDelay := Players[I1].FieldSkillDelay;
