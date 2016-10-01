@@ -319,8 +319,6 @@ const
   HEAL_CHECK_RADIUS = 4;
   HEAL_CHECK_TIME = 15;
   CLEAR_ARRAY_FACTOR = 5;
-  DEBUG_MODE = True;
-  CHANGE_RELIEF = True;
   MOVEMENT_DISTANCE = 3;
   MOVEMENT_FACTOR = 2;
   MAX_CIRCLES_AT_ONCE = 4;
@@ -338,6 +336,10 @@ const
   VICTORY_DELAY = 300;
   TOWERS_CHECK_FACTOR = 10;
   TOWERS_TILES_FACTOR = 2;
+
+  DEBUG_MODE = True;
+  CHANGE_RELIEF = True;
+  AI_ENABLED = True;
 
 //Battlefield
 
@@ -12169,6 +12171,9 @@ begin
   if not States.PlayerIsAI(I) then
     Exit;
 
+  if not AI_ENABLED then
+    Exit;
+
   if (InRange(P, 0, 7))
   and (Players[P].Hero > 0) then
   begin
@@ -12264,6 +12269,9 @@ begin
   if not States.PlayerIsAI(I) then
     Exit;
 
+  if not AI_ENABLED then
+    Exit;
+
   if (InRange(P, 0, 7))
   and (Players[P].Hero > 0) then
   begin
@@ -12288,6 +12296,10 @@ begin
   or (Players[P].CastingSkill)
   or (States.MapTileObject(RUNE_X, RUNE_Y) = 255) then
     Exit;
+
+  if not AI_ENABLED then
+    Exit;
+
   if (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_REGEN_OBJ)
   or ((Players[P].HP < MAX_HP)
   and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_REGEN_OBJ)) then
@@ -12309,6 +12321,9 @@ end;
 procedure AIWalk(P: Integer);
 begin
 
+  if not AI_ENABLED then
+    Exit;
+
   if States.GameTime mod 80 = 0 then
     if (Players[P].Hero > 0)
     and (not Players[P].CastingSkill) then
@@ -12320,6 +12335,9 @@ end;
 procedure AIWalkAfterSkill(P: Integer);
 begin
 
+  if not AI_ENABLED then
+    Exit;
+
   if Players[P].Hero > 0 then
     if States.GameTime = Players[P].SkillTime then
       Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 51, States.KaMRandomI(8));
@@ -12329,6 +12347,9 @@ end;
 
 procedure AIWalkIdle(P: Integer);
 begin
+
+  if not AI_ENABLED then
+    Exit;
 
   if Players[P].Hero > 0 then
     if (States.GroupIdle(Players[P].Hero))
@@ -12351,6 +12372,9 @@ begin
     Exit;
 
   if States.GroupMember(Players[P].Hero, 0) <= 0 then
+    Exit;
+
+  if not AI_ENABLED then
     Exit;
 
   aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
@@ -12458,6 +12482,8 @@ begin
   if Players[P].Hero <= 0 then
     Exit;
   if States.GroupOwner(Players[P].Hero) <> P then
+    Exit;
+  if not AI_ENABLED then
     Exit;
   if States.PlayerEnabled(P) then
     if States.PlayerIsAI(P) then
