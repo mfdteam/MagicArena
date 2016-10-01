@@ -793,31 +793,32 @@ begin
 end;
 
 
-procedure CheckTileCleanup;
+procedure CheckTileCleanup(CheckShields: Boolean);
 var
   aX, aY, aObj: Integer;
 begin
-
   for aX := MIN_X to MAX_X do
   for aY := MIN_Y to MAX_Y do
   begin
     if (States.MapTileType(aX, aY) = Tiles[aX][aY].TileType)
     and (States.MapTileRotation(aX, aY) <> Tiles[aX][aY].TileDirection) then
       Actions.MapTileSet(aX, aY, Tiles[aX][aY].TileType, Tiles[aX][aY].TileDirection);
-    aObj := States.MapTileObject(aX, aY);
-    if (aObj = WARRIOR_OBJECT7)
-    and (TileOnBattlefield(aX, aY))
-    and (States.GameTime > Tiles[aX][aY].ShieldTime) then
-      Actions.MapTileObjectSet(aX, aY, 255);
-    if (aObj <> 255)
-    and (not InRange(aObj, 149, 172))
-    and (TileOnBattlefield(aX, aY))
-    and (States.GameTime > Tiles[aX][aY].ObjectRefreshTime)
-    and (InRange(Tiles[aX][aY].Owner, 0, 11)) then
-      if States.PlayerIsAI(Tiles[aX][aY].Owner) then
+    if CheckShields then
+    begin
+      aObj := States.MapTileObject(aX, aY);
+      if (aObj = WARRIOR_OBJECT7)
+      and (TileOnBattlefield(aX, aY))
+      and (States.GameTime > Tiles[aX][aY].ShieldTime) then
         Actions.MapTileObjectSet(aX, aY, 255);
+      if (aObj <> 255)
+      and (not InRange(aObj, 149, 172))
+      and (TileOnBattlefield(aX, aY))
+      and (States.GameTime > Tiles[aX][aY].ObjectRefreshTime)
+      and (InRange(Tiles[aX][aY].Owner, 0, 11)) then
+        if States.PlayerIsAI(Tiles[aX][aY].Owner) then
+          Actions.MapTileObjectSet(aX, aY, 255);
+    end;
   end;
-
 end;
 
 
@@ -8960,14 +8961,24 @@ var
   X1, Y1: Integer;
 begin
   Actions.MapTileObjectSet(X, Y, 255);
-  for X1 := X - 2 to X + 1 do
-  for Y1 := Y - 2 to Y + 1 do
+
+  for X1 := X - 1 to X do
+  for Y1 := Y - 1 to Y do
     if TileOnBattlefield(X1, Y1) then
     begin
       Actions.GiveRoad(10, X1, Y1);
       Actions.RemoveRoad(X1, Y1);
-      Actions.MapTileSet(X1, Y1, Tiles[X1][Y1].TileType, Tiles[X1][Y].TileDirection);
     end;
+
+  for X1 := X - 2 to X + 1 do
+  for Y1 := Y - 2 to Y + 1 do
+    if TileOnBattlefield(X1, Y1) then
+      Actions.MapTileSet(X1, Y1, Tiles[X1][Y1].TileType, Tiles[X1][Y].TileDirection);
+
+  CheckTileCleanup(False);
+
+  RegenRelief;
+
 end;
 
 
@@ -13701,7 +13712,7 @@ begin
     RegenRelief;
 
   if States.GameTime mod TILES_RECHECK_TIME = 0 then
-    CheckTileCleanup;
+    CheckTileCleanup(True);
 
   for I := 0 to 7 do
   begin
