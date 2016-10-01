@@ -11403,6 +11403,8 @@ begin
       begin
         Players[I1].CaptureMind := False;
         Players[M[I1]].MindStunned := False;
+        Players[I1].CaptureMindTime := 0;
+        Players[M[I1]].StunnedMindTime := 0;
         if (Players[I1].Hero > 0)
         and (Players[M[I1]].Hero > 0) then
         begin
