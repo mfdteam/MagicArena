@@ -1585,7 +1585,7 @@ end;
 
 function MindStatus(P: Integer): ANSIString;
 begin
-  if Players[P].CaptureMind then
+  if (Players[P].CaptureMind) and (Players[P].CaptureMindTime > 0) then
     Result := '|[$11FF11]<$104>[] ' + '[$' + States.PlayerColorText(M[P]) + ']' + States.PlayerName(M[P]) + '[$FFFFFF]; <$39>: ' + HPColor(M[P]) + IntToStr(Players[M[P]].HP) + '[$FFFFFF] (' + IntToStr((Players[P].CaptureMindTime - States.GameTime)/10) + ')' 
 
   else
@@ -1596,7 +1596,7 @@ end;
 
 function MindStunnedStatus(P: Integer): ANSIString;
 begin
-  if Players[P].MindStunned then
+  if (Players[P].MindStunned) and (Players[P].StunnedMindTime > 0)  then
     Result := '|[$0050FF]<$103>[] (' + IntToStr((Players[P].StunnedMindTime - States.GameTime)/10) + ')'
 
   else
@@ -7856,6 +7856,9 @@ begin
         Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
         Actions.GroupKillAll(Players[O].Hero, True);
         Players[O].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[O].HeroType, Players[O].TempX, Players[O].TempY, 4, 1, 1);
+        
+        Players[P].CaptureMind := True;
+        Players[O].MindStunned := True;
 
         Players[P].MindTime := States.GameTime + DELAY_OF_TURNING;
         Players[P].WineSkillDelay := 20;
@@ -11278,8 +11281,6 @@ begin
         Players[M[I1]].TempZombiePlayer := Players[M[I1]].ZombiePlayer;
         Players[M[I1]].ZombiePlayer := Players[I1].ZombiePlayer;
         
-        Players[M[I1]].MindStunned := True;
-        Players[I1].CaptureMind := True;
         Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME - 30; 
         Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME - 30;
         Players[I1].HeroMindType := Players[I1].HeroType;
@@ -11327,7 +11328,6 @@ begin
         Players[I1].TempHeroType := Players[M[I1]].TempHeroType;
         Players[I1].HeroStunned := Players[M[I1]].HeroStunned;
         Players[I1].HeroStunnedTime := Players[M[I1]].HeroStunnedTime;
- 
         Players[M[I1]].HeroStunned := True;
         Players[M[I1]].HeroType := Players[I1].HeroMindType;
         Actions.GroupKillAll(Players[M[I1]].Hero, True);
@@ -11378,11 +11378,13 @@ begin
           Players[M[I1]].MindY := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
           Players[M[I1]].MindDir := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
           Actions.GroupKillAll(Players[M[I1]].Hero, True);
+          Players[M[I1]].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
         end;
         Players[I1].MindX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
         Actions.GroupKillAll(Players[I1].Hero, True);
+        Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         Players[I1].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
       end;
 
@@ -11405,6 +11407,7 @@ begin
           
           if (Players[M[I1]].HeroReborn = False) and (Players[M[I1]].HeroExiled = False) then
           begin
+            Actions.GroupKillAll(Players[I1].Hero, True);
             Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[M[I1]].MindX, Players[M[I1]].MindY, Players[M[I1]].MindDir, 1, 1);
             Actions.CinematicStart(I1);
             Actions.CinematicPanTo(I1, Players[M[I1]].MindX, Players[M[I1]].MindY, 0);
@@ -11412,6 +11415,7 @@ begin
           end;
           if (Players[I1].HeroReborn = False) then
           begin
+            Actions.GroupKillAll(Players[M[I1]].Hero, True);
             Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
             Actions.CinematicStart(M[I1]);
             Actions.CinematicPanTo(M[I1], Players[I1].MindX, Players[I1].MindY, 0);
