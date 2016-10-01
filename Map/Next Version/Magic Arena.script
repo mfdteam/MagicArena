@@ -11289,8 +11289,8 @@ begin
         Players[M[I1]].TempLastY := Players[M[I1]].LastY;
         Players[M[I1]].LastX := Players[I1].LastX;
         Players[M[I1]].LastY := Players[I1].LastY;
-        Players[M[I1]].TempZombiePlayer := Players[M[I1]].ZombiePlayer;
-        Players[M[I1]].ZombiePlayer := Players[I1].ZombiePlayer;
+        //Players[M[I1]].TempZombiePlayer := Players[M[I1]].ZombiePlayer;
+        //Players[M[I1]].ZombiePlayer := Players[I1].ZombiePlayer;
         
         Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME - 30; 
         Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME - 30;
@@ -11443,7 +11443,7 @@ begin
           Players[M[I1]].LastY := Players[M[I1]].TempLastY;
           Players[I1].Direction := Players[I1].TempDirection;
           Players[M[I1]].Direction := Players[M[I1]].TempDirection;
-          Players[M[I1]].ZombiePlayer:= Players[M[I1]].TempZombiePlayer;
+          //Players[M[I1]].ZombiePlayer:= Players[M[I1]].TempZombiePlayer;
 
           Players[M[I1]].RoadSkillDelay := Players[I1].RoadSkillDelay;
           Players[M[I1]].FieldSkillDelay := Players[I1].FieldSkillDelay;
