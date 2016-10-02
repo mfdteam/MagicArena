@@ -427,6 +427,7 @@ type
     TempDDTime : Integer;
     TempDD: Boolean;
     PlayersTeam: Integer;
+    UsedPlayersTeam: Boolean;
     CastingSkill: Boolean;
     SkillTime: Integer;
     SkillCastX: Integer;
@@ -11041,7 +11042,8 @@ begin
         Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER - Byte(States.PlayerIsAI(I1)), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         Players[I1].HeroExileBackTime := States.GameTime + EXILE_TIME;
         Actions.MapTileSet(Players[I1].HeroExileX, Players[I1].HeroExileY, EXILE_TILE, States.KaMRandomI(4));
-        if I1 <> Players[I1].HeroExileGiver then
+        if (I1 <> Players[I1].HeroExileGiver) 
+        and (not Players[I1].MindStunned) then
         begin
           Players[I1].PlayerStatusTime := States.GameTime + EXILE_TIME + 5;
           Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$110> ' + '[$' + States.PlayerColorText(Players[I1].HeroExileGiver) + ']' + States.PlayerName(Players[I1].HeroExileGiver) + '[]';
@@ -11443,6 +11445,14 @@ begin
         Players[I1].RoadSkillDelay := Players[M[I1]].RoadSkillDelay;
         Players[I1].FieldSkillDelay := Players[M[I1]].FieldSkillDelay;
         Players[I1].WineSkillDelay := Players[M[I1]].WineSkillDelay;
+        if Players[M[I1]].PlayersTeam = 1 then
+        begin
+          Players[M[I1]].PlayersTeam := 0;
+          Players[M[I1]].UsedPlayersTeam := True;
+        end;
+        if (Players[M[I1]].PlayersTeam = 0) and (not Players[M[I1]].UsedPlayersTeam) then
+          Players[M[I1]].PlayersTeam := 1;
+        Players[M[I1]].UsedPlayersTeam := False;
         Players[I1].HeroMagicImmunity := True;
         Players[I1].HeroMagicImmunityTime := States.GameTime + CAPTURE_MIND_TIME;
         Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
@@ -11608,6 +11618,14 @@ begin
           Players[I1].HeroExileDir := Players[M[I1]].HeroExileDir;
           Players[I1].HeroExiled := Players[M[I1]].HeroExiled;
           Players[M[I1]].HeroExileBackTime := 0;
+          if Players[M[I1]].PlayersTeam = 1 then
+          begin
+            Players[M[I1]].PlayersTeam := 0;
+            Players[M[I1]].UsedPlayersTeam := True;
+          end;
+          if (Players[M[I1]].PlayersTeam = 0) and (not Players[M[I1]].UsedPlayersTeam) then
+            Players[M[I1]].PlayersTeam := 1;
+          Players[M[I1]].UsedPlayersTeam := False;
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
           Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
           Players[M[I1]].HeroMagicImmunity := True;
