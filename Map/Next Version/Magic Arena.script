@@ -11619,6 +11619,7 @@ begin
           Players[I1].HeroExileDir := Players[M[I1]].HeroExileDir;
           Players[I1].HeroExiled := Players[M[I1]].HeroExiled;
           Players[M[I1]].HeroExileBackTime := 0;
+          Players[M[I1]].HeroExiled := False;
           if Players[M[I1]].PlayersTeam = 1 then
           begin
             Players[M[I1]].PlayersTeam := 0;
