@@ -8525,7 +8525,9 @@ begin
              and (InRange(O, 0, 7))
              and (Abs(X - X2) <= IN_FEAR_RADIUS)
              and (Abs(Y - Y2) <= IN_FEAR_RADIUS)
-             and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
+             and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+             and (not Players[O].HeroMagicImmunity)
+             and (not Players[O].HeroTotalImmunity) then
                Fear(P, X, Y);
 
       sAccurateShot: begin
@@ -8639,30 +8641,52 @@ begin
                      Players[P].WineSkillDelay := Round(WARRIOR_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                    end;
 
-      sExile: if (U > 0)
-              and (InRange(O, 0, 7))
-              and (Abs(X - X2) <= EXILE_RADIUS)
-              and (Abs(Y - Y2) <= EXILE_RADIUS)
-              and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
-              begin
-                TempFieldSkillDelay := Players[P].FieldSkillDelay;
-                Exile(P, X, Y);
-                Players[P].FieldSkillDelay := TempFieldSkillDelay;
-                Players[P].WineSkillDelay := Round(WARRIOR_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+      sExile: begin
+                if U <= 0 then
+                  Exit;
+                if ((InRange(O, 0, 7))
+                and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+                and (Abs(X - X2) <= EXILE_RADIUS)
+                and (Abs(Y - Y2) <= EXILE_RADIUS)
+                and (not Players[O].HeroMagicImmunity)
+                and (not Players[O].HeroTotalImmunity)
+                and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7))
+                or ((InRange(O, 0, 7))
+                and (Players[P].PlayersTeam = Players[O].PlayersTeam)
+                and (Abs(X - X2) <= EXILE_ALLY_RADIUS)
+                and (Abs(Y - Y2) <= EXILE_ALLY_RADIUS)
+                and (not Players[O].HeroMagicImmunity)
+                and (not Players[O].HeroTotalImmunity)
+                and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7)) then
+                begin
+                  TempFieldSkillDelay := Players[P].FieldSkillDelay;
+                  Exile(P, X, Y);
+                  Players[P].FieldSkillDelay := TempFieldSkillDelay;
+                  Players[P].WineSkillDelay := Round(WARRIOR_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                end;
               end;
 
       sShield: Shield(P, X, Y);
 
-      sRopesOfDeath: if (U > 0)
-                     and (InRange(O, 0, 7))
-                     and (Abs(X - X2) <= ROPE_RADIUS)
-                     and (Abs(Y - Y2) <= ROPE_RADIUS)
-                     and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
-                     begin
-                       TempRoadSkillDelay := Players[P].RoadSkillDelay;
-                       RopesOfDeath(P, X, Y);
-                       Players[P].RoadSkillDelay := TempRoadSkillDelay;
-                       Players[P].WineSkillDelay := Round(KNIGHT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+      sRopesOfDeath: begin
+                       if U <= 0 then
+                         Exit;
+                       if ((InRange(O, 0, 7))
+                       and (Abs(X - X2) <= ROPE_RADIUS)
+                       and (Abs(Y - Y2) <= ROPE_RADIUS)
+                       and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+                       and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7))
+                       or ((InRange(O, 0, 7))
+                       and (Abs(X - X2) <= ROPE_ALLY_RADIUS)
+                       and (Abs(Y - Y2) <= ROPE_ALLY_RADIUS)
+                       and (Players[P].PlayersTeam = Players[O].PlayersTeam)
+                       and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7)) then
+                       begin
+                         TempRoadSkillDelay := Players[P].RoadSkillDelay;
+                         RopesOfDeath(P, X, Y);
+                         Players[P].RoadSkillDelay := TempRoadSkillDelay;
+                         Players[P].WineSkillDelay := Round(KNIGHT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                       end;
                      end;
 
       sDeafeningClatter: begin
@@ -8681,6 +8705,8 @@ begin
               and (InRange(O, 0, 7))
               and (Abs(X - X2) <= STEAL_RADIUS)
               and (Abs(Y - Y2) <= STEAL_RADIUS)
+              and (not Players[O].HeroMagicImmunity)
+              and (not Players[O].HeroTotalImmunity)
               and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
               begin
                 TempFieldSkillDelay := Players[P].FieldSkillDelay;
@@ -8701,6 +8727,8 @@ begin
                 and (Abs(X - X2) <= SILENCE_SCOUT_RADIUS)
                 and (Abs(Y - Y2) <= SILENCE_SCOUT_RADIUS)
                 and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+                and (not Players[O].HeroMagicImmunity)
+                and (not Players[O].HeroTotalImmunity)
                 and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
                 begin
                   TempFieldSkillDelay := Players[P].FieldSkillDelay;
@@ -8712,6 +8740,8 @@ begin
       sMind: if (U > 0)
              and (Abs(X - X2) <= MIND_RADIUS)
              and (Abs(Y - Y2) <= MIND_RADIUS)
+             and (not Players[O].HeroMagicImmunity)
+             and (not Players[O].HeroTotalImmunity)
              and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
                Mind(P, X, Y);
 
