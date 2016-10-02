@@ -9092,7 +9092,7 @@ begin
         if States.GameTime < Players[M2[P]].MindTime2 then
         begin
           Players[M2[P]].MindTime2 := 0;
-          Players[M2[P]].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+          Players[M2[P]].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[M2[P]].ReCharge)));
           Players[M2[P]].CaptureMind := False;
           Players[P].MindStunned := False;
           Actions.GroupBlockOrders(Players[M2[P]].Hero, False);
@@ -10538,7 +10538,7 @@ begin
     if States.GameTime < Players[M2[O]].MindTime2 then
     begin
       Players[M2[O]].MindTime2 := 0;
-      Players[M2[O]].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[O].ReCharge)));
+      Players[M2[O]].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[M2[O]].ReCharge)));
       Players[M2[O]].CaptureMind := False;
       Players[O].MindStunned := False;
       Actions.GroupBlockOrders(Players[M2[O]].Hero, False);
