@@ -9241,44 +9241,42 @@ begin
           if (SkillName(Tiles[aX][aY].Skill) <> '')
           and (Tiles[aX][aY].Skill <> sTower) then
           begin
-            if Tiles[aX][aY].Owner <> P then
+            if (Tiles[aX][aY].Owner <> P) and (not Players[P].MindStunned)then
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[Tiles[aX][aY].Owner].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
               Players[Tiles[aX][aY].Owner].PlayerStatus := Players[Tiles[aX][aY].Owner].PlayerStatus + '|<$84> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$93> ' + SkillName(Tiles[aX][aY].Skill);
             end;
-            if ((Tiles[aX][aY].Owner = P)
-            and (not Players[P].CaptureMind)
-            and (not Players[P].MindStunned))
-            or ((Players[P].CaptureMind)
-            and (Tiles[aX][aY].Owner = M[P]))
-            or ((Players[P].MindStunned)
-            and (Tiles[aX][aY].Owner = M[P])) then
+            if (Tiles[aX][aY].Owner = P) and (not Players[P].MindStunned) then
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
             end;
+            if (Tiles[aX][aY].Owner = M2[P]) and (Players[P].MindStunned) then
+            begin
+              Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
+            end;
           end;
           if Tiles[aX][aY].Skill = sTower then
           begin
-            if Tiles[aX][aY].Owner <> P then
+            if (Tiles[aX][aY].Owner <> P) and (not Players[P].MindStunned)then
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[Tiles[aX][aY].Owner].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$118> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner);
               Players[Tiles[aX][aY].Owner].PlayerStatus := Players[Tiles[aX][aY].Owner].PlayerStatus + '|<$119> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P);
             end;
-            if ((Tiles[aX][aY].Owner = P)
-            and (not Players[P].CaptureMind)
-            and (not Players[P].MindStunned))
-            or ((Players[P].CaptureMind)
-            and (Tiles[aX][aY].Owner = M[P]))
-            or ((Players[P].MindStunned)
-            and (Tiles[aX][aY].Owner = M[P])) then
+            if (Tiles[aX][aY].Owner = P) and (not Players[P].MindStunned) then
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$117>';
+            end;
+            if (Tiles[aX][aY].Owner = M2[P]) and (Players[P].MindStunned) then
+            begin
+              Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$117>';
             end;
           end;
           if (P <> Tiles[aX][aY].Owner)
