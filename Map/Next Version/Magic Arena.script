@@ -9084,7 +9084,7 @@ begin
         if States.GameTime < Players[P].MindTime2 then
         begin
           Players[P].MindTime2 := 0;
-          Players[P].WineSkillDelay := 500;
+          Players[P].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
           Players[P].CaptureMind := False;
           Players[M[P]].MindStunned := False;
         end;
@@ -9092,7 +9092,7 @@ begin
         if States.GameTime < Players[M2[P]].MindTime2 then
         begin
           Players[M2[P]].MindTime2 := 0;
-          Players[M2[P]].WineSkillDelay := 500;
+          Players[M2[P]].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
           Players[M2[P]].CaptureMind := False;
           Players[P].MindStunned := False;
           Actions.GroupBlockOrders(Players[M2[P]].Hero, False);
@@ -10530,7 +10530,7 @@ begin
     if States.GameTime < Players[O].MindTime2 then
     begin
       Players[O].MindTime2 := 0;
-      Players[O].WineSkillDelay := 500;
+      Players[O].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[O].ReCharge)));
       Players[O].CaptureMind := False;
       Players[M[O]].MindStunned := False;
     end;
@@ -10538,7 +10538,7 @@ begin
     if States.GameTime < Players[M2[O]].MindTime2 then
     begin
       Players[M2[O]].MindTime2 := 0;
-      Players[M2[O]].WineSkillDelay := 500;
+      Players[M2[O]].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[O].ReCharge)));
       Players[M2[O]].CaptureMind := False;
       Players[O].MindStunned := False;
       Actions.GroupBlockOrders(Players[M2[O]].Hero, False);
@@ -11300,7 +11300,7 @@ begin
       begin
         if (Players[I1].HeroExiled) or (Players[M[I1]].HeroExiled) then
         begin
-          Players[I1].WineSkillDelay := 500;
+          Players[I1].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[I1].ReCharge)));
           Players[I1].CaptureMind := False;
           Players[M[I1]].MindStunned := False;
           Actions.GroupBlockOrders(Players[I1].Hero, False);
