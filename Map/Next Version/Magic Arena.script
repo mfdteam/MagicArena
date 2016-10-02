@@ -1608,7 +1608,7 @@ end;
 
 function ExileStatus(P: Integer): ANSIString;
 begin
-  if Players[P].HeroExiled then
+  if Players[P].HeroExiled and (Players[P].HeroExileBackTime - States.GameTime > 0) then
     Result := '|[$DEFACA]<$109>[] (' + IntToStr((Players[P].HeroExileBackTime - States.GameTime)/10) + ')'
 
   else
@@ -6383,21 +6383,6 @@ begin
       Exit;
     if States.MapTileObject(X, Y) = WARRIOR_OBJECT7 then
       Exit;
-    if States.GameTime < Players[O].MindTime2 then
-    begin
-      Players[O].MindTime2 := 0;
-      Players[O].WineSkillDelay := 500;
-      Players[O].CaptureMind := False;
-      Players[M[O]].MindStunned := False;
-    end;
-    if States.GameTime < Players[M2[O]].MindTime2 then
-    begin
-      Players[M2[O]].MindTime2 := 0;
-      Players[M2[O]].WineSkillDelay := 500;
-      Players[M2[O]].CaptureMind := False;
-      Players[O].MindStunned := False;
-      Actions.GroupBlockOrders(Players[M2[O]].Hero, False);
-    end;
     if (U > 0)
     and (U = States.GroupMember(Players[O].Hero, 0))
     and (not Players[O].HeroMagicImmunity)
@@ -6450,6 +6435,7 @@ begin
           or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
             ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
 
+      Players[O].HeroExiled := True;
       Players[O].HeroExileTime := States.GameTime + EXILE_DELAY;
       Players[P].LastUsedSkill := sExile;
       Players[O].HeroExileGiver := P;
@@ -11006,7 +10992,6 @@ begin
           Players[I1].HeroType := Players[I1].TempHeroType;
           Players[I1].WerewolfTime := 0;
         end;
-        Players[I1].HeroExiled := True;
         Players[I1].HeroExileX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].HeroExileY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].HeroExileDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
@@ -11190,10 +11175,6 @@ begin
           Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Skill := sTrack;
         end;
 
-      if (States.GameTime >= Players[I1].HeroExileBackTime)
-      and (Players[I1].HeroExiled) then
-        Players[I1].HeroExiled := False;
-
       if (States.GameTime >= Players[I1].GravityTime)
       and (Players[I1].MovedByGravity) then
         Players[I1].MovedByGravity := False;
@@ -11317,50 +11298,60 @@ begin
 
       if States.GameTime = Players[I1].MindTime2 then
       begin
-        if Length(Zombies) > 0 then
-        for K := 0 to Length(Zombies) - 1 do
-          if Zombies[K].Owner = M[I1] then
-            Zombies[K].Owner := -1;
-        Players[I1].TempSpawnX := Players[I1].SpawnX;
-        Players[I1].TempSpawnY := Players[I1].SpawnY;
-        Players[M[I1]].TempSpawnX := Players[M[I1]].SpawnX;
-        Players[M[I1]].TempSpawnY := Players[M[I1]].SpawnY;
-        Players[I1].SpawnX := Players[M[I1]].SpawnX;
-        Players[I1].SpawnY := Players[M[I1]].SpawnY;
-        Players[M[I1]].SpawnX := Players[I1].TempSpawnX;
-        Players[M[I1]].SpawnY := Players[I1].TempSpawnY;
-        Players[I1].TempDirection := Players[I1].Direction;
-        Players[M[I1]].TempDirection := Players[M[I1]].Direction;
-        Players[I1].Direction := Players[M[I1]].Direction;
-        Players[M[I1]].Direction := Players[I1].TempDirection;
-        Players[M[I1]].TempLastX := Players[M[I1]].LastX;
-        Players[M[I1]].TempLastY := Players[M[I1]].LastY;
-        Players[M[I1]].LastX := Players[I1].LastX;
-        Players[M[I1]].LastY := Players[I1].LastY;
+        if (Players[I1].HeroExiled) or (Players[M[I1]].HeroExiled) then
+        begin
+          Players[I1].WineSkillDelay := 500;
+          Players[I1].CaptureMind := False;
+          Players[M[I1]].MindStunned := False;
+          Actions.GroupBlockOrders(Players[I1].Hero, False);
+        end;
+        if (Players[I1].CaptureMind) and (Players[M[I1]].MindStunned) then
+        begin
+          if Length(Zombies) > 0 then
+          for K := 0 to Length(Zombies) - 1 do
+            if Zombies[K].Owner = M[I1] then
+              Zombies[K].Owner := -1;
+          Players[I1].TempSpawnX := Players[I1].SpawnX;
+          Players[I1].TempSpawnY := Players[I1].SpawnY;
+          Players[M[I1]].TempSpawnX := Players[M[I1]].SpawnX;
+          Players[M[I1]].TempSpawnY := Players[M[I1]].SpawnY;
+          Players[I1].SpawnX := Players[M[I1]].SpawnX;
+          Players[I1].SpawnY := Players[M[I1]].SpawnY;
+          Players[M[I1]].SpawnX := Players[I1].TempSpawnX;
+          Players[M[I1]].SpawnY := Players[I1].TempSpawnY;
+          Players[I1].TempDirection := Players[I1].Direction;
+          Players[M[I1]].TempDirection := Players[M[I1]].Direction;
+          Players[I1].Direction := Players[M[I1]].Direction;
+          Players[M[I1]].Direction := Players[I1].TempDirection;
+          Players[M[I1]].TempLastX := Players[M[I1]].LastX;
+          Players[M[I1]].TempLastY := Players[M[I1]].LastY;
+          Players[M[I1]].LastX := Players[I1].LastX;
+          Players[M[I1]].LastY := Players[I1].LastY;
         
-        Players[I1].HeroMindType := Players[I1].HeroType;
-        Players[M[I1]].HeroMindType := Players[M[I1]].HeroType;
-        Players[I1].TempStolenSkill := Players[I1].StolenSkill;
-        Players[I1].TempStolenSkillTime := Players[I1].StolenSkillTime;
-        Players[I1].TempStolenSkillName := Players[I1].StolenSkillName;
-        Players[I1].TempReCharge := Players[I1].ReCharge;
-        Players[I1].TempReChargeTime := Players[I1].ReChargeTime;
-        Players[I1].TempDD := Players[I1].DD;
-        Players[I1].TempDDTime := Players[I1].DDTime;
-        Players[I1].TempHeroMagicImmunity :=  Players[I1].HeroMagicImmunity;
-        Players[I1].TempHeroMagicImmunityTime := Players[I1].HeroMagicImmunityTime;
-        Players[I1].TempHeroTotalImmunity :=  Players[I1].HeroTotalImmunity;
-        Players[I1].TempHeroTotalImmunityTime := Players[I1].HeroTotalImmunityTime;
+          Players[I1].HeroMindType := Players[I1].HeroType;
+          Players[M[I1]].HeroMindType := Players[M[I1]].HeroType;
+          Players[I1].TempStolenSkill := Players[I1].StolenSkill;
+          Players[I1].TempStolenSkillTime := Players[I1].StolenSkillTime;
+          Players[I1].TempStolenSkillName := Players[I1].StolenSkillName;
+          Players[I1].TempReCharge := Players[I1].ReCharge;
+          Players[I1].TempReChargeTime := Players[I1].ReChargeTime;
+          Players[I1].TempDD := Players[I1].DD;
+          Players[I1].TempDDTime := Players[I1].DDTime;
+          Players[I1].TempHeroMagicImmunity :=  Players[I1].HeroMagicImmunity;
+          Players[I1].TempHeroMagicImmunityTime := Players[I1].HeroMagicImmunityTime;
+          Players[I1].TempHeroTotalImmunity :=  Players[I1].HeroTotalImmunity;
+          Players[I1].TempHeroTotalImmunityTime := Players[I1].HeroTotalImmunityTime;
 
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
-        Actions.GroupKillAll(Players[M[I1]].Hero, True);
-        Players[M[I1]].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
-        Players[I1].MindAppearTime := States.GameTime + DELAY_OF_TURNING;
-        Actions.FogCoverAll(I1);
-        Actions.FogRevealRect(I1, 1, 39, 70, 109);
-        Actions.FogCoverAll(M[I1]);
-        Actions.FogRevealRect(M[I1], 1, 39, 70, 109);
+          Actions.GroupKillAll(Players[I1].Hero, True);
+          Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+          Actions.GroupKillAll(Players[M[I1]].Hero, True);
+          Players[M[I1]].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
+          Players[I1].MindAppearTime := States.GameTime + DELAY_OF_TURNING;
+          Actions.FogCoverAll(I1);
+          Actions.FogRevealRect(I1, 1, 39, 70, 109);
+          Actions.FogCoverAll(M[I1]);
+          Actions.FogRevealRect(M[I1], 1, 39, 70, 109);
+        end;
       end;
 
       if States.GameTime = Players[I1].MindAppearTime then
