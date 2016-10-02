@@ -1586,7 +1586,8 @@ end;
 
 function MindStatus(P: Integer): ANSIString;
 begin
-  if (Players[P].CaptureMind) and (Players[P].CaptureMindTime - States.GameTime > 0) then
+  if (Players[P].CaptureMind)
+  and (Players[P].CaptureMindTime - States.GameTime > 0) then
     Result := '|[$11FF11]<$104>[] ' + '[$' + States.PlayerColorText(M[P]) + ']' + States.PlayerName(M[P]) + '[$FFFFFF]; <$39>: ' + HPColor(M[P]) + IntToStr(Players[M[P]].HP) + '[$FFFFFF] (' + IntToStr((Players[P].CaptureMindTime - States.GameTime)/10) + ')' 
 
   else
@@ -1597,7 +1598,8 @@ end;
 
 function MindStunnedStatus(P: Integer): ANSIString;
 begin
-  if (Players[P].MindStunned) and (Players[P].StunnedMindTime - States.GameTime > 0)  then
+  if (Players[P].MindStunned)
+  and (Players[P].StunnedMindTime - States.GameTime > 0)  then
     Result := '|[$0050FF]<$103>[] (' + IntToStr((Players[P].StunnedMindTime - States.GameTime)/10) + ')'
 
   else
@@ -1608,7 +1610,8 @@ end;
 
 function ExileStatus(P: Integer): ANSIString;
 begin
-  if Players[P].HeroExiled and (Players[P].HeroExileBackTime - States.GameTime > 0) then
+  if (Players[P].HeroExiled)
+  and (Players[P].HeroExileBackTime - States.GameTime > 0) then
     Result := '|[$DEFACA]<$109>[] (' + IntToStr((Players[P].HeroExileBackTime - States.GameTime)/10) + ')'
 
   else
@@ -1680,7 +1683,8 @@ begin
     and (States.MapTileType(X, Y) <> 207)
     and (States.MapTileType(X, Y) <> 215)
     and (States.MapTileType(X, Y) <> 223)
-    and (not States.IsRoadAt(8, X, Y));
+    and (not States.IsRoadAt(8, X, Y))
+    and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7);
 end;
 
 
@@ -4549,6 +4553,9 @@ begin
     Exit;
 
   if States.GroupMember(Players[P].Hero, 0) <= 0 then
+    Exit;
+
+  if Players[P].SettingTrack then
     Exit;
 
   if (TileOnBattlefield(X, Y))
@@ -8568,7 +8575,8 @@ begin
                          Players[P].WineSkillDelay := Round(VAGA_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                        end;
 
-      sTrack: begin
+      sTrack: if not Players[P].SettingTrack then
+              begin
                 TempFieldSkillDelay := Players[P].FieldSkillDelay;
                 FieryTrack(P, X, Y);
                 Players[P].FieldSkillDelay := TempFieldSkillDelay;
@@ -9241,19 +9249,22 @@ begin
           if (SkillName(Tiles[aX][aY].Skill) <> '')
           and (Tiles[aX][aY].Skill <> sTower) then
           begin
-            if (Tiles[aX][aY].Owner <> P) and (not Players[P].MindStunned)then
+            if (Tiles[aX][aY].Owner <> P)
+            and (not Players[P].MindStunned)then
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[Tiles[aX][aY].Owner].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
               Players[Tiles[aX][aY].Owner].PlayerStatus := Players[Tiles[aX][aY].Owner].PlayerStatus + '|<$84> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$93> ' + SkillName(Tiles[aX][aY].Skill);
             end;
-            if (Tiles[aX][aY].Owner = P) and (not Players[P].MindStunned) then
+            if (Tiles[aX][aY].Owner = P)
+            and (not Players[P].MindStunned) then
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
             end;
-            if (Tiles[aX][aY].Owner = M2[P]) and (Players[P].MindStunned) then
+            if (Tiles[aX][aY].Owner = M2[P])
+            and (Players[P].MindStunned) then
             begin
               Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
@@ -9261,19 +9272,22 @@ begin
           end;
           if Tiles[aX][aY].Skill = sTower then
           begin
-            if (Tiles[aX][aY].Owner <> P) and (not Players[P].MindStunned)then
+            if (Tiles[aX][aY].Owner <> P)
+            and (not Players[P].MindStunned) then
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[Tiles[aX][aY].Owner].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$118> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner);
               Players[Tiles[aX][aY].Owner].PlayerStatus := Players[Tiles[aX][aY].Owner].PlayerStatus + '|<$119> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P);
             end;
-            if (Tiles[aX][aY].Owner = P) and (not Players[P].MindStunned) then
+            if (Tiles[aX][aY].Owner = P)
+            and (not Players[P].MindStunned) then
             begin
               Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$117>';
             end;
-            if (Tiles[aX][aY].Owner = M2[P]) and (Players[P].MindStunned) then
+            if (Tiles[aX][aY].Owner = M2[P])
+            and (Players[P].MindStunned) then
             begin
               Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
               Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$117>';
