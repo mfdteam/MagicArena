@@ -11414,7 +11414,7 @@ begin
           Players[M[I1]].HeroMindType := 15;
         end;
 
-        Players[I1].HeroType := Players[M[I1]].HeroMindType;
+        Players[I1].HeroType := Players[M[I1]].HeroType;
         Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(I1, Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
         Players[I1].HeroStunned := Players[M[I1]].HeroStunned;
@@ -11446,6 +11446,10 @@ begin
         Players[I1].PreparingTime := Players[M[I1]].PreparingTime;
         Players[I1].HeroInFear := Players[M[I1]].HeroInFear;
         Players[I1].HeroInFearTime := Players[M[I1]].HeroInFearTime;
+        Players[I1].SettingTrack := Players[M[I1]].SettingTrack;
+        Players[I1].TrackStopTime := Players[M[I1]].TrackStopTime;
+        Players[M[I1]].SettingTrack := False;
+        Players[M[I1]].TrackStopTime := 0;
         Players[I1].RoadSkillDelay := Players[M[I1]].RoadSkillDelay;
         Players[I1].FieldSkillDelay := Players[M[I1]].FieldSkillDelay;
         Players[I1].WineSkillDelay := Players[M[I1]].WineSkillDelay;
@@ -11615,6 +11619,10 @@ begin
           Players[I1].RebornTime := Players[I1].TempRebornTime;
           Players[M[I1]].HeroStunned := Players[I1].HeroStunned;
           Players[M[I1]].HeroStunnedTime := Players[I1].HeroStunnedTime;
+          Players[M[I1]].SettingTrack := Players[I1].SettingTrack;
+          Players[M[I1]].TrackStopTime := Players[I1].TrackStopTime;
+          Players[I1].SettingTrack := False;
+          Players[I1].TrackStopTime := 0;
           Players[I1].HeroExileTime := Players[M[I1]].HeroExileTime;
           Players[I1].HeroExileBackTime := Players[M[I1]].HeroExileBackTime;
           Players[I1].HeroExileX := Players[M[I1]].HeroExileX;
@@ -11622,8 +11630,8 @@ begin
           Players[I1].HeroExileGiver := Players[M[I1]].HeroExileGiver;
           Players[I1].HeroExileDir := Players[M[I1]].HeroExileDir;
           Players[I1].HeroExiled := Players[M[I1]].HeroExiled;
-          Players[M[I1]].HeroExileBackTime := 0;
           Players[M[I1]].HeroExiled := False;
+          Players[M[I1]].HeroExileBackTime := 0;
           if Players[M[I1]].PlayersTeam = 1 then
           begin
             Players[M[I1]].PlayersTeam := 0;
