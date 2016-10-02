@@ -464,7 +464,7 @@ type
     CaptureMindTime: Integer;
     MindStunned: Boolean;
     StunnedMindTime: Integer;
-    MindMagicImmunity: Integer;
+    MindMagicImmunityTime: Integer;
     MindAppearTime: Integer;
     MindAppearTimeBack: Integer;
     MindX: Integer;
@@ -1131,7 +1131,7 @@ begin
       TempStolenSkill := sNone;
       TempStolenSkillName := '';
       TempStolenSkillTime := 0;
-      MindMagicImmunity := 0;
+      MindMagicImmunityTime := 0;
       MindAppearTime := 0;
       MindAppearTimeBack := 0;
       MindX := 0;
@@ -9439,7 +9439,8 @@ begin
           end;
         end;
         if not (Players[P].CaptureMind)
-        and not (Players[P].MindStunned) then
+        and not (Players[P].MindStunned)
+        and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
           Players[P].HP := Players[P].HP - 1 - Byte(Players[Tiles[aX][aY].Owner].DD);
         if Players[P].CaptureMind then
           Players[M[P]].HP := Players[M[P]].HP - 1 - Byte(Players[Tiles[aX][aY].Owner].DD);
@@ -9512,7 +9513,8 @@ begin
 
   if (aObj = BOWMAN_ROCKET)
   and (not Players[P].HeroMagicImmunity)
-  and (not Players[P].HeroTotalImmunity) then
+  and (not Players[P].HeroTotalImmunity)
+  and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
   begin
     ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := 0;
     TilesRoadLength[Tiles[aX][aY].Owner] := TilesRoadLength[Tiles[aX][aY].Owner] + 9;
@@ -9748,7 +9750,8 @@ begin
             aTile := States.MapTileType(aX, aY);
             if (ObjectType(aObj) = otKill)
             or ((aTile = INFERNAL_TILE)
-            and (States.UnitType(AIUnits[K]) <> 13)) then
+            and (States.UnitType(AIUnits[K]) <> 13))
+            and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
             begin
               Actions.UnitKill(AIUnits[K], False);
 
@@ -11427,10 +11430,10 @@ begin
         Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
         Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME; 
         Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME;
-        Players[I1].MindMagicImmunity := States.GameTime + CAPTURE_MIND_TIME - 10;
+        Players[I1].MindMagicImmunityTime := States.GameTime + CAPTURE_MIND_TIME - 10;
       end;
       
-      if States.GameTime = Players[I1].MindMagicImmunity then
+      if States.GameTime = Players[I1].MindMagicImmunityTime then
       begin
         Players[M[I1]].HeroMagicImmunity := True;
         Players[M[I1]].HeroMagicImmunityTime := States.GameTime + 10;
