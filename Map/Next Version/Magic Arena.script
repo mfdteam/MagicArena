@@ -11006,17 +11006,6 @@ begin
           Players[I1].HeroType := Players[I1].TempHeroType;
           Players[I1].WerewolfTime := 0;
         end;
-        if States.GameTime <= Players[I1].MindTime then
-          Exit;
-        if (InRange(Players[I1].MindAppearTimeBack - States.GameTime, 0, 49))
-        and (InRange(Players[I1].HeroMindType, 14, 27))
-        and (InRange(Players[M[I1]].HeroMindType, 14, 27)) then
-        begin
-          Players[I1].HeroType := Players[I1].HeroMindType;
-          Players[M[I1]].HeroType := Players[M[I1]].HeroMindType;
-          Players[I1].TempHeroType := Players[I1].TempHeroMindType;
-          Players[I1].MindAppearTimeBack := 0;
-        end;
         Players[I1].HeroExiled := True;
         Players[I1].HeroExileX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].HeroExileY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
@@ -11421,10 +11410,6 @@ begin
         Players[I1].RoadSkillDelay := Players[M[I1]].RoadSkillDelay;
         Players[I1].FieldSkillDelay := Players[M[I1]].FieldSkillDelay;
         Players[I1].WineSkillDelay := Players[M[I1]].WineSkillDelay;
-        if Players[M[I1]].PlayersTeam = 0 then
-          Players[I1].PlayersTeam := 1;
-        if Players[M[I1]].PlayersTeam = 1 then
-          Players[I1].PlayersTeam := 0;
         Players[I1].HeroMagicImmunity := True;
         Players[I1].HeroMagicImmunityTime := States.GameTime + CAPTURE_MIND_TIME;
         Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
@@ -11592,10 +11577,6 @@ begin
           Players[M[I1]].HeroExileBackTime := 0;
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
           Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
-          if Players[I1].PlayersTeam = 0 then
-            Players[M[I1]].PlayersTeam := 1;
-          if Players[I1].PlayersTeam = 1 then
-            Players[M[I1]].PlayersTeam := 0;
           Players[M[I1]].HeroMagicImmunity := True;
           Players[M[I1]].HeroMagicImmunityTime := States.GameTime + 20;
           if Length(Zombies) > 0 then
