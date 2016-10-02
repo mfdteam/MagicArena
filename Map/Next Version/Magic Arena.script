@@ -11420,6 +11420,7 @@ begin
         Players[M[I1]].HeroType := Players[I1].HeroMindType;
         Actions.GroupKillAll(Players[M[I1]].Hero, True);
         Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[M[I1]].MindX, Players[M[I1]].MindY, Players[M[I1]].MindDir, 1, 1);
+        Players[I1].TempHeroType := Players[M[I1]].TempHeroType;
 
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
