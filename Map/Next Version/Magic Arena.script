@@ -1747,6 +1747,66 @@ begin
 end;
 
 
+function SkillInfo(fSkill: aSkill): ANSIString;
+begin
+  case fSkill of
+
+    sFieryLance: Result := '<$301>';
+    sTeleport: Result := '<$401>';
+    s10kSpears: Result := '<$501>';
+
+    sCrackingEarth: Result := '<$302>';
+    sWaveOfRage: Result := '<$402>';
+    sTotem: Result := '<$502>';
+
+    sSpikedEarth: Result := '<$304>';
+    sZombieSummon: Result := '<$404>';
+    sFear: Result := '<$504>';
+
+    sAccurateShot: Result := '<$303>';
+    sSuddenDeath: Result := '<$403>';
+    sSniperShot: Result := '<$503>';
+
+    sGravity: Result := '<$307>';
+    sDeadlyFireworks: Result := '<$407>';
+    sWerewolf: Result := '<$507>';
+
+    sDisorientation: Result := '<$313>';
+    sTrack: Result := '<$413>';
+    sRegen: Result := '<$513>';
+
+    sViseOfDeath: Result := '<$306>';
+    sSacrificialTeleport: Result := '<$406>';
+    sTower: Result := '<$506>';
+
+    sRocket: Result := '<$305>';
+    sPrison: Result := '<$405>';
+    sRevengeFromNowhere: Result := '<$505>';
+
+    sFierySnake: Result := '<$308>';
+    sExile: Result := '<$408>';
+    sShield: Result := '<$508>';
+
+    sRopesOfDeath: Result := '<$309>';
+    sDeafeningClatter: Result := '<$409>';
+    sRagingSpurt: Result := '<$509>';
+
+    sMentalBurst: Result := '<$310>';
+    sSteal: Result := '<$410>';
+    sUniversal: Result := '<$58>';
+
+    sBoomerang: Result := '<$311>';
+    sSilence: Result := '<$411>';
+    sMind: Result := '<$511>';
+
+    sNone: Result := '<$57>'
+
+    else Result := '';
+
+  end;
+end;
+
+
 function RoadSkillName(P, UT: Integer): ANSIString;
 begin
   case UT of
@@ -2176,7 +2236,13 @@ begin
   begin
     Actions.ShowMsg(P, RoadSkillInfo(P, Players[P].HeroType));
     Actions.ShowMsg(P, FieldSkillInfo(P, Players[P].HeroType));
-    Actions.ShowMsg(P, WineSkillInfo(P, Players[P].HeroType));
+    if (Players[P].HeroType <> 25)
+    or ((Players[P].HeroType = 25)
+    and (Players[P].StolenSkill = sNone)) then
+      Actions.ShowMsg(P, WineSkillInfo(P, Players[P].HeroType));
+    if (Players[P].HeroType = 25)
+    and (Players[P].StolenSkill <> sNone) then
+      Actions.ShowMsg(P, SkillInfo(Players[P].StolenSkill));
   end;
   if (HT = 21)
   and (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = Players[P].SpawnX)
