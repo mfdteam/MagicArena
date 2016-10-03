@@ -132,8 +132,6 @@ const
   AXE_ROAD_SPEED = 1;
   AXE_FIELD_SPEED = 2;
 
-  VAGA_FIELD_SPEED = 1.5;
-
   WARRIOR_ROAD_SPEED = 2;
 
   KNIGHT_FIELD_SPEED = 3;
@@ -6470,8 +6468,16 @@ begin
   if (TileOnBattlefield(X, Y))
   and (Players[P].Hero > 0) then
   begin
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    if not Players[P].HeroExiled then
+    begin
+      X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    end
+    else
+    begin
+      X2 := Players[P].HeroExileX;
+      Y2 := Players[P].HeroExileY;
+    end;
     if (Abs(X2 - X) <= SHIELD_RADIUS)
     and (Abs(Y2 - Y) <= SHIELD_RADIUS) then
     begin
@@ -8966,10 +8972,12 @@ begin
   if Players[P].HeroReborn then
     Exit;
 
-  if States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P then
+  if (States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P)
+  and (Players[P].HeroType <> 26) then
     Exit;
 
-  if Players[P].HeroExiled then
+  if (Players[P].HeroExiled)
+  and (Players[P].HeroType <> 26) then
     Exit;
 
 //Use skills
