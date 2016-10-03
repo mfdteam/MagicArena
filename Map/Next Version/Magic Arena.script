@@ -139,7 +139,7 @@ const
 
   ROGUE_ROAD_SPEED = 2;
 
-  SCOUT_ROAD_SPEED = 0.8;
+  SCOUT_ROAD_SPEED = 1;
 
 //Skills objects
 
