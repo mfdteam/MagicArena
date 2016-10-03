@@ -2190,6 +2190,8 @@ begin
   and (Players[P].HP > 0) then
     StartReChoice(P);
   if (HT = 21)
+  and (States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) = Players[P].SpawnX)
+  and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = Players[P].SpawnY)
   and (not Players[P].ReChoiceAllowed) then
     Actions.ShowMsg(P, '<$65>');
 end;
