@@ -6140,15 +6140,16 @@ begin
     begin
       X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+      if not States.PlayerIsAI(P) then
+        Direction := Players[P].SkillDirection;
     end
     else
     begin
       X2 := Players[P].HeroExileX;
       Y2 := Players[P].HeroExileY;
+      if not States.PlayerIsAI(P) then
+        Direction := Players[P].HeroExileDir;
     end;
-
-    if not States.PlayerIsAI(P) then
-      Direction := Players[P].SkillDirection;
 
     TilesRoadLength[P] := TilesRoadLength[P] + 4;
     SetLength(TilesRoadX[P], TilesRoadLength[P]);
