@@ -6136,8 +6136,16 @@ begin
       Direction := Dir;
     end;
 
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    if not Players[P].HeroExiled then
+    begin
+      X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    end
+    else
+    begin
+      X2 := Players[P].HeroExileX;
+      Y2 := Players[P].HeroExileY;
+    end;
 
     if not States.PlayerIsAI(P) then
       Direction := Players[P].SkillDirection;
@@ -8900,10 +8908,12 @@ begin
   if Players[P].HeroReborn then
     Exit;
 
-  if States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P then
+  if (States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P)
+  and (Players[P].HeroType <> 26) then
     Exit;
 
-  if Players[P].HeroExiled then
+  if (Players[P].HeroExiled)
+  and (Players[P].HeroType <> 26) then
     Exit;
 
 //Use skills
