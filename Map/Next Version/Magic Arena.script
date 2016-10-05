@@ -10827,10 +10827,12 @@ begin
   begin
     if InRange(LastAttacker, 0, 11) then
     begin
-      Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
+      if Players[O].MindStunned = False then 
+        Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
       Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
       Players[LastAttacker].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-      if LastAttackerUnitType = 13 then
+      if (LastAttackerUnitType = 13)
+      and (not Players[O].MindStunned) then
       begin
         Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$105> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
         Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$106> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
@@ -10841,54 +10843,79 @@ begin
           Players[O].HP := Players[O].HP - 1;
         end;
       end;
-      if LastAttackerUnitType = 14 then
+      if (LastAttackerUnitType = 13)
+      and (Players[O].MindStunned) then
+      begin
+        Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$120> ' + '[]';
+        if (Players[O].HP > 1)
+        and (Players[LastAttacker].DD) then
+          Players[O].HP := Players[O].HP - 1;
+      end;
+      if (LastAttackerUnitType = 14)
+      and not (Players[O].MindStunned) then
       begin
         Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$75> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
         Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$89> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
       end;
+      if (LastAttackerUnitType = 14) 
+      and (Players[O].MindStunned) then
+        Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$121> ' + '[]';
       if (InRange(LastAttackerUnitType, 15, 27))
-      and (LastAttackerZombieType = 3) then
+      and (LastAttackerZombieType = 3)
+      and not (Players[O].MindStunned) then
       begin
         Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$76> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
         Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$90> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
       end;
       if (InRange(LastAttackerUnitType, 15, 27))
-      and (LastAttackerZombieType = 2) then
+      and (LastAttackerZombieType = 3)
+      and (Players[O].MindStunned) then
+        Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$122> ' + '[]';
+      if (InRange(LastAttackerUnitType, 15, 27))
+      and (LastAttackerZombieType = 2)
+      and not (Players[O].MindStunned) then
       begin
         Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$107> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
         Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$108> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
       end;
+      if (InRange(LastAttackerUnitType, 15, 27))
+      and (LastAttackerZombieType = 2)
+      and (Players[O].MindStunned) then
+        Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$123> ' + '[]';
       Players[O].RespawnCheckTime := States.GameTime + 10;
-      Players[LastAttacker].TotalKills := Players[LastAttacker].TotalKills + 1;
-      SetLength(Players[LastAttacker].KillTimes, Length(Players[LastAttacker].KillTimes) + 1);
-      Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] := States.GameTime;
-        if Length(Players[LastAttacker].KillTimes) >= 4 then
-          if (Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] - Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
-          {and (not Players[LastAttacker].Rampage)} then
-          begin
-            Actions.PlayWAV(-1, 'Rampage', 1);
-            Players[LastAttacker].Rampage := True;
-            Players[LastAttacker].KillsCountTime := States.GameTime + KILLS_REFRESH_TIME;
-          end;
-        if Length(Players[LastAttacker].KillTimes) >= 3 then
-          if (Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] - Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
-          and (not Players[LastAttacker].TripleKill)
-          and (not Players[LastAttacker].Rampage) then
-          begin
-            Actions.PlayWAV(-1, 'TripleKill', 1);
-            Players[LastAttacker].TripleKill := True;
-            Players[LastAttacker].KillsCountTime := Players[LastAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
-          end;
-        if Length(Players[LastAttacker].KillTimes) >= 2 then
-          if (Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] - Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
-          and (not Players[LastAttacker].DoubleKill)
-          and (not Players[LastAttacker].TripleKill)
-          and (not Players[LastAttacker].Rampage) then
-          begin
-            Actions.PlayWAV(-1, 'DoubleKill', 1);
-            Players[LastAttacker].DoubleKill := True;
-            Players[LastAttacker].KillsCountTime := Players[LastAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
-          end;
+      if Players[O].MindStunned = False then 
+      begin
+        Players[LastAttacker].TotalKills := Players[LastAttacker].TotalKills + 1;
+        SetLength(Players[LastAttacker].KillTimes, Length(Players[LastAttacker].KillTimes) + 1);
+        Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] := States.GameTime;
+          if Length(Players[LastAttacker].KillTimes) >= 4 then
+            if (Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] - Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
+            {and (not Players[LastAttacker].Rampage)} then
+            begin
+              Actions.PlayWAV(-1, 'Rampage', 1);
+              Players[LastAttacker].Rampage := True;
+              Players[LastAttacker].KillsCountTime := States.GameTime + KILLS_REFRESH_TIME;
+            end;
+          if Length(Players[LastAttacker].KillTimes) >= 3 then
+            if (Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] - Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
+            and (not Players[LastAttacker].TripleKill)
+            and (not Players[LastAttacker].Rampage) then
+            begin
+              Actions.PlayWAV(-1, 'TripleKill', 1);
+              Players[LastAttacker].TripleKill := True;
+              Players[LastAttacker].KillsCountTime := Players[LastAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+            end;
+          if Length(Players[LastAttacker].KillTimes) >= 2 then
+            if (Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] - Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
+            and (not Players[LastAttacker].DoubleKill)
+            and (not Players[LastAttacker].TripleKill)
+            and (not Players[LastAttacker].Rampage) then
+            begin
+              Actions.PlayWAV(-1, 'DoubleKill', 1);
+              Players[LastAttacker].DoubleKill := True;
+              Players[LastAttacker].KillsCountTime := Players[LastAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+            end;
+        end;
     end;
     if Players[O].HP > 0 then
     begin 
