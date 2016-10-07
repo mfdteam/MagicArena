@@ -8914,7 +8914,7 @@ begin
   and (Players[P].HeroType <> 26) then
     Exit;
 
-  if (Players[P].HeroExiled)
+  if (Players[P].HeroExileBackTime > States.GameTime)
   and (Players[P].HeroType <> 26) then
     Exit;
 
@@ -8985,7 +8985,7 @@ begin
   if States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P then
     Exit;
 
-  if Players[P].HeroExiled then
+  if Players[P].HeroExileBackTime > States.GameTime then
     Exit;
 
 //Use skills
@@ -9056,7 +9056,7 @@ begin
   and (Players[P].HeroType <> 26) then
     Exit;
 
-  if (Players[P].HeroExiled)
+  if (Players[P].HeroExileBackTime > States.GameTime)
   and (Players[P].HeroType <> 26) then
     Exit;
 
