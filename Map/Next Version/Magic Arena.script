@@ -5721,7 +5721,7 @@ begin
     SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
     TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X;
     TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y;
-    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := SetTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] + 33;
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := SetTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] + 20;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := SetTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] + 3;
     TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := BOWMAN_ROCKET;
     Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
