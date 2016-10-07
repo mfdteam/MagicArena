@@ -12386,7 +12386,14 @@ begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
+    if Players[P].HeroExiled then
+    begin
+      aX := Players[P].HeroExileX;
+      aY := Players[P].HeroExileY;
+    end;
+
     if (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7)
+    or (Tiles[aX][aY].ShieldTime >= States.GameTime)
     or (Players[P].HeroTotalImmunity) then
     begin
 
@@ -12401,6 +12408,7 @@ begin
     end;
 
     if (States.MapTileObject(aX, aY) <> WARRIOR_OBJECT7)
+    or (Tiles[aX][aY].ShieldTime < States.GameTime)
     and (not Players[P].HeroTotalImmunity) then
     begin
 
@@ -13509,7 +13517,7 @@ end;
 
 procedure AIWarrior(P: Integer);
 var
-  aX, aY, O, U, X, Y, uX, uY, aX1, aX2, aY1, aY2, E, A: Integer;
+  aX, aY, O, U, X, Y, uX, uY, aX1, aX2, aY1, aY2: Integer;
 begin
 
   if (States.KaMRandomI(10) > 7)
