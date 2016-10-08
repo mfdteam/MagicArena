@@ -2714,32 +2714,32 @@ begin
       if U > 0 then
         O := States.UnitOwner(U);
 
-      if InRange(States.UnitOwner(U), 8, 11) then
+      if InRange(O, 8, 11) then
       begin
         Actions.UnitKill(U, False);
         Players[P].LastUsedSkill := sFear;
         Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       end;
 
-      if (U > 0)
-      and (InRange(O, 0, 7)) then 
-        if (U = States.GroupMember(Players[O].Hero, 0))
-        and (not Players[O].HeroInFear)
-        and (not Players[O].HeroMagicImmunity)
-        and (not Players[O].HeroTotalImmunity)
-        and (O <> P)
-        and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
-        begin
-          Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-          Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$74> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sFear);
-          Players[O].HeroInFear := True;
-          Players[O].HeroFearGiver := P;
-          Players[O].HeroInFearTime := States.GameTime + IN_FEAR_TIME;
-          if Players[O].Hero > 0 then
-            Actions.GroupBlockOrders(Players[O].Hero, True);
-          Players[P].LastUsedSkill := sFear;
-          Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-        end;
+      if U > 0 then
+        if InRange(O, 0, 7) then 
+          if (U = States.GroupMember(Players[O].Hero, 0))
+          and (not Players[O].HeroInFear)
+          and (not Players[O].HeroMagicImmunity)
+          and (not Players[O].HeroTotalImmunity)
+          and (O <> P)
+          and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
+          begin
+            Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+            Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$74> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$71> ' + SkillName(sFear);
+            Players[O].HeroInFear := True;
+            Players[O].HeroFearGiver := P;
+            Players[O].HeroInFearTime := States.GameTime + IN_FEAR_TIME;
+            if Players[O].Hero > 0 then
+              Actions.GroupBlockOrders(Players[O].Hero, True);
+            Players[P].LastUsedSkill := sFear;
+            Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+          end;
     end;
   end;
 
