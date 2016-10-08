@@ -38,7 +38,7 @@ const
 
   WARRIOR_ROAD_DELAY = 100;
   WARRIOR_FIELD_DELAY = 150;
-  WARRIOR_WINE_DELAY = 350;
+  WARRIOR_WINE_DELAY = 250;
 
   KNIGHT_ROAD_DELAY = 100;
   KNIGHT_FIELD_DELAY = 150;
@@ -3214,7 +3214,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := LANCE_OBJECT;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -3234,7 +3234,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := LANCE_OBJECT;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -3254,7 +3254,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := LANCE_OBJECT;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -3274,7 +3274,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := LANCE_OBJECT;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -3768,7 +3768,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := XBOW_OBJECT3;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -3788,7 +3788,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := XBOW_OBJECT3;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -3808,7 +3808,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := XBOW_OBJECT3;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -3828,7 +3828,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := XBOW_OBJECT3;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -4118,7 +4118,7 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X2;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 21 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := XBOW_OBJECT3;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
@@ -4138,7 +4138,7 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 21 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := XBOW_OBJECT3;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
@@ -4158,7 +4158,7 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X2;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 21 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := XBOW_OBJECT3;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
@@ -4178,7 +4178,7 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 21 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := XBOW_OBJECT3;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
@@ -4272,7 +4272,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := PIKE_OBJECT9;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -4292,7 +4292,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := PIKE_OBJECT9;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -4312,7 +4312,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := PIKE_OBJECT9;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -4332,7 +4332,7 @@ begin
                SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
                TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2;
-               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
+               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := PIKE_OBJECT9;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -6244,7 +6244,6 @@ begin
                    SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                    TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
                    TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
-                   ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := WARRIOR_OBJECT3 - (States.KaMRandomI(2) + 1) * 3 * Byte(States.KaMRandomI(3) = 0);
                    Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -6299,7 +6298,6 @@ begin
                    SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                    TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
                    TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
-                   ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := WARRIOR_OBJECT3 - (States.KaMRandomI(2) + 1) * 3 * Byte(States.KaMRandomI(3) = 0);
                    Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -6354,7 +6352,6 @@ begin
                    SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                    TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
                    TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
-                   ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := WARRIOR_OBJECT3 - (States.KaMRandomI(2) + 1) * 3 * Byte(States.KaMRandomI(3) = 0);
                    Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
@@ -6409,7 +6406,6 @@ begin
                    SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
                    TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1;
                    TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1;
-                   ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 28 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := WARRIOR_OBJECT3 - (States.KaMRandomI(2) + 1) * 3 * Byte(States.KaMRandomI(3) = 0);
                    Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
