@@ -11827,8 +11827,10 @@ begin
         begin
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], 255);
 
-          if (CHANGE_RELIEF)
-          and (InRange(States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]), 0, 45)) then
+          if not CHANGE_RELIEF then
+            Exit;
+
+          if InRange(States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]), 0, 45) then
             Actions.MapTileHeightSet(TilesRoadX[P][K], TilesRoadY[P][K], Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief);
 
         end;
@@ -11837,9 +11839,10 @@ begin
         and (States.MapTileObject(TilesRoadX[P][K], TilesRoadY[P][K]) = BARB_OBJECT)
         and (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K]))
         and (States.GameTime mod 3 = 0)
-        and (CHANGE_RELIEF)
         and (InRange(States.MapTileHeight(TilesRoadX[P][K], TilesRoadY[P][K]), 0, 45)) then
         begin
+          if not CHANGE_RELIEF then
+            Exit;
           aRelief := Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Relief + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
           if aRelief < 0 then
             aRelief := -1 * aRelief;
@@ -11933,10 +11936,11 @@ begin
             if not Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], TilesFieldObjects[P][K]) then
               if ObjectType(TilesFieldObjects[P][K]) = otKill then
                 Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], UNIVERSAL_KILL_OBJ);
-          if (P = 8)
-          and (CHANGE_RELIEF) then
-            for C := 0 to 1 + States.KaMRandomI(3) do 
+          if P = 8 then
+            for C := 0 to 1 + States.KaMRandomI(3) do
             begin
+              if not CHANGE_RELIEF then
+                Exit;
               aRelief := States.MapTileHeight(TilesFieldX[8][K], TilesFieldY[8][K]) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
               if aRelief < 0 then
                 aRelief := -1 * aRelief;
@@ -13310,6 +13314,9 @@ var
   X, Y, aX, aY, U, O, D, A, E: Integer;
 begin
 
+  if not DEBUG_MODE then
+    Exit;
+
   if (States.KaMRandomI(10) > 5)
   and (Players[P].RoadSkillDelay = 0)
   and (Players[P].Hero > 0) then
@@ -13545,6 +13552,9 @@ procedure AIWarrior(P: Integer);
 var
   aX, aY, O, U, X, Y, uX, uY, aX1, aX2, aY1, aY2: Integer;
 begin
+
+  if not DEBUG_MODE then
+    Exit;
 
   if (States.KaMRandomI(10) > 7)
   and (States.KaMRandom < 0.25)
@@ -14262,8 +14272,7 @@ begin
 
       if Players[I].Hero > 0 then
         if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if (AICanUseSkills(I, 20))
-          and (DEBUG_MODE) then
+          if (AICanUseSkills(I, 20)) then
             AIPikeman(I);
 
       if Players[I].Hero > 0 then
@@ -14273,8 +14282,7 @@ begin
 
       if Players[I].Hero > 0 then
         if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if (AICanUseSkills(I, 26))
-          and (DEBUG_MODE) then
+          if (AICanUseSkills(I, 26)) then
             AIWarrior(I);
 
       if Players[I].Hero > 0 then
