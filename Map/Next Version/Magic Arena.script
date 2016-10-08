@@ -12437,7 +12437,8 @@ begin
 
         end;
 
-        if Tiles[aX][aY].ShieldTime < States.GameTime then
+        if (Tiles[aX][aY].ShieldTime < States.GameTime)
+        and (not Players[P].HeroTotalImmunity) then
         begin
 
           if (InRange(P, 0, 3))
