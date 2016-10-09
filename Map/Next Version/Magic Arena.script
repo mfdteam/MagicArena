@@ -328,7 +328,7 @@ const
   SKILL_CANCEL_OBJ = -2;
   REBORN_TIME = 50;
   BOWMAN_PRISON_AI_CHANCE = 0.9;
-  EFFECT_CHECK_FACTOR = 5;
+  EFFECT_CHECK_FACTOR = 6;
   FENCE_TIME = 60;
   RECRUIT_HUNGER = 115;
   VICTORY_DELAY = 300;
@@ -12156,38 +12156,42 @@ begin
   if not TileOnBattlefield(aX, aY) then
     Exit;
 
-  for X := aX - 2 to aX + 2 do
-  for Y := aY - 2 to aY + 2 do
-    if TileOnBattlefield(X, Y) then
-    begin
-      Tile := States.MapTileType(X, Y);
-      if (Tile = MAGIC_IMMUNITY_ANIMATION)
-      or (Tile = TOTAL_IMMUNITY_ANIMATION)
-      or (Tile = DOUBLE_ANIMATION)
-      or (Tile = RECHARGE_ANIMATION)
-      or (Tile = MIND_ANIMATION)
-      or (Tile = STUN_ANIMATION)
-      or (Tile = FEAR_ANIMATION)
-      or (Tile = SILENCE_ANIMATION) then
-        Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
-    end;
+  if States.GameTime mod EFFECT_CHECK_FACTOR < 3 then
+    for X := aX - 2 to aX + 2 do
+    for Y := aY - 2 to aY + 2 do
+      if TileOnBattlefield(X, Y) then
+      begin
+        Tile := States.MapTileType(X, Y);
+        if (Tile = MAGIC_IMMUNITY_ANIMATION)
+        or (Tile = TOTAL_IMMUNITY_ANIMATION)
+        or (Tile = DOUBLE_ANIMATION)
+        or (Tile = RECHARGE_ANIMATION)
+        or (Tile = MIND_ANIMATION)
+        or (Tile = STUN_ANIMATION)
+        or (Tile = FEAR_ANIMATION)
+        or (Tile = SILENCE_ANIMATION) then
+          Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
+      end;
 
-  if Players[P].HeroMagicImmunity then
-    Actions.MapTileSet(aX, aY, MAGIC_IMMUNITY_ANIMATION, States.KaMRandomI(4));
-  if Players[P].HeroTotalImmunity then
-    Actions.MapTileSet(aX, aY, TOTAL_IMMUNITY_ANIMATION, States.KaMRandomI(4));
-  if Players[P].DD then
-    Actions.MapTileSet(aX, aY, DOUBLE_ANIMATION, States.KaMRandomI(4));
-  if Players[P].ReCharge then
-    Actions.MapTileSet(aX, aY, RECHARGE_ANIMATION, States.KaMRandomI(4));
-  if Players[P].HeroStunned then
-    Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
-  if Players[P].HeroInFear then
-    Actions.MapTileSet(aX, aY, FEAR_ANIMATION, States.KaMRandomI(4));
-  if Players[P].HeroSilent then
-    Actions.MapTileSet(aX, aY, SILENCE_ANIMATION, States.KaMRandomI(4));
-  if Players[P].MindStunned then
-    Actions.MapTileSet(aX, aY, MIND_ANIMATION, States.KaMRandomI(4));
+  if States.GameTime mod EFFECT_CHECK_FACTOR >= 3 then
+  begin
+    if Players[P].HeroMagicImmunity then
+      Actions.MapTileSet(aX, aY, MAGIC_IMMUNITY_ANIMATION, States.KaMRandomI(4));
+    if Players[P].HeroTotalImmunity then
+      Actions.MapTileSet(aX, aY, TOTAL_IMMUNITY_ANIMATION, States.KaMRandomI(4));
+    if Players[P].DD then
+      Actions.MapTileSet(aX, aY, DOUBLE_ANIMATION, States.KaMRandomI(4));
+    if Players[P].ReCharge then
+      Actions.MapTileSet(aX, aY, RECHARGE_ANIMATION, States.KaMRandomI(4));
+    if Players[P].HeroStunned then
+      Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
+    if Players[P].HeroInFear then
+      Actions.MapTileSet(aX, aY, FEAR_ANIMATION, States.KaMRandomI(4));
+    if Players[P].HeroSilent then
+      Actions.MapTileSet(aX, aY, SILENCE_ANIMATION, States.KaMRandomI(4));
+    if Players[P].MindStunned then
+      Actions.MapTileSet(aX, aY, MIND_ANIMATION, States.KaMRandomI(4));
+  end;
 
 end;
 
@@ -13981,10 +13985,9 @@ begin
 
   CheckRuneCleanup;
 
-  if States.GameTime mod EFFECT_CHECK_FACTOR = 0 then
-    for I := 0 to 7 do
-      if States.PlayerEnabled(I) then
-        CheckEffects(I);
+  for I := 0 to 7 do
+    if States.PlayerEnabled(I) then
+      CheckEffects(I);
 
   if States.GameTime mod ZOMBIE_STORM_FACTOR = 0 then
   begin
