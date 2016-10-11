@@ -529,6 +529,12 @@ type
     HeroTotalImmunityTime: Integer;
     TempHeroTotalImmunity: Boolean;
     TempHeroTotalImmunityTime: Integer;
+    RocketX: Integer;
+    RocketY: Integer;
+    RocketTime: Integer;
+    SuddenX: Integer;
+    SuddenY: Integer;
+    SuddenTime: Integer;
   end;
 
 
@@ -565,6 +571,7 @@ type
     TileDirection: Integer;
     ShieldTime: Integer;
     ImmortalTime: Integer;
+    TrackTime: Integer;
   end;
 
 
@@ -772,6 +779,7 @@ begin
     Tiles[aX][aY].TileDirection := States.MapTileRotation(aX, aY);
     Tiles[aX][aY].ShieldTime := 0;
     Tiles[aX][aY].ImmortalTime := 0;
+    Tiles[aX][aY].TrackTime := 0;
   end;
 end;
 
@@ -809,6 +817,10 @@ begin
       if (aObj = WARRIOR_OBJECT7)
       and (TileOnBattlefield(aX, aY))
       and (States.GameTime > Tiles[aX][aY].ShieldTime) then
+        Actions.MapTileObjectSet(aX, aY, 255);
+      if (aObj = VAGA_OBJECT8)
+      and (TileOnBattlefield(aX, aY))
+      and (States.GameTime > Tiles[aX][aY].TrackTime) then
         Actions.MapTileObjectSet(aX, aY, 255);
       if (aObj <> 255)
       and (not InRange(aObj, 149, 172))
@@ -1190,6 +1202,12 @@ begin
       LastDir := -1;
       HeroTotalImmunity := False;
       HeroTotalImmunityTime := 0;
+      RocketX := 0;
+      RocketY := 0;
+      RocketTime := 0;
+      SuddenX := 0;
+      SuddenY := 0;
+      SuddenTime := 0;
     end;
   end;
 
@@ -3978,6 +3996,10 @@ begin
 
       end;
 
+      Players[P].SuddenTime := States.GameTime + 66;
+      Players[P].SuddenX := X;
+      Players[P].SuddenY := Y;
+
       Players[P].LastUsedSkill := sSuddenDeath;
 
       Players[P].FieldSkillDelay := Round(XBOW_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
@@ -5727,6 +5749,10 @@ begin
     Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
     Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sRocket;
     Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+
+    Players[P].RocketTime := SetTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] + 60;
+    Players[P].RocketX := X;
+    Players[P].RocketY := Y;
 
     if (States.PlayerIsAI(P))
     and (Players[P].HP > 0) then
@@ -11314,6 +11340,18 @@ begin
           if States.MapTileObject(aX, aY) = AXE_OBJECT2 then
             Actions.MapTileObjectSet(aX, aY, 255);
 
+      if States.GameTime = Players[I1].SuddenTime then
+        for aX := Players[I1].SuddenX - 1 to Players[I1].SuddenX + 1 do
+        for aY := Players[I1].SuddenY - 1 to Players[I1].SuddenY + 1 do
+          if States.MapTileObject(aX, aY) = XBOW_OBJECT3 then
+            Actions.MapTileObjectSet(aX, aY, 255);
+
+      if States.GameTime = Players[I1].RocketTime then
+        for aX := Players[I1].RocketX - 1 to Players[I1].RocketX + 1 do
+        for aY := Players[I1].RocketY - 1 to Players[I1].RocketY + 1 do
+          if States.MapTileObject(aX, aY) = BOWMAN_ROCKET2 then
+            Actions.MapTileObjectSet(aX, aY, 255);
+
       if (Players[I1].SettingTrack)
       and ((States.GameTime - Players[I1].TrackStopTime) mod TRACK_FACTOR = 0)
       and (States.GroupOwner(Players[I1].Hero) = I1)
@@ -11329,6 +11367,7 @@ begin
           SetLength(TilesFieldObjects[I1], TilesFieldLength[I1]);  
           TilesFieldX[I1][Length(TilesFieldX[I1]) - 1] := FieryTrackX(I1);    
           TilesFieldY[I1][Length(TilesFieldY[I1]) - 1] := FieryTrackY(I1);
+          Tiles[FieryTrackX(I1)][FieryTrackY(I1)].TrackTime := Players[I1].TrackStopTime + 5;
           TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 1] := VAGA_OBJECT8;    
           ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := Players[I1].TrackStopTime + 3;    
           SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - 1] := States.GameTime + 1;
