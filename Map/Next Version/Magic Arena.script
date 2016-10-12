@@ -356,8 +356,6 @@ const
   TRIPLE_KILL_CHECK_TIME = 150;
   RAMPAGE_CHECK_TIME = 225;
   MAX_TIME_BETWEEN_KILLS = 75;
-  KILLS_REFRESH_TIME = 60;
-
 
 type
   aSkill = (sNone,
@@ -1179,7 +1177,7 @@ begin
       ScoutSilenceStartTime := 0;
       ScoutSilenceGiver := -1;
       TotalKills := 0;
-      KillsCountTime := KILLS_REFRESH_TIME;
+      KillsCountTime := 0;
       DoubleKill := False;
       TripleKill := False;
       Rampage := False;
@@ -9460,7 +9458,8 @@ begin
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
                 Players[Tiles[aX][aY].Owner].Rampage := True;
-                Players[Tiles[aX][aY].Owner].KillsCountTime := States.GameTime + KILLS_REFRESH_TIME;
+                Players[Tiles[aX][aY].Owner].KillsCountTime := 0;
+                Players[Tiles[aX][aY].Owner].KillsCountTime := States.GameTime + Players[Tiles[aX][aY].Owner].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
             if Length(Players[Tiles[aX][aY].Owner].KillTimes) >= 3 then
               if (Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] - Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
@@ -9469,7 +9468,8 @@ begin
               begin
                 Actions.PlayWAV(-1, 'TripleKill', 1);
                 Players[Tiles[aX][aY].Owner].TripleKill := True;
-                Players[Tiles[aX][aY].Owner].KillsCountTime := Players[Tiles[aX][aY].Owner].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+                Players[Tiles[aX][aY].Owner].KillsCountTime := 0;
+                Players[Tiles[aX][aY].Owner].KillsCountTime := States.GameTime + Players[Tiles[aX][aY].Owner].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
             if Length(Players[Tiles[aX][aY].Owner].KillTimes) >= 2 then
               if (Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] - Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
@@ -9479,7 +9479,7 @@ begin
               begin
                 Actions.PlayWAV(-1, 'DoubleKill', 1);
                 Players[Tiles[aX][aY].Owner].DoubleKill := True;
-                Players[Tiles[aX][aY].Owner].KillsCountTime := Players[Tiles[aX][aY].Owner].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+                Players[Tiles[aX][aY].Owner].KillsCountTime := States.GameTime + Players[Tiles[aX][aY].Owner].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
           end;
           if (Players[P].HeroInFear)
@@ -9495,7 +9495,8 @@ begin
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
                 Players[Players[P].HeroFearGiver].Rampage := True;
-                Players[Players[P].HeroFearGiver].KillsCountTime := States.GameTime + KILLS_REFRESH_TIME;
+                Players[Players[P].HeroFearGiver].KillsCountTime := 0;
+                Players[Players[P].HeroFearGiver].KillsCountTime := States.GameTime + Players[Players[P].HeroFearGiver].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
             if Length(Players[Players[P].HeroFearGiver].KillTimes) >= 3 then
               if (Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] - Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
@@ -9504,7 +9505,8 @@ begin
               begin
                 Actions.PlayWAV(-1, 'TripleKill', 1);
                 Players[Players[P].HeroFearGiver].TripleKill := True;
-                Players[Players[P].HeroFearGiver].KillsCountTime := Players[Players[P].HeroFearGiver].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+                Players[Players[P].HeroFearGiver].KillsCountTime := 0;
+                Players[Players[P].HeroFearGiver].KillsCountTime := States.GameTime + Players[Players[P].HeroFearGiver].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
             if Length(Players[Players[P].HeroFearGiver].KillTimes) >= 2 then
               if (Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] - Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
@@ -9514,7 +9516,7 @@ begin
               begin
                 Actions.PlayWAV(-1, 'DoubleKill', 1);
                 Players[Players[P].HeroFearGiver].DoubleKill := True;
-                Players[Players[P].HeroFearGiver].KillsCountTime := Players[Players[P].HeroFearGiver].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+                Players[Players[P].HeroFearGiver].KillsCountTime := States.GameTime + Players[Players[P].HeroFearGiver].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
           end;
           if (Players[P].MovedByGravity)
@@ -9531,7 +9533,8 @@ begin
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
                 Players[Players[P].GravityUser].Rampage := True;
-                Players[Players[P].GravityUser].KillsCountTime := States.GameTime + KILLS_REFRESH_TIME;
+                Players[Players[P].GravityUser].KillsCountTime := 0;
+                Players[Players[P].GravityUser].KillsCountTime := States.GameTime + Players[Players[P].GravityUser].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
             if Length(Players[Players[P].GravityUser].KillTimes) >= 3 then
               if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
@@ -9540,7 +9543,8 @@ begin
               begin
                 Actions.PlayWAV(-1, 'TripleKill', 1);
                 Players[Players[P].GravityUser].TripleKill := True;
-                Players[Players[P].GravityUser].KillsCountTime := Players[Players[P].GravityUser].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+                Players[Players[P].GravityUser].KillsCountTime := 0;
+                Players[Players[P].GravityUser].KillsCountTime := States.GameTime + Players[Players[P].GravityUser].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
             if Length(Players[Players[P].GravityUser].KillTimes) >= 2 then
               if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
@@ -9550,7 +9554,7 @@ begin
               begin
                 Actions.PlayWAV(-1, 'DoubleKill', 1);
                 Players[Players[P].GravityUser].DoubleKill := True;
-                Players[Players[P].GravityUser].KillsCountTime := Players[Players[P].GravityUser].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+                Players[Players[P].GravityUser].KillsCountTime := States.GameTime + Players[Players[P].GravityUser].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
           end;
           if (Players[P].MovedByRopes)
@@ -9567,7 +9571,8 @@ begin
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
                 Players[Players[P].RopeAttacker].Rampage := True;
-                Players[Players[P].RopeAttacker].KillsCountTime := States.GameTime + KILLS_REFRESH_TIME;
+                Players[Players[P].RopeAttacker].KillsCountTime := 0
+                Players[Players[P].RopeAttacker].KillsCountTime := States.GameTime + Players[Players[P].RopeAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
             if Length(Players[Players[P].RopeAttacker].KillTimes) >= 3 then
               if (Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 1] - Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
@@ -9576,7 +9581,8 @@ begin
               begin
                 Actions.PlayWAV(-1, 'TripleKill', 1);
                 Players[Players[P].RopeAttacker].TripleKill := True;
-                Players[Players[P].RopeAttacker].KillsCountTime := Players[Players[P].RopeAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+                Players[Players[P].RopeAttacker].KillsCountTime := 0
+                Players[Players[P].RopeAttacker].KillsCountTime := States.GameTime + Players[Players[P].RopeAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
             if Length(Players[Players[P].RopeAttacker].KillTimes) >= 2 then
               if (Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 1] - Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
@@ -9586,7 +9592,7 @@ begin
               begin
                 Actions.PlayWAV(-1, 'DoubleKill', 1);
                 Players[Players[P].RopeAttacker].DoubleKill := True;
-                Players[Players[P].RopeAttacker].KillsCountTime := Players[Players[P].RopeAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+                Players[Players[P].RopeAttacker].KillsCountTime := States.GameTime + Players[Players[P].RopeAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
               end;
           end;
         end;
@@ -10931,7 +10937,8 @@ begin
             begin
               Actions.PlayWAV(-1, 'Rampage', 1);
               Players[LastAttacker].Rampage := True;
-              Players[LastAttacker].KillsCountTime := States.GameTime + KILLS_REFRESH_TIME;
+              Players[LastAttacker].KillsCountTime := 0;
+              Players[LastAttacker].KillsCountTime := States.GameTime + Players[LastAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
             end;
           if Length(Players[LastAttacker].KillTimes) >= 3 then
             if (Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] - Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
@@ -10940,7 +10947,8 @@ begin
             begin
               Actions.PlayWAV(-1, 'TripleKill', 1);
               Players[LastAttacker].TripleKill := True;
-              Players[LastAttacker].KillsCountTime := Players[LastAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+              Players[LastAttacker].KillsCountTime := 0;
+              Players[LastAttacker].KillsCountTime := States.GameTime + Players[LastAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
             end;
           if Length(Players[LastAttacker].KillTimes) >= 2 then
             if (Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] - Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
@@ -10950,7 +10958,7 @@ begin
             begin
               Actions.PlayWAV(-1, 'DoubleKill', 1);
               Players[LastAttacker].DoubleKill := True;
-              Players[LastAttacker].KillsCountTime := Players[LastAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
+              Players[LastAttacker].KillsCountTime := States.GameTime + Players[LastAttacker].KillsCountTime + MAX_TIME_BETWEEN_KILLS;
             end;
         end;
     end;
@@ -11279,9 +11287,9 @@ begin
         Players[I1].TripleKill := False;
         Players[I1].Rampage := False;
         SetLength(Players[I1].KillTimes, 0);
-        Players[I1].KillsCountTime := Players[I1].KillsCountTime + KILLS_REFRESH_TIME;
+        Players[I1].KillsCountTime := 0;
       end;
-
+      
       if States.GameTime = Players[I1].WerewolfTime then
       begin
         Players[I1].VagaX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
