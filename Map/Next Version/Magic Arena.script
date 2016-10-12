@@ -14157,14 +14157,10 @@ begin
         TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]' + ReChoiceColor(I) + ' {R} []' + ':' + PlayerInfo(I);
 
     for I := 0 to Length(SortedPlayersLeft) - 1 do
-      if (States.PlayerEnabled(I))
-      and (Players[I].HeroChosen) then
-        Scores[0] := Scores[0] + '|[$' + States.PlayerColorText(SortedPlayersLeft[I]) + ']' + States.PlayerName(SortedPlayersLeft[I]) + '[]: ' + KillsColor(SortedPlayersLeft[I]) + IntToStr(Players[SortedPlayersLeft[I]].Kills) + '[]';
+      Scores[0] := Scores[0] + '|[$' + States.PlayerColorText(SortedPlayersLeft[I]) + ']' + States.PlayerName(SortedPlayersLeft[I]) + '[]: ' + KillsColor(SortedPlayersLeft[I]) + IntToStr(Players[SortedPlayersLeft[I]].Kills) + '[]';
 
     for I := 0 to Length(SortedPlayersRight) - 1 do
-      if (States.PlayerEnabled(I))
-      and (Players[I].HeroChosen) then
-        Scores[1] := Scores[1] + '|[$' + States.PlayerColorText(SortedPlayersRight[I]) + ']' + States.PlayerName(SortedPlayersRight[I]) + '[]: ' + KillsColor(SortedPlayersRight[I]) + IntToStr(Players[SortedPlayersRight[I]].Kills) + '[]';
+      Scores[1] := Scores[1] + '|[$' + States.PlayerColorText(SortedPlayersRight[I]) + ']' + States.PlayerName(SortedPlayersRight[I]) + '[]: ' + KillsColor(SortedPlayersRight[I]) + IntToStr(Players[SortedPlayersRight[I]].Kills) + '[]';
 
   end;
 
