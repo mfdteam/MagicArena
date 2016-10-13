@@ -907,9 +907,8 @@ begin
 end;
 
 
-procedure OnMissionStart;
+procedure SetPlayersLeft;
 begin
-
   for I := 0 to 3 do
     if States.PlayerEnabled(I) then
     begin
@@ -921,7 +920,11 @@ begin
       SetLength(SortedPlayersLeft, Length(SortedPlayersLeft) + 1);
       SortedPlayersLeft[Length(SortedPlayersLeft) - 1] := I;
     end;
+end;
 
+
+procedure SetPlayersRight;
+begin
   for I := 4 to 7 do
     if States.PlayerEnabled(I) then
     begin
@@ -933,6 +936,14 @@ begin
       SetLength(SortedPlayersRight, Length(SortedPlayersRight) + 1);
       SortedPlayersRight[Length(SortedPlayersRight) - 1] := I;
     end;
+end;
+
+
+procedure OnMissionStart;
+begin
+
+  SetPlayersLeft;
+  SetPlayersRight;
 
   AISoldiers := States.PlayerGetAllGroups(8);
 
