@@ -7024,9 +7024,15 @@ begin
   begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+    if Players[P].MovedByRopes then
+    begin
+      X2 := Players[P].RopeX
+      Y2 := Players[P].RopeY;
+      Direction := Players[P].RopeUnitDir;
+    end;
     Desync := 0;
     R := States.KaMRandomI(SPURT_AI_RANDOM);
-    Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     Players[P].CurrentSpurtLength := 0;
 
     case Direction of
