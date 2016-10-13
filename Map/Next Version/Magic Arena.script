@@ -6763,8 +6763,7 @@ begin
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity)
       and (U = States.GroupMember(Players[O].Hero, 0))
-      and (States.MapTileObject(X2, Y2) <> WARRIOR_OBJECT7)
-      and (not Players[O].MovedByThreads) then
+      and (States.MapTileObject(X2, Y2) <> WARRIOR_OBJECT7) then
       begin
         TilesRoadLength[P] := TilesRoadLength[P] + 4;
         SetLength(TilesRoadX[P], TilesRoadLength[P]);
