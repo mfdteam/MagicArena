@@ -1,4 +1,4 @@
-//Script version 2.159 (09 oct 2016)
+//Script version 2.162 (14 oct 2016)
 
 const
 
@@ -435,6 +435,13 @@ type
     HeroSilentTime: Integer;
     HeroSilentStartTime: Integer;
     AIChoiceTime: Integer;
+    ThreadsUnitDir: Integer;
+    ThreadsTime: Integer;
+    ThreadsAttacker: Integer;
+    ThreadsX: Integer;
+    ThreadsY: Integer;
+    ThreadsDX: Integer;
+    ThreadsDY: Integer;
     Preparing: Boolean;
     PreparingTime: Integer;
     ReCharge: Boolean;
@@ -1131,6 +1138,13 @@ begin
       HeroSilentTime := 0;
       HeroSilentStartTime := 0;
       AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
+      ThreadsUnitDir := -1;
+      ThreadsAttacker := -1;
+      ThreadsTime := -1;
+      ThreadsDX := -1;
+      ThreadsDY := -1;
+      ThreadsX := -1;
+      ThreadsY := -1;
       Preparing := False;
       PreparingTime := 0;
       ReCharge := False;
@@ -6791,32 +6805,51 @@ begin
              or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
+        Players[O].ThreadsTime := States.GameTime + THREADS_DELAY;
+        Players[O].ThreadsAttacker := P;
         Players[O].MovedByThreads := True;
+        Players[O].ThreadsUnitDir := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
 
         case D of
 
           0: begin
+               Players[O].ThreadsDX := 0;
+               Players[O].ThreadsDY := -1;
              end;
 
           1: begin
+               Players[O].ThreadsDX := 1;
+               Players[O].ThreadsDY := -1;
              end;
 
           2: begin
+               Players[O].ThreadsDX := 1;
+               Players[O].ThreadsDY := 0;
              end;
 
           3: begin
+               Players[O].ThreadsDX := 1;
+               Players[O].ThreadsDY := 1;
              end;
 
           4: begin
+               Players[O].ThreadsDX := 0;
+               Players[O].ThreadsDY := 1;
              end;
 
           5: begin
+               Players[O].ThreadsDX := -1;
+               Players[O].ThreadsDY := 1;
              end;
 
           6: begin
+               Players[O].ThreadsDX := -1;
+               Players[O].ThreadsDY := 0;
              end;
 
           7: begin
+               Players[O].ThreadsDX := -1;
+               Players[O].ThreadsDY := -1;
              end;
 
         end;
@@ -9365,6 +9398,8 @@ begin
         for I := 0 to 7 do
         begin
 
+          if Players[I].ThreadsAttacker = P then
+            Players[I].ThreadsAttacker := -1;
 
           if Players[I].ScoutSilenceGiver = P then
             Players[I].ScoutSilenceGiver := -1;
@@ -9587,16 +9622,39 @@ begin
               end;
           end;
           if (Players[P].MovedByThreads)
+          and (Players[P].PlayersTeam <> Players[Players[P].ThreadsAttacker].PlayersTeam)
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
+            Players[Players[P].ThreadsAttacker].Kills := Players[Players[P].ThreadsAttacker].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
+            Players[Players[P].ThreadsAttacker].TotalKills := Players[Players[P].ThreadsAttacker].TotalKills + 1;
+            SetLength(Players[Players[P].ThreadsAttacker].KillTimes, Length(Players[Players[P].ThreadsAttacker].KillTimes) + 1);
+            Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] := States.GameTime;
+            if Length(Players[Players[P].ThreadsAttacker].KillTimes) >= 4 then
+              if (Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] - Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
+              {and (not Players[Players[P].ThreadsAttacker].Rampage)} then
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
+                Players[Players[P].ThreadsAttacker].Rampage := True;
+                Players[Players[P].ThreadsAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
               end;
+            if Length(Players[Players[P].ThreadsAttacker].KillTimes) >= 3 then
+              if (Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] - Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
+              and (not Players[Players[P].ThreadsAttacker].TripleKill)
+              and (not Players[Players[P].ThreadsAttacker].Rampage) then
               begin
                 Actions.PlayWAV(-1, 'TripleKill', 1);
+                Players[Players[P].ThreadsAttacker].TripleKill := True;
+                Players[Players[P].ThreadsAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
               end;
+            if Length(Players[Players[P].ThreadsAttacker].KillTimes) >= 2 then
+              if (Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] - Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
+              and (not Players[Players[P].ThreadsAttacker].DoubleKill)
+              and (not Players[Players[P].ThreadsAttacker].TripleKill)
+              and (not Players[Players[P].ThreadsAttacker].Rampage) then
               begin
                 Actions.PlayWAV(-1, 'DoubleKill', 1);
+                Players[Players[P].ThreadsAttacker].DoubleKill := True;
+                Players[Players[P].ThreadsAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
               end;
           end;
         end;
@@ -10835,6 +10893,8 @@ begin
     for I := 0 to 7 do
     begin
 
+      if Players[I].ThreadsAttacker = O then
+        Players[I].ThreadsAttacker := -1;
 
       if Players[I].ScoutSilenceGiver = O then
         Players[I].ScoutSilenceGiver := -1;
@@ -11510,15 +11570,22 @@ begin
         Players[I1].HeroSilentTime := States.GameTime + SILENCE_SCOUT_TIME;
       end;
 
+      if States.GameTime = Players[I1].ThreadsTime then
+        if (InRange(Players[I1].ThreadsAttacker, 0, 7))
         and (States.GroupOwner(Players[I1].Hero) = I1) then
         begin
+          Players[I1].ThreadsX := States.UnitPositionX(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].ThreadsAttacker].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) < MIN_Y);
+          Players[I1].ThreadsY := States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].ThreadsAttacker].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) < MIN_Y);
           Actions.GroupKillAll(Players[I1].Hero, True);
+          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].ThreadsDX + Players[I1].ThreadsX, Players[I1].ThreadsDY + Players[I1].ThreadsY, Players[I1].ThreadsUnitDir, 1, 1);
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
           if Players[I1].HeroStunned then
             Actions.GroupBlockOrders(Players[I1].Hero, True);
           Players[I1].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+          Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[I1].ThreadsAttacker) + ']' + States.PlayerName(Players[I1].ThreadsAttacker) + '[]<$71> ' + SkillName(sThreadsOfDeath);
         end;
 
+      if (States.GameTime >= Players[I1].ThreadsTime + THREADS_DELAY)
       and (Players[I1].MovedByThreads) then
         Players[I1].MovedByThreads := False;
 
