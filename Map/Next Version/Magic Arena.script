@@ -74,8 +74,8 @@ const
   FIRE_RADIUS = 6;
   SHOCK_RADIUS = 6;
   REGEN_RADIUS = 6;
-  ROPE_RADIUS = 5;
-  ROPE_ALLY_RADIUS = 7;
+  THREADS_RADIUS = 5;
+  THREADS_ALLY_RADIUS = 7;
   STEAL_RADIUS = 8;
   MIND_RADIUS = 4;
   SILENCE_SCOUT_RADIUS = 6;
@@ -280,7 +280,7 @@ const
   REGEN_DELAY = 90;
   SHOCK_TIME = 20;
   SKILL_RESPAWN_TIME = 1;
-  ROPE_DELAY = 14;
+  THREADS_DELAY = 14;
   DEAFENING_TIME = 50;
   SPURT_TIME = 35;
   SPURT_AI_FACTOR = 8;
@@ -368,7 +368,7 @@ type
             sDisorientation, sTrack, sRegen,
             sViseOfDeath, sSacrificialTeleport, sTower,
             sFierySnake, sExile, sShield,
-            sRopesOfDeath, sDeafeningClatter, sRagingSpurt,
+            sThreadsOfDeath, sDeafeningClatter, sRagingSpurt,
             sMentalBurst, sSteal, sUniversal,
             sBoomerang, sSilence, sMind);
 
@@ -435,13 +435,6 @@ type
     HeroSilentTime: Integer;
     HeroSilentStartTime: Integer;
     AIChoiceTime: Integer;
-    RopeUnitDir: Integer;
-    RopeTime: Integer;
-    RopeAttacker: Integer;
-    RopeX: Integer;
-    RopeY: Integer;
-    RopeDX: Integer;
-    RopeDY: Integer;
     Preparing: Boolean;
     PreparingTime: Integer;
     ReCharge: Boolean;
@@ -503,7 +496,7 @@ type
     TripleKill: Boolean;
     Rampage: Boolean;
     GravityUser: Integer;
-    MovedByRopes: Boolean;
+    MovedByThreads: Boolean;
     SpurtStartTime: Integer;
     CurrentSpurtLength: Integer;
     RebornTime: Integer;
@@ -1138,13 +1131,6 @@ begin
       HeroSilentTime := 0;
       HeroSilentStartTime := 0;
       AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
-      RopeUnitDir := -1;
-      RopeAttacker := -1;
-      RopeTime := -1;
-      RopeDX := -1;
-      RopeDY := -1;
-      RopeX := -1;
-      RopeY := -1;
       Preparing := False;
       PreparingTime := 0;
       ReCharge := False;
@@ -1205,7 +1191,7 @@ begin
       TripleKill := False;
       Rampage := False;
       GravityUser := -1;
-      MovedByRopes := False;
+      MovedByThreads := False;
       SpurtStartTime := 0;
       CurrentSpurtLength := 0;
       RebornTime := 0;
@@ -1781,7 +1767,7 @@ begin
     sExile: Result := '<$112>';
     sShield: Result := '<$48>';
 
-    sRopesOfDeath: Result := '<$50>';
+    sThreadsOfDeath: Result := '<$50>';
     sDeafeningClatter: Result := '<$51>';
     sRagingSpurt: Result := '<$52>';
 
@@ -1839,7 +1825,7 @@ begin
     sExile: Result := '<$408>';
     sShield: Result := '<$508>';
 
-    sRopesOfDeath: Result := '<$309>';
+    sThreadsOfDeath: Result := '<$309>';
     sDeafeningClatter: Result := '<$409>';
     sRagingSpurt: Result := '<$509>';
 
@@ -6724,7 +6710,7 @@ end;
 //KNIGHT
 
 
-procedure RopesOfDeath(P, X, Y: Integer);
+procedure ThreadsOfDeath(P, X, Y: Integer);
 var
   X2, Y2, U, O, D: Integer;
 begin
@@ -6743,11 +6729,11 @@ begin
     U := States.UnitAt(X, Y);
     if U > 0 then
       O := States.UnitOwner(U);
-    if ((Abs(X2 - X) <= ROPE_RADIUS)
-    and (Abs(Y2 - Y) <= ROPE_RADIUS)
+    if ((Abs(X2 - X) <= THREADS_RADIUS)
+    and (Abs(Y2 - Y) <= THREADS_RADIUS)
     and (Players[O].PlayersTeam <> Players[P].PlayersTeam))
-    or ((Abs(X2 - X) <= ROPE_ALLY_RADIUS)
-    and (Abs(Y2 - Y) <= ROPE_ALLY_RADIUS)
+    or ((Abs(X2 - X) <= THREADS_ALLY_RADIUS)
+    and (Abs(Y2 - Y) <= THREADS_ALLY_RADIUS)
     and (Players[O].PlayersTeam = Players[P].PlayersTeam)) then
     begin
       if States.PlayerIsAI(P) then
@@ -6763,7 +6749,8 @@ begin
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity)
       and (U = States.GroupMember(Players[O].Hero, 0))
-      and (States.MapTileObject(X2, Y2) <> WARRIOR_OBJECT7) then
+      and (States.MapTileObject(X2, Y2) <> WARRIOR_OBJECT7)
+      and (not Players[O].MovedByThreads) then
       begin
         TilesRoadLength[P] := TilesRoadLength[P] + 4;
         SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -6804,56 +6791,37 @@ begin
              or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
-        Players[O].RopeTime := States.GameTime + ROPE_DELAY;
-        Players[O].RopeAttacker := P;
-        Players[O].MovedByRopes := True;
-        Players[O].RopeUnitDir := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
+        Players[O].MovedByThreads := True;
 
         case D of
 
           0: begin
-               Players[O].RopeDX := 0;
-               Players[O].RopeDY := -1;
              end;
 
           1: begin
-               Players[O].RopeDX := 1;
-               Players[O].RopeDY := -1;
              end;
 
           2: begin
-               Players[O].RopeDX := 1;
-               Players[O].RopeDY := 0;
              end;
 
           3: begin
-               Players[O].RopeDX := 1;
-               Players[O].RopeDY := 1;
              end;
 
           4: begin
-               Players[O].RopeDX := 0;
-               Players[O].RopeDY := 1;
              end;
 
           5: begin
-               Players[O].RopeDX := -1;
-               Players[O].RopeDY := 1;
              end;
 
           6: begin
-               Players[O].RopeDX := -1;
-               Players[O].RopeDY := 0;
              end;
 
           7: begin
-               Players[O].RopeDX := -1;
-               Players[O].RopeDY := -1;
              end;
 
         end;
 
-        Players[P].LastUsedSkill := sRopesOfDeath;
+        Players[P].LastUsedSkill := sThreadsOfDeath;
         Players[P].RoadSkillDelay := Round(KNIGHT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
         ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
 
@@ -7051,12 +7019,6 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
-    if Players[P].MovedByRopes then
-    begin
-      X2 := Players[P].RopeX
-      Y2 := Players[P].RopeY;
-      Direction := Players[P].RopeUnitDir;
-    end;
     Desync := 0;
     R := States.KaMRandomI(SPURT_AI_RANDOM);
     Players[P].CurrentSpurtLength := 0;
@@ -8562,7 +8524,7 @@ begin
           sExile: Players[P].StolenSkillName := '<$112>';
           sShield: Players[P].StolenSkillName := '<$48>';
 
-          sRopesOfDeath: Players[P].StolenSkillName := '<$50>';
+          sThreadsOfDeath: Players[P].StolenSkillName := '<$50>';
           sDeafeningClatter: Players[P].StolenSkillName := '<$51>';
           sRagingSpurt: Players[P].StolenSkillName := '<$52>';
 
@@ -8854,22 +8816,22 @@ begin
 
       sShield: Shield(P, X, Y);
 
-      sRopesOfDeath: begin
+      sThreadsOfDeath: begin
                        if U <= 0 then
                          Exit;
                        if ((InRange(O, 0, 7))
-                       and (Abs(X - X2) <= ROPE_RADIUS)
-                       and (Abs(Y - Y2) <= ROPE_RADIUS)
+                       and (Abs(X - X2) <= THREADS_RADIUS)
+                       and (Abs(Y - Y2) <= THREADS_RADIUS)
                        and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
                        and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7))
                        or ((InRange(O, 0, 7))
-                       and (Abs(X - X2) <= ROPE_ALLY_RADIUS)
-                       and (Abs(Y - Y2) <= ROPE_ALLY_RADIUS)
+                       and (Abs(X - X2) <= THREADS_ALLY_RADIUS)
+                       and (Abs(Y - Y2) <= THREADS_ALLY_RADIUS)
                        and (Players[P].PlayersTeam = Players[O].PlayersTeam)
                        and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7)) then
                        begin
                          TempRoadSkillDelay := Players[P].RoadSkillDelay;
-                         RopesOfDeath(P, X, Y);
+                         ThreadsOfDeath(P, X, Y);
                          Players[P].RoadSkillDelay := TempRoadSkillDelay;
                          Players[P].WineSkillDelay := Round(KNIGHT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                        end;
@@ -9045,7 +9007,7 @@ begin
       19: FieryLance(P, X, Y, -1);
       20: ViseOfDeath(P, X, Y, -1);
       21: Boomerang(P, X, Y, -1);
-      22: RopesOfDeath(P, X, Y);
+      22: ThreadsOfDeath(P, X, Y);
       23: CrackingEarth(P, X, Y, -1);
       25: MentalBurst(P, X, Y, -1, False);
       26: FierySnake(P, X, Y, -1);
@@ -9403,8 +9365,6 @@ begin
         for I := 0 to 7 do
         begin
 
-          if Players[I].RopeAttacker = P then
-            Players[I].RopeAttacker := -1;
 
           if Players[I].ScoutSilenceGiver = P then
             Players[I].ScoutSilenceGiver := -1;
@@ -9626,40 +9586,17 @@ begin
                 Players[Players[P].GravityUser].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
               end;
           end;
-          if (Players[P].MovedByRopes)
-          and (Players[P].PlayersTeam <> Players[Players[P].RopeAttacker].PlayersTeam)
+          if (Players[P].MovedByThreads)
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
-            Players[Players[P].RopeAttacker].Kills := Players[Players[P].RopeAttacker].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
-            Players[Players[P].RopeAttacker].TotalKills := Players[Players[P].RopeAttacker].TotalKills + 1;
-            SetLength(Players[Players[P].RopeAttacker].KillTimes, Length(Players[Players[P].RopeAttacker].KillTimes) + 1);
-            Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 1] := States.GameTime;
-            if Length(Players[Players[P].RopeAttacker].KillTimes) >= 4 then
-              if (Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 1] - Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
-              {and (not Players[Players[P].RopeAttacker].Rampage)} then
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
-                Players[Players[P].RopeAttacker].Rampage := True;
-                Players[Players[P].RopeAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
               end;
-            if Length(Players[Players[P].RopeAttacker].KillTimes) >= 3 then
-              if (Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 1] - Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
-              and (not Players[Players[P].RopeAttacker].TripleKill)
-              and (not Players[Players[P].RopeAttacker].Rampage) then
               begin
                 Actions.PlayWAV(-1, 'TripleKill', 1);
-                Players[Players[P].RopeAttacker].TripleKill := True;
-                Players[Players[P].RopeAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
               end;
-            if Length(Players[Players[P].RopeAttacker].KillTimes) >= 2 then
-              if (Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 1] - Players[Players[P].RopeAttacker].KillTimes[Length(Players[Players[P].RopeAttacker].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
-              and (not Players[Players[P].RopeAttacker].DoubleKill)
-              and (not Players[Players[P].RopeAttacker].TripleKill)
-              and (not Players[Players[P].RopeAttacker].Rampage) then
               begin
                 Actions.PlayWAV(-1, 'DoubleKill', 1);
-                Players[Players[P].RopeAttacker].DoubleKill := True;
-                Players[Players[P].RopeAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
               end;
           end;
         end;
@@ -10898,8 +10835,6 @@ begin
     for I := 0 to 7 do
     begin
 
-      if Players[I].RopeAttacker = O then
-        Players[I].RopeAttacker := -1;
 
       if Players[I].ScoutSilenceGiver = O then
         Players[I].ScoutSilenceGiver := -1;
@@ -11575,24 +11510,17 @@ begin
         Players[I1].HeroSilentTime := States.GameTime + SILENCE_SCOUT_TIME;
       end;
 
-      if States.GameTime = Players[I1].RopeTime then
-        if (InRange(Players[I1].RopeAttacker, 0, 7))
         and (States.GroupOwner(Players[I1].Hero) = I1) then
         begin
-          Players[I1].RopeX := States.UnitPositionX(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].RopeAttacker].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) < MIN_Y);
-          Players[I1].RopeY := States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].RopeAttacker].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].RopeAttacker].Hero, 0)) < MIN_Y);
           Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].RopeDX + Players[I1].RopeX, Players[I1].RopeDY + Players[I1].RopeY, Players[I1].RopeUnitDir, 1, 1);
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
           if Players[I1].HeroStunned then
             Actions.GroupBlockOrders(Players[I1].Hero, True);
           Players[I1].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-          Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[I1].RopeAttacker) + ']' + States.PlayerName(Players[I1].RopeAttacker) + '[]<$71> ' + SkillName(sRopesOfDeath);
         end;
 
-      if (States.GameTime >= Players[I1].RopeTime + ROPE_DELAY)
-      and (Players[I1].MovedByRopes) then
-        Players[I1].MovedByRopes := False;
+      and (Players[I1].MovedByThreads) then
+        Players[I1].MovedByThreads := False;
 
       if States.GameTime = Players[I1].SkillTime then
         Players[I1].CastingSkill := False;
@@ -14086,8 +14014,8 @@ begin
       Actions.GroupOrderHalt(Players[P].Hero);
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - ROPE_RADIUS) to (aX + ROPE_RADIUS) do
-      for Y := (aY - ROPE_RADIUS) to (aY + ROPE_RADIUS) do
+      for X := (aX - THREADS_RADIUS) to (aX + THREADS_RADIUS) do
+      for Y := (aY - THREADS_RADIUS) to (aY + THREADS_RADIUS) do
       begin
         if TileOnBattlefield(X, Y) then
           if not States.IsRoadAt(8, X, Y) then
@@ -14108,7 +14036,7 @@ begin
               uX := States.UnitPositionX(U);
               uY := States.UnitPositionY(U);
               DeafeningClatter(P, uX, uY);
-              RopesOfDeath(P, uX, uY);
+              ThreadsOfDeath(P, uX, uY);
               RagingSpurt(P, X, Y);
               Exit;
             end;
