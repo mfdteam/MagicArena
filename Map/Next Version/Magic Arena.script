@@ -913,6 +913,9 @@ begin
   for I := 0 to 3 do
     if States.PlayerEnabled(I) then
     begin
+      if (States.PlayerIsAI(I))
+      and (not AI_ENABLED) then
+        Exit;
       SetLength(PlayersLeft, Length(PlayersLeft) + 1);
       PlayersLeft[Length(PlayersLeft) - 1] := I;
       SetLength(SortedPlayersLeft, Length(SortedPlayersLeft) + 1);
@@ -922,6 +925,9 @@ begin
   for I := 4 to 7 do
     if States.PlayerEnabled(I) then
     begin
+      if (States.PlayerIsAI(I))
+      and (not AI_ENABLED) then
+        Exit;
       SetLength(PlayersRight, Length(PlayersRight) + 1);
       PlayersRight[Length(PlayersRight) - 1] := I;
       SetLength(SortedPlayersRight, Length(SortedPlayersRight) + 1);
@@ -11279,7 +11285,7 @@ begin
         SetLength(Players[I1].KillTimes, 0);
         Players[I1].KillsCountTime := 0;
       end;
-      
+
       if States.GameTime = Players[I1].WerewolfTime then
       begin
         Players[I1].VagaX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
@@ -12776,7 +12782,8 @@ begin
           and ((D1 = D2)
           or (Abs(D1 - D2) = 4))
           and (Z > 0)
-          and (States.MapTileObject(X1, Y1) <> WARRIOR_OBJECT7) then
+          and (States.MapTileObject(X1, Y1) <> WARRIOR_OBJECT7)
+          and (not Players[I].HeroTotalImmunity) then
             if (States.GroupType(Z) = 0)
             and (States.KaMRandom < STORM_CHANCE) then
               Actions.GroupOrderStorm(Z);
@@ -12819,7 +12826,8 @@ begin
           and ((D1 = D2)
           or (Abs(D1 - D2) = 4))
           and (Z > 0)
-          and (States.MapTileObject(X1, Y1) <> WARRIOR_OBJECT7) then
+          and (States.MapTileObject(X1, Y1) <> WARRIOR_OBJECT7)
+          and (not Players[I].HeroTotalImmunity) then
             if (States.GroupType(Z) = 0)
             and (States.KaMRandom < STORM_CHANCE) then
               Actions.GroupOrderStorm(Z);
