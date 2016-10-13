@@ -9170,7 +9170,11 @@ begin
   for X1 := X - 2 to X + 1 do
   for Y1 := Y - 2 to Y + 1 do
     if TileOnBattlefield(X1, Y1) then
+    begin
       Actions.MapTileSet(X1, Y1, Tiles[X1][Y1].TileType, Tiles[X1][Y].TileDirection);
+      if Tiles[X1][Y1].Skill = sTower then
+        Tiles[X1][Y1].Skill := sNone;
+    end;
 
   CheckTileCleanup(False);
 
