@@ -7258,6 +7258,7 @@ end;
 procedure Boomerang(P, X, Y, D: Integer);
 var
   X1, Y1, X2, Y2, DX1, DY1, DX2, DY2, Desync, Direction: Integer;
+  Wall: Boolean;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -7349,6 +7350,8 @@ begin
              for Y1 := Y2 - 2 downto Y2 - BOOMERANG_LENGTH do
              begin
                Desync := Desync + 1;
+               if not Wall then
+                 Wall := States.MapTileType(DX1, Y1) = 206;
                if TileOnBattlefield(DX1, Y1) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7370,7 +7373,8 @@ begin
 
              Desync := Desync + 1;
 
-             if TileOnBattlefield(X2, Y2 - BOOMERANG_LENGTH - 1) then
+             if (TileOnBattlefield(X2, Y2 - BOOMERANG_LENGTH - 1))
+             and (not Wall) then
              begin
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -7388,10 +7392,14 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
+             if not Wall then
+               Wall := States.MapTileType(X2, Y2 - BOOMERANG_LENGTH - 1) = 206;
+
              for Y1 := Y2 - BOOMERANG_LENGTH to Y2 - 2 do
              begin
                Desync := Desync + 1;
-               if TileOnBattlefield(DX2, Y1) then
+               if (TileOnBattlefield(DX2, Y1))
+               and (not Wall) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -7412,7 +7420,8 @@ begin
 
              Desync := Desync + 1;
 
-             if TileOnBattlefield(X2, Y2 - 1) then
+             if (TileOnBattlefield(X2, Y2 - 1))
+             and (not Wall) then
              begin
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -7437,6 +7446,8 @@ begin
              for X1 := X2 + 2 to X2 + BOOMERANG_LENGTH do
              begin
                Desync := Desync + 1;
+               if not Wall then
+                 Wall := States.MapTileType(X1, DY1) = 206;
                if TileOnBattlefield(X1, DY1) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7458,7 +7469,8 @@ begin
 
              Desync := Desync + 1;
 
-             if TileOnBattlefield(X2 + BOOMERANG_LENGTH + 1, Y2) then
+             if (TileOnBattlefield(X2 + BOOMERANG_LENGTH + 1, Y2))
+             and (not Wall) then
              begin
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -7476,10 +7488,14 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
+             if not Wall then
+               Wall := States.MapTileType(X2 + BOOMERANG_LENGTH + 1, Y2) = 206;
+
              for X1 := X2 + BOOMERANG_LENGTH downto X2 + 2 do
              begin
                Desync := Desync + 1;
-               if TileOnBattlefield(X1, DY2) then
+               if (TileOnBattlefield(X1, DY2))
+               and (not Wall) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -7500,7 +7516,8 @@ begin
 
              Desync := Desync + 1;
 
-             if TileOnBattlefield(X2 + 1, Y2) then
+             if (TileOnBattlefield(X2 + 1, Y2))
+             and (not Wall) then
              begin
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -7525,6 +7542,8 @@ begin
              for Y1 := Y2 + 2 to Y2 + BOOMERANG_LENGTH do
              begin
                Desync := Desync + 1;
+               if not Wall then
+                 Wall := States.MapTileType(DX1, Y1) = 206;
                if TileOnBattlefield(DX1, Y1) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7546,7 +7565,8 @@ begin
 
              Desync := Desync + 1;
 
-             if TileOnBattlefield(X2, Y2 + BOOMERANG_LENGTH + 1) then
+             if (TileOnBattlefield(X2, Y2 + BOOMERANG_LENGTH + 1))
+             and (not Wall) then
              begin
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -7564,10 +7584,14 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
+             if not Wall then
+               Wall := States.MapTileType(X2, Y2 + BOOMERANG_LENGTH + 1) = 206;
+
              for Y1 := Y2 + BOOMERANG_LENGTH downto Y2 + 2 do
              begin
                Desync := Desync + 1;
-               if TileOnBattlefield(DX2, Y1) then
+               if (TileOnBattlefield(DX2, Y1))
+               and (not Wall) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -7588,7 +7612,8 @@ begin
 
              Desync := Desync + 1;
 
-             if TileOnBattlefield(X2, Y2 + 1) then
+             if (TileOnBattlefield(X2, Y2 + 1))
+             and (not Wall) then
              begin
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -7613,6 +7638,8 @@ begin
              for X1 := X2 - 2 downto X2 - BOOMERANG_LENGTH do
              begin
                Desync := Desync + 1;
+               if not Wall then
+                 Wall := States.MapTileType(X1, DY1) = 206;
                if TileOnBattlefield(X1, DY1) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7634,7 +7661,8 @@ begin
 
              Desync := Desync + 1;
 
-             if TileOnBattlefield(X2 - BOOMERANG_LENGTH - 1, Y2) then
+             if (TileOnBattlefield(X2 - BOOMERANG_LENGTH - 1, Y2))
+             and (not Wall) then
              begin
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -7652,10 +7680,14 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
+             if not Wall then
+               Wall := States.MapTileType(X2 - BOOMERANG_LENGTH - 1, Y2) = 206;
+
              for X1 := X2 - BOOMERANG_LENGTH to X2 - 2 do
              begin
                Desync := Desync + 1;
-               if TileOnBattlefield(X1, DY2) then
+               if (TileOnBattlefield(X1, DY2))
+               and (not Wall) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
                  SetLength(TilesRoadX[P], TilesRoadLength[P]);
@@ -7676,7 +7708,8 @@ begin
 
              Desync := Desync + 1;
 
-             if TileOnBattlefield(X2 - 1, Y2) then
+             if (TileOnBattlefield(X2 - 1, Y2))
+             and (not Wall) then
              begin
                TilesRoadLength[P] := TilesRoadLength[P] + 1;
                SetLength(TilesRoadX[P], TilesRoadLength[P]);
