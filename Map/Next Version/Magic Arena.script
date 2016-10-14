@@ -14364,15 +14364,6 @@ begin
   if States.GameTime > GAME_START_TIME then
     CheckVictoryDefeat;
 
-  if States.GameTime > GAME_START_TIME + 10 then
-    for I := 0 to 7 do
-      if Players[I].Kills > 0 then
-        if not FirstBlood then
-        begin
-          Actions.PlayWAV(-1, 'FirstBlood', 1);
-          FirstBlood := True;
-        end;
-
   ClearArrays;
 
   if States.GameTime mod PLANT_TREES_TIME = 0 then
