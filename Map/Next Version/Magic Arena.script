@@ -11457,7 +11457,8 @@ begin
       if States.GameTime = Players[I1].FireworkTime then
         for aX := Players[I1].FireworkX - FIREWORKS1_RADIUS - FIREWORKS2_RADIUS - 2 to Players[I1].FireworkX + FIREWORKS1_RADIUS + FIREWORKS2_RADIUS + 2 do
         for aY := Players[I1].FireworkY - FIREWORKS1_RADIUS - FIREWORKS2_RADIUS - 2 to Players[I1].FireworkY + FIREWORKS1_RADIUS + FIREWORKS2_RADIUS + 2 do
-          if States.MapTileObject(aX, aY) = AXE_OBJECT2 then
+          if (States.MapTileObject(aX, aY) = AXE_OBJECT2)
+          or (States.MapTileObject(aX, aY) = CIRCLE_FILL_OBJ) then
             Actions.MapTileObjectSet(aX, aY, 255);
 
       if States.GameTime = Players[I1].SuddenTime then
