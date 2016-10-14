@@ -11058,43 +11058,6 @@ begin
             end;
         end;
     end;
-    if not (Players[LastAttacker].DoubleKill)
-    and not (Players[LastAttacker].TripleKill) then
-      Players[LastAttacker].TempKill := O;
-    if not (Players[LastAttacker].TripleKill) then
-      Players[LastAttacker].TempKill2 := O;
-    for K := 0 to 7 do
-    begin
-      if Players[K].Kills > 0 then
-        if not FirstBlood then
-          for I := 0 to 7 do
-          begin
-            Actions.PlayWAV(-1, 'FirstBlood', 1);
-            FirstBlood := True;
-            Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-            Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$124>' + '[$' + States.PlayerColorText(O) + '] ' + States.PlayerName(O);
-          end;
-          if Players[K].DoubleKill then
-            for I := 0 to 7 do
-            begin
-              Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$125>' + '[$' + States.PlayerColorText(Players[K].TempKill) + '] ' + States.PlayerName(Players[K].TempKill) + ' [$FFFFFF]<$128>' + ' [$' + States.PlayerColorText(O) + ']' + States.PlayerName(O);
-              Players[K].DoubleKill := False;
-            end;
-          if Players[K].TripleKill then
-            for I := 0 to 7 do
-            begin
-              Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$126>' + '[$' + States.PlayerColorText(Players[K].TempKill) + '] ' + States.PlayerName(Players[K].TempKill) +',[$' + States.PlayerColorText(Players[K].TempKill2) + '] ' + States.PlayerName(Players[K].TempKill2) + ' [$FFFFFF]<$128>' + ' [$' + States.PlayerColorText(O) + ']' + States.PlayerName(O);
-              Players[K].TripleKill := False;
-            end;
-          if Players[K].Rampage then
-            for I := 0 to 7 do
-            begin
-              Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$127>';
-            end;
-    end;
     if Players[O].HP > 0 then
     begin 
       Players[O].Hero := -1;
