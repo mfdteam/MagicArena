@@ -11702,6 +11702,13 @@ begin
           Players[I1].TempHeroMagicImmunityTime := Players[I1].HeroMagicImmunityTime;
           Players[I1].TempHeroTotalImmunity :=  Players[I1].HeroTotalImmunity;
           Players[I1].TempHeroTotalImmunityTime := Players[I1].HeroTotalImmunityTime;
+          
+          Players[I1].MindX := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
+          Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
+          Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
+          Players[M[I1]].MindX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
+          Players[M[I1]].MindY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
+          Players[M[I1]].MindDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
 
           Actions.GroupKillAll(Players[I1].Hero, True);
           Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
