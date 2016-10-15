@@ -5925,7 +5925,7 @@ begin
 
     ExpCirclesLength[P][ExpCirclesCounter[P]] := ExpCirclesLength[P][ExpCirclesCounter[P]] + EXP_CYCLES * EXP_RADIUS;
     SetLength(ExpCircles[P][ExpCirclesCounter[P]], ExpCirclesLength[P][ExpCirclesCounter[P]]);
-    TilesWineLength[P] := TilesWineLength[P] + 9;
+    TilesWineLength[P] := TilesWineLength[P] + 8;
     SetLength(TilesWineX[P], TilesWineLength[P]);
     SetLength(TilesWineY[P], TilesWineLength[P]);
     SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
@@ -6116,13 +6116,13 @@ begin
       if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y < MIN_Y then
         ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y := MIN_Y;
 
-      TilesWineX[P][Length(TilesWineX[P]) - 9] := ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X;    
-      TilesWineY[P][Length(TilesWineY[P]) - 9] := ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y;
-      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 9] := CircleTime;
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 9] := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I);
-      TilesWineObjects[P][Length(TilesWineObjects[P]) - 9] := CIRCLE_FILL_OBJ;
-      Tiles[TilesWineX[P][Length(TilesWineX[P]) - 9]][TilesWineY[P][Length(TilesWineY[P]) - 9]].Owner := P;
-      Tiles[TilesWineX[P][Length(TilesWineX[P]) - 9]][TilesWineY[P][Length(TilesWineY[P]) - 9]].Skill := sRevengeFromNowhere;
+      TilesWineX[P][Length(TilesWineX[P]) - 1] := ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X;    
+      TilesWineY[P][Length(TilesWineY[P]) - 1] := ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := CircleTime;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I);
+      TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := CIRCLE_FILL_OBJ;
+      Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
+      Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRevengeFromNowhere;
 
       ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I);
 
@@ -6142,7 +6142,7 @@ begin
 
     Players[P].WineSkillDelay := Round(BOWMAN_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
-    ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 9] + CLEAR_ARRAY_FACTOR;
+    ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
 
     if (States.PlayerIsAI(P))
     and (Players[P].HP > 0) then
