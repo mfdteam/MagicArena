@@ -12596,63 +12596,64 @@ begin
       aY := Players[P].HeroExileY;
     end;
 
-    if (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7)
-    or (Players[P].HeroTotalImmunity) then
-    begin
-
-      if (InRange(P, 0, 3))
-      and (not States.PlayerAllianceCheck(Players[4].ZombiePlayer, P)) then
-        Actions.PlayerAllianceChange(Players[4].ZombiePlayer, P, True, True);
-
-      if (InRange(P, 4, 7))
-      and (not States.PlayerAllianceCheck(Players[0].ZombiePlayer, P)) then
-        Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, True, True);
-
-    end;
-
-    if (States.MapTileObject(aX, aY) <> WARRIOR_OBJECT7)
-    and (not Players[P].HeroTotalImmunity) then
-    begin
-
-      if (InRange(P, 0, 3))
-      and (States.PlayerAllianceCheck(Players[4].ZombiePlayer, P)) then
-        Actions.PlayerAllianceChange(Players[4].ZombiePlayer, P, False, False);
-
-      if (InRange(P, 4, 7))
-      and (States.PlayerAllianceCheck(Players[0].ZombiePlayer, P)) then
-        Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, False, False);
-
-    end;
-
     if TileOnBattlefield(aX, aY) then
     begin
 
-        if Tiles[aX][aY].ShieldTime >= States.GameTime then
-        begin
+      if (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7)
+      or (Players[P].HeroTotalImmunity) then
+      begin
 
-          if (InRange(P, 0, 3))
-          and (not States.PlayerAllianceCheck(Players[4].ZombiePlayer, P)) then
-            Actions.PlayerAllianceChange(Players[4].ZombiePlayer, P, True, True);
+        if (InRange(P, 0, 3))
+        and (not States.PlayerAllianceCheck(Players[4].ZombiePlayer, P)) then
+          Actions.PlayerAllianceChange(Players[4].ZombiePlayer, P, True, True);
 
-          if (InRange(P, 4, 7))
-          and (not States.PlayerAllianceCheck(Players[0].ZombiePlayer, P)) then
-            Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, True, True);
+        if (InRange(P, 4, 7))
+        and (not States.PlayerAllianceCheck(Players[0].ZombiePlayer, P)) then
+          Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, True, True);
 
-        end;
+      end;
 
-        if (Tiles[aX][aY].ShieldTime < States.GameTime)
-        and (not Players[P].HeroTotalImmunity) then
-        begin
+      if (States.MapTileObject(aX, aY) <> WARRIOR_OBJECT7)
+      and (not Players[P].HeroTotalImmunity) then
+      begin
 
-          if (InRange(P, 0, 3))
-          and (States.PlayerAllianceCheck(Players[4].ZombiePlayer, P)) then
-            Actions.PlayerAllianceChange(Players[4].ZombiePlayer, P, False, False);
+        if (InRange(P, 0, 3))
+        and (States.PlayerAllianceCheck(Players[4].ZombiePlayer, P)) then
+          Actions.PlayerAllianceChange(Players[4].ZombiePlayer, P, False, False);
 
-          if (InRange(P, 4, 7))
-          and (States.PlayerAllianceCheck(Players[0].ZombiePlayer, P)) then
-            Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, False, False);
+        if (InRange(P, 4, 7))
+        and (States.PlayerAllianceCheck(Players[0].ZombiePlayer, P)) then
+          Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, False, False);
 
-        end;
+      end;
+
+
+      if Tiles[aX][aY].ShieldTime >= States.GameTime then
+      begin
+
+        if (InRange(P, 0, 3))
+        and (not States.PlayerAllianceCheck(Players[4].ZombiePlayer, P)) then
+          Actions.PlayerAllianceChange(Players[4].ZombiePlayer, P, True, True);
+
+        if (InRange(P, 4, 7))
+        and (not States.PlayerAllianceCheck(Players[0].ZombiePlayer, P)) then
+          Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, True, True);
+
+      end;
+
+      if (Tiles[aX][aY].ShieldTime < States.GameTime)
+      and (not Players[P].HeroTotalImmunity) then
+      begin
+
+        if (InRange(P, 0, 3))
+        and (States.PlayerAllianceCheck(Players[4].ZombiePlayer, P)) then
+          Actions.PlayerAllianceChange(Players[4].ZombiePlayer, P, False, False);
+
+        if (InRange(P, 4, 7))
+        and (States.PlayerAllianceCheck(Players[0].ZombiePlayer, P)) then
+          Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, False, False);
+
+      end;
 
     end;
 
