@@ -438,6 +438,7 @@ type
     ThreadsUnitDir: Integer;
     ThreadsTime: Integer;
     ThreadsAttacker: Integer;
+    ThreadsTarget: Integer;
     ThreadsX: Integer;
     ThreadsY: Integer;
     ThreadsDX: Integer;
@@ -1146,6 +1147,7 @@ begin
       AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
       ThreadsUnitDir := -1;
       ThreadsAttacker := -1;
+      ThreadsTarget := -1;
       ThreadsTime := -1;
       ThreadsDX := -1;
       ThreadsDY := -1;
@@ -6812,6 +6814,7 @@ begin
 
         Players[O].ThreadsTime := States.GameTime + THREADS_DELAY;
         Players[O].ThreadsAttacker := P;
+        Players[P].ThreadsTarget := O;
         Players[O].MovedByThreads := True;
         Players[O].ThreadsUnitDir := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
 
@@ -9416,6 +9419,13 @@ begin
           if Players[I].HeroExileGiver = P then
             Players[I].HeroExileGiver := -1;
 
+          if Players[I].ThreadsTarget = P then
+          begin
+            Players[P].ThreadsTime := 0;
+            Players[P].MovedByThreads := False;
+            Players[I].ThreadsTarget := -1;
+          end;
+
         end;
 
         for K := 0 to SPURT_LENGTH - 1 do
@@ -10914,6 +10924,13 @@ begin
 
       if Players[I].HeroExileGiver = O then
         Players[I].HeroExileGiver := -1;
+
+      if Players[I].ThreadsTarget = O then
+      begin
+        Players[O].ThreadsTime := 0;
+        Players[O].MovedByThreads := False;
+        Players[I].ThreadsTarget := -1;
+      end;
 
     end;
 
