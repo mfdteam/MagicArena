@@ -1,4 +1,50 @@
-Magic Arena v. 2.116
+Magic Arena v. 2.161
+
+- Pikeman: New skill "Infernal Tower" instead of Concentration
+- Warrior: New skill "Shield of Darkness" instead of Circle of Silence
+- Warrior: New skill "Exile" instead of Sturdy armor
+- AI disabled temporarily. Wait for it in future releases
+- Now after spawning you'll be absolutely immortal
+- Immortality rune was renamed to Magic Immunity rune (because it is so)
+- Circle skills could cut trees after cancellation
+- More effects animations (Fear, Stun, Silence, Mind Control, ReCharge)
+- Effects animation should not reduce FPS
+- Players can use spells on rune spawns
+- Removed annoying kick from rune spawns
+- Check Raging Spurt coordinates and direction when spurt starts
+- Players can choose random hero (place road under recruit)
+- Sword Fighter. Radius of using Zombie summon reduced from 4 to 3 tiles; now Zombie Summon with Double Damage will spawn zombie-barbarian instead of 2 militias
+- Bowman: Revenge from Nowhere burst now has no blind zones
+- Pikeman: Vise of Death should block Bowman's rockets
+- Axe Fighter-Werewolf: Disorientation stun time +0.5 seconds (now 2 seconds), Fiery Track cooldown decreased from 17 to 14 seconds. Now you can't repick your hero during Werewolf
+- Warrior: Fiery Snake cooldown reduced from 11 to 10 seconds
+- Knight: Threads of Death cooldown decreased from 13 to 10 seconds. Now can take runes during Raging Spurt
+- Scout: Boomerang: deleted 1 object in the beginning just in front of your hero; Boomerang stops if there is wall on its way
+- Fixed Immortal (Magic Immunity) status after Raging Spurt
+- Fixed Fiery Track cleanup bugs
+- Fixed Bowman's rocket cleanup bugs
+- Fixed Sudden Death cleanup bugs
+- Fixed Mind Control animation cleanup bugs
+- Fixed Mind Control center screen placement bugs
+- Fixed a lot of bugs with Mind Control and respawning
+- Fixed statuses during Mind Control
+- Fixed spawning targets of Mind Control if target was moved
+- Fixed some bugs with displaying effects
+- Fixed a bug, when some spells had higher speed near the walls
+- Fixed stealing spell by Rogue after Mind Control
+- Improved random trees planting
+- Now the colour of left team AI (for zombies, towers and illusions) is light-green
+- Disabled multiple Mind Control usage
+- Disabled multiple Fiery Tracks usage
+- Fixed some bugs with Rogue's target spells usage
+- Fixed ReChoice reminder messages
+- Show messages with info about stolen skills (Rogue)
+- Much better FPS
+- Fixed some sound problems
+- Added new kill statuses (double kill by player 1 etc)
+- More minor bugfixes
+
+v. 2.116
 
 - Chance to kill zombies/illusions by Fear is 100% now
 - Fixed Circle of Silence effect
