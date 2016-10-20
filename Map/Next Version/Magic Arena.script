@@ -335,9 +335,9 @@ const
   TOWERS_CHECK_FACTOR = 10;
   TOWERS_TILES_FACTOR = 2;
 
-  DEBUG_MODE = False;
+  DEBUG_MODE = True;
   CHANGE_RELIEF = True;
-  AI_ENABLED = False;
+  AI_ENABLED = True;
 
 //Battlefield
 
@@ -1243,6 +1243,12 @@ begin
       SuddenTime := 0;
     end;
   end;
+
+  for I := 0 to 7 do
+    if States.PlayerEnabled(I) then
+      if (States.PlayerIsAI(I))
+      and (not AI_ENABLED) then
+        Players[I].HP := 0;
 
   for I := 0 to 3 do
   begin
@@ -10139,55 +10145,59 @@ end;
 
 procedure CheckVictoryDefeat;
 var
-  TeamPlayersCount: array[0..1] of Integer;
+  TeamHP: array[0..1] of Integer;
 begin
   for I := 0 to 1 do
-    TeamPlayersCount[I] := 0;
+    TeamHP[I] := 0;
 
-  for I := 0 to 7 do
-    if States.PlayerEnabled(I) then
-    begin
-      if (Players[I].HP = 0) and not (Players[I].CaptureMind) then
-        Actions.PlayerDefeat(I);
-    end;
-  
   for J := 0 to 3 do
     if States.PlayerEnabled(J) then
-      if not States.PlayerDefeated(J) then
-        TeamPlayersCount[0] := TeamPlayersCount[0] + 1;
+      TeamHP[0] := TeamHP[0] + Players[J].HP;
 
-  for J := 4 to 7 do
-    if States.PlayerEnabled(J) then
-      if not States.PlayerDefeated(J) then
-        TeamPlayersCount[1] := TeamPlayersCount[1] + 1;
+  for K := 4 to 7 do
+    if States.PlayerEnabled(K) then
+      TeamHP[1] := TeamHP[1] + Players[K].HP;
 
-  if TeamPlayersCount[0] = 0 then
-    for J := 3 to 7 do
-      if States.PlayerEnabled(J) then
-        if not States.PlayerDefeated(J) then
-          Actions.PlayerWin([J], True);
-
-  if TeamPlayersCount[1] = 0 then
-    for J := 0 to 3 do
-      if States.PlayerEnabled(J) then
-        if not States.PlayerDefeated(J) then
-          Actions.PlayerWin([J], True);
-
-  for I := 0 to 7 do
-    if States.PlayerEnabled(I) then
-      if (Players[I].HP = 0)
-      and (Players[I].Hero > 0)
-      and not (Players[I].CaptureMind) then
+  if TeamHP[0] = 0 then
+  begin
+    for K := 0 to 3 do
+    begin
+      if States.PlayerEnabled(K) then
       begin
-        if (States.UnitPositionX(States.GroupMember(Players[I].Hero, 0)) <> Players[I].TribuneX)
-        and (States.UnitPositionY(States.GroupMember(Players[I].Hero, 0)) <> Players[I].TribuneY) then
-        begin
-          Actions.GroupKillAll(Players[I].Hero, True);
-          Players[I].Hero := Actions.GiveGroup(I, Players[I].HeroType, Players[I].TribuneX, Players[I].TribuneY, 4, 1, 1);
-          Actions.GroupHungerSet(Players[I].Hero, States.UnitMaxHunger);
-        end;
+        Actions.PlayerDefeat(K);
+        Actions.FogRevealAll(K);
       end;
-      
+    end;
+    for J := 4 to 7 do
+    begin
+      if States.PlayerEnabled(J) then
+      begin
+        Actions.PlayerWin([J], True);
+        Actions.FogRevealAll(J);
+      end;
+    end;
+  end;
+
+  if TeamHP[1] = 0 then
+  begin
+    for K := 4 to 7 do
+    begin
+      if States.PlayerEnabled(K) then
+      begin
+        Actions.PlayerDefeat(K);
+        Actions.FogRevealAll(K);
+      end;
+    end;
+    for J := 0 to 3 do
+    begin
+      if States.PlayerEnabled(J) then
+      begin
+        Actions.PlayerWin([J], True);
+        Actions.FogRevealAll(J);
+      end;
+    end;
+  end;
+
 end;
 
 
