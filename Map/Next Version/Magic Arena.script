@@ -1258,7 +1258,7 @@ begin
       SpawnY := 58 + I * 11;
       Direction := 2;
       TribuneY := 3;
-      TribuneX := 42 + 2 * I;
+      TribuneX := 43 + 2 * I;
       ZombiePlayer := 10;
       PlayersTeam := 0;
     end;
@@ -1272,7 +1272,7 @@ begin
       SpawnY := 58 + ((I - 4) * 11);
       Direction := 6;
       TribuneY := 26;
-      TribuneX := 54 + ((I - 4) * 2);
+      TribuneX := 55 + ((I - 4) * 2);
       ZombiePlayer := 11;
       PlayersTeam := 1;
     end;
@@ -10739,12 +10739,7 @@ procedure OnPlayerDefeated(P: Integer);
 begin
   if (InRange(P, 0, 7)) then
   begin
-    Actions.FogRevealAll(P);
-    Actions.GroupKillAll(Players[P].Hero, True);
-    Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].TribuneX, Players[P].TribuneY, 4, 1, 1);
-    Actions.CinematicStart(P);
-    Actions.CinematicPanTo(P, Players[P].TribuneX, Players[P].TribuneY, 0);
-    Actions.CinematicEnd(P);
+
     if Length(Zombies) > 0 then
       for I := 0 to Length(Zombies) - 1 do
         if Zombies[I].Owner = P then
@@ -11156,16 +11151,6 @@ begin
         end;
     end;
     Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
-    if Players[O].HP = 0 then
-    begin
-      Actions.FogRevealAll(O);
-      Actions.GroupKillAll(Players[O].Hero, True);
-      Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[O].TribuneX, Players[O].TribuneY, 4, 1, 1);
-      Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
-      Actions.CinematicStart(O);
-      Actions.CinematicPanTo(O, Players[O].TribuneX, Players[O].TribuneY, 0);
-      Actions.CinematicEnd(O);
-    end;
   end;
 end;
 
@@ -11325,7 +11310,8 @@ begin
           Players[M[I1]].HeroReborn := False;
           Players[M[I1]].RebornTime := 0;
         end;
-        if not (Players[I1].MovedToTribune) and not (Players[I1].CaptureMind) then
+        if not (Players[I1].MovedToTribune)
+        and not (Players[I1].CaptureMind) then
         begin
           if Players[I1].MindStunned then
           begin
@@ -11340,6 +11326,8 @@ begin
           Actions.CinematicStart(I1);
           Actions.CinematicPanTo(I1, Players[I1].TribuneX, Players[I1].TribuneY, 0);
           Actions.CinematicEnd(I1);
+          Actions.GroupKillAll(Players[I1].Hero, True);
+          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].TribuneX, Players[I1].TribuneY, 4, 1, 1);
           Actions.GroupHungerset(Players[I1].Hero, States.UnitMaxHunger);
           Actions.GroupBlockOrders(Players[I1].Hero, True);
           Players[I1].MovedToTribune := True;
