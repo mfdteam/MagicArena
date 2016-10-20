@@ -4936,6 +4936,11 @@ begin
         TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := CIRCLE_FILL_OBJ;
         SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - I] := States.GameTime + 48;
         ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := States.GameTime + 58;
+        if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
+        begin
+          Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Owner := P;
+          Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Skill := sDeadlyFireworks;
+        end;
       end;
 
       TilesFieldX[P][Length(TilesFieldX[P]) - 20] := X2 + 1;
