@@ -1278,6 +1278,17 @@ begin
     end;
   end;
 
+  {for I := 0 to 11 do
+  for K := 0 to 11 do
+    if (States.PlayerEnabled(I))
+    and (States.PlayerEnabled(K))
+    and (I <> K) then
+      if Players[I].PlayersTeam <> Players[K].PlayersTeam then
+      begin
+        Actions.PlayerShareBeacons(I, K, False);
+        Actions.PlayerShareBeacons(K, I, False);
+      end;}
+
 end;
 
 
