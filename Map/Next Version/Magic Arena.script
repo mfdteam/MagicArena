@@ -8741,14 +8741,15 @@ begin
                        Players[P].WineSkillDelay := Round(SWORD_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                      end;
 
-      sFear: if (U > 0)
-             and (InRange(O, 0, 7))
-             and (Abs(X - X2) <= IN_FEAR_RADIUS)
-             and (Abs(Y - Y2) <= IN_FEAR_RADIUS)
-             and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-             and (not Players[O].HeroMagicImmunity)
-             and (not Players[O].HeroTotalImmunity) then
-               Fear(P, X, Y);
+      sFear: if (U > 0) then
+               if (Abs(X - X2) <= IN_FEAR_RADIUS)
+               and (Abs(Y - Y2) <= IN_FEAR_RADIUS) then
+                 if ((InRange(O, 0, 7))
+                 and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+                 and (not Players[O].HeroMagicImmunity)
+                 and (not Players[O].HeroTotalImmunity))
+                 or (InRange(O, 8, 11)) then
+                   Fear(P, X, Y);
 
       sAccurateShot: begin
                        TempRoadSkillDelay := Players[P].RoadSkillDelay;
