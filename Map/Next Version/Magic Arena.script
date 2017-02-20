@@ -169,6 +169,8 @@ const
   PIKE_OBJECT7 = 42;
   PIKE_OBJECT8 = 43;
   PIKE_OBJECT9 = 14;
+  PIKE_OBJECT10 = 57;
+  PIKE_OBJECT11 = 54;
 
   BOWMAN_OBJECT = 58;
   BOWMAN_OBJECT2 = 55;
@@ -296,6 +298,7 @@ const
   EXILE_TIME = 40;
   EXILE_DELAY = 8;
   SHIELD_TIME = 100;
+  TOWER_DELAY = 15;
 
 //Game mechanics
 
@@ -538,6 +541,9 @@ type
     SuddenX: Integer;
     SuddenY: Integer;
     SuddenTime: Integer;
+    TowerTime: Integer;
+    TowerX: Integer;
+    TowerY: Integer;
   end;
 
 
@@ -715,6 +721,8 @@ begin
   or (aObj = VAGA_OBJECT8)
   or (aObj = SCOUT_OBJECT5)
   or (aObj = SCOUT_OBJECT6)
+  or (aObj = PIKE_OBJECT10)
+  or (aObj = PIKE_OBJECT11)
   or (aObj = UNIVERSAL_KILL_OBJ) then
     Result := otKill;
 
@@ -1241,6 +1249,9 @@ begin
       SuddenX := 0;
       SuddenY := 0;
       SuddenTime := 0;
+      TowerTime := 0;
+      TowerX := 0;
+      TowerY := 0;
     end;
   end;
 
@@ -4523,7 +4534,7 @@ end;
 
 procedure InfernalTower(P, X, Y: Integer);
 var
-  X2, Y2, Recruit, Tower, aX, aY: Integer;
+  X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4546,29 +4557,109 @@ begin
 
     if (Abs(X2 - X) <= TOWER_RADIUS)
     and (Abs(Y2 - Y) <= TOWER_RADIUS) then
-    begin
-      Tower := Actions.GiveHouse(Players[P].ZombiePlayer, 17, X, Y);
-      if Tower > 0 then
       begin
-        for aX := X - 2 to X + 1 do
-        for aY := Y - 2 to Y + 1 do
-          if TileOnBattlefield(aX, aY) then
-          begin
-            Tiles[aX][aY].Owner := P;
-            Tiles[aX][aY].Skill := sTower;
-          end;
-        Recruit := Actions.GiveUnit(Players[P].ZombiePlayer, 13, X, Y + 3, States.KaMRandomI(8));
-        SetLength(Zombies, Length(Zombies) + 1);
-        Zombies[Length(Zombies) - 1].Owner := P;
-        Zombies[Length(Zombies) - 1].ID := Recruit;
-        Zombies[Length(Zombies) - 1].ZombieType := 0;
-        Actions.UnitHungerSet(Recruit, RECRUIT_HUNGER + States.UnitLowHunger);
-        Actions.HouseAddWaresTo(Tower, 1, 5);
-        Actions.HouseAddDamage(Tower, 200);
-        Players[P].WineSkillDelay := Round(PIKE_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-        Players[P].LastUsedSkill := sTower;
+      TilesWineLength[P] := TilesWineLength[P] + 8;
+      SetLength(TilesWineX[P], TilesWineLength[P]);
+      SetLength(TilesWineY[P], TilesWineLength[P]);
+      SetLength(ClearTilesWineTimes[P], TilesWineLength[P]);
+      SetLength(SetTilesWineTimes[P], TilesWineLength[P]);
+      SetLength(TilesWineObjects[P], TilesWineLength[P]);
+
+      TilesWineX[P][Length(TilesWineX[P]) - 8] := X2 + 1;
+      TilesWineX[P][Length(TilesWineX[P]) - 7] := X2 - 1;
+      TilesWineY[P][Length(TilesWineY[P]) - 6] := Y2 - 1;
+      TilesWineY[P][Length(TilesWineY[P]) - 5] := Y2 + 1; 
+    
+      TilesWineY[P][Length(TilesWineY[P]) - 8] := Y2;
+      TilesWineY[P][Length(TilesWineY[P]) - 7] := Y2;
+      TilesWineX[P][Length(TilesWineX[P]) - 6] := X2;
+      TilesWineX[P][Length(TilesWineX[P]) - 5] := X2; 
+    
+      TilesWineX[P][Length(TilesWineX[P]) - 4] := X2 + 1;
+      TilesWineX[P][Length(TilesWineX[P]) - 3] := X2 - 1;
+      TilesWineX[P][Length(TilesWineX[P]) - 2] := X2 - 1;
+      TilesWineX[P][Length(TilesWineX[P]) - 1] := X2 + 1;
+    
+      TilesWineY[P][Length(TilesWineY[P]) - 4] := Y2 + 1;
+      TilesWineY[P][Length(TilesWineY[P]) - 3] := Y2 - 1;
+      TilesWineY[P][Length(TilesWineY[P]) - 2] := Y2 + 1;
+      TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2 - 1;
+
+      for I := 5 to 8 do
+        TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := PIKE_OBJECT10;
+
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 9;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 10;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 11;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 12;
+
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 1;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 2;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 3;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 4;
+    
+      for I := 1 to 4 do
+        TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := PIKE_OBJECT11;
+    
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 13;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 14;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 15;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 16;
+    
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 5;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 6;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 7;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 8;
+
+      for I := 1 to 8 do
+      begin
+        if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
+        begin
+          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
+          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := sTower;
+          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
+        end;
+        if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
+        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
+        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
+        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7)
+        or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+          ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
       end;
+
+      Players[P].TowerTime := States.GameTime + TOWER_DELAY;
+      Players[P].TowerX := X;
+      Players[P].TowerY := Y;
+      Players[P].WineSkillDelay := Round(PIKE_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+      Players[P].LastUsedSkill := sTower;
+
     end;
+  end;
+end;
+
+
+procedure PlaceTower(P: Integer);
+var
+  Recruit, Tower, aX, aY: Integer;
+begin
+  Tower := Actions.GiveHouse(Players[P].ZombiePlayer, 17, Players[P].TowerX, Players[P].TowerY);
+  if Tower > 0 then
+  begin
+    for aX := Players[P].TowerX - 2 to Players[P].TowerX + 1 do
+    for aY := Players[P].TowerY - 2 to Players[P].TowerY + 1 do
+      if TileOnBattlefield(aX, aY) then
+      begin
+        Tiles[aX][aY].Owner := P;
+        Tiles[aX][aY].Skill := sTower;
+      end;
+    Recruit := Actions.GiveUnit(Players[P].ZombiePlayer, 13, Players[P].TowerX, Players[P].TowerY + 3, States.KaMRandomI(8));
+    SetLength(Zombies, Length(Zombies) + 1);
+    Zombies[Length(Zombies) - 1].Owner := P;
+    Zombies[Length(Zombies) - 1].ID := Recruit;
+    Zombies[Length(Zombies) - 1].ZombieType := 0;
+    Actions.UnitHungerSet(Recruit, RECRUIT_HUNGER + States.UnitLowHunger);
+    Actions.HouseAddWaresTo(Tower, 1, 5);
+    Actions.HouseAddDamage(Tower, 200);
   end;
 end;
 
@@ -9431,6 +9522,7 @@ begin
         Players[P].HeroExileTime := 0;
         Players[P].HeroExileBackTime := 0;
         Players[P].HeroExiled := False;
+        Players[P].TowerTime := 0;
 
         if (InRange(Players[P].WerewolfTime - States.GameTime, 0, 49))
         and (InRange(Players[P].TempHeroType, 14, 27)) then
@@ -10953,6 +11045,7 @@ begin
     Players[O].HeroExileTime := 0;
     Players[O].HeroExileBackTime := 0;
     Players[O].HeroExiled := False;
+    Players[O].TowerTime := 0;
 
     for I := 0 to 7 do
     begin
@@ -11555,6 +11648,9 @@ begin
       begin
         Players[I1].SettingTrack := False;
       end;
+
+      if States.GameTime = Players[I1].TowerTime then
+        PlaceTower(I1);
 
       if States.GameTime = Players[I1].FireworkTime then
         for aX := Players[I1].FireworkX - FIREWORKS1_RADIUS - FIREWORKS2_RADIUS - 2 to Players[I1].FireworkX + FIREWORKS1_RADIUS + FIREWORKS2_RADIUS + 2 do
