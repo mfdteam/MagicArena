@@ -1,4 +1,23 @@
-Magic Arena v. 2.161
+Magic Arena v.2.173
+
+- Team victory/defeat conditions
+- Axe Fighter: Fireworks cooldown +2 seconds; Gravity cooldown -2 seconds
+- Axe Fighter - Werewolf: Disorientation cooldown -1 second 
+- Pikeman: now cast of Infernal tower has short delay and 8 tiles animation
+- Polish translation by Hoster
+- Now map needs less memory (reduced by 1,5 MB) 
+- Fixed stolen Fear usage on zombies
+- HP indicator should blink when Hero has only 1 HP
+- Fixed Shield of Darkness animation
+- Raging Spurt could ignore Shield of Darkness
+
+v. 2.163
+
+- Fixed Threads of Death cancellation when target dies before teleportation
+- Fixed wine skills cancellation on location 1
+
+
+2.161
 
 - Pikeman: New skill "Infernal Tower" instead of Concentration
 - Warrior: New skill "Shield of Darkness" instead of Circle of Silence
@@ -45,6 +64,7 @@ Magic Arena v. 2.161
 - Fixed some sound problems
 - Added new kill statuses (double kill by player 1 etc)
 - More minor bugfixes
+
 
 v. 2.116
 
@@ -109,10 +129,7 @@ v.2.101
 - Knight: immortality during casting Raging Spurt removed; Radius of using Ropes of Death on allies increased from 5 to 7 tiles 
 
 
-
-
 v. 2.64
-
 
 - Gameplay status should show who and by which skill killed your Hero
 - Kills counter
@@ -155,7 +172,6 @@ v. 2.64
 
 v. 2.27
 
-
 - Bowman: Completely reworked Prison
 - Bowman: Mines replaced with a rocket which can be launched to any point on the battlefield
 - Vagabond: New skill Fiery Track instead of Vaga-Wave
@@ -184,14 +200,12 @@ v. 2.27
 
 v.2.03
 
-
 - FPS is better
 - Fixed OMFG bug with Bowmam's mines
 - Added colours to Scout's spells
 
 
 v.2.00
-
 
 - New Hero - Scout
 - New map for Arena. Enjoy
@@ -224,7 +238,6 @@ v.2.00
 
  v. 1.77
 
-
 - New Hero - Rogue
 - ReCharge Rune: Resets cooldowns and decreases them for 25%
 - Fixed Silence desync bug
@@ -251,7 +264,6 @@ v.2.00
 
 v. 1.55
 
-
 - New Hero - Knight
 - AI Lance Carrier uses Teleport
 - Sword Fighter: Fear now lasts 8 seconds
@@ -275,7 +287,6 @@ v. 1.55
 
 v. 1.37
 
-
 - A message with Hero description will be sent when you choose Hero
 - Sound when you step on Bowman's mine ;D
 - Readme fixed and updated
@@ -298,7 +309,6 @@ v. 1.37
 
 v. 1.08
 
-
 - Readme update
 - Bowman: Mines cleanup time increased to 150 seconds
 - Immortal rune time increased to 20 seconds
@@ -311,7 +321,6 @@ v. 1.08
 
 v. 1.06
 
-
 - Runes: Illusion, Regen, Immortality. To activate them, take certain objects placed in the special tile in the middle of arena
 - Fixed Bowman mine bugs: could be placed on top of old mine, walls, roads, stones etc, could sometimes become invisible even for allies and kill someone again when placed right under units
 - Immortal heroes are marked on map (there will be stone under them)
@@ -322,7 +331,6 @@ v. 1.06
 
 
 v. 1.00
-
 
 - Vagabond: new skill "Disorientation" instead of "Unexpected Movement", stuns enemy for 1 second
 - Pikeman: New skill "Concentration" instead of "Waves of Revenge", stuns and makes him immortal for a while and then creates a deadly wave
@@ -339,14 +347,12 @@ v. 1.00
 
 v. 0.93
 
-
 - Random trees planting
 - Readme update
 - Tribunes fix
 
 
 v. 0.91
-
 
 - FPS fix
 - AI can use Sword fighter skills!
@@ -362,7 +368,6 @@ v. 0.91
 
 v. 0.87
 
-
 - Fixed mistakes and typos in Readme
 - Russian Readme
 - Fixed bug: sometimes objects did not disappear when skills were used in Prison
@@ -371,6 +376,5 @@ v. 0.87
 
 
 v. 0.83
-
 
 - Initial release
