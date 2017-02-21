@@ -1,4 +1,4 @@
-//Script version 2.163 (16 oct 2016)
+//Script version 2.173 (21 feb 2017)
 
 const
 
@@ -338,9 +338,9 @@ const
   TOWERS_CHECK_FACTOR = 10;
   TOWERS_TILES_FACTOR = 2;
 
-  DEBUG_MODE = True;
+  DEBUG_MODE = False;
   CHANGE_RELIEF = True;
-  AI_ENABLED = True;
+  AI_ENABLED = False;
 
 //Battlefield
 
