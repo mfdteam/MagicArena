@@ -544,6 +544,7 @@ type
     TowerTime: Integer;
     TowerX: Integer;
     TowerY: Integer;
+    Defeat: Boolean;
   end;
 
 
@@ -1268,6 +1269,7 @@ begin
       TowerTime := 0;
       TowerX := 0;
       TowerY := 0;
+      Defeat := False;
     end;
   end;
 
@@ -10314,11 +10316,29 @@ begin
 
   for J := 0 to 3 do
     if States.PlayerEnabled(J) then
+    begin
       TeamHP[0] := TeamHP[0] + Players[J].HP;
+      if (Players[J].HP = 0)
+      and (not Players[J].Defeat) then
+      begin
+        Actions.ShowMsgFormatted(-1, '<$134>', [States.PlayerName(J)]);
+        Actions.PlayWAV(-1, 'Defeat', 1);
+        Players[J].Defeat := True;
+      end;
+    end;
 
   for K := 4 to 7 do
     if States.PlayerEnabled(K) then
+    begin
       TeamHP[1] := TeamHP[1] + Players[K].HP;
+      if (Players[K].HP = 0)
+      and (not Players[K].Defeat) then
+      begin
+        Actions.ShowMsgFormatted(-1, '<$134>', [States.PlayerName(K)]);
+        Actions.PlayWAV(-1, 'Defeat', 1);
+        Players[K].Defeat := True;
+      end;
+    end;
 
   if TeamHP[0] = 0 then
   begin
