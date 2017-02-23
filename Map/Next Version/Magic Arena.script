@@ -345,7 +345,6 @@ const
 
 //Battlefield
 
-  SPECTATORS = False;
   MIN_X = 12;
   MAX_X = 59;
   MIN_Y = 51;
@@ -1557,6 +1556,7 @@ begin
   end;
 end;
 
+
 function StatusKill(P: Integer): ANSIString;
 begin
   if Players[P].KillStatusTime - States.GameTime > 0 then
@@ -1566,6 +1566,7 @@ begin
 
     Result := '';
 end;
+
 
 function RogueStatus(P: Integer): ANSIString;
 begin
