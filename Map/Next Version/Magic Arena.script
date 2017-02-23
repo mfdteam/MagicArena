@@ -338,9 +338,10 @@ const
   TOWERS_CHECK_FACTOR = 10;
   TOWERS_TILES_FACTOR = 2;
 
-  DEBUG_MODE = False;
+  DEBUG_MODE = True;
   CHANGE_RELIEF = True;
-  AI_ENABLED = False;
+  AI_ENABLED = True;
+  SHOW_ERROR_MSG = True;
 
 //Battlefield
 
@@ -628,6 +629,14 @@ var
   VictoryTime: Integer;
 
 
+procedure LogError(aMsg: ANSIString; aShowMsg: Boolean);
+begin
+  Actions.Log(aMsg);
+  if aShowMsg then
+    Actions.ShowMsg(-1, aMsg);
+end;
+
+
 function InRange(Value, Min, Max: Integer): Boolean;
 begin
   Result := (Value >= Min) and (Value <= Max);
@@ -848,28 +857,36 @@ end;
 procedure AIHeroChoice(P: Integer);
 begin
 
-  if not AI_ENABLED then
-    Exit;
+  try
 
-  case States.KaMRandomI(6) of
-    0: Players[P].HeroType := 16;
-    1: Players[P].HeroType := 23;
-    2: Players[P].HeroType := 18;
-    3: Players[P].HeroType := 19;
-    4: Players[P].HeroType := 17;
-    5: Players[P].HeroType := 22;
-    //6: Players[P].HeroType := 20;
-    //7: Players[P].HeroType := 26;
+    if not AI_ENABLED then
+      Exit;
+
+    case States.KaMRandomI(6) of
+      0: Players[P].HeroType := 16;
+      1: Players[P].HeroType := 23;
+      2: Players[P].HeroType := 18;
+      3: Players[P].HeroType := 19;
+      4: Players[P].HeroType := 17;
+      5: Players[P].HeroType := 22;
+      //6: Players[P].HeroType := 20;
+      //7: Players[P].HeroType := 26;
+    end;
+
+    Players[P].TempHeroType := Players[P].HeroType;
+    Players[P].HeroChosen := True;
+    Actions.GiveUnit(8, 13, 13, 14, 4);
+
+    if InRange(P, 0, 3) then
+      TeamChoice[0] := TeamChoice[0] + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$32> ' + States.UnitTypeName(Players[P].HeroType);
+    if InRange(P, 4, 7) then
+      TeamChoice[1] := TeamChoice[1] + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$32> ' + States.UnitTypeName(Players[P].HeroType);
+
+  except
+
+    LogError('Exception in the script: cannot choose hero for invalid AI player (Exception ID: 1)', SHOW_ERROR_MSG);
+
   end;
-
-  Players[P].TempHeroType := Players[P].HeroType;
-  Players[P].HeroChosen := True;
-  Actions.GiveUnit(8, 13, 13, 14, 4);
-
-  if InRange(P, 0, 3) then
-    TeamChoice[0] := TeamChoice[0] + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$32> ' + States.UnitTypeName(Players[P].HeroType);
-  if InRange(P, 4, 7) then
-    TeamChoice[1] := TeamChoice[1] + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$32> ' + States.UnitTypeName(Players[P].HeroType);
 
 end;
 
@@ -1376,65 +1393,72 @@ end;
 
 procedure GetRuneEffect(P, aRune: Integer);
 begin
+  try
 
-  if RuneTaken then
-    Exit;
+    if RuneTaken then
+      Exit;
 
-  case aRune of
+    case aRune of
 
-    RUNE_REGEN_OBJ:
-      if (not Players[P].MindStunned)
-      and (not Players[P].CaptureMind) then
-        if States.GameTime > Players[P].RegenDelay then          
-        begin
-          Players[P].HP := Players[P].HP + 1;
-          Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
-          RuneTaken := True;
-          Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
-        end;
+      RUNE_REGEN_OBJ:
+        if (not Players[P].MindStunned)
+        and (not Players[P].CaptureMind) then
+          if States.GameTime > Players[P].RegenDelay then          
+          begin
+            Players[P].HP := Players[P].HP + 1;
+            Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
+            RuneTaken := True;
+            Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+          end;
 
-    RUNE_DOUBLE_OBJ:
-    begin
-      Players[P].DD := True;
-      Players[P].DDTime := States.GameTime + RUNE_DOUBLE_TIME;
-      RuneTaken := True;
-      Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
-    end;
-
-    RUNE_ILLUSION_OBJ:
-      for I := 0 to 3 do
+      RUNE_DOUBLE_OBJ:
       begin
-        ZomboHero[P][I] := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
-        SetLength(Zombies, Length(Zombies) + 1);
-        Zombies[Length(Zombies) - 1].Owner := P;
-        Zombies[Length(Zombies) - 1].ZombieType := 3;
-        if ZomboHero[P][I] > 0 then
-        begin
-          Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
-          Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
-        end;
+        Players[P].DD := True;
+        Players[P].DDTime := States.GameTime + RUNE_DOUBLE_TIME;
         RuneTaken := True;
         Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
       end;
 
-    RUNE_MAGIC_IMMUNITY_OBJ:
-    begin
-      Players[P].HeroMagicImmunity := True;
-      Players[P].HeroMagicImmunityTime := States.GameTime + RUNE_MAGIC_IMMUNITY_TIME;
-      RuneTaken := True;
-      Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+      RUNE_ILLUSION_OBJ:
+        for I := 0 to 3 do
+        begin
+          ZomboHero[P][I] := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
+          SetLength(Zombies, Length(Zombies) + 1);
+          Zombies[Length(Zombies) - 1].Owner := P;
+          Zombies[Length(Zombies) - 1].ZombieType := 3;
+          if ZomboHero[P][I] > 0 then
+          begin
+            Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
+            Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
+          end;
+          RuneTaken := True;
+          Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+        end;
+
+      RUNE_MAGIC_IMMUNITY_OBJ:
+      begin
+        Players[P].HeroMagicImmunity := True;
+        Players[P].HeroMagicImmunityTime := States.GameTime + RUNE_MAGIC_IMMUNITY_TIME;
+        RuneTaken := True;
+        Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+      end;
+
+      RUNE_RECHARGE_OBJ:
+      begin
+        Players[P].ReCharge := True;
+        Players[P].ReChargeTime := States.GameTime + RUNE_RECHARGE_TIME;
+        Players[P].RoadSkillDelay := 0;
+        Players[P].FieldSkillDelay := 0;
+        Players[P].WineSkillDelay := 0;
+        RuneTaken := True;
+        Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+      end;
+
     end;
 
-    RUNE_RECHARGE_OBJ:
-    begin
-      Players[P].ReCharge := True;
-      Players[P].ReChargeTime := States.GameTime + RUNE_RECHARGE_TIME;
-      Players[P].RoadSkillDelay := 0;
-      Players[P].FieldSkillDelay := 0;
-      Players[P].WineSkillDelay := 0;
-      RuneTaken := True;
-      Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
-    end;
+  except
+
+    LogError('Exception in the script: cannot check rune effect for invalid player or object ' + IntToStr(aRune) + ' is not a rune (Exception ID: 2)', SHOW_ERROR_MSG);
 
   end;
 
@@ -1443,72 +1467,94 @@ end;
 
 procedure CheckStolenSkillTime(P: Integer);
 begin
-  if Players[P].StolenSkillTime = 0 then
-  begin
-    Players[P].StolenSkill := sNone;
-    Players[P].StolenSkillName := '<$57>';
-  end;
+  try
+    if Players[P].StolenSkillTime = 0 then
+    begin
+      Players[P].StolenSkill := sNone;
+      Players[P].StolenSkillName := '<$57>';
+    end;
 
-  if Players[P].StolenSkillTime > 0 then
-    Players[P].StolenSkillTime := Players[P].StolenSkillTime - 1;
+    if Players[P].StolenSkillTime > 0 then
+      Players[P].StolenSkillTime := Players[P].StolenSkillTime - 1;
+  except
+    LogError('Exception in the script: cannot update stolen skill timer for invalid player (Exception ID: 3)', SHOW_ERROR_MSG);
+  end;
 end;
 
 
 function HPString(P: Integer): ANSIString;
 begin
-  if Players[P].HP <> 1 then
-    Result := IntToStr(Players[P].HP)
-  else
-    case States.GameTime mod 25 of
-      0..12:  Result := ' ';
-      13..24: Result := IntToStr(Players[P].HP);
-    end;
+  try
+    if Players[P].HP <> 1 then
+      Result := IntToStr(Players[P].HP)
+    else
+      case States.GameTime mod 25 of
+        0..12:  Result := ' ';
+        13..24: Result := IntToStr(Players[P].HP);
+      end;
+  except
+    LogError('Exception in the script: cannot update HP string for invalid player (Exception ID: 4)', SHOW_ERROR_MSG);
+  end;
 end;
 
 
 function HPColor(P: Integer): ANSIString;
 begin
-  case Players[P].HP of
-    9..20: Result := '[$00FF00]';
-    7..8:  Result := '[$32CD9B]';
-    5..6:  Result := '[$00FFFF]';
-    3..4:  Result := '[$008CFF]';
-    1..2:  Result := '[$0050FF]'
-    else   Result := '[$000000]';
+  try
+    case Players[P].HP of
+      9..20: Result := '[$00FF00]';
+      7..8:  Result := '[$32CD9B]';
+      5..6:  Result := '[$00FFFF]';
+      3..4:  Result := '[$008CFF]';
+      1..2:  Result := '[$0050FF]'
+      else   Result := '[$000000]';
+    end;
+  except
+    LogError('Exception in the script: cannot update HP counter color for invalid player (Exception ID: 5)', SHOW_ERROR_MSG);
   end;
 end;
 
 
 function KillsColor(P: Integer): ANSIString;
 begin
-  case Players[P].Kills of
-    20..24:  Result := '[$0045FF]';
-    15..19:  Result := '[$00A5FF]';
-    10..14:  Result := '[$00D7FF]';
-    5..9:    Result := '[$00FFFF]';
-    0..4:    Result := '[$FFFFFF]'
-    else     Result := '[$0000FF]';
+  try
+    case Players[P].Kills of
+      20..24:  Result := '[$0045FF]';
+      15..19:  Result := '[$00A5FF]';
+      10..14:  Result := '[$00D7FF]';
+      5..9:    Result := '[$00FFFF]';
+      0..4:    Result := '[$FFFFFF]'
+      else     Result := '[$0000FF]';
+    end;
+  except
+    LogError('Exception in the script: cannot update kills counter color for invalid player (Exception ID: 6)', SHOW_ERROR_MSG);
   end;
 end;
 
 
 function ReChoiceColor(P: Integer): ANSIString;
 begin
-  if Players[P].ReChoiceAllowed then
-    Result := '[$00FF00]'
-  else
-    Result := '[$0000FF]';
+  try
+    if Players[P].ReChoiceAllowed then
+      Result := '[$00FF00]'
+    else
+      Result := '[$0000FF]';
+  except
+    LogError('Exception in the script: cannot update ReChoice color for invalid player (Exception ID: 7)', SHOW_ERROR_MSG);
+  end;
 end;
 
 
 function GameplayStatus(P: Integer): ANSIString;
 begin
-  if Players[P].PlayerStatusTime - States.GameTime > 0 then
-    Result := '||' + Players[P].PlayerStatus
-
-  else
-
-    Result := '';
+  try
+    if Players[P].PlayerStatusTime - States.GameTime > 0 then
+      Result := '||' + Players[P].PlayerStatus
+    else
+      Result := '';
+  except
+    LogError('Exception in the script: cannot update gameplay status for invalid player (Exception ID: 8)', SHOW_ERROR_MSG);
+  end;
 end;
 
 function StatusKill(P: Integer): ANSIString;
