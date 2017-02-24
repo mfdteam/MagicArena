@@ -1511,7 +1511,7 @@ begin
       else   Result := '[$000000]';
     end;
   except
-    LogError('Exception in the script: cannot update HP counter color for invalid player (Exception ID: 5)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update HP counter highlight color for invalid player (Exception ID: 5)', SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1528,7 +1528,7 @@ begin
       else     Result := '[$0000FF]';
     end;
   except
-    LogError('Exception in the script: cannot update kills counter color for invalid player (Exception ID: 6)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update kills counter highlight color for invalid player (Exception ID: 6)', SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1541,7 +1541,7 @@ begin
     else
       Result := '[$0000FF]';
   except
-    LogError('Exception in the script: cannot update ReChoice color for invalid player (Exception ID: 7)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update ReChoice status highlight color for invalid player (Exception ID: 7)', SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1557,6 +1557,35 @@ begin
     LogError('Exception in the script: cannot update gameplay status for invalid player (Exception ID: 8)', SHOW_ERROR_MSG);
   end;
 end;
+
+
+function SacrificialTeleportColor(P: Integer): ANSIString;
+begin
+  try
+    if (Players[P].HeroType = 20)
+    and (Players[P].HP = 1) then
+      Result := '[$0000FF]'
+    else
+      Result := '[$FFFFFF]';
+  except
+    LogError('Exception in the script: cannot update sacrificial teleport status highlight color for invalid player (Exception ID: 9)', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+function StolenSacrificialTeleportColor(P: Integer): ANSIString;
+begin
+  try
+    if (Players[P].HeroType = 25)
+    and (Players[P].HP = 1)
+    and (Players[P].StolenSkill = sSacrificialTeleport) then
+      Result := '[$0000FF]'
+    else
+      Result := '[$FFFFFF]';
+  except
+    LogError('Exception in the script: cannot update stolen sacrificial teleport status highlight color for invalid player (Exception ID: 10)', SHOW_ERROR_MSG);
+  end;
+end; 
 
 
 function StatusKill(P: Integer): ANSIString;
@@ -14508,7 +14537,7 @@ begin
     for I := 0 to 7 do
       if (States.PlayerEnabled(I))
       and (Players[I].HeroChosen) then
-         Players[I].TempHero := Actions.GiveGroup(I, Players[I].HeroType, 18, 14, 4, 1, 1);
+        Players[I].TempHero := Actions.GiveGroup(I, Players[I].HeroType, 18, 14, 4, 1, 1);
     for K := 0 to 7 do
       if Players[K].TempHero > 0 then
       begin
@@ -14554,8 +14583,8 @@ begin
     begin
       Actions.OverlayTextSet(I, '<$33> [$ADAF67]' + States.UnitTypeName(Players[I].HeroType) + '[]!'
       + '||<$35>: ' + RoadSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].RoadSkillDelay/10)
-      + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10)
-      + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].WineSkillDelay/10)
+      + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '.' + SacrificialTeleportColor(I) + ' <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10) + '[]'
+      + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '.' + StolenSacrificialTeleportColor(I) + ' <$34>: ' + IntToStr(Players[I].WineSkillDelay/10) + '[]'
       + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + '|'
       + StatusText(I) + '|||<$41>:|' + TeamInfo[0] + '|||<$79>:|' + Scores[0]);
     end;
@@ -14568,8 +14597,8 @@ begin
     begin
       Actions.OverlayTextSet(I, '<$33> [$ADAF67]' + States.UnitTypeName(Players[I].HeroType) + '[]!'
       + '||<$35>: ' + RoadSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].RoadSkillDelay/10)
-      + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10)
-      + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '. <$34>: ' + IntToStr(Players[I].WineSkillDelay/10)
+      + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '.' + SacrificialTeleportColor(I) + ' <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10) + '[]'
+      + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '.' + StolenSacrificialTeleportColor(I) + ' <$34>: ' + IntToStr(Players[I].WineSkillDelay/10) + '[]'
       + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + '|'
       + StatusText(I) + '|||<$41>:|' + TeamInfo[1] + '|||<$79>:|' + Scores[1]);
     end;
