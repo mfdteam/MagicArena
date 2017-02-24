@@ -1,4 +1,12 @@
-Magic Arena v.2.173
+Magic Arena - Next Version
+
+- Custom debugger
+- Message + sound when players get defeated (Hero has 0 HP)
+- Highlight Sacrifial Teleport cooldown in red when player can't use skill
+- AI Pikeman could step on Infernal Tower animation
+
+
+v.2.173
 
 - Team victory/defeat conditions
 - Axe Fighter: Fireworks cooldown +2 seconds; Gravity cooldown -2 seconds
@@ -10,6 +18,7 @@ Magic Arena v.2.173
 - HP indicator should blink when Hero has only 1 HP
 - Fixed Shield of Darkness animation
 - Raging Spurt could ignore Shield of Darkness
+
 
 v. 2.163
 
