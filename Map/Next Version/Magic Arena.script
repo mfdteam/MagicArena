@@ -545,6 +545,7 @@ type
     TowerX: Integer;
     TowerY: Integer;
     Defeat: Boolean;
+    RoadSkillCancelTime: Integer;
   end;
 
 
@@ -1270,6 +1271,7 @@ begin
       TowerX := 0;
       TowerY := 0;
       Defeat := False;
+      RoadSkillCancelTime := 0;
     end;
   end;
 
@@ -5530,42 +5532,74 @@ begin
     if DY < 0 then
       DY := -1 * DY;
 
-    TilesRoadLength[P] := TilesRoadLength[P] + 4;
+    TilesRoadLength[P] := TilesRoadLength[P] + 8;
     SetLength(TilesRoadX[P], TilesRoadLength[P]);
     SetLength(TilesRoadY[P], TilesRoadLength[P]);
     SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
     SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
     SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
+
+    TilesRoadX[P][Length(TilesRoadX[P]) - 8] := X1 - 1;
+    TilesRoadX[P][Length(TilesRoadX[P]) - 7] := X1 + 1;
+    TilesRoadX[P][Length(TilesRoadX[P]) - 6] := X1 + 1;
+    TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X1 - 1;
     
-    TilesRoadX[P][Length(TilesRoadX[P]) - 4] := X1 + 1;
-    TilesRoadX[P][Length(TilesRoadX[P]) - 3] := X1 - 1;
-    TilesRoadX[P][Length(TilesRoadX[P]) - 2] := X1 - 1;
-    TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1 + 1;
+    TilesRoadY[P][Length(TilesRoadY[P]) - 8] := Y1 - 1;
+    TilesRoadY[P][Length(TilesRoadY[P]) - 7] := Y1 - 1;
+    TilesRoadY[P][Length(TilesRoadY[P]) - 6] := Y1 + 1;
+    TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y1 + 1;
     
-    TilesRoadY[P][Length(TilesRoadY[P]) - 4] := Y1 + 1;
+    TilesRoadX[P][Length(TilesRoadX[P]) - 4] := X1 - 1;
+    TilesRoadX[P][Length(TilesRoadX[P]) - 3] := X1 + 1;
+    TilesRoadX[P][Length(TilesRoadX[P]) - 2] := X1 + 1;
+    TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X1 - 1;
+    
+    TilesRoadY[P][Length(TilesRoadY[P]) - 4] := Y1 - 1;
     TilesRoadY[P][Length(TilesRoadY[P]) - 3] := Y1 - 1;
     TilesRoadY[P][Length(TilesRoadY[P]) - 2] := Y1 + 1;
-    TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1 - 1;
+    TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1 + 1;
 
-    for I := 1 to 4 do
+    for I := 1 to 8 do
     begin
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := BOWMAN_OBJECT;
-      SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := States.GameTime + 2;
-      ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := States.GameTime + 6;
       if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
       begin
         Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
         Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sRocket;
       end;
+    end;
+
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 8] := States.GameTime + 6;
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 7] := States.GameTime + 6;
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 6] := States.GameTime + 6;
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] := States.GameTime + 6;
+    
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 8] := States.GameTime + 1;
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 7] := States.GameTime + 1;
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 6] := States.GameTime + 1;
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 5] := States.GameTime + 1;
+
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 4] := States.GameTime + 9;
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 3] := States.GameTime + 9;
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] := States.GameTime + 9;
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 9;
+    
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 4] := States.GameTime + 7;
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 3] := States.GameTime + 7;
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 7;
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 7;
+
+    for I := 1 to 8 do
+    begin
       if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
       or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
       begin
-        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := 0;
-        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
-        TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := BOWMAN_OBJECT5;
+         SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := 0;
+         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
+         TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := BOWMAN_OBJECT5;
       end;
     end;
 
@@ -5657,8 +5691,8 @@ begin
     and (Y > Y1)
     and (DX < DY) then
     begin
-      for aX := X1 + 1 to X1 + DX do
-      for aY := Y1 + 1 to Y1 + DX do
+      for aX := X1 + 2 to X1 + DX do
+      for aY := Y1 + 2 to Y1 + DX do
         if (aY = Y1 + (aX - X1))
         and (TileOnBattlefield(aX, aY)) then
         begin
@@ -5699,8 +5733,8 @@ begin
     and (Y > Y1)
     and (DX >= DY) then
     begin
-      for aX := X1 + 1 to X1 + DY do
-      for aY := Y1 + 1 to Y1 + DY do
+      for aX := X1 + 2 to X1 + DY do
+      for aY := Y1 + 2 to Y1 + DY do
         if (aY = Y1 + (aX - X1))
         and (TileOnBattlefield(aX, aY)) then
         begin
@@ -5741,8 +5775,8 @@ begin
     and (Y < Y1)
     and (DX < DY) then
     begin
-      for aX := X1 + 1 to X1 + DX do
-      for aY := Y1 - 1 downto Y1 - DX do
+      for aX := X1 + 2 to X1 + DX do
+      for aY := Y1 - 2 downto Y1 - DX do
         if (aY = Y1 - (aX - X1))
         and (TileOnBattlefield(aX, aY)) then
         begin
@@ -5783,8 +5817,8 @@ begin
     and (Y < Y1)
     and (DX >= DY) then
     begin
-      for aX := X1 + 1 to X1 + DY do
-      for aY := Y1 - 1 downto Y1 - DY do
+      for aX := X1 + 2 to X1 + DY do
+      for aY := Y1 - 2 downto Y1 - DY do
         if (aY = Y1 - (aX - X1))
         and (TileOnBattlefield(aX, aY)) then
         begin
@@ -5825,8 +5859,8 @@ begin
     and (Y < Y1)
     and (DX < DY) then
     begin
-      for aX := X1 - 1 downto X1 - DX do
-      for aY := Y1 - 1 downto Y1 - DX do
+      for aX := X1 - 2 downto X1 - DX do
+      for aY := Y1 - 2 downto Y1 - DX do
         if (aY = Y1 + (aX - X1))
         and (TileOnBattlefield(aX, aY)) then
         begin
@@ -5867,8 +5901,8 @@ begin
     and (Y < Y1)
     and (DX >= DY) then
     begin
-      for aX := X1 - 1 downto X1 - DY do
-      for aY := Y1 - 1 downto Y1 - DY do
+      for aX := X1 - 2 downto X1 - DY do
+      for aY := Y1 - 2 downto Y1 - DY do
         if (aY = Y1 + (aX - X1))
         and (TileOnBattlefield(aX, aY)) then
         begin
@@ -5909,8 +5943,8 @@ begin
     and (Y > Y1)
     and (DX < DY) then
     begin
-      for aX := X1 - 1 downto X1 - DX do
-      for aY := Y1 + 1 to Y1 + DX do
+      for aX := X1 - 2 downto X1 - DX do
+      for aY := Y1 + 2 to Y1 + DX do
         if (aY = Y1 - (aX - X1))
         and (TileOnBattlefield(aX, aY)) then
         begin
@@ -5951,8 +5985,8 @@ begin
     and (Y > Y1)
     and (DX >= DY) then
     begin
-      for aX := X1 - 1 downto X1 - DY do
-      for aY := Y1 + 1 to Y1 + DY do
+      for aX := X1 - 2 downto X1 - DY do
+      for aY := Y1 + 2 to Y1 + DY do
         if (aY = Y1 - (aX - X1))
         and (TileOnBattlefield(aX, aY)) then
         begin
@@ -6007,6 +6041,7 @@ begin
     Players[P].RocketTime := SetTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] + 60;
     Players[P].RocketX := X;
     Players[P].RocketY := Y;
+    Players[P].RoadSkillCancelTime := States.GameTime + 9;
 
     if (States.PlayerIsAI(P))
     and (Players[P].HP > 0) then
@@ -9550,13 +9585,12 @@ begin
           or ((Players[P].HeroType = 23)
           and (States.GameTime < Players[P].CrackingStartTime)) then
             for I := 0 to TilesRoadLength[P] - 1 do
-              if SetTilesRoadTimes[P][I] > States.GameTime then
-                if (TilesRoadObjects[P][I] <> BOWMAN_ROCKET)
-                and (TilesRoadObjects[P][I] <> BOWMAN_OBJECT6) then
-                begin
-                  SetTilesRoadTimes[P][I] := 0;
-                  TilesRoadObjects[P][I] := SKILL_CANCEL_OBJ;
-                end;
+              if (SetTilesRoadTimes[P][I] > States.GameTime)
+              and (States.GameTime <= Players[P].RoadSkillCancelTime) then
+              begin
+                SetTilesRoadTimes[P][I] := 0;
+                TilesRoadObjects[P][I] := SKILL_CANCEL_OBJ;
+              end;
 
         if TilesFieldLength[P] > 0 then
           for I := 0 to TilesFieldLength[P] - 1 do
@@ -10363,7 +10397,7 @@ begin
       and (not Players[J].Defeat) then
       begin
         Actions.ShowMsgFormatted(-1, '<$134>', [States.PlayerName(J)]);
-        Actions.PlayWAV(-1, 'Defeat', 1);
+        Actions.PlayWAVFadeMusic(-1, 'Defeat', 1);
         Players[J].Defeat := True;
       end;
     end;
@@ -10376,7 +10410,7 @@ begin
       and (not Players[K].Defeat) then
       begin
         Actions.ShowMsgFormatted(-1, '<$134>', [States.PlayerName(K)]);
-        Actions.PlayWAV(-1, 'Defeat', 1);
+        Actions.PlayWAVFadeMusic(-1, 'Defeat', 1);
         Players[K].Defeat := True;
       end;
     end;
