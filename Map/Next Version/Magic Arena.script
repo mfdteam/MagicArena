@@ -8796,6 +8796,7 @@ begin
 
         Players[P].LastUsedSkill := sSteal;
         Players[P].FieldSkillDelay := Round(ROGUE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+        Players[P].WineSkillDelay := ROGUE_WINE_DELAY;
 
         if InRange(O, 0, 7) then
           if Players[P].StolenSkill <> sNone then
