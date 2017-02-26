@@ -10398,6 +10398,10 @@ begin
       begin
         Actions.ShowMsgFormatted(-1, '<$134>', [States.PlayerName(J)]);
         Actions.PlayWAVFadeMusic(-1, 'Defeat', 1);
+        if Length(Zombies) > 0 then
+          for I := 0 to Length(Zombies) - 1 do
+            if Zombies[I].Owner = J then
+              Actions.UnitKill(Zombies[I].ID, False);
         Players[J].Defeat := True;
       end;
     end;
@@ -10411,6 +10415,10 @@ begin
       begin
         Actions.ShowMsgFormatted(-1, '<$134>', [States.PlayerName(K)]);
         Actions.PlayWAVFadeMusic(-1, 'Defeat', 1);
+        if Length(Zombies) > 0 then
+          for I := 0 to Length(Zombies) - 1 do
+            if Zombies[I].Owner = K then
+              Actions.UnitKill(Zombies[I].ID, False);
         Players[K].Defeat := True;
       end;
     end;
@@ -10989,19 +10997,6 @@ begin
           end;
         end;
       end;
-end;
-
-
-procedure OnPlayerDefeated(P: Integer);
-begin
-  if (InRange(P, 0, 7)) then
-  begin
-
-    if Length(Zombies) > 0 then
-      for I := 0 to Length(Zombies) - 1 do
-        if Zombies[I].Owner = P then
-          Actions.UnitKill(Zombies[I].ID, False);
-  end;
 end;
 
 
