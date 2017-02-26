@@ -546,6 +546,8 @@ type
     TowerY: Integer;
     Defeat: Boolean;
     RoadSkillCancelTime: Integer;
+    FieldSkillCancelTime: Integer;
+    WineSkillCancelTime: Integer;
   end;
 
 
@@ -1272,6 +1274,8 @@ begin
       TowerY := 0;
       Defeat := False;
       RoadSkillCancelTime := 0;
+      FieldSkillCancelTime := 0;
+      WineSkillCancelTime := 0;
     end;
   end;
 
@@ -2711,6 +2715,8 @@ begin
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 5;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 7;
 
+    Players[P].RoadSkillCancelTime := States.GameTime + 10;
+
     for I := 1 to 4 do
     begin
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := SWORD_OBJECT;
@@ -2993,6 +2999,8 @@ begin
 
     Players[P].CrackingStartTime := States.GameTime + 9;
 
+    Players[P].RoadSkillCancelTime := States.GameTime + 8;
+
     for I := 1 to 4 do
     begin
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := BARB_OBJECT;
@@ -3263,6 +3271,8 @@ begin
       SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 16;
       ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 36;
 
+      Players[P].WineSkillCancelTime := States.GameTime + 36;
+
       for I := 1 to 9 do
         if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
@@ -3371,6 +3381,8 @@ begin
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 3] := States.GameTime + 5;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 8;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 11;
+
+    Players[P].RoadSkillCancelTime := States.GameTime + 14;
 
     for I := 1 to 4 do
       if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
@@ -3712,6 +3724,8 @@ begin
     SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 23;
     SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 24;
 
+    Players[P].WineSkillCancelTime := States.GameTime + 30;
+
     for I := 1 to 24 do
     begin
 
@@ -3923,6 +3937,8 @@ begin
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 5;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 7;
 
+    Players[P].RoadSkillCancelTime := States.GameTime + 12;
+
     for I := 1 to 4 do
     begin   
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := XBOW_OBJECT2;
@@ -4127,6 +4143,8 @@ begin
       TilesFieldX[P][Length(TilesFieldX[P]) - 13] := X - 1;
       TilesFieldY[P][Length(TilesFieldY[P]) - 13] := Y - 1;
 
+    Players[P].FieldSkillCancelTime := States.GameTime + 29;
+
       for I := 5 to 13 do
         TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := XBOW_OBJECT3;
 
@@ -4274,6 +4292,8 @@ begin
     SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 6;
     SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 7;
     SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 8;
+
+    Players[P].WineSkillCancelTime := States.GameTime + 17;
 
     for I := 1 to 8 do
     begin
@@ -4449,6 +4469,8 @@ begin
       if I mod VISE_RADIUS = 0 then
         ViseCircles[P][ViseCirclesCounter[P]][ViseCirclesLength[P][ViseCirclesCounter[P]] - I].Radius := 0;
     end;
+
+    Players[P].RoadSkillCancelTime := States.GameTime + 8;
 
     case Direction of
 
@@ -4998,6 +5020,8 @@ begin
       TilesWineX[P][Length(TilesWineX[P]) - 13] := X - 1;
       TilesWineY[P][Length(TilesWineY[P]) - 13] := Y - 1;
 
+      Players[P].WineSkillCancelTime := States.GameTime + 14;
+
       for I := 5 to 13 do
       begin
         ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := States.GameTime + 100;
@@ -5266,6 +5290,8 @@ begin
 
       SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 2] := States.GameTime + 1;
       SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 1;
+
+      Players[P].FieldSkillCancelTime := States.GameTime + 40;
 
       for I := 1 to 20 do
       begin
@@ -5597,9 +5623,9 @@ begin
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
       or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
       begin
-         SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := 0;
-         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
-         TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := BOWMAN_OBJECT5;
+        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := 0;
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
+        TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := BOWMAN_OBJECT5;
       end;
     end;
 
@@ -6233,6 +6259,8 @@ begin
     SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 7;
     SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 8;
 
+    Players[P].WineSkillCancelTime := States.GameTime + 20;
+
     for I := 1 to 8 do
     begin
 
@@ -6492,6 +6520,8 @@ begin
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 3] := States.GameTime + 4;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 6;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8;
+
+    Players[P].RoadSkillCancelTime := States.GameTime + 18;
 
     for I := 1 to 4 do
     begin
@@ -6935,6 +6965,8 @@ begin
       SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 6;
       SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 7;
       SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 8;
+
+      Players[P].WineSkillCancelTime := States.GameTime + 20;
 
       for aX := X - SHIELD_AREA_RADIUS + 1 to X + SHIELD_AREA_RADIUS - 1 do
       for aY := Y - SHIELD_AREA_RADIUS + 1 to Y + SHIELD_AREA_RADIUS - 1 do
@@ -7591,6 +7623,8 @@ begin
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 3] := States.GameTime + 2;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 3;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 4;
+
+    Players[P].RoadSkillCancelTime := States.GameTime + 10;
 
     for I := 1 to 4 do
     begin
@@ -8448,6 +8482,8 @@ begin
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 3] := States.GameTime + 4;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 6;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8;
+
+    Players[P].RoadSkillCancelTime := States.GameTime + 16;
 
     for I := 1 to 5 do
       if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
@@ -9594,7 +9630,8 @@ begin
 
         if TilesFieldLength[P] > 0 then
           for I := 0 to TilesFieldLength[P] - 1 do
-            if SetTilesFieldTimes[P][I] > States.GameTime then
+            if (SetTilesFieldTimes[P][I] > States.GameTime)
+            and (States.GameTime <= Players[P].FieldSkillCancelTime) then
             begin
               SetTilesFieldTimes[P][I] := 0;
               TilesFieldObjects[P][I] := SKILL_CANCEL_OBJ;
@@ -9607,7 +9644,8 @@ begin
           and (Players[P].LastUsedSkill = sCrackingEarth)
           and (States.GameTime < Players[P].CrackingStartTime))  then
             for I := 0 to TilesWineLength[P] - 1 do
-              if SetTilesWineTimes[P][I] > States.GameTime then
+              if (SetTilesWineTimes[P][I] > States.GameTime)
+              and (States.GameTime <= Players[P].WineSkillCancelTime) then
               begin
                 SetTilesWineTimes[P][I] := 0;
                 TilesWineObjects[P][I] := SKILL_CANCEL_OBJ;
@@ -9622,7 +9660,8 @@ begin
             and (Players[M2[P]].LastUsedSkill = sCrackingEarth)
             and (States.GameTime < Players[M2[P]].CrackingStartTime))  then
               for I := 0 to TilesWineLength[M2[P]] - 1 do
-                if SetTilesWineTimes[M2[P]][I] > States.GameTime then
+                if (SetTilesWineTimes[M2[P]][I] > States.GameTime)
+                and (States.GameTime <= Players[M2[P]].WineSkillCancelTime) then
                 begin
                   SetTilesWineTimes[M2[P]][I] := 0;
                   TilesWineObjects[M2[P]][I] := SKILL_CANCEL_OBJ;
@@ -9680,54 +9719,63 @@ begin
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to TotemCirclesLength[P][K] - 1 do
             if (TotemCircles[P][K][I].AddTime > States.GameTime)
+            and (States.GameTime <= Players[P].WineSkillCancelTime)
             and (TotemCircles[P][K][I].Obj <> 255) then
               TotemCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to ExpCirclesLength[P][K] - 1 do
             if (ExpCircles[P][K][I].AddTime > States.GameTime)
+            and (States.GameTime <= Players[P].WineSkillCancelTime)
             and (ExpCircles[P][K][I].Obj <> 255) then
               ExpCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to RogueCirclesLength[P][K] - 1 do
             if (RogueCircles[P][K][I].AddTime > States.GameTime)
+            and (States.GameTime <= Players[P].RoadSkillCancelTime)
             and (RogueCircles[P][K][I].Obj <> 255) then
               RogueCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to StolenRogueCirclesLength[P][K] - 1 do
             if (StolenRogueCircles[P][K][I].AddTime > States.GameTime)
+            and (States.GameTime <= Players[P].RoadSkillCancelTime)
             and (StolenRogueCircles[P][K][I].Obj <> 255) then
               StolenRogueCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles1Length[P][K] - 1 do
             if (FireworksCircles1[P][K][I].AddTime > States.GameTime)
+            and (States.GameTime <= Players[P].FieldSkillCancelTime)
             and (FireworksCircles1[P][K][I].Obj <> 255) then
               FireworksCircles1[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles2Length[P][K] - 1 do
             if (FireworksCircles2[P][K][I].AddTime > States.GameTime)
+            and (States.GameTime <= Players[P].FieldSkillCancelTime)
             and (FireworksCircles2[P][K][I].Obj <> 255) then
               FireworksCircles2[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles3Length[P][K] - 1 do
             if (FireworksCircles3[P][K][I].AddTime > States.GameTime)
+            and (States.GameTime <= Players[P].FieldSkillCancelTime)
             and (FireworksCircles3[P][K][I].Obj <> 255) then
               FireworksCircles3[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles4Length[P][K] - 1 do
             if (FireworksCircles4[P][K][I].AddTime > States.GameTime)
+            and (States.GameTime <= Players[P].FieldSkillCancelTime)
             and (FireworksCircles4[P][K][I].Obj <> 255) then
               FireworksCircles4[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
         for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
           for I := 0 to FireworksCircles5Length[P][K] - 1 do
             if (FireworksCircles5[P][K][I].AddTime > States.GameTime)
+            and (States.GameTime <= Players[P].FieldSkillCancelTime)
             and (FireworksCircles5[P][K][I].Obj <> 255) then
               FireworksCircles5[P][K][I].Obj := SKILL_CANCEL_OBJ;
 
@@ -11115,17 +11163,17 @@ begin
       or ((Players[O].HeroType = 23)
       and (States.GameTime < Players[O].CrackingStartTime)) then
         for I := 0 to TilesRoadLength[O] - 1 do
-          if SetTilesRoadTimes[O][I] > States.GameTime then
-            if (TilesRoadObjects[O][I] <> BOWMAN_ROCKET)
-            and (TilesRoadObjects[O][I] <> BOWMAN_OBJECT6) then
-            begin
-              SetTilesRoadTimes[O][I] := 0;
-              TilesRoadObjects[O][I] := SKILL_CANCEL_OBJ;
-            end;
+          if (SetTilesRoadTimes[O][I] > States.GameTime)
+          and (States.GameTime <= Players[O].RoadSkillCancelTime) then
+          begin
+            SetTilesRoadTimes[O][I] := 0;
+            TilesRoadObjects[O][I] := SKILL_CANCEL_OBJ;
+          end;
 
     if TilesFieldLength[O] > 0 then
       for I := 0 to TilesFieldLength[O] - 1 do
-        if SetTilesFieldTimes[O][I] > States.GameTime then
+        if (SetTilesFieldTimes[O][I] > States.GameTime)
+        and (States.GameTime <= Players[O].FieldSkillCancelTime) then
         begin
           SetTilesFieldTimes[O][I] := 0;
           TilesFieldObjects[O][I] := SKILL_CANCEL_OBJ;
@@ -11138,7 +11186,8 @@ begin
       and (Players[O].LastUsedSkill = sCrackingEarth)
       and (States.GameTime < Players[O].CrackingStartTime)) then
         for I := 0 to TilesWineLength[O] - 1 do
-          if SetTilesWineTimes[O][I] > States.GameTime then
+          if (SetTilesWineTimes[O][I] > States.GameTime)
+          and (States.GameTime <= Players[O].WineSkillCancelTime) then
           begin
             SetTilesWineTimes[O][I] := 0;
             TilesWineObjects[O][I] := SKILL_CANCEL_OBJ;
@@ -11153,7 +11202,8 @@ begin
         and (Players[M2[O]].LastUsedSkill = sCrackingEarth)
         and (States.GameTime < Players[M2[O]].CrackingStartTime)) then
           for I := 0 to TilesWineLength[M2[O]] - 1 do
-            if SetTilesWineTimes[M2[O]][I] > States.GameTime then
+            if (SetTilesWineTimes[M2[O]][I] > States.GameTime)
+            and (States.GameTime <= Players[M2[O]].WineSkillCancelTime) then
             begin
               SetTilesWineTimes[M2[O]][I] := 0;
               TilesWineObjects[M2[O]][I] := SKILL_CANCEL_OBJ;
@@ -11199,54 +11249,63 @@ begin
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to TotemCirclesLength[O][K] - 1 do
         if (TotemCircles[O][K][I].AddTime > States.GameTime)
+        and (States.GameTime <= Players[O].WineSkillCancelTime)
         and (TotemCircles[O][K][I].Obj <> 255) then
           TotemCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to ExpCirclesLength[O][K] - 1 do
         if (ExpCircles[O][K][I].AddTime > States.GameTime)
-        and (ExpCircles[O][K][I].Obj <> 255)  then
+        and (States.GameTime <= Players[O].WineSkillCancelTime)
+        and (ExpCircles[O][K][I].Obj <> 255) then
           ExpCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to RogueCirclesLength[O][K] - 1 do
         if (RogueCircles[O][K][I].AddTime > States.GameTime)
+        and (States.GameTime <= Players[O].RoadSkillCancelTime)
         and (RogueCircles[O][K][I].Obj <> 255)  then
           RogueCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to StolenRogueCirclesLength[O][K] - 1 do
         if (StolenRogueCircles[O][K][I].AddTime > States.GameTime)
+        and (States.GameTime <= Players[O].RoadSkillCancelTime)
         and (StolenRogueCircles[O][K][I].Obj <> 255)  then
           StolenRogueCircles[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles1Length[O][K] - 1 do
         if (FireworksCircles1[O][K][I].AddTime > States.GameTime)
+        and (States.GameTime <= Players[O].FieldSkillCancelTime)
         and (FireworksCircles1[O][K][I].Obj <> 255)  then
           FireworksCircles1[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles2Length[O][K] - 1 do
         if (FireworksCircles2[O][K][I].AddTime > States.GameTime)
+        and (States.GameTime <= Players[O].FieldSkillCancelTime)
         and (FireworksCircles2[O][K][I].Obj <> 255)  then
           FireworksCircles2[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles3Length[O][K] - 1 do
         if (FireworksCircles3[O][K][I].AddTime > States.GameTime)
+        and (States.GameTime <= Players[O].FieldSkillCancelTime)
         and (FireworksCircles3[O][K][I].Obj <> 255)  then
           FireworksCircles3[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles4Length[O][K] - 1 do
         if (FireworksCircles4[O][K][I].AddTime > States.GameTime)
+        and (States.GameTime <= Players[O].FieldSkillCancelTime)
         and (FireworksCircles4[O][K][I].Obj <> 255)  then
           FireworksCircles4[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
       for I := 0 to FireworksCircles5Length[O][K] - 1 do
         if (FireworksCircles5[O][K][I].AddTime > States.GameTime)
+        and (States.GameTime <= Players[O].FieldSkillCancelTime)
         and (FireworksCircles5[O][K][I].Obj <> 255)  then
           FireworksCircles5[O][K][I].Obj := SKILL_CANCEL_OBJ;
 
