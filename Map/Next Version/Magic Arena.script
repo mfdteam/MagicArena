@@ -48,11 +48,6 @@ const
   ROGUE_FIELD_DELAY = 90;
   ROGUE_WINE_DELAY = 0;
 
-  ROGUE_TOTEM_DELAY = 0;
-  ROGUE_FIREWORKS_DELAY = 0;
-  ROGUE_REVENGE_DELAY = 0;
-  ROGUE_MENTAL_DELAY = 0;
-
   SCOUT_ROAD_DELAY = 90;
   SCOUT_FIELD_DELAY = 150;
   SCOUT_WINE_DELAY = 350;
@@ -2310,49 +2305,6 @@ begin
             Actions.MapTileObjectSet(PosX, PosY, 255);
     end;
   end;
-
-end;
-
-
-procedure CreateShield(P: Integer);
-var
-  C, aX, aY: Integer;
-begin
-  TilesFieldLength[P] := TilesFieldLength[P] + 9;
-  SetLength(TilesFieldX[P], TilesFieldLength[P]);
-  SetLength(TilesFieldY[P], TilesFieldLength[P]);
-  SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
-  SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
-  SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
-
-  for aX := Players[P].SpawnX - 1 to Players[P].SpawnX + 1 do
-  for aY := Players[P].SpawnY - 1 to Players[P].SpawnY + 1 do
-  begin
-    C := C + 1;
-    TilesFieldX[P][Length(TilesFieldX[P]) - C] := aX;
-    TilesFieldY[P][Length(TilesFieldY[P]) - C] := aY;
-    if Tiles[aX][aY].ImmortalTime < States.GameTime + FENCE_TIME + 1 then
-      Tiles[aX][aY].ImmortalTime := States.GameTime + FENCE_TIME + 1;
-    Tiles[aX][aY].ObjectRefreshTime := States.GameTime + FENCE_TIME + 2;
-  end;
-
-  for J := 1 to 9 do
-  begin
-    TilesFieldObjects[P][Length(TilesFieldObjects[P]) - J] := WARRIOR_OBJECT7;
-    Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - J]][TilesFieldY[P][Length(TilesFieldY[P]) - J]].Skill := sNone;
-    Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - J]][TilesFieldY[P][Length(TilesFieldY[P]) - J]].Owner := P;
-    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - J] := States.GameTime + 1 + FENCE_TIME;
-    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - J] := States.GameTime + 1;
-
-    if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - J], TilesFieldY[P][Length(TilesFieldY[P]) - J]) = BARB_OBJECT3)
-    or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - J], TilesFieldY[P][Length(TilesFieldY[P]) - J]) = BOWMAN_ROCKET)
-    or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - J], TilesFieldY[P][Length(TilesFieldY[P]) - J]) = BOWMAN_OBJECT5)
-    or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - J], TilesFieldY[P][Length(TilesFieldY[P]) - J]), SWORD_OBJECT, VAGA_OBJECT6)) then
-      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - J] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - J] + CLEANUP_TIME;
-
-  end;
-
-  ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 9] + CLEAR_ARRAY_FACTOR + 2;
 
 end;
 
@@ -8514,9 +8466,6 @@ begin
                Players[P].LastUsedSkill := sMentalBurst;
                Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if Players[P].StolenSkill = sMentalBurst then
-                 if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
-                   Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
                if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
                begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
@@ -8536,9 +8485,6 @@ begin
                Players[P].LastUsedSkill := sMentalBurst;
                Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if Players[P].StolenSkill = sMentalBurst then
-                 if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
-                   Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
                if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
                begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
@@ -8558,9 +8504,6 @@ begin
                Players[P].LastUsedSkill := sMentalBurst;
                Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if Players[P].StolenSkill = sMentalBurst then
-                 if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
-                   Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
                if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
                begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
@@ -8580,9 +8523,6 @@ begin
                Players[P].LastUsedSkill := sMentalBurst;
                Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if Players[P].StolenSkill = sMentalBurst then
-                 if Players[P].WineSkillDelay < ROGUE_MENTAL_DELAY then
-                   Players[P].WineSkillDelay := ROGUE_MENTAL_DELAY;
                if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
                begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
@@ -8627,8 +8567,6 @@ begin
                Players[P].LastUsedSkill := sMentalBurst;
                Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if Players[P].RoadSkillDelay < ROGUE_MENTAL_DELAY then
-                 Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
                if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
                begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
@@ -8648,8 +8586,6 @@ begin
                Players[P].LastUsedSkill := sMentalBurst;
                Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if Players[P].RoadSkillDelay < ROGUE_MENTAL_DELAY then
-                 Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
                if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
                begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
@@ -8669,8 +8605,6 @@ begin
                Players[P].LastUsedSkill := sMentalBurst;
                Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if Players[P].RoadSkillDelay < ROGUE_MENTAL_DELAY then
-                 Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
                if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
                begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
@@ -8690,8 +8624,6 @@ begin
                Players[P].LastUsedSkill := sMentalBurst;
                Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if Players[P].RoadSkillDelay < ROGUE_MENTAL_DELAY then
-                 Players[P].RoadSkillDelay := ROGUE_MENTAL_DELAY;
                if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
                begin
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
@@ -8866,32 +8798,8 @@ begin
         Players[P].FieldSkillDelay := Round(ROGUE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
         if InRange(O, 0, 7) then
-        begin
-
-          if Players[P].StolenSkill = sTotem then
-            Players[P].WineSkillDelay := ROGUE_TOTEM_DELAY
-
-          else
-
-          if Players[P].StolenSkill = sDeadlyFireworks then
-            Players[P].WineSkillDelay := ROGUE_FIREWORKS_DELAY
-
-          else
-
-          if Players[P].StolenSkill = sRevengeFromNowhere then
-            Players[P].WineSkillDelay := ROGUE_REVENGE_DELAY
-
-          else
-
-          if (Players[P].StolenSkill <> sRevengeFromNowhere)
-          and (Players[P].StolenSkill <> sDeadlyFireworks)
-          and (Players[P].StolenSkill <> sTotem) then
-            Players[P].WineSkillDelay := ROGUE_WINE_DELAY;
-
           if Players[P].StolenSkill <> sNone then
             Players[P].StolenSkillTime := STOLEN_SKILL_TIME;
-
-        end;
 
         ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
 
@@ -9836,8 +9744,7 @@ begin
             SetLength(Players[Tiles[aX][aY].Owner].KillTimes, Length(Players[Tiles[aX][aY].Owner].KillTimes) + 1);
             Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] := States.GameTime;
             if Length(Players[Tiles[aX][aY].Owner].KillTimes) >= 4 then
-              if (Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] - Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
-              {and (not Players[Tiles[aX][aY].Owner].Rampage)} then
+              if (Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] - Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
                 Players[Tiles[aX][aY].Owner].Rampage := True;
@@ -9871,8 +9778,7 @@ begin
             SetLength(Players[Players[P].HeroFearGiver].KillTimes, Length(Players[Players[P].HeroFearGiver].KillTimes) + 1);
             Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] := States.GameTime;
             if Length(Players[Players[P].HeroFearGiver].KillTimes) >= 4 then
-              if (Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] - Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
-              {and (not Players[Players[P].HeroFearGiver].Rampage)} then
+              if (Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] - Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
                 Players[Players[P].HeroFearGiver].Rampage := True;
@@ -9907,8 +9813,7 @@ begin
             SetLength(Players[Players[P].GravityUser].KillTimes, Length(Players[Players[P].GravityUser].KillTimes) + 1);
             Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] := States.GameTime;
             if Length(Players[Players[P].GravityUser].KillTimes) >= 4 then
-              if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
-              {and (not Players[Players[P].GravityUser].Rampage)} then
+              if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
                 Players[Players[P].GravityUser].Rampage := True;
@@ -9943,8 +9848,7 @@ begin
             SetLength(Players[Players[P].ThreadsAttacker].KillTimes, Length(Players[Players[P].ThreadsAttacker].KillTimes) + 1);
             Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] := States.GameTime;
             if Length(Players[Players[P].ThreadsAttacker].KillTimes) >= 4 then
-              if (Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] - Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
-              {and (not Players[Players[P].ThreadsAttacker].Rampage)} then
+              if (Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] - Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
               begin
                 Actions.PlayWAV(-1, 'Rampage', 1);
                 Players[Players[P].ThreadsAttacker].Rampage := True;
@@ -11379,8 +11283,7 @@ begin
         SetLength(Players[LastAttacker].KillTimes, Length(Players[LastAttacker].KillTimes) + 1);
         Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] := States.GameTime;
           if Length(Players[LastAttacker].KillTimes) >= 4 then
-            if (Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] - Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME)
-            {and (not Players[LastAttacker].Rampage)} then
+            if (Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] - Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
             begin
               Actions.PlayWAV(-1, 'Rampage', 1);
               Players[LastAttacker].Rampage := True;
