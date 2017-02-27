@@ -9739,7 +9739,9 @@ begin
           end;
           if (P <> Tiles[aX][aY].Owner)
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
-            Actions.PlayWAV(Tiles[aX][aY].Owner, 'Retard', 1);
+          for I := 0 to 7 do
+            if Players[I].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam then
+              Actions.PlayWAV(I, 'Retard', 1);
           if (P <> Tiles[aX][aY].Owner)
           and (Players[P].PlayersTeam <> Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
@@ -9811,7 +9813,9 @@ begin
           if (Players[P].MovedByGravity)
           and (Players[P].PlayersTeam = Players[Players[P].GravityUser].PlayersTeam)
           and (P <> Players[P].GravityUser) then
-            Actions.PlayWAV(Players[P].GravityUser, 'Retard', 1);
+            for I := 0 to 7 do
+              if Players[I].PlayersTeam = Players[Players[P].GravityUser].PlayersTeam then
+                Actions.PlayWAV(I, 'Retard', 1);
           if (Players[P].MovedByGravity)
           and (Players[P].PlayersTeam <> Players[Players[P].GravityUser].PlayersTeam)
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
@@ -9850,7 +9854,9 @@ begin
           if (Players[P].MovedByThreads)
           and (Players[P].PlayersTeam = Players[Players[P].ThreadsAttacker].PlayersTeam)
           and (P <> Players[P].ThreadsAttacker) then
-            Actions.PlayWAV(Players[P].ThreadsAttacker, 'Retard', 1);
+            for I := 0 to 7 do
+              if Players[I].PlayersTeam = Players[Players[P].ThreadsAttacker].PlayersTeam then
+                Actions.PlayWAV(I, 'Retard', 1);
           if (Players[P].MovedByThreads)
           and (Players[P].PlayersTeam <> Players[Players[P].ThreadsAttacker].PlayersTeam)
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
