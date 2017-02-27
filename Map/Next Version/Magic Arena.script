@@ -9809,6 +9809,10 @@ begin
               end;
           end;
           if (Players[P].MovedByGravity)
+          and (Players[P].PlayersTeam = Players[Players[P].GravityUser].PlayersTeam)
+          and (P <> Players[P].GravityUser) then
+            Actions.PlayWAV(Players[P].GravityUser, 'Retard', 1);
+          if (Players[P].MovedByGravity)
           and (Players[P].PlayersTeam <> Players[Players[P].GravityUser].PlayersTeam)
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
@@ -9843,6 +9847,10 @@ begin
                 Players[Players[P].GravityUser].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
               end;
           end;
+          if (Players[P].MovedByThreads)
+          and (Players[P].PlayersTeam = Players[Players[P].ThreadsAttacker].PlayersTeam)
+          and (P <> Players[P].ThreadsAttacker) then
+            Actions.PlayWAV(Players[P].ThreadsAttacker, 'Retard', 1);
           if (Players[P].MovedByThreads)
           and (Players[P].PlayersTeam <> Players[Players[P].ThreadsAttacker].PlayersTeam)
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
