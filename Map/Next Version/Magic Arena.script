@@ -2408,6 +2408,8 @@ end;
 
 
 procedure OnBeacon(P, X, Y: Integer);
+var
+  Random: Boolean;
 begin
   if not DEBUG_MODE then
     Exit;
@@ -2415,6 +2417,8 @@ begin
     Exit;
   if States.GameTime > CHOOSE_HERO_TIMER then
     Exit;
+
+  Random := False;
 
   if TileOnChoiceArea(X, Y) then
     for I := 0 to 7 do
@@ -2425,22 +2429,33 @@ begin
           Players[I].HeroType := States.UnitType(States.UnitAt(X, Y));
           if Players[I].HeroType = 13 then
           begin
+            Random := True;
             case States.KaMRandomI(6) of
-              0: Players[P].HeroType := 16;
-              1: Players[P].HeroType := 23;
-              2: Players[P].HeroType := 18;
-              3: Players[P].HeroType := 19;
-              4: Players[P].HeroType := 17;
-              5: Players[P].HeroType := 22;
+              0: Players[I].HeroType := 16;
+              1: Players[I].HeroType := 23;
+              2: Players[I].HeroType := 18;
+              3: Players[I].HeroType := 19;
+              4: Players[I].HeroType := 17;
+              5: Players[I].HeroType := 22;
             end;
           end;
           Players[I].TempHeroType := Players[I].HeroType;
           Players[I].HeroChosen := True;
           Actions.GiveUnit(8, 13, 13, 14, 4);
-          if InRange(I, 0, 3) then
-            TeamChoice[0] := TeamChoice[0] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[] <$32> ' + States.UnitTypeName(Players[I].HeroType);
-          if InRange(I, 4, 7) then
-            TeamChoice[1] := TeamChoice[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[] <$32> ' + States.UnitTypeName(Players[I].HeroType);
+          if not Random then
+          begin
+            if InRange(I, 0, 3) then
+              TeamChoice[0] := TeamChoice[0] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[] <$32> ' + States.UnitTypeName(Players[I].HeroType);
+            if InRange(I, 4, 7) then
+              TeamChoice[1] := TeamChoice[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[] <$32> ' + States.UnitTypeName(Players[I].HeroType);
+          end
+          else
+          begin
+            if InRange(I, 0, 3) then
+              TeamChoice[0] := TeamChoice[0] + '|<$115> [$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]: ' + States.UnitTypeName(Players[I].HeroType);
+            if InRange(I, 4, 7) then
+              TeamChoice[1] := TeamChoice[1] + '|<$115> [$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]: ' + States.UnitTypeName(Players[I].HeroType);
+          end;
         end;
 end;
 
