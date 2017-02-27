@@ -970,6 +970,8 @@ end;
 procedure OnMissionStart;
 begin
 
+  Actions.PlayWAVFadeMusic(-1, 'Intro', 1);
+
   SetPlayersLeft;
   SetPlayersRight;
 
@@ -9743,15 +9745,6 @@ begin
           if (P <> Tiles[aX][aY].Owner)
           and (Players[P].PlayersTeam <> Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
-            for I := 0 to 7 do
-              if (States.PlayerEnabled(I))
-              and (I <> P) then
-              begin
-                if Players[P].PlayersTeam = Players[I].PlayersTeam then
-                  Actions.PlayWAV(I, 'AllyKilled', 1)
-                else
-                  Actions.PlayWAV(I, 'EnemyKilled', 1);
-              end;
             Players[Tiles[aX][aY].Owner].Kills := Players[Tiles[aX][aY].Owner].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
             Players[Tiles[aX][aY].Owner].TotalKills := Players[Tiles[aX][aY].Owner].TotalKills + 1;
             SetLength(Players[Tiles[aX][aY].Owner].KillTimes, Length(Players[Tiles[aX][aY].Owner].KillTimes) + 1);
@@ -10350,6 +10343,7 @@ end;
 procedure CheckVictoryDefeat;
 var
   TeamHP: array[0..1] of Integer;
+  P: Integer;
 begin
   for I := 0 to 1 do
     TeamHP[I] := 0;
@@ -10361,12 +10355,23 @@ begin
       if (Players[J].HP = 0)
       and (not Players[J].Defeat) then
       begin
-        Actions.ShowMsgFormatted(-1, '<$134>', [States.PlayerName(J)]);
-        Actions.PlayWAVFadeMusic(-1, 'Defeat', 1);
         if Length(Zombies) > 0 then
           for I := 0 to Length(Zombies) - 1 do
             if Zombies[I].Owner = J then
               Actions.UnitKill(Zombies[I].ID, False);
+        for P := 0 to 7 do
+          if States.PlayerEnabled(P) then
+            begin
+              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[P].PlayerStatus := Players[P].PlayerStatus + '|[$' + States.PlayerColorText(J) + ']' + States.PlayerName(J) + '[] <$134>';
+              if J <> P then
+              begin
+                if Players[P].PlayersTeam = Players[J].PlayersTeam then
+                  Actions.PlayWAV(P, 'AllyKilled', 1)
+                else
+                  Actions.PlayWAV(P, 'EnemyKilled', 1);
+              end;
+            end;
         Players[J].Defeat := True;
       end;
     end;
@@ -10378,12 +10383,23 @@ begin
       if (Players[K].HP = 0)
       and (not Players[K].Defeat) then
       begin
-        Actions.ShowMsgFormatted(-1, '<$134>', [States.PlayerName(K)]);
-        Actions.PlayWAVFadeMusic(-1, 'Defeat', 1);
         if Length(Zombies) > 0 then
           for I := 0 to Length(Zombies) - 1 do
             if Zombies[I].Owner = K then
               Actions.UnitKill(Zombies[I].ID, False);
+        for P := 0 to 7 do
+          if States.PlayerEnabled(P) then
+            begin
+              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[P].PlayerStatus := Players[P].PlayerStatus + '|[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + '[] <$134>';
+              if K <> P then
+              begin
+                if Players[P].PlayersTeam = Players[K].PlayersTeam then
+                  Actions.PlayWAV(P, 'AllyKilled', 1)
+                else
+                  Actions.PlayWAV(P, 'EnemyKilled', 1);
+              end;
+            end;
         Players[K].Defeat := True;
       end;
     end;
@@ -11234,15 +11250,6 @@ begin
   begin
     if InRange(LastAttacker, 0, 11) then
     begin
-      for I := 0 to 7 do
-        if (States.PlayerEnabled(I))
-        and (I <> O) then
-        begin
-          if Players[O].PlayersTeam = Players[I].PlayersTeam then
-            Actions.PlayWAV(I, 'AllyKilled', 1)
-          else
-            Actions.PlayWAV(I, 'EnemyKilled', 1);
-         end;
       if not Players[O].MindStunned then 
         Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
       Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
