@@ -970,8 +970,6 @@ end;
 procedure OnMissionStart;
 begin
 
-  Actions.PlayWAVFadeMusic(-1, 'Intro', 1);
-
   SetPlayersLeft;
   SetPlayersRight;
 
