@@ -6,6 +6,7 @@ Magic Arena - Next Version
 - AI Pikeman could step on Infernal Tower animation
 - When player gets defeated, all his zombies/illusions should die (reverted from 2.112)
 - Skills should be cancelled only if Hero dies during animation
+- Sounds when ally/enemy is killed, when player kills his ally
 
 
 v.2.173

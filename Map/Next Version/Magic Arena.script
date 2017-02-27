@@ -9738,8 +9738,20 @@ begin
             end;
           end;
           if (P <> Tiles[aX][aY].Owner)
+          and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+            Actions.PlayWAV(Tiles[aX][aY].Owner, 'Retard', 1);
+          if (P <> Tiles[aX][aY].Owner)
           and (Players[P].PlayersTeam <> Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
+            for I := 0 to 7 do
+              if (States.PlayerEnabled(I))
+              and (I <> P) then
+              begin
+                if Players[P].PlayersTeam = Players[I].PlayersTeam then
+                  Actions.PlayWAV(I, 'AllyKilled', 1)
+                else
+                  Actions.PlayWAV(I, 'EnemyKilled', 1);
+              end;
             Players[Tiles[aX][aY].Owner].Kills := Players[Tiles[aX][aY].Owner].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
             Players[Tiles[aX][aY].Owner].TotalKills := Players[Tiles[aX][aY].Owner].TotalKills + 1;
             SetLength(Players[Tiles[aX][aY].Owner].KillTimes, Length(Players[Tiles[aX][aY].Owner].KillTimes) + 1);
@@ -11222,7 +11234,16 @@ begin
   begin
     if InRange(LastAttacker, 0, 11) then
     begin
-      if Players[O].MindStunned = False then 
+      for I := 0 to 7 do
+        if (States.PlayerEnabled(I))
+        and (I <> O) then
+        begin
+          if Players[O].PlayersTeam = Players[I].PlayersTeam then
+            Actions.PlayWAV(I, 'AllyKilled', 1)
+          else
+            Actions.PlayWAV(I, 'EnemyKilled', 1);
+         end;
+      if not Players[O].MindStunned then 
         Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
       Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
       Players[LastAttacker].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
@@ -11278,7 +11299,7 @@ begin
       and (Players[O].MindStunned) then
         Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$123> ' + '[]';
       Players[O].RespawnCheckTime := States.GameTime + 10;
-      if Players[O].MindStunned = False then 
+      if not Players[O].MindStunned then 
       begin
         Players[LastAttacker].TotalKills := Players[LastAttacker].TotalKills + 1;
         SetLength(Players[LastAttacker].KillTimes, Length(Players[LastAttacker].KillTimes) + 1);
@@ -12080,7 +12101,7 @@ begin
           Players[I1].HeroType := Players[I1].HeroMindType;
           Players[M[I1]].HeroType := Players[M[I1]].HeroMindType;
           Players[I1].TempHeroType := Players[I1].TempHeroMindType;
-          if (Players[M[I1]].HeroReborn = False) and (Players[M[I1]].HeroExiled = False) then
+          if (not Players[M[I1]].HeroReborn) and (not Players[M[I1]].HeroExiled) then
           begin
             Actions.GroupKillAll(Players[I1].Hero, True);
             Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[M[I1]].MindX, Players[M[I1]].MindY, Players[M[I1]].MindDir, 1, 1);
@@ -12088,7 +12109,7 @@ begin
             Actions.CinematicPanTo(I1, Players[M[I1]].MindX, Players[M[I1]].MindY, 0);
             Actions.CinematicEnd(I1);
           end;
-          if (Players[I1].HeroReborn = False) then
+          if (not Players[I1].HeroReborn) then
           begin
             Actions.GroupKillAll(Players[M[I1]].Hero, True);
             Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
