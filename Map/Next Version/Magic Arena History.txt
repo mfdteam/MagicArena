@@ -1,12 +1,12 @@
 Magic Arena - Next Version
 
 - Custom debugger (WIP)
-- Message + sound when players get defeated (Hero has 0 HP)
+- Status + sound when players get defeated (Hero has 0 HP)
 - Highlight Sacrificial Teleport cooldown in red when player can't use skill
 - AI Pikeman could step on Infernal Tower animation
 - When player gets defeated, all his zombies/illusions should die (reverted from 2.112)
 - Skills should be cancelled only if Hero dies during animation
-- Sounds when ally/enemy is killed, when player kills his ally
+- Sound when player kills his ally
 
 
 v.2.173
