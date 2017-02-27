@@ -7,6 +7,7 @@ Magic Arena - Next Version
 - When player gets defeated, all his zombies/illusions should die (reverted from 2.112)
 - Skills should be cancelled only if Hero dies during animation
 - Sound when player kills his ally
+- Added delay before teleportation (Teleport and Sacrificial Teleport skills)
 
 
 v.2.173

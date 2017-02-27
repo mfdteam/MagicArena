@@ -543,6 +543,10 @@ type
     RoadSkillCancelTime: Integer;
     FieldSkillCancelTime: Integer;
     WineSkillCancelTime: Integer;
+    TeleportTime: Integer;
+    TeleportX: Integer;
+    TeleportY: Integer;
+    TeleportDir: Integer;
   end;
 
 
@@ -1271,6 +1275,10 @@ begin
       RoadSkillCancelTime := 0;
       FieldSkillCancelTime := 0;
       WineSkillCancelTime := 0;
+      TeleportTime := 0;
+      TeleportX := 0;
+      TeleportY := 0;
+      TeleportDir := -1;
     end;
   end;
 
@@ -3496,8 +3504,11 @@ begin
       if States.PlayerIsAI(P) then 
         Players[P].TempHeroType := Players[P].HeroType;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(P, Players[P].TempHeroType, X, Y, NewDir, 1, 1);
-      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+      Players[P].TeleportTime := States.GameTime + DELAY_OF_TURNING;
+      Players[P].TeleportX := X;
+      Players[P].TeleportY := Y;
+      Players[P].TeleportDir := NewDir;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       Players[P].FieldSkillDelay := Round(LANCE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
     end;
   end;
@@ -4572,8 +4583,11 @@ begin
       Players[P].FieldSkillDelay := Round(PIKE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Actions.GroupKillAll(Players[P].Hero, False);
       Players[P].HP := Players[P].HP - 1;  
-      Players[P].Hero := Actions.GiveGroup(P, Players[P].TempHeroType, X, Y, NewDir, 1, 1);
-      Actions.GroupHungerset(Players[P].Hero, States.UnitMaxHunger);
+      Players[P].TeleportTime := States.GameTime + DELAY_OF_TURNING;
+      Players[P].TeleportX := X;
+      Players[P].TeleportY := Y;
+      Players[P].TeleportDir := NewDir;
+      Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
   end;
 
@@ -4593,8 +4607,11 @@ begin
         Players[P].FieldSkillDelay := Round(PIKE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
         Actions.GroupKillAll(Players[P].Hero, False);
         Players[M[P]].HP := Players[M[P]].HP - 1;  
-        Players[P].Hero := Actions.GiveGroup(P, Players[P].TempHeroType, X, Y, NewDir, 1, 1);
-        Actions.GroupHungerset(Players[P].Hero, States.UnitMaxHunger);
+        Players[P].TeleportTime := States.GameTime + DELAY_OF_TURNING;
+        Players[P].TeleportX := X;
+        Players[P].TeleportY := Y;
+        Players[P].TeleportDir := NewDir;
+        Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       end;
     end;
   
@@ -11700,6 +11717,13 @@ begin
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         Players[I1].HeroReborn := False;
 
+      end;
+
+      if States.GameTime = Players[I1].TeleportTime then
+      begin
+        Actions.GroupKillAll(Players[I1].Hero, True);
+        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].TeleportX, Players[I1].TeleportY, Players[I1].TeleportDir, 1, 1);
+        Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
       end;
 
       if States.GameTime = Players[I1].VagaAppearTime then
