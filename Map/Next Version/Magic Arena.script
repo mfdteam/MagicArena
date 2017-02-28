@@ -513,7 +513,6 @@ type
     FireworkTime: Integer;
     FireworkX: Integer;
     FireworkY: Integer;
-    CrackingStartTime: Integer;
     HeroExileTime: Integer;
     HeroExileBackTime: Integer;
     HeroExileX: Integer;
@@ -1249,7 +1248,6 @@ begin
       FireworkTime := 0;
       FireworkX := 0;
       FireworkY := 0;
-      CrackingStartTime := 0;
       HeroExileTime := 0;
       HeroExileBackTime := 0;
       HeroExileX := 0;
@@ -2972,8 +2970,6 @@ begin
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 3;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 4;
 
-    Players[P].CrackingStartTime := States.GameTime + 9;
-
     Players[P].RoadSkillCancelTime := States.GameTime + 8;
 
     for I := 1 to 4 do
@@ -3225,7 +3221,7 @@ begin
       Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
       Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sTotem;
 
-      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 36;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 38;
       ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 110;
       Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
 
@@ -9558,16 +9554,13 @@ begin
           end;
 
         if TilesRoadLength[P] > 0 then
-          if (Players[P].HeroType <> 23)
-          or ((Players[P].HeroType = 23)
-          and (States.GameTime < Players[P].CrackingStartTime)) then
-            for I := 0 to TilesRoadLength[P] - 1 do
-              if (SetTilesRoadTimes[P][I] > States.GameTime)
-              and (States.GameTime <= Players[P].RoadSkillCancelTime) then
-              begin
-                SetTilesRoadTimes[P][I] := 0;
-                TilesRoadObjects[P][I] := SKILL_CANCEL_OBJ;
-              end;
+          for I := 0 to TilesRoadLength[P] - 1 do
+            if (SetTilesRoadTimes[P][I] > States.GameTime)
+            and (States.GameTime <= Players[P].RoadSkillCancelTime) then
+            begin
+              SetTilesRoadTimes[P][I] := 0;
+              TilesRoadObjects[P][I] := SKILL_CANCEL_OBJ;
+            end;
 
         if TilesFieldLength[P] > 0 then
           for I := 0 to TilesFieldLength[P] - 1 do
@@ -9579,34 +9572,24 @@ begin
             end;
 
         if TilesWineLength[P] > 0 then
-          if ((Players[P].HeroType <> 25)
-          and (Players[P].LastUsedSkill <> sCrackingEarth))
-          or ((Players[P].HeroType = 25)
-          and (Players[P].LastUsedSkill = sCrackingEarth)
-          and (States.GameTime < Players[P].CrackingStartTime))  then
-            for I := 0 to TilesWineLength[P] - 1 do
-              if (SetTilesWineTimes[P][I] > States.GameTime)
-              and (States.GameTime <= Players[P].WineSkillCancelTime) then
-              begin
-                SetTilesWineTimes[P][I] := 0;
-                TilesWineObjects[P][I] := SKILL_CANCEL_OBJ;
-              end;
+          for I := 0 to TilesWineLength[P] - 1 do
+            if (SetTilesWineTimes[P][I] > States.GameTime)
+            and (States.GameTime <= Players[P].WineSkillCancelTime) then
+            begin
+              SetTilesWineTimes[P][I] := 0;
+              TilesWineObjects[P][I] := SKILL_CANCEL_OBJ;
+            end;
               
         if (InRange(M2[P], 0, 7))
         and Players[M2[P]].MindStunned then
           if TilesWineLength[M2[P]] > 0 then
-            if ((Players[M2[P]].HeroType <> 25)
-            and (Players[M2[P]].LastUsedSkill <> sCrackingEarth))
-            or ((Players[M2[P]].HeroType = 25)
-            and (Players[M2[P]].LastUsedSkill = sCrackingEarth)
-            and (States.GameTime < Players[M2[P]].CrackingStartTime))  then
-              for I := 0 to TilesWineLength[M2[P]] - 1 do
-                if (SetTilesWineTimes[M2[P]][I] > States.GameTime)
-                and (States.GameTime <= Players[M2[P]].WineSkillCancelTime) then
-                begin
-                  SetTilesWineTimes[M2[P]][I] := 0;
-                  TilesWineObjects[M2[P]][I] := SKILL_CANCEL_OBJ;
-                end;
+            for I := 0 to TilesWineLength[M2[P]] - 1 do
+              if (SetTilesWineTimes[M2[P]][I] > States.GameTime)
+              and (States.GameTime <= Players[M2[P]].WineSkillCancelTime) then
+              begin
+                SetTilesWineTimes[M2[P]][I] := 0;
+                TilesWineObjects[M2[P]][I] := SKILL_CANCEL_OBJ;
+              end;
 
         Players[P].TrackStartTime := 0;
         Players[P].TrackStopTime := 0;
@@ -11136,16 +11119,13 @@ begin
     end;
     
     if TilesRoadLength[O] > 0 then
-      if (Players[O].HeroType <> 23)
-      or ((Players[O].HeroType = 23)
-      and (States.GameTime < Players[O].CrackingStartTime)) then
-        for I := 0 to TilesRoadLength[O] - 1 do
-          if (SetTilesRoadTimes[O][I] > States.GameTime)
-          and (States.GameTime <= Players[O].RoadSkillCancelTime) then
-          begin
-            SetTilesRoadTimes[O][I] := 0;
-            TilesRoadObjects[O][I] := SKILL_CANCEL_OBJ;
-          end;
+      for I := 0 to TilesRoadLength[O] - 1 do
+        if (SetTilesRoadTimes[O][I] > States.GameTime)
+        and (States.GameTime <= Players[O].RoadSkillCancelTime) then
+        begin
+          SetTilesRoadTimes[O][I] := 0;
+          TilesRoadObjects[O][I] := SKILL_CANCEL_OBJ;
+        end;
 
     if TilesFieldLength[O] > 0 then
       for I := 0 to TilesFieldLength[O] - 1 do
@@ -11157,34 +11137,24 @@ begin
         end;
 
     if TilesWineLength[O] > 0 then
-      if ((Players[O].HeroType <> 25)
-      and (Players[O].LastUsedSkill <> sCrackingEarth))
-      or ((Players[O].HeroType = 25)
-      and (Players[O].LastUsedSkill = sCrackingEarth)
-      and (States.GameTime < Players[O].CrackingStartTime)) then
-        for I := 0 to TilesWineLength[O] - 1 do
-          if (SetTilesWineTimes[O][I] > States.GameTime)
-          and (States.GameTime <= Players[O].WineSkillCancelTime) then
-          begin
-            SetTilesWineTimes[O][I] := 0;
-            TilesWineObjects[O][I] := SKILL_CANCEL_OBJ;
-          end;
+      for I := 0 to TilesWineLength[O] - 1 do
+        if (SetTilesWineTimes[O][I] > States.GameTime)
+        and (States.GameTime <= Players[O].WineSkillCancelTime) then
+        begin
+          SetTilesWineTimes[O][I] := 0;
+          TilesWineObjects[O][I] := SKILL_CANCEL_OBJ;
+        end;
           
     if (InRange(M2[O], 0, 7))
     and Players[M2[O]].MindStunned then
       if TilesWineLength[M2[O]] > 0 then
-        if ((Players[M2[O]].HeroType <> 25)
-        and (Players[M2[O]].LastUsedSkill <> sCrackingEarth))
-        or ((Players[M2[O]].HeroType = 25)
-        and (Players[M2[O]].LastUsedSkill = sCrackingEarth)
-        and (States.GameTime < Players[M2[O]].CrackingStartTime)) then
-          for I := 0 to TilesWineLength[M2[O]] - 1 do
-            if (SetTilesWineTimes[M2[O]][I] > States.GameTime)
-            and (States.GameTime <= Players[M2[O]].WineSkillCancelTime) then
-            begin
-              SetTilesWineTimes[M2[O]][I] := 0;
-              TilesWineObjects[M2[O]][I] := SKILL_CANCEL_OBJ;
-            end;
+        for I := 0 to TilesWineLength[M2[O]] - 1 do
+          if (SetTilesWineTimes[M2[O]][I] > States.GameTime)
+          and (States.GameTime <= Players[M2[O]].WineSkillCancelTime) then
+          begin
+            SetTilesWineTimes[M2[O]][I] := 0;
+            TilesWineObjects[M2[O]][I] := SKILL_CANCEL_OBJ;
+          end;
 
   end;
 
@@ -11616,7 +11586,7 @@ begin
           Actions.CinematicEnd(I1);
           Actions.GroupKillAll(Players[I1].Hero, True);
           Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].TribuneX, Players[I1].TribuneY, 4, 1, 1);
-          Actions.GroupHungerset(Players[I1].Hero, States.UnitMaxHunger);
+          Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
           Actions.GroupBlockOrders(Players[I1].Hero, True);
           Players[I1].MovedToTribune := True;
         end;
