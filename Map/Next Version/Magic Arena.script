@@ -8450,8 +8450,8 @@ begin
 
         if (Abs(X - X2) <= REPLICA_RADIUS)
         and (Abs(Y - Y2) <= REPLICA_RADIUS)
-        and (not Players[O].MagicImmunity)
-        and (not Players[O].TotalImmunity) then
+        and (not Players[O].HeroMagicImmunity)
+        and (not Players[O].HeroTotalImmunity) then
         begin
 
           D := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
@@ -9419,8 +9419,8 @@ begin
                 and (Abs(X - X2) <= REPLICA_RADIUS)
                 and (Abs(Y - Y2) <= REPLICA_RADIUS)
                 and (InRange(O, 0, 7)) then
-                  if (not Players[O].MagicImmunity)
-                  and (not Players[O].TotalImmunity) 
+                  if (not Players[O].HeroMagicImmunity)
+                  and (not Players[O].HeroTotalImmunity) then
                   begin
                     TempRoadSkillDelay := Players[P].RoadSkillDelay;
                     Replica(P, X, Y);
@@ -12018,6 +12018,7 @@ begin
 
       if States.GameTime = Players[I1].RiftTime then
       begin
+        Actions.GroupKillAll(Players[I1].Hero, True);
         Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].RiftX, Players[I1].RiftY, Players[I1].RiftDir, 1, 1);
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         if Length(Zombies) > 0 then
