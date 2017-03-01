@@ -8,6 +8,7 @@ Magic Arena - Next Version
 - Skills should be cancelled only if Hero dies during animation
 - Sound when player kills his ally
 - Added delay before teleportation (Teleport and Sacrificial Teleport skills)
+- New Hero: Rebel
 
 
 v.2.173
