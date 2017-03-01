@@ -52,6 +52,10 @@ const
   SCOUT_FIELD_DELAY = 150;
   SCOUT_WINE_DELAY = 350;
 
+  REBEL_ROAD_DELAY = 100;
+  REBEL_FIELD_DELAY = 120;
+  REBEL_WINE_DELAY = 300;
+
 //Skills parameters
 
   TELEPORT_RADIUS = 5;
@@ -79,6 +83,14 @@ const
   EXILE_ALLY_RADIUS = 7;
   SHIELD_RADIUS = 7;
   SHIELD_AREA_RADIUS = 3;
+  REPLICA_RADIUS = 5;
+  REPLICA_DELAY = 15;
+  RIFT_USAGE_RADIUS = 4;
+  RIFT_ZOMBIE_RADIUS = 5;
+  RIFT_DELAY = 10;
+  RIFT_ADD_ILLUSIONS = 2;
+  MIRROR_TIME = 50;
+  REBEL_ZOMBIE_LIFE = 300;
 
   RAGE_RADIUS = 5;
   TOTEM_RADIUS = 4;
@@ -219,6 +231,8 @@ const
   SCOUT_OBJECT5 = 19;
   SCOUT_OBJECT6 = 126;
   SCOUT_OBJECT7 = 112;
+
+  REBEL_OBJECT = 192;
 
   CIRCLE_FILL_OBJ = 17;
   UNIVERSAL_KILL_OBJ = 180;
@@ -368,7 +382,8 @@ type
             sFierySnake, sExile, sShield,
             sThreadsOfDeath, sDeafeningClatter, sRagingSpurt,
             sMentalBurst, sSteal, sUniversal,
-            sBoomerang, sSilence, sMind);
+            sBoomerang, sSilence, sMind,
+            sReplica, sRift, sMirror);
 
 
 type
@@ -546,6 +561,16 @@ type
     TeleportX: Integer;
     TeleportY: Integer;
     TeleportDir: Integer;
+    ReplicaTime: Integer;
+    ReplicaX: Integer;
+    ReplicaY: Integer;
+    ReplicaDir: Integer;
+    ReplicaType: Integer;
+    RiftTime: Integer;
+    RiftX: Integer;
+    RiftY: Integer;
+    RiftDir: Integer;
+    MirrorTime: Integer;
   end;
 
 
@@ -555,6 +580,7 @@ type
     ID: Integer;
     Hunger: Integer;
     ZombieType: Integer;
+    TeleportTime: Integer;
   end;
 
 
@@ -1277,6 +1303,16 @@ begin
       TeleportX := 0;
       TeleportY := 0;
       TeleportDir := -1;
+      ReplicaTime := 0;
+      ReplicaX := 0;
+      ReplicaY := 0;
+      ReplicaDir := -1;
+      ReplicaType := -1;
+      RiftTime := 0;
+      RiftX := 0;
+      RiftY := 0;
+      RiftDir := -1;
+      MirrorTime := 0;
     end;
   end;
 
@@ -1734,6 +1770,17 @@ begin
 end;
 
 
+function MirrorStatus(P: Integer): ANSIString;
+begin
+  if Players[P].MirrorTime - States.GameTime > 0 then
+    Result := '|[$528FAC]<$137>[] (' + IntToStr((Players[P].MirrorTime - States.GameTime)/10) + ')'
+
+  else
+
+    Result := '';
+end;
+
+
 function WerewolfStatus(P: Integer): ANSIString;
 begin
   if Players[P].WerewolfTime > States.GameTime then
@@ -1843,7 +1890,7 @@ end;
 function StatusText(P: Integer): ANSIString;
 begin
   Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) + WerewolfStatus(P) + RegenStatus(P) + DDStatus(P)
-  + SilenceStatus(P) + PreparingStatus(P) + ExileStatus(P) + ShieldStatus(P) + ReChargeStatus(P) + RogueStatus(P)
+  + SilenceStatus(P) + PreparingStatus(P) + ExileStatus(P) + ShieldStatus(P) + ReChargeStatus(P) + RogueStatus(P) + MirrorStatus(P)
   + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + FieryTrackStatus(P) + TotalImmunityStatus(P) + StatusKill(P) + DefeatStatus(P) + GameplayStatus(P);
 end;
 
@@ -1934,6 +1981,10 @@ begin
     sSilence: Result := '<$81>';
     sMind: Result := '<$102>';
 
+    sReplica: Result := '<$135>';
+    sRift: Result := '<$136>';
+    sMirror: Result := '<$137>';
+
     sNone: Result := '';
 
   end;
@@ -1992,6 +2043,10 @@ begin
     sSilence: Result := '<$411>';
     sMind: Result := '<$511>';
 
+    sReplica: Result := '<$314>';
+    sRift: Result := '<$414>';
+    sMirror: Result := '<$514>';
+
     sNone: Result := '<$57>'
 
     else Result := '';
@@ -2012,9 +2067,10 @@ begin
     21: Result := '[$AAAAAA]<$80>[]';
     22: Result := '[$634BBA]<$50>[]';
     23: Result := '[$499AEE]<$14>[]';
+    24: Result := '[$C2C3C5]<$135>[]';
+    25: Result := '[$ADF346]<$55>[]';
     26: Result := '[$0022FF]<$46>[]';
     27: Result := '[$FF7648]<$15>[]';
-    25: Result := '[$ADF346]<$55>[]';
   end;
 end;
 
@@ -2031,9 +2087,10 @@ begin
     21: Result := '[$BA5555]<$81>[]';
     22: Result := '[$902F9D]<$51>[]';
     23: Result := '[$4040FF]<$22>[]';
+    24: Result := '[$9570BB]<$136>[]';
+    25: Result := '[$CC7854]<$56>[]';
     26: Result := '[$528AAF]<$112>[]';
     27: Result := '[$00CDCD]<$23>[]';
-    25: Result := '[$CC7854]<$56>[]';
   end;
 end;
 
@@ -2050,9 +2107,10 @@ begin
     21: Result := '[$AAFFAA]<$102>[]';
     22: Result := '[$2580CE]<$52>[]';
     23: Result := '[$EE677A]<$30>[]';
+    24: Result := '[$E6E1B4]<$137>[]';
+    25: Result := '[$AE209F]' + Players[P].StolenSkillName + '[]';
     26: Result := '[$1707A6]<$48>[]';
     27: Result := '[$00FC7C]<$31>[]';
-    25: Result := '[$AE209F]' + Players[P].StolenSkillName + '[]';
   end;
 end;
 
@@ -2069,9 +2127,10 @@ begin
     21: Result := '<$311>';
     22: Result := '<$309>';
     23: Result := '<$302>';
+    24: Result := '<$314>';
+    25: Result := '<$310>';
     26: Result := '<$308>';
     27: Result := '<$313>';
-    25: Result := '<$310>';
   end;
 end;
 
@@ -2088,9 +2147,10 @@ begin
     21: Result := '<$411>';
     22: Result := '<$409>';
     23: Result := '<$402>';
+    24: Result := '<$414>';
+    25: Result := '<$410>';
     26: Result := '<$408>';
     27: Result := '<$413>';
-    25: Result := '<$410>';
   end;
 end;
 
@@ -2107,9 +2167,10 @@ begin
     21: Result := '<$511>';
     22: Result := '<$509>';
     23: Result := '<$502>';
+    24: Result := '<$514>';
+    25: Result := '<$510>';
     26: Result := '<$508>';
     27: Result := '<$513>';
-    25: Result := '<$510>';
   end;
 end;
 
@@ -2126,6 +2187,7 @@ begin
     21:  Result := '<$211>';
     22:  Result := '<$209>';
     23:  Result := '<$202>';
+    24:  Result := '<$212>';
     25:  Result := '<$210>';
     26:  Result := '<$208>'
     else Result := '';
@@ -8361,6 +8423,147 @@ begin
 end;
 
 
+//REBEL
+
+
+procedure Replica(P, X, Y: Integer);
+var
+  U, O, X2, Y2: Integer;
+begin
+  if Players[P].Hero <= 0 then
+    Exit;
+
+  if States.GroupMember(Players[P].Hero, 0) <= 0 then
+    Exit;
+
+  if (States.StatArmyCount(Players[P].ZombiePlayer) < MAX_MILIZOMBIE)
+  and (Players[P].ZombiePlayer <> - 1) 
+  and (TileOnBattlefield(X, Y)) then
+  begin
+    U := States.UnitAt(X, Y);
+    if U > 0 then
+    begin
+      O := States.UnitOwner(U);
+      if InRange(O, 0, 7) then
+      begin
+        X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+        Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+
+        TilesRoadLength[P] := TilesRoadLength[P] + 4;
+        SetLength(TilesRoadX[P], TilesRoadLength[P]);
+        SetLength(TilesRoadY[P], TilesRoadLength[P]);
+        SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
+        SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
+        SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
+
+        TilesRoadX[P][Length(TilesRoadX[P]) - 4] := X2 + 1;
+        TilesRoadX[P][Length(TilesRoadX[P]) - 3] := X2 - 1;
+        TilesRoadX[P][Length(TilesRoadX[P]) - 2] := X2 - 1;
+        TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + 1;
+    
+        TilesRoadY[P][Length(TilesRoadY[P]) - 4] := Y2 + 1;
+        TilesRoadY[P][Length(TilesRoadY[P]) - 3] := Y2 - 1;
+        TilesRoadY[P][Length(TilesRoadY[P]) - 2] := Y2 + 1;
+        TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
+   
+        for I := 1 to 4 do
+        begin
+          TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := REBEL_OBJECT;
+          if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
+          begin
+            Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
+            Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sReplica;
+          end;
+        end;
+    
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 4] := States.GameTime + 8;
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 3] := States.GameTime + 10;
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] := States.GameTime + 12;
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 14;
+    
+        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 4] := States.GameTime + 1;
+        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 3] := States.GameTime + 3;
+        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 5;
+        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 7;
+
+        Players[P].RoadSkillCancelTime := States.GameTime + 14;
+
+        for I := 1 to 4 do
+          if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
+            if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
+            or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
+            or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
+            or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
+            or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+              ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
+
+        Players[P].ReplicaX := X;
+        Players[P].ReplicaY := Y;
+        Players[P].ReplicaType := States.UnitType(U);
+        Players[P].ReplicaTime := States.GameTime + REPLICA_DELAY;
+        Players[P].ReplicaDir := States.UnitDirection(U);
+        Players[P].RoadSkillDelay := Round(REBEL_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+        Players[P].LastUsedSkill := sReplica;
+      end;
+    end;
+  end;
+
+end;
+
+
+procedure Rift(P, X, Y: Integer);
+var
+  X2, Y2, X1, Y1: Integer;
+begin
+  if Players[P].Hero <= 0 then
+    Exit;
+
+  if States.GroupMember(Players[P].Hero, 0) <= 0 then
+    Exit;
+  if (Players[P].ZombiePlayer <> - 1) 
+  and (TileOnBattlefield(X, Y)) then
+  begin
+    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    if (Abs(X2 - X) <= RIFT_USAGE_RADIUS)
+    and (Abs(Y2 - Y) <= RIFT_USAGE_RADIUS) then
+    begin
+      Players[P].RiftX := X;
+      Players[P].RiftY := Y;
+      Players[P].RiftTime := States.GameTime + RIFT_DELAY;
+      Players[P].RiftDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if Length(Zombies) > 0 then
+        for I := 0 to Length(Zombies) - 1 do
+        begin
+          X1 := States.UnitPositionX(Zombies[I].ID);
+          Y1 := States.UnitPositionY(Zombies[I].ID);
+          if (Zombies[I].Owner = P)
+          and (InRange(States.UnitType(Zombies[I].ID), 14, 27))
+          and (Abs(X1 - X) <= RIFT_ZOMBIE_RADIUS)
+          and (Abs(Y1 - Y) <= RIFT_ZOMBIE_RADIUS) then
+            Zombies[I].TeleportTime := Players[P].RiftTime;
+        end;
+      Players[P].FieldSkillDelay := Round(REBEL_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+      Players[P].LastUsedSkill := sRift;
+    end;
+
+  end;
+
+end;
+
+
+procedure Mirror(P, X, Y: Integer);
+begin
+  if Players[P].Hero <= 0 then
+    Exit;
+
+  if States.GroupMember(Players[P].Hero, 0) <= 0 then
+    Exit;
+
+  Players[P].MirrorTime := States.GameTime + MIRROR_TIME;
+  Players[P].WineSkillDelay := Round(REBEL_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+  Players[P].LastUsedSkill := sMirror;
+end;
 
 //ROGUE
 
@@ -8818,6 +9021,10 @@ begin
           sSilence: Players[P].StolenSkillName := '<$81>';
           sMind: Players[P].StolenSkillName := '<$102>';
 
+          sReplica: Players[P].StolenSkillName := '<$135>';
+          sRift: Players[P].StolenSkillName := '<$136>';
+          sMirror: Players[P].StolenSkillName := '<$137>';
+
           sNone: Players[P].StolenSkillName := '<$58>';
 
         end;
@@ -9153,6 +9360,28 @@ begin
              and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
                Mind(P, X, Y);
 
+      sReplica: if (U > 0)
+                and (Abs(X - X2) <= REPLICA_RADIUS)
+                and (Abs(Y - Y2) <= REPLICA_RADIUS)
+                and (InRange(O, 0, 7)) then
+                begin
+                  TempRoadSkillDelay := Players[P].RoadSkillDelay;
+                  Replica(P, X, Y);
+                  Players[P].RoadSkillDelay := TempRoadSkillDelay;
+                  Players[P].WineSkillDelay := Round(REBEL_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                end;
+
+      sRift: if (Abs(X - X2) <= RIFT_USAGE_RADIUS)
+             and (Abs(Y - Y2) <= RIFT_USAGE_RADIUS) then
+             begin
+               TempFieldSkillDelay := Players[P].FieldSkillDelay;
+               Rift(P, X, Y);
+               Players[P].FieldSkillDelay := TempFieldSkillDelay;
+               Players[P].WineSkillDelay := Round(REBEL_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+             end;
+
+      sMirror: Mirror(P, X, Y);
+
       sUniversal: Exit;
 
       sNone: Players[P].StolenSkillName := '<$58>';
@@ -9187,8 +9416,6 @@ begin
     if Players[P].HeroType = 13 then
     begin
       Players[P].HeroType := States.KaMRandomI(12) + 15;
-      if Players[P].HeroType = 24 then
-        Players[P].HeroType := States.KaMRandomI(9) + 15;
       aRandom := True;
     end;
     Players[P].TempHeroType := Players[P].HeroType;
@@ -9269,6 +9496,7 @@ begin
       21: Boomerang(P, X, Y, -1);
       22: ThreadsOfDeath(P, X, Y);
       23: CrackingEarth(P, X, Y, -1);
+      24: Replica(P, X, Y);
       25: MentalBurst(P, X, Y, -1, False);
       26: FierySnake(P, X, Y, -1);
       27: Disorientation(P, X, Y);
@@ -9339,6 +9567,7 @@ begin
       21: Silence(P, X, Y);
       22: DeafeningClatter(P, X, Y);
       23: WaveOfRage(P, X, Y);
+      24: Rift(P, X, Y);
       25: StealSkill(P, X, Y);
       26: Exile(P, X, Y);
       27: FieryTrack(P, X, Y);
@@ -9411,6 +9640,7 @@ begin
       21: Mind(P, X, Y);
       22: RagingSpurt(P, X, Y);
       23: TotemOfAncestors(P, X, Y);
+      24: Mirror(P, X, Y);
       25: UseStolenSkill(P, X, Y, -1);
       26: Shield(P, X, Y);
       27: Regen(P, X, Y);
@@ -9598,6 +9828,9 @@ begin
         Players[P].HeroExileBackTime := 0;
         Players[P].HeroExiled := False;
         Players[P].TowerTime := 0;
+        Players[P].ReplicaTime := 0;
+        Players[P].RiftTime := 0;
+        Players[P].MirrorTime := 0;
 
         if (InRange(Players[P].WerewolfTime - States.GameTime, 0, 49))
         and (InRange(Players[P].TempHeroType, 14, 27)) then
@@ -11035,6 +11268,30 @@ begin
 end;
 
 
+procedure OnUnitAttacked(aID, aAttacker: Integer);
+var
+  P, Z, X, Y, T: Integer;
+begin
+  for I := 0 to Length(Zombies) - 1 do
+    if aAttacker = Zombies[I].ID then
+    begin
+      P := Zombies[I].Owner;
+      if Players[P].MirrorTime >= States.GameTime then
+      begin
+        SetLength(Zombies, Length(Zombies) + 1);
+        Zombies[Length(Zombies) - 1].Owner := P;
+        X := States.UnitPositionX(Zombies[I].ID);
+        Y := States.UnitPositionY(Zombies[I].ID);
+        T := States.UnitType(Zombies[I].ID);
+        Z := Actions.GiveGroup(Players[P].ZombiePlayer, T, X, Y, States.KaMRandomI(8), 1, 1);
+        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+        Zombies[Length(Zombies) - 1].ZombieType := 3;
+        Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE);
+      end;
+    end;
+end;
+
+
 procedure OnUnitDied(aID, aKiller: Integer);
 var
   O, aX, aY, X, Y: Integer;
@@ -11168,6 +11425,9 @@ begin
     Players[O].HeroExileBackTime := 0;
     Players[O].HeroExiled := False;
     Players[O].TowerTime := 0;
+    Players[O].ReplicaTime := 0;
+    Players[O].RiftTime := 0;
+    Players[O].MirrorTime := 0;
 
     for I := 0 to 7 do
     begin
@@ -11542,7 +11802,7 @@ end;
 
 procedure CheckStatus;
 var
-  I1, aX, aY, U: Integer;
+  I1, aX, aY, U, Z: Integer;
 begin
 
   if (RuneTaken)
@@ -11687,6 +11947,46 @@ begin
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         Players[I1].HeroReborn := False;
 
+      end;
+
+      if States.GameTime = Players[I1].ReplicaTime then
+      begin
+        SetLength(Zombies, Length(Zombies) + 1);
+        Zombies[Length(Zombies) - 1].Owner := I1;
+        Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].ReplicaType, Players[I1].ReplicaX, Players[I1].ReplicaY, Players[I1].ReplicaDir, 1, 1);
+        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+        Zombies[Length(Zombies) - 1].ZombieType := 3;
+        Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE);
+      end;
+
+      if States.GameTime = Players[I1].RiftTime then
+      begin
+        Actions.GroupKillAll(Players[I1].Hero, True);
+        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].RiftX, Players[I1].RiftY, Players[I1].RiftDir, 1, 1);
+        Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
+        if Length(Zombies) > 0 then
+          for I := 0 to Length(Zombies) - 1 do
+            if (Zombies[I].TeleportTime = States.GameTime)
+            and (not States.UnitDead(Zombies[I].ID)) then
+            begin
+              SetLength(Zombies, Length(Zombies) + 1);
+              Zombies[Length(Zombies) - 1].Owner := I1;
+              Zombies[Length(Zombies) - 1].ZombieType := Zombies[I].ZombieType;
+              Zombies[Length(Zombies) - 1].Hunger := States.UnitHunger(Zombies[I].ID);
+              Z := Actions.GiveGroup(Players[I1].ZombiePlayer, States.UnitType(Zombies[I].ID), Players[I1].RiftX, Players[I1].RiftY, States.KaMRandomI(8), 1, 1);
+              Actions.GroupHungerSet(Z, Zombies[Length(Zombies) - 1].Hunger);
+              Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+              Actions.UnitKill(Zombies[I].ID, True);
+            end;
+        for K := 0 to RIFT_ADD_ILLUSIONS - 1 do
+        begin
+          SetLength(Zombies, Length(Zombies) + 1);
+          Zombies[Length(Zombies) - 1].Owner := I1;
+          Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].HeroType, Players[I1].RiftX, Players[I1].RiftY, Players[I1].RiftDir, 1, 1);
+          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+          Zombies[Length(Zombies) - 1].ZombieType := 3;
+          Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE);
+        end;
       end;
 
       if States.GameTime = Players[I1].TeleportTime then
