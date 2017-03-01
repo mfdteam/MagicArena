@@ -8587,15 +8587,17 @@ begin
       
       if Length(Zombies) > 0 then
         for I := 0 to Length(Zombies) - 1 do
-        begin
-          X1 := States.UnitPositionX(Zombies[I].ID);
-          Y1 := States.UnitPositionY(Zombies[I].ID);
-          if (Zombies[I].Owner = P)
-          and (InRange(States.UnitType(Zombies[I].ID), 14, 27))
-          and (Abs(X1 - X) <= RIFT_ZOMBIE_RADIUS)
-          and (Abs(Y1 - Y) <= RIFT_ZOMBIE_RADIUS) then
-            Zombies[I].TeleportTime := Players[P].RiftTime;
-        end;
+          if not States.UnitDead(Zombies[I].ID) then
+          begin
+            X1 := States.UnitPositionX(Zombies[I].ID);
+            Y1 := States.UnitPositionY(Zombies[I].ID);
+            if (Zombies[I].Owner = P)
+            and (InRange(States.UnitType(Zombies[I].ID), 14, 27))
+            and (Abs(X1 - X) <= RIFT_ZOMBIE_RADIUS)
+            and (Abs(Y1 - Y) <= RIFT_ZOMBIE_RADIUS) then
+              Zombies[I].TeleportTime := Players[P].RiftTime;
+          end;
+
       Actions.GroupKillAll(Players[P].Hero, True);
       Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       Players[P].FieldSkillDelay := Round(REBEL_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
@@ -8618,7 +8620,9 @@ begin
   Players[P].MirrorTime := States.GameTime + MIRROR_TIME;
   Players[P].WineSkillDelay := Round(REBEL_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
   Players[P].LastUsedSkill := sMirror;
+
 end;
+
 
 //ROGUE
 
