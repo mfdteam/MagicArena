@@ -566,6 +566,7 @@ type
     ReplicaY: Integer;
     ReplicaDir: Integer;
     ReplicaType: Integer;
+    ReplicaTarget: Integer;
     RiftTime: Integer;
     RiftX: Integer;
     RiftY: Integer;
@@ -1304,6 +1305,7 @@ begin
       ReplicaY := 0;
       ReplicaDir := -1;
       ReplicaType := -1;
+      ReplicaTarget := -1;
       RiftTime := 0;
       RiftX := 0;
       RiftY := 0;
@@ -2196,6 +2198,44 @@ begin
     Result := ' [$BECADA]<$66>[]; <$39>: ' + HPColor(P) + HPString(P) + '[]' 
   else
     Result := ' <$42>: ' + States.UnitTypeName(Players[P].HeroType) + '; <$39>: ' + HPColor(P) + HPString(P) + '[]';
+end;
+
+
+function BackX(P: Integer): Integer;
+var
+  aX, aD: Integer;
+begin
+  aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+  aD := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+  case aD of
+    0: Result := aX;
+    1: Result := aX - 1;
+    2: Result := aX - 1;
+    3: Result := aX - 1;
+    4: Result := aX;
+    5: Result := aX + 1;
+    6: Result := aX + 1;
+    7: Result := aX + 1;
+  end;
+end;
+
+
+function BackY(P: Integer): Integer;
+var
+  aY, aD: Integer;
+begin
+  aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+  aD := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+  case aD of
+    0: Result := aY + 1;
+    1: Result := aY + 1;
+    2: Result := aY;
+    3: Result := aY - 1;
+    4: Result := aY - 1;
+    5: Result := aY - 1;
+    6: Result := aY;
+    7: Result := aY + 1;
+  end;
 end;
 
 
@@ -4919,44 +4959,6 @@ begin
 
   end;
 
-end;
-
-
-function FieryTrackX(P: Integer): Integer;
-var
-  aX, aD: Integer;
-begin
-  aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-  aD := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
-  case aD of
-    0: Result := aX;
-    1: Result := aX - 1;
-    2: Result := aX - 1;
-    3: Result := aX - 1;
-    4: Result := aX;
-    5: Result := aX + 1;
-    6: Result := aX + 1;
-    7: Result := aX + 1;
-  end;
-end;
-
-
-function FieryTrackY(P: Integer): Integer;
-var
-  aY, aD: Integer;
-begin
-  aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-  aD := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
-  case aD of
-    0: Result := aY + 1;
-    1: Result := aY + 1;
-    2: Result := aY;
-    3: Result := aY - 1;
-    4: Result := aY - 1;
-    5: Result := aY - 1;
-    6: Result := aY;
-    7: Result := aY + 1;
-  end;
 end;
 
 
@@ -8423,7 +8425,7 @@ end;
 
 procedure Replica(P, X, Y: Integer);
 var
-  U, O, X2, Y2, BackX, BackY, D: Integer;
+  U, O, X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -8449,53 +8451,6 @@ begin
         and (not Players[O].HeroMagicImmunity)
         and (not Players[O].HeroTotalImmunity) then
         begin
-
-          D := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
-
-          case D of
-
-            0: begin
-                 BackX := X;
-                 BackY := Y + 1;
-               end;
-
-            1: begin
-                 BackX := X - 1;
-                 BackY := Y + 1;
-               end;
-
-            2: begin
-                 BackX := X - 1;
-                 BackY := Y;
-               end;
-
-            3: begin
-                 BackX := X - 1;
-                 BackY := Y - 1;
-               end;
-
-            4: begin
-                 BackX := X;
-                 BackY := Y - 1;
-               end;
-
-            5: begin
-                 BackX := X + 1;
-                 BackY := Y - 1;
-              end;
-
-            6: begin
-                 BackX := X + 1;
-                 BackY := Y;
-               end;
-
-            7: begin
-                 BackX := X + 1;
-                 BackY := Y + 1;
-               end;
-
-          end;
-
           TilesRoadLength[P] := TilesRoadLength[P] + 4;
           SetLength(TilesRoadX[P], TilesRoadLength[P]);
           SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -8544,11 +8499,9 @@ begin
               or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
                 ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
-          Players[P].ReplicaX := BackX;
-          Players[P].ReplicaY := BackY;
           Players[P].ReplicaType := States.UnitType(U);
           Players[P].ReplicaTime := States.GameTime + REPLICA_DELAY;
-          Players[P].ReplicaDir := States.UnitDirection(U);
+          Players[P].ReplicaTarget := O;
           Players[P].RoadSkillDelay := Round(REBEL_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
           Players[P].LastUsedSkill := sReplica;
         end;
@@ -12008,6 +11961,9 @@ begin
 
       if States.GameTime = Players[I1].ReplicaTime then
       begin
+        Players[I1].ReplicaX := BackX(Players[I1].ReplicaTarget);
+        Players[I1].ReplicaY := BackY(Players[I1].ReplicaTarget);
+        Players[I1].ReplicaDir := States.UnitDirection(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0));
         SetLength(Zombies, Length(Zombies) + 1);
         Zombies[Length(Zombies) - 1].Owner := I1;
         Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].ReplicaType, Players[I1].ReplicaX, Players[I1].ReplicaY, Players[I1].ReplicaDir, 1, 1);
@@ -12170,7 +12126,7 @@ begin
       and (States.GroupOwner(Players[I1].Hero) = I1)
       and (Players[I1].Hero > 0)
       and (Players[I1].HP > 0) then
-        if TileOnBattlefield(FieryTrackX(I1), FieryTrackY(I1)) then
+        if TileOnBattlefield(BackX(I1), BackY(I1)) then
         begin
           TilesFieldLength[I1] := TilesFieldLength[I1] + 1;
           SetLength(TilesFieldX[I1], TilesFieldLength[I1]);
@@ -12178,9 +12134,9 @@ begin
           SetLength(ClearTilesFieldTimes[I1], TilesFieldLength[I1]);
           SetLength(SetTilesFieldTimes[I1], TilesFieldLength[I1]);
           SetLength(TilesFieldObjects[I1], TilesFieldLength[I1]);  
-          TilesFieldX[I1][Length(TilesFieldX[I1]) - 1] := FieryTrackX(I1);    
-          TilesFieldY[I1][Length(TilesFieldY[I1]) - 1] := FieryTrackY(I1);
-          Tiles[FieryTrackX(I1)][FieryTrackY(I1)].TrackTime := Players[I1].TrackStopTime + 5;
+          TilesFieldX[I1][Length(TilesFieldX[I1]) - 1] := BackX(I1);    
+          TilesFieldY[I1][Length(TilesFieldY[I1]) - 1] := BackY(I1);
+          Tiles[BackX(I1)][BackY(I1)].TrackTime := Players[I1].TrackStopTime + 5;
           TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 1] := VAGA_OBJECT8;    
           ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := Players[I1].TrackStopTime + 3;    
           SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - 1] := States.GameTime + 1;
