@@ -255,6 +255,7 @@ const
   RUNE_MAGIC_IMMUNITY_TIME = 200;
   RUNE_ILLUSION_TIME = 1800;
   RUNE_RECHARGE_TIME = 600;
+  RUNE_ILLUSIONS_COUNT = 4;
 
 //Animation
 
@@ -640,7 +641,6 @@ var
   ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime: array[0..11] of Integer;
   RuneTime: Integer;
   M, M2: array[0..7] of Integer;
-  ZomboHero: array[0..7] of array[0..3] of Integer;
   AISoldiers: array of Integer;
   SpurtTimes, SpurtX, SpurtY, SpurtDir: array[0..11] of array[0..SPURT_LENGTH - 1] of Integer;
   RUNE_Y: Integer;
@@ -665,7 +665,8 @@ end;
 
 function InRange(Value, Min, Max: Integer): Boolean;
 begin
-  Result := (Value >= Min) and (Value <= Max);
+  Result := (Value >= Min)
+            and (Value <= Max);
 end;
 
 
@@ -676,8 +677,8 @@ begin
   if Y <= 0 then
     Exit;
   Result := (InRange(X, MIN_X, MAX_X))
-  and (InRange(Y, MIN_Y, MAX_Y))
-  and (States.MapTileType(X, Y) <> 202);
+            and (InRange(Y, MIN_Y, MAX_Y))
+            and (States.MapTileType(X, Y) <> 202);
 end;
 
 
@@ -688,7 +689,7 @@ begin
   if Y <= 0 then
     Exit;
   Result := (InRange(X, 15, 21))
-  and (InRange(Y, 17, 18));
+            and (InRange(Y, 17, 18));
 end;
 
 
@@ -700,12 +701,12 @@ begin
     Exit;
 
   Result := (TileOnBattlefield(X, Y))
-  and (States.MapTileObject(X, Y) <> BARB_OBJECT3)
-  and (States.MapTileObject(X, Y) <> BOWMAN_ROCKET)
-  and (States.MapTileObject(X, Y) <> BOWMAN_OBJECT5)
-  and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7)
-  and (not InRange(States.MapTileObject(X, Y), SHIELD_OBJECT, SHIELD_OBJECT8))
-  and (not InRange(States.MapTileObject(X, Y), SWORD_OBJECT, VAGA_OBJECT6));
+            and (States.MapTileObject(X, Y) <> BARB_OBJECT3)
+            and (States.MapTileObject(X, Y) <> BOWMAN_ROCKET)
+            and (States.MapTileObject(X, Y) <> BOWMAN_OBJECT5)
+            and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7)
+            and (not InRange(States.MapTileObject(X, Y), SHIELD_OBJECT, SHIELD_OBJECT8))
+            and (not InRange(States.MapTileObject(X, Y), SWORD_OBJECT, VAGA_OBJECT6));
 
 end;
 
@@ -1058,10 +1059,6 @@ begin
     M2[I] := -1;
   end;
 
-  for I := 0 to 7 do
-  for K := 0 to 3 do
-    ZomboHero[I][K] := -1;
-
   for I := 0 to 3 do
     if States.PlayerEnabled(I) then
     begin
@@ -1371,7 +1368,7 @@ begin
     Exit;
 
   Result := (X = RUNE_X)
-  and (Y = RUNE_Y);
+            and (Y = RUNE_Y);
 
 end;
 
@@ -1435,6 +1432,8 @@ end;
 
 
 procedure GetRuneEffect(P, aRune: Integer);
+var
+  Z: Integer;
 begin
   try
 
@@ -1463,17 +1462,14 @@ begin
       end;
 
       RUNE_ILLUSION_OBJ:
-        for I := 0 to 3 do
+        for I := 0 to RUNE_ILLUSIONS_COUNT - 1 do
         begin
-          ZomboHero[P][I] := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
           SetLength(Zombies, Length(Zombies) + 1);
           Zombies[Length(Zombies) - 1].Owner := P;
           Zombies[Length(Zombies) - 1].ZombieType := 3;
-          if ZomboHero[P][I] > 0 then
-          begin
-            Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
-            Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
-          end;
+          Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
+          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+          Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
           RuneTaken := True;
           Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
         end;
@@ -1918,13 +1914,13 @@ begin
     Exit;
   if TileOnBattlefield(X, Y) then 
     Result := (States.MapTileType(X, Y) <> 197)
-    and (States.MapTileType(X, Y) <> 202)
-    and (States.MapTileType(X, Y) <> 206)
-    and (States.MapTileType(X, Y) <> 207)
-    and (States.MapTileType(X, Y) <> 215)
-    and (States.MapTileType(X, Y) <> 223)
-    and (not States.IsRoadAt(8, X, Y))
-    and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7);
+              and (States.MapTileType(X, Y) <> 202)
+              and (States.MapTileType(X, Y) <> 206)
+              and (States.MapTileType(X, Y) <> 207)
+              and (States.MapTileType(X, Y) <> 215)
+              and (States.MapTileType(X, Y) <> 223)
+              and (not States.IsRoadAt(8, X, Y))
+              and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7);
 end;
 
 
@@ -9763,7 +9759,7 @@ end;
 
 procedure CheckTiles(P: Integer);
 var
-  T, aX, aY, aObj, aTile, aTime: Integer;
+  T, aX, aY, aObj, aTile, aTime, Z: Integer;
 begin
   aObj := -1;
   aTile := -1;
@@ -10406,18 +10402,18 @@ begin
   end;
 
   if aObj = RUNE_ILLUSION_OBJ then
-  for I := 0 to 3 do
-  begin
-    ZomboHero[P][I] := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
-    SetLength(Zombies, Length(Zombies) + 1);
-    Zombies[Length(Zombies) - 1].Owner := P;
-    Zombies[Length(Zombies) - 1].ID := States.GroupMember(ZomboHero[P][I], 0);
-    Zombies[Length(Zombies) - 1].ZombieType := 3;
-    Actions.GroupHungerSet(ZomboHero[P][I], RUNE_ZOMBIE_LIFE);
-    if TileOnRuneSpawn(aX, aY) then
-      RuneTaken := True;
-    Actions.MapTileObjectSet(aX, aY, 255);
-  end;
+    for I := 0 to RUNE_ILLUSIONS_COUNT - 1 do
+    begin
+      Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
+      SetLength(Zombies, Length(Zombies) + 1);
+      Zombies[Length(Zombies) - 1].Owner := P;
+      Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+      Zombies[Length(Zombies) - 1].ZombieType := 3;
+      Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
+      if TileOnRuneSpawn(aX, aY) then
+        RuneTaken := True;
+      Actions.MapTileObjectSet(aX, aY, 255);
+    end;
 
   if aObj = RUNE_RECHARGE_OBJ then
   begin
@@ -10656,7 +10652,7 @@ begin
       O := States.HouseOwner(aHouse);
     end;
     Result := (HT = 17)
-    and (Players[P].PlayersTeam <> Players[O].PlayersTeam);
+              and (Players[P].PlayersTeam <> Players[O].PlayersTeam);
   end;
 end;
 
@@ -13103,10 +13099,10 @@ function ObjectIsTree(aX, aY: Integer): Boolean;
 begin
   if TileOnBattlefield(aX, aY) then
     Result := ((States.MapTileObject(aX, aY) = 157)
-    or (States.MapTileObject(aX, aY) = 158)
-    or (States.MapTileObject(aX, aY) = 159)
-    or (States.MapTileObject(aX, aY) = 160)
-    or (States.MapTileObject(aX, aY) = 172));
+              or (States.MapTileObject(aX, aY) = 158)
+              or (States.MapTileObject(aX, aY) = 159)
+              or (States.MapTileObject(aX, aY) = 160)
+              or (States.MapTileObject(aX, aY) = 172));
 end;
 
 
@@ -13114,13 +13110,13 @@ function TileHasTreesAround(aX, aY: Integer): Boolean;
 begin
   if TileOnBattlefield(aX, aY) then
     Result := ((ObjectIsTree(aX + 1, aY))
-    or (ObjectIsTree(aX + 1, aY + 1))
-    or (ObjectIsTree(aX + 1, aY - 1))
-    or (ObjectIsTree(aX - 1, aY - 1))
-    or (ObjectIsTree(aX - 1, aY))
-    or (ObjectIsTree(aX - 1, aY + 1))
-    or (ObjectIsTree(aX, aY + 1))
-    or (ObjectIsTree(aX, aY - 1)));
+              or (ObjectIsTree(aX + 1, aY + 1))
+              or (ObjectIsTree(aX + 1, aY - 1))
+              or (ObjectIsTree(aX - 1, aY - 1))
+              or (ObjectIsTree(aX - 1, aY))
+              or (ObjectIsTree(aX - 1, aY + 1))
+              or (ObjectIsTree(aX, aY + 1))
+              or (ObjectIsTree(aX, aY - 1)));
 end;
 
 
@@ -13215,7 +13211,8 @@ begin
     OldY[O] := States.UnitPositionY(States.GroupMember(G, 0));
   end;
 
-  Result := (OldX[O] div MOVEMENT_DISTANCE <> NewX[O] div MOVEMENT_DISTANCE) or (OldY[O] div MOVEMENT_DISTANCE <> NewY[O] div MOVEMENT_DISTANCE);
+  Result := (OldX[O] div MOVEMENT_DISTANCE <> NewX[O] div MOVEMENT_DISTANCE)
+            or (OldY[O] div MOVEMENT_DISTANCE <> NewY[O] div MOVEMENT_DISTANCE);
 
 end;
 
@@ -13656,11 +13653,11 @@ begin
     if States.PlayerIsAI(P) then
       if Players[P].Hero > 0 then
         Result := ((Players[P].HeroType = UT)
-        and (Players[P].HP > 0)
-        and (TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[P].Hero, 0))))
-        and (not Players[P].HeroInFear)
-        and (not Players[P].HeroStunned)
-        and (not Players[P].HeroSilent));
+                  and (Players[P].HP > 0)
+                  and (TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[P].Hero, 0))))
+                  and (not Players[P].HeroInFear)
+                  and (not Players[P].HeroStunned)
+                  and (not Players[P].HeroSilent));
 end;
 
 
@@ -13669,8 +13666,8 @@ begin
   Result := True;
   if InRange(States.UnitOwner(U), 0, 7) then
     Result := (not Players[States.UnitOwner(U)].HeroMagicImmunity)
-    and (not Players[States.UnitOwner(U)].HeroTotalImmunity)
-    and (States.MapTileObject(States.UnitPositionX(U), States.UnitPositionY(U)) <> WARRIOR_OBJECT7);  
+              and (not Players[States.UnitOwner(U)].HeroTotalImmunity)
+              and (States.MapTileObject(States.UnitPositionX(U), States.UnitPositionY(U)) <> WARRIOR_OBJECT7);  
 end;
 
 
