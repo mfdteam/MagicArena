@@ -346,6 +346,7 @@ const
   VICTORY_DELAY = 300;
   TOWERS_CHECK_FACTOR = 10;
   TOWERS_TILES_FACTOR = 2;
+  ZOMBIE_ARRAY_CHECK_FACTOR = 200;
 
   DEBUG_MODE = True;
   CHANGE_RELIEF = True;
@@ -1430,6 +1431,39 @@ begin
   if (not RuneTaken)
   and (States.MapTileObject(RUNE_X, RUNE_Y) <> RuneObject) then
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RuneObject);
+end;
+
+
+procedure CheckZombieArray;
+var
+  TempZombies: array of aZombie;
+begin
+  if Length(Zombies) <= 0 then
+    Exit;
+  try
+    for I := 0 to Length(Zombies) - 1 do
+      if not States.UnitDead(Zombies[I].ID) then
+      begin
+        SetLength(TempZombies, Length(TempZombies) + 1);
+        TempZombies[Length(TempZombies) - 1].ID := Zombies[I].ID;
+        TempZombies[Length(TempZombies) - 1].Owner := Zombies[I].Owner;
+        TempZombies[Length(TempZombies) - 1].Hunger := Zombies[I].Hunger;
+        TempZombies[Length(TempZombies) - 1].ZombieType := Zombies[I].ZombieType;
+        TempZombies[Length(TempZombies) - 1].TeleportTime := Zombies[I].TeleportTime;
+      end;
+    SetLength(Zombies, Length(TempZombies));
+    if Length(Zombies) > 0 then
+      for K := 0 to Length(Zombies) - 1 do
+      begin
+        Zombies[K].ID := TempZombies[K].ID;
+        Zombies[K].Owner := TempZombies[K].Owner;
+        Zombies[K].Hunger := TempZombies[K].Hunger;
+        Zombies[K].ZombieType := TempZombies[K].ZombieType;
+        Zombies[K].TeleportTime := TempZombies[K].TeleportTime;
+      end;
+  except
+    LogError('Exception in the script: Something went wrong when trying to resize Zombies array (Exception ID: 11)', SHOW_ERROR_MSG);
+  end;
 end;
 
 
@@ -8542,8 +8576,8 @@ begin
             Y1 := States.UnitPositionY(Zombies[I].ID);
             if (Zombies[I].Owner = P)
             and (InRange(States.UnitType(Zombies[I].ID), 14, 27))
-            and (Abs(X1 - X) <= RIFT_ZOMBIE_RADIUS)
-            and (Abs(Y1 - Y) <= RIFT_ZOMBIE_RADIUS) then
+            and (Abs(X1 - X2) <= RIFT_ZOMBIE_RADIUS)
+            and (Abs(Y1 - Y2) <= RIFT_ZOMBIE_RADIUS) then
               Zombies[I].TeleportTime := Players[P].RiftTime;
           end;
 
@@ -11302,7 +11336,7 @@ begin
           Z := Actions.GiveGroup(Players[P].ZombiePlayer, T, X, Y, States.KaMRandomI(8), 1, 1);
           Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
           Zombies[Length(Zombies) - 1].ZombieType := 3;
-          Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE);
+          Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[P].DD)));
         end;
       end;
 end;
@@ -11983,7 +12017,7 @@ begin
         Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].ReplicaType, Players[I1].ReplicaX, Players[I1].ReplicaY, Players[I1].ReplicaDir, 1, 1);
         Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
         Zombies[Length(Zombies) - 1].ZombieType := 3;
-        Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE);
+        Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[I1].DD)));
       end;
 
       if States.GameTime = Players[I1].RiftTime then
@@ -12010,10 +12044,10 @@ begin
         begin
           SetLength(Zombies, Length(Zombies) + 1);
           Zombies[Length(Zombies) - 1].Owner := I1;
-          Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].HeroType, Players[I1].RiftX, Players[I1].RiftY, Players[I1].RiftDir, 1, 1);
+          Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].HeroType, Players[I1].RiftX + States.KaMRandomI(3) - States.KaMRandomI(3), Players[I1].RiftY + States.KaMRandomI(3) - States.KaMRandomI(3), Players[I1].RiftDir, 1, 1);
           Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
           Zombies[Length(Zombies) - 1].ZombieType := 3;
-          Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE);
+          Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[I1].DD)));
         end;
       end;
 
@@ -14834,6 +14868,9 @@ begin
 
   if States.GameTime mod TILES_RECHECK_TIME = 0 then
     CheckTileCleanup(True);
+
+  if States.GameTime mod ZOMBIE_ARRAY_CHECK_FACTOR = 0 then
+    CheckZombieArray;
 
   for I := 0 to 7 do
     if States.PlayerEnabled(I) then
