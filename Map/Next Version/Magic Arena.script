@@ -11268,13 +11268,16 @@ end;
 
 procedure OnUnitWounded(aID, aAttacker: Integer);
 begin
+  if Length(Zombies) <= 0 then
+    Exit;
   for I := 0 to Length(Zombies) - 1 do
-    if aAttacker = Zombies[I].ID then
-    begin
-      LastAttacker := Zombies[I].Owner;
-      LastAttackerZombieType := Zombies[I].ZombieType;
-      LastAttackerUnitType := States.UnitType(aAttacker);
-    end;
+    if not States.UnitDead(Zombies[I].ID) then
+      if aAttacker = Zombies[I].ID then
+      begin
+        LastAttacker := Zombies[I].Owner;
+        LastAttackerZombieType := Zombies[I].ZombieType;
+        LastAttackerUnitType := States.UnitType(aAttacker);
+      end;
 end;
 
 
@@ -11282,23 +11285,26 @@ procedure OnUnitAttacked(aID, aAttacker: Integer);
 var
   P, Z, X, Y, T: Integer;
 begin
+  if Length(Zombies) <= 0 then
+    Exit;
   for I := 0 to Length(Zombies) - 1 do
-    if aAttacker = Zombies[I].ID then
-    begin
-      P := Zombies[I].Owner;
-      if Players[P].MirrorTime >= States.GameTime then
+    if not States.UnitDead(Zombies[I].ID) then
+      if aAttacker = Zombies[I].ID then
       begin
-        SetLength(Zombies, Length(Zombies) + 1);
-        Zombies[Length(Zombies) - 1].Owner := P;
-        X := States.UnitPositionX(Zombies[I].ID);
-        Y := States.UnitPositionY(Zombies[I].ID);
-        T := States.UnitType(Zombies[I].ID);
-        Z := Actions.GiveGroup(Players[P].ZombiePlayer, T, X, Y, States.KaMRandomI(8), 1, 1);
-        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-        Zombies[Length(Zombies) - 1].ZombieType := 3;
-        Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE);
+        P := Zombies[I].Owner;
+        if Players[P].MirrorTime >= States.GameTime then
+        begin
+          SetLength(Zombies, Length(Zombies) + 1);
+          Zombies[Length(Zombies) - 1].Owner := P;
+          X := States.UnitPositionX(Zombies[I].ID);
+          Y := States.UnitPositionY(Zombies[I].ID);
+          T := States.UnitType(Zombies[I].ID);
+          Z := Actions.GiveGroup(Players[P].ZombiePlayer, T, X, Y, States.KaMRandomI(8), 1, 1);
+          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+          Zombies[Length(Zombies) - 1].ZombieType := 3;
+          Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE);
+        end;
       end;
-    end;
 end;
 
 
@@ -11979,7 +11985,8 @@ begin
         Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
         if Length(Zombies) > 0 then
           for I := 0 to Length(Zombies) - 1 do
-            if (Zombies[I].TeleportTime = States.GameTime)
+            if (Zombies[I].Owner = I1)
+            and (Zombies[I].TeleportTime = States.GameTime)
             and (not States.UnitDead(Zombies[I].ID)) then
             begin
               SetLength(Zombies, Length(Zombies) + 1);
