@@ -11967,8 +11967,16 @@ begin
 
       if States.GameTime = Players[I1].ReplicaTime then
       begin
-        Players[I1].ReplicaX := BackX(Players[I1].ReplicaTarget);
-        Players[I1].ReplicaY := BackY(Players[I1].ReplicaTarget);
+        if TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0))) then
+        begin
+          Players[I1].ReplicaX := BackX(Players[I1].ReplicaTarget);
+          Players[I1].ReplicaY := BackY(Players[I1].ReplicaTarget);
+        end
+        else
+        begin
+          Players[I1].ReplicaX := Players[Players[I1].ReplicaTarget].LastX;
+          Players[I1].ReplicaY := Players[Players[I1].ReplicaTarget].LastY;
+        end;
         Players[I1].ReplicaDir := States.UnitDirection(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0));
         SetLength(Zombies, Length(Zombies) + 1);
         Zombies[Length(Zombies) - 1].Owner := I1;
