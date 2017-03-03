@@ -8538,6 +8538,7 @@ begin
           Players[P].ReplicaTarget := O;
           Players[P].RoadSkillDelay := Round(REBEL_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
           Players[P].LastUsedSkill := sReplica;
+          ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
         end;
       end;
     end;
