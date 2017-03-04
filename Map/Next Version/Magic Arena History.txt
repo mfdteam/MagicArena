@@ -9,6 +9,8 @@ Magic Arena - Next Version
 - Sound when player kills his ally
 - Added delay before teleportation (Teleport and Sacrificial Teleport skills)
 - New Hero: Rebel
+- Fixed arrays cleanup
+- Fear and Spell Steal can lure enemy zombies/illusions
 
 
 v.2.173

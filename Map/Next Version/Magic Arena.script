@@ -64,6 +64,7 @@ const
   MILIZOMBIE_RADIUS = 3;
   MAX_MILIZOMBIE = 100;
   IN_FEAR_RADIUS = 5;
+  FEAR_LURE_CHANCE = 1;
   BOMB_RADIUS = 7;
   ROCKET_USAGE_RADIUS = 50;
   MIN_ROCKET_USAGE_RADIUS = 0;
@@ -76,6 +77,8 @@ const
   THREADS_RADIUS = 5;
   THREADS_ALLY_RADIUS = 7;
   STEAL_RADIUS = 8;
+  STEALSKILL_KILL_CHANCE = 0.7;
+  STEALSKILL_LURE_CHANCE = 0.7;
   MIND_RADIUS = 4;
   SILENCE_SCOUT_RADIUS = 6;
   TOWER_RADIUS = 4;
@@ -85,7 +88,7 @@ const
   SHIELD_AREA_RADIUS = 3;
   REPLICA_RADIUS = 5;
   REPLICA_DELAY = 15;
-  REPLICA_KILL_CHANCE = 0.7;
+  REPLICA_KILL_CHANCE = 0.5;
   REPLICA_LURE_CHANCE = 0.3;
   RIFT_USAGE_RADIUS = 4;
   RIFT_ZOMBIE_RADIUS = 5;
@@ -2996,7 +2999,7 @@ end;
 
 procedure Fear(P, X, Y: Integer);
 var
- X2, Y2, U, O: Integer;
+ X2, Y2, U, O, T, Z: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -3019,6 +3022,16 @@ begin
 
       if InRange(O, 8, 11) then
       begin
+        T := States.UnitType(U);
+        if States.KaMRandom < FEAR_LURE_CHANCE then
+        begin
+          SetLength(Zombies, Length(Zombies) + 1);
+          Zombies[Length(Zombies) - 1].Owner := P;
+          Z := Actions.GiveGroup(Players[P].ZombiePlayer, T, X, Y, States.KaMRandomI(8), 1, 1);
+          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+          Zombies[Length(Zombies) - 1].ZombieType := 3;
+          Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
+        end;
         Actions.UnitKill(U, False);
         Players[P].LastUsedSkill := sFear;
         Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
@@ -8954,7 +8967,7 @@ end;
 
 procedure StealSkill(P, X, Y: Integer);
 var
-  X2, Y2, U, O: Integer;
+  X2, Y2, U, O, Z, T: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -9024,8 +9037,20 @@ begin
           Players[P].StolenSkill := Players[O].LastUsedSkill;
 
         if InRange(O, 8, 11) then
-          if States.KaMRandom < 0.7 then
+        begin
+          T := States.UnitType(U);
+          if States.KaMRandom < STEALSKILL_KILL_CHANCE then
             Actions.UnitKill(U, False);
+          if States.KaMRandom < STEALSKILL_LURE_CHANCE then
+          begin
+            SetLength(Zombies, Length(Zombies) + 1);
+            Zombies[Length(Zombies) - 1].Owner := P;
+            Z := Actions.GiveGroup(Players[P].ZombiePlayer, T, X, Y, States.KaMRandomI(8), 1, 1);
+            Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+            Zombies[Length(Zombies) - 1].ZombieType := 3;
+            Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
+          end;
+        end;
 
         case Players[P].StolenSkill of
 
@@ -12057,7 +12082,7 @@ begin
                 Zombies[Length(Zombies) - 1].ZombieType := 3;
                 Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[I1].DD)));
               end;
-              Actions.UnitKill(Zombies[I].ID, True);
+              Actions.UnitKill(Zombies[I].ID, False);
             end;
       end;
 
