@@ -85,6 +85,8 @@ const
   SHIELD_AREA_RADIUS = 3;
   REPLICA_RADIUS = 5;
   REPLICA_DELAY = 15;
+  REPLICA_KILL_CHANCE = 0.7;
+  REPLICA_LURE_CHANCE = 0.3;
   RIFT_USAGE_RADIUS = 4;
   RIFT_ZOMBIE_RADIUS = 5;
   RIFT_ADD_ILLUSIONS = 2;
@@ -8541,7 +8543,7 @@ begin
         Players[P].ReplicaTarget := O; 
 
         if (InRange(Players[P].ReplicaTarget, 8, 11))
-        and (States.KaMRandom < 0.7) then
+        and (States.KaMRandom < REPLICA_KILL_CHANCE) then
           if Length(Zombies) > 0 then
             for I := 0 to Length(Zombies) - 1 do
               if not States.UnitDead(Zombies[I].ID) then
@@ -12041,7 +12043,22 @@ begin
           for I := 0 to Length(Zombies) - 1 do
             if (Zombies[I].KillTime = States.GameTime)
             and (not States.UnitDead(Zombies[I].ID)) then
-              Actions.UnitKill(Zombies[I].ID, False);
+            begin
+              if States.KaMRandom < REPLICA_LURE_CHANCE then
+              begin
+                Players[I1].ReplicaType := States.UnitType(Zombies[I].ID);
+                Players[I1].ReplicaX := States.UnitPositionX(Zombies[I].ID);
+                Players[I1].ReplicaY := States.UnitPositionY(Zombies[I].ID);
+                Players[I1].ReplicaDir := States.UnitDirection(Zombies[I].ID);
+                SetLength(Zombies, Length(Zombies) + 1);
+                Zombies[Length(Zombies) - 1].Owner := I1;
+                Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].ReplicaType, Players[I1].ReplicaX, Players[I1].ReplicaY, Players[I1].ReplicaDir, 1, 1);
+                Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+                Zombies[Length(Zombies) - 1].ZombieType := 3;
+                Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[I1].DD)));
+              end;
+              Actions.UnitKill(Zombies[I].ID, True);
+            end;
       end;
 
       if States.GameTime = Players[I1].RiftTime then
