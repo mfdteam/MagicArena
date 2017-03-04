@@ -8498,7 +8498,7 @@ begin
     and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
       U := States.UnitAt(X, Y);
-      if U < 0 then
+      if U <= 0 then
         Exit;
       O := States.UnitOwner(U);
       if ((InRange(O, 0, 7))
@@ -8991,14 +8991,16 @@ begin
     and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
       U := States.UnitAt(X, Y);
-      if U > 0 then
-        O := States.UnitOwner(U);
-      if (U > 0)
-      and ((U = States.GroupMember(Players[O].Hero, 0))
+      if U <= 0 then
+        Exit;
+      O := States.UnitOwner(U);
+      if ((InRange(O, 0, 7))
+      and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity)
-      and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-      or (InRange(O, 8, 11))) then
+      and (Players[P].PlayersTeam <> Players[O].PlayersTeam))
+      or ((InRange(O, 8, 11))
+      and (Players[P].PlayersTeam <> Players[O].PlayersTeam)) then
       begin
         TilesFieldLength[P] := TilesFieldLength[P] + 4;
         SetLength(TilesFieldX[P], TilesFieldLength[P]);
@@ -9042,7 +9044,8 @@ begin
         if InRange(O, 0, 7) then
           Players[P].StolenSkill := Players[O].LastUsedSkill;
 
-        if InRange(O, 8, 11) then
+        if InRange(O, 8, 11)
+        and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
         begin
           R := States.KaMRandom;
           Lure := R < STEALSKILL_LURE_CHANCE;
@@ -9119,11 +9122,13 @@ begin
 
         Players[P].LastUsedSkill := sSteal;
         Players[P].FieldSkillDelay := Round(ROGUE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-        Players[P].WineSkillDelay := ROGUE_WINE_DELAY;
 
         if InRange(O, 0, 7) then
+        begin
+          Players[P].WineSkillDelay := ROGUE_WINE_DELAY;
           if Players[P].StolenSkill <> sNone then
             Players[P].StolenSkillTime := STOLEN_SKILL_TIME;
+        end;
 
         ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
 
