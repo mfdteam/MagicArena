@@ -77,7 +77,6 @@ const
   THREADS_RADIUS = 5;
   THREADS_ALLY_RADIUS = 7;
   STEAL_RADIUS = 8;
-  STEALSKILL_KILL_CHANCE = 0.7;
   STEALSKILL_LURE_CHANCE = 0.7;
   MIND_RADIUS = 4;
   SILENCE_SCOUT_RADIUS = 6;
@@ -2999,7 +2998,9 @@ end;
 
 procedure Fear(P, X, Y: Integer);
 var
- X2, Y2, U, O, T, Z: Integer;
+  X2, Y2, U, O, T, Z: Integer;
+  R: Single;
+  Lure: Boolean;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -3023,7 +3024,9 @@ begin
       if InRange(O, 8, 11) then
       begin
         T := States.UnitType(U);
-        if States.KaMRandom < FEAR_LURE_CHANCE then
+        R := States.KaMRandom;
+        Lure := R < FEAR_LURE_CHANCE;
+        if Lure then
         begin
           SetLength(Zombies, Length(Zombies) + 1);
           Zombies[Length(Zombies) - 1].Owner := P;
@@ -3032,7 +3035,7 @@ begin
           Zombies[Length(Zombies) - 1].ZombieType := 3;
           Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
         end;
-        Actions.UnitKill(U, False);
+        Actions.UnitKill(U, Lure);
         Players[P].LastUsedSkill := sFear;
         Players[P].WineSkillDelay := Round(SWORD_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       end;
@@ -8495,14 +8498,14 @@ begin
     and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
       U := States.UnitAt(X, Y);
-      if U > 0 then
-        O := States.UnitOwner(U);
-      if (U > 0)
-      and (InRange(O, 0, 7))
-      and ((U = States.GroupMember(Players[O].Hero, 0))
+      if U < 0 then
+        Exit;
+      O := States.UnitOwner(U);
+      if ((InRange(O, 0, 7))
+      and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroMagicImmunity)
-      and (not Players[O].HeroTotalImmunity)
-      or (InRange(O, 8, 11))
+      and (not Players[O].HeroTotalImmunity))
+      or ((InRange(O, 8, 11))
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam)) then
       begin
         TilesRoadLength[P] := TilesRoadLength[P] + 4;
@@ -8969,7 +8972,9 @@ end;
 procedure StealSkill(P, X, Y: Integer);
 var
   X2, Y2, U, O, Z, T: Integer;
-begin
+  R: Single;
+  Lure: Boolean;
+begin 
   if Players[P].Hero <= 0 then
     Exit;
 
@@ -9039,10 +9044,10 @@ begin
 
         if InRange(O, 8, 11) then
         begin
-          T := States.UnitType(U);
-          if States.KaMRandom < STEALSKILL_KILL_CHANCE then
-            Actions.UnitKill(U, False);
-          if States.KaMRandom < STEALSKILL_LURE_CHANCE then
+          R := States.KaMRandom;
+          Lure := R < STEALSKILL_LURE_CHANCE;
+          T := States.UnitType(U);          
+          if Lure then
           begin
             SetLength(Zombies, Length(Zombies) + 1);
             Zombies[Length(Zombies) - 1].Owner := P;
@@ -9050,6 +9055,7 @@ begin
             Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
             Zombies[Length(Zombies) - 1].ZombieType := 3;
             Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
+            Actions.UnitKill(U, Lure);
           end;
         end;
 
@@ -9219,9 +9225,10 @@ begin
 
       sFear: if (U > 0) then
                if (Abs(X - X2) <= IN_FEAR_RADIUS)
-               and (Abs(Y - Y2) <= IN_FEAR_RADIUS) then
+               and (Abs(Y - Y2) <= IN_FEAR_RADIUS)
+               and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+               and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
                  if ((InRange(O, 0, 7))
-                 and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
                  and (not Players[O].HeroMagicImmunity)
                  and (not Players[O].HeroTotalImmunity))
                  or (InRange(O, 8, 11)) then
@@ -9397,20 +9404,21 @@ begin
 
       sMentalBurst: MentalBurst(P, X, Y, -1, True);
 
-      sSteal: if (U > 0)
-              and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-              and (InRange(O, 0, 7))
-              and (Abs(X - X2) <= STEAL_RADIUS)
-              and (Abs(Y - Y2) <= STEAL_RADIUS)
-              and (not Players[O].HeroMagicImmunity)
-              and (not Players[O].HeroTotalImmunity)
-              and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
-              begin
-                TempFieldSkillDelay := Players[P].FieldSkillDelay;
-                StealSkill(P, X, Y);
-                Players[P].FieldSkillDelay := TempFieldSkillDelay;
-                Players[P].WineSkillDelay := Round(ROGUE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-              end;
+      sSteal: if U > 0 then
+                if (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+                and (Abs(X - X2) <= STEAL_RADIUS)
+                and (Abs(Y - Y2) <= STEAL_RADIUS)
+                and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
+                  if ((InRange(O, 0, 7))
+                  and (not Players[O].HeroMagicImmunity)
+                  and (not Players[O].HeroTotalImmunity))
+                  or (InRange(O, 8, 11)) then
+                  begin
+                    TempFieldSkillDelay := Players[P].FieldSkillDelay;
+                    StealSkill(P, X, Y);
+                    Players[P].FieldSkillDelay := TempFieldSkillDelay;
+                    Players[P].WineSkillDelay := Round(ROGUE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                  end;
 
       sBoomerang: begin
                     TempRoadSkillDelay := Players[P].RoadSkillDelay;
@@ -9434,29 +9442,30 @@ begin
                   Players[P].WineSkillDelay := Round(SCOUT_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                 end;
 
-      sMind: if (U > 0)
-             and (Abs(X - X2) <= MIND_RADIUS)
-             and (Abs(Y - Y2) <= MIND_RADIUS)
-             and (not Players[O].HeroMagicImmunity)
-             and (not Players[O].HeroTotalImmunity)
-             and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
-               Mind(P, X, Y);
+      sMind: if (U > 0) then
+               if (Abs(X - X2) <= MIND_RADIUS)
+               and (Abs(Y - Y2) <= MIND_RADIUS)
+               and (not Players[O].HeroMagicImmunity)
+               and (not Players[O].HeroTotalImmunity)
+               and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+               and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
+                 Mind(P, X, Y);
 
-      sReplica: if (U > 0)
-                and (Abs(X - X2) <= REPLICA_RADIUS)
-                and (Abs(Y - Y2) <= REPLICA_RADIUS)
-                and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
-                  if ((InRange(O, 0, 7)) 
-                  and (not Players[O].HeroMagicImmunity)
-                  and (not Players[O].HeroTotalImmunity))
-                  or ((InRange(O, 8, 11))
-                  and (Players[O].PlayersTeam <> Players[P].PlayersTeam)) then
-                  begin
-                    TempRoadSkillDelay := Players[P].RoadSkillDelay;
-                    Replica(P, X, Y);
-                    Players[P].RoadSkillDelay := TempRoadSkillDelay;
-                    Players[P].WineSkillDelay := Round(REBEL_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-                  end;
+      sReplica: if (U > 0) then
+                  if (Abs(X - X2) <= REPLICA_RADIUS)
+                  and (Abs(Y - Y2) <= REPLICA_RADIUS)
+                  and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
+                    if ((InRange(O, 0, 7)) 
+                    and (not Players[O].HeroMagicImmunity)
+                    and (not Players[O].HeroTotalImmunity))
+                    or ((InRange(O, 8, 11))
+                    and (Players[O].PlayersTeam <> Players[P].PlayersTeam)) then
+                    begin
+                      TempRoadSkillDelay := Players[P].RoadSkillDelay;
+                      Replica(P, X, Y);
+                      Players[P].RoadSkillDelay := TempRoadSkillDelay;
+                      Players[P].WineSkillDelay := Round(REBEL_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                    end;
 
       sRift: if (Abs(X - X2) <= RIFT_USAGE_RADIUS)
              and (Abs(Y - Y2) <= RIFT_USAGE_RADIUS) then
@@ -11896,6 +11905,8 @@ end;
 procedure CheckStatus;
 var
   I1, aX, aY, U, Z: Integer;
+  R: Single;
+  Lure: Boolean;
 begin
 
   if (RuneTaken)
@@ -12072,7 +12083,9 @@ begin
             if (Zombies[I].KillTime = States.GameTime)
             and (not States.UnitDead(Zombies[I].ID)) then
             begin
-              if States.KaMRandom < REPLICA_LURE_CHANCE then
+              R := States.KaMRandom;
+              Lure := R < REPLICA_LURE_CHANCE;
+              if Lure then
               begin
                 Players[I1].ReplicaType := States.UnitType(Zombies[I].ID);
                 Players[I1].ReplicaX := States.UnitPositionX(Zombies[I].ID);
@@ -12085,7 +12098,7 @@ begin
                 Zombies[Length(Zombies) - 1].ZombieType := 3;
                 Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[I1].DD)));
               end;
-              Actions.UnitKill(Zombies[I].ID, False);
+              Actions.UnitKill(Zombies[I].ID, Lure);
             end;
       end;
 
