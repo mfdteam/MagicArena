@@ -583,6 +583,7 @@ type
     Hunger: Integer;
     ZombieType: Integer;
     TeleportTime: Integer;
+    KillTime: Integer;
   end;
 
 
@@ -1450,6 +1451,7 @@ begin
         TempZombies[Length(TempZombies) - 1].Hunger := Zombies[I].Hunger;
         TempZombies[Length(TempZombies) - 1].ZombieType := Zombies[I].ZombieType;
         TempZombies[Length(TempZombies) - 1].TeleportTime := Zombies[I].TeleportTime;
+        TempZombies[Length(TempZombies) - 1].KillTime := Zombies[I].KillTime;
       end;
     SetLength(Zombies, Length(TempZombies));
     if Length(Zombies) > 0 then
@@ -1460,6 +1462,7 @@ begin
         Zombies[K].Hunger := TempZombies[K].Hunger;
         Zombies[K].ZombieType := TempZombies[K].ZombieType;
         Zombies[K].TeleportTime := TempZombies[K].TeleportTime;
+        Zombies[K].KillTime := TempZombies[K].KillTime;
       end;
   except
     LogError('Exception in the script: Something went wrong when trying to resize Zombies array (Exception ID: 11)', SHOW_ERROR_MSG);
@@ -8467,79 +8470,87 @@ begin
   if States.GroupMember(Players[P].Hero, 0) <= 0 then
     Exit;
 
-  if (States.StatArmyCount(Players[P].ZombiePlayer) < MAX_MILIZOMBIE)
-  and (Players[P].ZombiePlayer <> - 1) 
-  and (TileOnBattlefield(X, Y)) then
+  if (TileOnBattlefield(X, Y))
+  and (Players[P].Hero > 0) then
   begin
-    U := States.UnitAt(X, Y);
-    if U > 0 then
+    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    if (Abs(X2 - X) <= REPLICA_RADIUS)
+    and (Abs(Y2 - Y) <= REPLICA_RADIUS)
+    and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
     begin
-      O := States.UnitOwner(U);
-      if InRange(O, 0, 7) then
+      U := States.UnitAt(X, Y);
+      if U > 0 then
+        O := States.UnitOwner(U);
+      if (U > 0)
+      and ((U = States.GroupMember(Players[O].Hero, 0))
+      and (not Players[O].HeroMagicImmunity)
+      and (not Players[O].HeroTotalImmunity)
+      or (InRange(O, 8, 11))
+      and (Players[P].PlayersTeam <> Players[O].PlayersTeam)) then
       begin
-        X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-        Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+        TilesRoadLength[P] := TilesRoadLength[P] + 4;
+        SetLength(TilesRoadX[P], TilesRoadLength[P]);
+        SetLength(TilesRoadY[P], TilesRoadLength[P]);
+        SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
+        SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
+        SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
 
-        if (Abs(X - X2) <= REPLICA_RADIUS)
-        and (Abs(Y - Y2) <= REPLICA_RADIUS)
-        and (not Players[O].HeroMagicImmunity)
-        and (not Players[O].HeroTotalImmunity) then
-        begin
-          TilesRoadLength[P] := TilesRoadLength[P] + 4;
-          SetLength(TilesRoadX[P], TilesRoadLength[P]);
-          SetLength(TilesRoadY[P], TilesRoadLength[P]);
-          SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
-          SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
-          SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-
-          TilesRoadX[P][Length(TilesRoadX[P]) - 4] := X2 + 1;
-          TilesRoadX[P][Length(TilesRoadX[P]) - 3] := X2 - 1;
-          TilesRoadX[P][Length(TilesRoadX[P]) - 2] := X2 - 1;
-          TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + 1;
+        TilesRoadX[P][Length(TilesRoadX[P]) - 4] := X2 + 1;
+        TilesRoadX[P][Length(TilesRoadX[P]) - 3] := X2 - 1;
+        TilesRoadX[P][Length(TilesRoadX[P]) - 2] := X2 - 1;
+        TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + 1;
     
-          TilesRoadY[P][Length(TilesRoadY[P]) - 4] := Y2 + 1;
-          TilesRoadY[P][Length(TilesRoadY[P]) - 3] := Y2 - 1;
-          TilesRoadY[P][Length(TilesRoadY[P]) - 2] := Y2 + 1;
-          TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
+        TilesRoadY[P][Length(TilesRoadY[P]) - 4] := Y2 + 1;
+        TilesRoadY[P][Length(TilesRoadY[P]) - 3] := Y2 - 1;
+        TilesRoadY[P][Length(TilesRoadY[P]) - 2] := Y2 + 1;
+        TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
    
-          for I := 1 to 4 do
+        for I := 1 to 4 do
+        begin
+          TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := REBEL_OBJECT;
+          if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
           begin
-            TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := REBEL_OBJECT;
-            if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-            begin
-              Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
-              Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sReplica;
-            end;
+            Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
+            Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sReplica;
           end;
-    
-          ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 4] := States.GameTime + 8;
-          ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 3] := States.GameTime + 10;
-          ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] := States.GameTime + 12;
-          ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 14;
-    
-          SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 4] := States.GameTime + 1;
-          SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 3] := States.GameTime + 3;
-          SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 5;
-          SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 7;
-
-          Players[P].RoadSkillCancelTime := States.GameTime + 14;
-
-          for I := 1 to 4 do
-            if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-              if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
-              or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
-              or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-              or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-              or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
-                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
-
-          Players[P].ReplicaType := States.UnitType(U);
-          Players[P].ReplicaTime := States.GameTime + REPLICA_DELAY;
-          Players[P].ReplicaTarget := O;
-          Players[P].RoadSkillDelay := Round(REBEL_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-          Players[P].LastUsedSkill := sReplica;
-          ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
         end;
+    
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 4] := States.GameTime + 8;
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 3] := States.GameTime + 10;
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] := States.GameTime + 12;
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 14;
+    
+        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 4] := States.GameTime + 1;
+        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 3] := States.GameTime + 3;
+        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 5;
+        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 7;
+
+        Players[P].RoadSkillCancelTime := States.GameTime + 14;
+        for I := 1 to 4 do
+          if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
+            if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
+            or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
+            or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
+            or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
+            or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+              ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
+
+        Players[P].ReplicaType := States.UnitType(U);
+        Players[P].ReplicaTime := States.GameTime + REPLICA_DELAY;
+        Players[P].ReplicaTarget := O; 
+
+        if (InRange(Players[P].ReplicaTarget, 8, 11))
+        and (States.KaMRandom < 0.7) then
+          if Length(Zombies) > 0 then
+            for I := 0 to Length(Zombies) - 1 do
+              if not States.UnitDead(Zombies[I].ID) then
+                if Zombies[I].ID = U then
+                  Zombies[I].KillTime := Players[P].ReplicaTime;
+
+        Players[P].RoadSkillDelay := Round(REBEL_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+        Players[P].LastUsedSkill := sReplica;
+        ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
       end;
     end;
   end;
@@ -9406,9 +9417,12 @@ begin
       sReplica: if (U > 0)
                 and (Abs(X - X2) <= REPLICA_RADIUS)
                 and (Abs(Y - Y2) <= REPLICA_RADIUS)
-                and (InRange(O, 0, 7)) then
-                  if (not Players[O].HeroMagicImmunity)
-                  and (not Players[O].HeroTotalImmunity) then
+                and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
+                  if ((InRange(O, 0, 7)) 
+                  and (not Players[O].HeroMagicImmunity)
+                  and (not Players[O].HeroTotalImmunity))
+                  or ((InRange(O, 8, 11))
+                  and (Players[O].PlayersTeam <> Players[P].PlayersTeam)) then
                   begin
                     TempRoadSkillDelay := Players[P].RoadSkillDelay;
                     Replica(P, X, Y);
@@ -12002,23 +12016,32 @@ begin
 
       if States.GameTime = Players[I1].ReplicaTime then
       begin
-        if TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0))) then
+        if InRange(Players[I1].ReplicaTarget, 0, 7) then
         begin
-          Players[I1].ReplicaX := BackX(Players[I1].ReplicaTarget);
-          Players[I1].ReplicaY := BackY(Players[I1].ReplicaTarget);
-        end
-        else
-        begin
-          Players[I1].ReplicaX := Players[Players[I1].ReplicaTarget].LastX;
-          Players[I1].ReplicaY := Players[Players[I1].ReplicaTarget].LastY;
+          if TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0))) then
+          begin
+            Players[I1].ReplicaX := BackX(Players[I1].ReplicaTarget);
+            Players[I1].ReplicaY := BackY(Players[I1].ReplicaTarget);
+          end
+          else
+          begin
+            Players[I1].ReplicaX := Players[Players[I1].ReplicaTarget].LastX;
+            Players[I1].ReplicaY := Players[Players[I1].ReplicaTarget].LastY;
+          end;
+          Players[I1].ReplicaDir := States.UnitDirection(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0));
+          SetLength(Zombies, Length(Zombies) + 1);
+          Zombies[Length(Zombies) - 1].Owner := I1;
+          Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].ReplicaType, Players[I1].ReplicaX, Players[I1].ReplicaY, Players[I1].ReplicaDir, 1, 1);
+          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+          Zombies[Length(Zombies) - 1].ZombieType := 3;
+          Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[I1].DD)));
         end;
-        Players[I1].ReplicaDir := States.UnitDirection(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0));
-        SetLength(Zombies, Length(Zombies) + 1);
-        Zombies[Length(Zombies) - 1].Owner := I1;
-        Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].ReplicaType, Players[I1].ReplicaX, Players[I1].ReplicaY, Players[I1].ReplicaDir, 1, 1);
-        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-        Zombies[Length(Zombies) - 1].ZombieType := 3;
-        Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[I1].DD)));
+
+        if Length(Zombies) > 0 then
+          for I := 0 to Length(Zombies) - 1 do
+            if (Zombies[I].KillTime = States.GameTime)
+            and (not States.UnitDead(Zombies[I].ID)) then
+              Actions.UnitKill(Zombies[I].ID, False);
       end;
 
       if States.GameTime = Players[I1].RiftTime then
