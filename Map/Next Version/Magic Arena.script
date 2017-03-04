@@ -8498,6 +8498,7 @@ begin
       if U > 0 then
         O := States.UnitOwner(U);
       if (U > 0)
+      and (InRange(O, 0, 7))
       and ((U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity)
@@ -12045,7 +12046,7 @@ begin
       begin
         if (InRange(Players[I1].ReplicaTarget, 0, 7))
         and (Players[I1].Hero > 0)
-        and (Players[[Players[I1].ReplicaTarget].Hero > 0) then
+        and (Players[Players[I1].ReplicaTarget].Hero > 0) then
         begin
           if TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0))) then
           begin
