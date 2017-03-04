@@ -12043,7 +12043,9 @@ begin
 
       if States.GameTime = Players[I1].ReplicaTime then
       begin
-        if InRange(Players[I1].ReplicaTarget, 0, 7) then
+        if (InRange(Players[I1].ReplicaTarget, 0, 7))
+        and (Players[I1].Hero > 0)
+        and (Players[[Players[I1].ReplicaTarget].Hero > 0) then
         begin
           if TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0))) then
           begin
