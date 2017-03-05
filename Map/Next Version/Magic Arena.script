@@ -7648,6 +7648,7 @@ begin
   if (States.GameTime = SpurtTimes[P][Players[P].CurrentSpurtLength - 1] + 2)
   and ((States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) <> SpurtX[P][Players[P].CurrentSpurtLength - 1])
   or (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) <> SpurtY[P][Players[P].CurrentSpurtLength - 1]))
+  and (TileOnBattlefield(SpurtX[P][Players[P].CurrentSpurtLength - 1], SpurtY[P][Players[P].CurrentSpurtLength - 1]))
   and (States.GameTime > CHOOSE_HERO_TIMER)
   and (Players[P].HP > 0) then
   begin
