@@ -7630,10 +7630,15 @@ end;
 
 
 procedure CheckSpurt(P, Step: Integer);
+var
+  U1, U2: Integer;
 begin
+  U1 := States.UnitAt(SpurtX[P][Step], SpurtY[P][Step]);
+
   if (States.GameTime = SpurtTimes[P][Step] + 1)
   and (States.GameTime > CHOOSE_HERO_TIMER)
   and (Players[P].HP > 0)
+  and ((U1 = -1) or (States.UnitDead(U1)))
   and (TileOnBattlefield(SpurtX[P][Step], SpurtY[P][Step])) then
   begin
     Actions.GroupKillAll(Players[P].Hero, True);
@@ -7645,10 +7650,13 @@ begin
       GetRuneEffect(P, RuneObject);
   end;
 
+  U2 := States.UnitAt(SpurtX[P][Players[P].CurrentSpurtLength - 1], SpurtY[P][Players[P].CurrentSpurtLength - 1]);
+
   if (States.GameTime = SpurtTimes[P][Players[P].CurrentSpurtLength - 1] + 2)
   and ((States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)) <> SpurtX[P][Players[P].CurrentSpurtLength - 1])
   or (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) <> SpurtY[P][Players[P].CurrentSpurtLength - 1]))
   and (TileOnBattlefield(SpurtX[P][Players[P].CurrentSpurtLength - 1], SpurtY[P][Players[P].CurrentSpurtLength - 1]))
+  and ((U2 = -1) or (States.UnitDead(U2)))
   and (States.GameTime > CHOOSE_HERO_TIMER)
   and (Players[P].HP > 0) then
   begin
