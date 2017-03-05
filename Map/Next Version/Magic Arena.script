@@ -12738,6 +12738,7 @@ begin
       begin
 
         if (TileOnRuneSpawn(TilesRoadX[P][K], TilesRoadY[P][K]))
+        and (InRange(States.GameTime, SetTilesRoadTimes[P][K], SetTilesRoadTimes[P][K] - 1))
         and (not RuneTaken)
         and (TilesRoadObjects[P][K] <> BARB_OBJECT3) then
         begin
@@ -12833,6 +12834,7 @@ begin
       begin
 
         if (TileOnRuneSpawn(TilesFieldX[P][K], TilesFieldY[P][K]))
+        and (InRange(States.GameTime, SetTilesFieldTimes[P][K], SetTilesFieldTimes[P][K] - 1))
         and (not RuneTaken)
         and (TilesFieldObjects[P][K] <> BARB_OBJECT3) then
         begin
@@ -12933,6 +12935,7 @@ begin
       begin
 
         if (TileOnRuneSpawn(TilesWineX[P][K], TilesWineY[P][K]))
+        and (InRange(States.GameTime, SetTilesWineTimes[P][K], SetTilesWineTimes[P][K] - 1))
         and (not RuneTaken)
         and (TilesWineObjects[P][K] <> BARB_OBJECT3) then
         begin

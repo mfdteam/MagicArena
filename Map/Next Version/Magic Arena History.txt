@@ -13,6 +13,7 @@ Magic Arena - Next Version
 - Fear and Spell Steal can lure enemy zombies/illusions
 - Raging Sppurt could still ignore Shield of Darkness
 - Raging Spurt near rune spawn could send Knight to a wrong location
+- Fixed objects placement on rune spawn
 
 
 v.2.173
