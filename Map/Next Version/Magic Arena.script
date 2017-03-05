@@ -2998,7 +2998,7 @@ end;
 
 procedure Fear(P, X, Y: Integer);
 var
-  X2, Y2, U, O, T, Z: Integer;
+  X2, Y2, U, O, T, Z, H: Integer;
   R: Single;
   Lure: Boolean;
 begin
@@ -3028,12 +3028,13 @@ begin
         Lure := R < FEAR_LURE_CHANCE;
         if Lure then
         begin
+          H := States.UnitHunger(U);
           SetLength(Zombies, Length(Zombies) + 1);
           Zombies[Length(Zombies) - 1].Owner := P;
           Z := Actions.GiveGroup(Players[P].ZombiePlayer, T, X, Y, States.KaMRandomI(8), 1, 1);
           Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
           Zombies[Length(Zombies) - 1].ZombieType := 3;
-          Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
+          Actions.GroupHungerSet(Z, H);
         end;
         Actions.UnitKill(U, Lure);
         Players[P].LastUsedSkill := sFear;
@@ -8971,7 +8972,7 @@ end;
 
 procedure StealSkill(P, X, Y: Integer);
 var
-  X2, Y2, U, O, Z, T: Integer;
+  X2, Y2, U, O, Z, T, H: Integer;
   R: Single;
   Lure: Boolean;
 begin 
@@ -9052,12 +9053,13 @@ begin
           T := States.UnitType(U);          
           if Lure then
           begin
+            H := States.UnitHunger(U);
             SetLength(Zombies, Length(Zombies) + 1);
             Zombies[Length(Zombies) - 1].Owner := P;
             Z := Actions.GiveGroup(Players[P].ZombiePlayer, T, X, Y, States.KaMRandomI(8), 1, 1);
             Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
             Zombies[Length(Zombies) - 1].ZombieType := 3;
-            Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
+            Actions.GroupHungerSet(Z, H);
             Actions.UnitKill(U, Lure);
           end;
         end;
@@ -11909,7 +11911,7 @@ end;
 
 procedure CheckStatus;
 var
-  I1, aX, aY, U, Z: Integer;
+  I1, aX, aY, U, Z, H: Integer;
   R: Single;
   Lure: Boolean;
 begin
@@ -12092,6 +12094,7 @@ begin
               Lure := R < REPLICA_LURE_CHANCE;
               if Lure then
               begin
+                H := States.UnitHunger(Zombies[I].ID);
                 Players[I1].ReplicaType := States.UnitType(Zombies[I].ID);
                 Players[I1].ReplicaX := States.UnitPositionX(Zombies[I].ID);
                 Players[I1].ReplicaY := States.UnitPositionY(Zombies[I].ID);
@@ -12101,7 +12104,7 @@ begin
                 Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].ReplicaType, Players[I1].ReplicaX, Players[I1].ReplicaY, Players[I1].ReplicaDir, 1, 1);
                 Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
                 Zombies[Length(Zombies) - 1].ZombieType := 3;
-                Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[I1].DD)));
+                Actions.GroupHungerSet(Z, H);
               end;
               Actions.UnitKill(Zombies[I].ID, Lure);
             end;
