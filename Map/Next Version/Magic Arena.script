@@ -660,6 +660,7 @@ var
   RuneObject: Integer;
   GameOver: Boolean;
   VictoryTime: Integer;
+  RuneCleanupTime: array[0..7] of Integer;
 
 
 procedure LogError(aMsg: ANSIString; aShowMsg: Boolean);
@@ -1433,6 +1434,9 @@ procedure CheckRuneCleanup;
 begin
   if States.MapTileObject(RUNE_X, RUNE_Y) = BARB_OBJECT3 then
     RuneTaken := True;
+  for I := 0 to 7 do
+    if States.GameTime = RuneCleanupTime[I] then
+      RuneTaken := True;
   if (not RuneTaken)
   and (States.MapTileObject(RUNE_X, RUNE_Y) <> RuneObject) then
     Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RuneObject);
@@ -3430,6 +3434,9 @@ begin
         Actions.GroupKillAll(Players[P].Hero, True);
         Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       end;
+
+      if TileOnRuneSpawn(X, Y) then
+        RuneCleanupTime[P] := States.GameTime + 37;
 
       Players[P].LastUsedSkill := sTotem;
 
@@ -9943,6 +9950,7 @@ begin
         Players[P].ReplicaTime := 0;
         Players[P].RiftTime := 0;
         Players[P].MirrorTime := 0;
+        RuneCleanupTime[P] := 0;
 
         if (InRange(Players[P].WerewolfTime - States.GameTime, 0, 49))
         and (InRange(Players[P].TempHeroType, 14, 27)) then
@@ -11546,6 +11554,7 @@ begin
     Players[O].ReplicaTime := 0;
     Players[O].RiftTime := 0;
     Players[O].MirrorTime := 0;
+    RuneCleanupTime[O] := 0;
 
     for I := 0 to 7 do
     begin
@@ -11757,7 +11766,7 @@ begin
                 begin
                   Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
                   Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$126>' + '[$' + States.PlayerColorText(Players[K].TempKill) + '] ' + States.PlayerName(Players[K].TempKill) +',[$' + States.PlayerColorText(Players[K].TempKill2) + '] ' + States.PlayerName(Players[K].TempKill2) + ' [$FFFFFF]<$128>' + ' [$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
-                 Players[K].TripleKill := False;
+                  Players[K].TripleKill := False;
                 end;
               if Players[K].Rampage then
                 for I := 0 to 7 do
@@ -12741,18 +12750,9 @@ begin
   begin
     if (TilesRoadX[P][K] > 0)
     and (TilesRoadY[P][K] > 0) then
-      if TileOnBattlefield(TilesRoadX[P][K], TilesRoadY[P][K])
+      if TileOnBattlefield_2(TilesRoadX[P][K], TilesRoadY[P][K])
       and (TilesRoadObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
-
-        if (TileOnRuneSpawn(TilesRoadX[P][K], TilesRoadY[P][K]))
-        and (InRange(States.GameTime, SetTilesRoadTimes[P][K], SetTilesRoadTimes[P][K] - 1))
-        and (not RuneTaken)
-        and (TilesRoadObjects[P][K] <> BARB_OBJECT3) then
-        begin
-          TilesRoadObjects[P][K] := SKILL_CANCEL_OBJ;
-          ClearTilesRoadTimes[P][K] := 0;
-        end;
 
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (TilesRoadObjects[P][K] = BARB_OBJECT3)
@@ -12837,18 +12837,9 @@ begin
   begin
     if (TilesFieldX[P][K] > 0)
     and (TilesFieldY[P][K] > 0) then
-      if TileOnBattlefield(TilesFieldX[P][K], TilesFieldY[P][K])
+      if TileOnBattlefield_2(TilesFieldX[P][K], TilesFieldY[P][K])
       and (TilesFieldObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
-
-        if (TileOnRuneSpawn(TilesFieldX[P][K], TilesFieldY[P][K]))
-        and (InRange(States.GameTime, SetTilesFieldTimes[P][K], SetTilesFieldTimes[P][K] - 1))
-        and (not RuneTaken)
-        and (TilesFieldObjects[P][K] <> BARB_OBJECT3) then
-        begin
-          TilesFieldObjects[P][K] := SKILL_CANCEL_OBJ;
-          ClearTilesFieldTimes[P][K] := 0;
-        end;
 
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (TilesFieldObjects[P][K] = WARRIOR_OBJECT7) then
@@ -12938,18 +12929,9 @@ begin
   begin
     if (TilesWineX[P][K] > 0)
     and (TilesWineY[P][K] > 0) then
-      if TileOnBattlefield(TilesWineX[P][K], TilesWineY[P][K])
+      if TileOnBattlefield_2(TilesWineX[P][K], TilesWineY[P][K])
       and (TilesWineObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
-
-        if (TileOnRuneSpawn(TilesWineX[P][K], TilesWineY[P][K]))
-        and (InRange(States.GameTime, SetTilesWineTimes[P][K], SetTilesWineTimes[P][K] - 1))
-        and (not RuneTaken)
-        and (TilesWineObjects[P][K] <> BARB_OBJECT3) then
-        begin
-          TilesWineObjects[P][K] := SKILL_CANCEL_OBJ;
-          ClearTilesWineTimes[P][K] := 0;
-        end;
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (TilesWineObjects[P][K] = WARRIOR_OBJECT7) then
