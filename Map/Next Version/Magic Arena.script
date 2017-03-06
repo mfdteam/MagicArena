@@ -350,6 +350,7 @@ const
   TOWERS_CHECK_FACTOR = 10;
   TOWERS_TILES_FACTOR = 2;
   ZOMBIE_ARRAY_CHECK_FACTOR = 200;
+  ZOMBIE_TAKE_RUNES = True;
 
   DEBUG_MODE = True;
   CHANGE_RELIEF = True;
@@ -1561,6 +1562,32 @@ begin
   end;
 
 end;
+
+
+procedure ZombieTakeRune;
+var
+  aX, aY, O, aRune: Integer;
+begin
+  if RuneTaken then
+    Exit;
+
+  if not ZOMBIE_TAKE_RUNES then
+    Exit;
+
+  if Length(Zombies) > 0 then
+    for I := 0 to Length(Zombies) - 1 do
+      if not States.UnitDead(Zombies[I].ID) then
+      begin
+        aX := States.UnitPositionX(Zombies[I].ID);
+        aY := States.UnitPositionY(Zombies[I].ID);
+        O := Zombies[I].Owner;
+        if TileOnRuneSpawn(aX, aY) then
+        begin
+          aRune := States.MapTileObject(aX, aY);
+          GetRuneEffect(O, aRune);
+        end;
+      end;
+end;   
 
 
 procedure CheckStolenSkillTime(P: Integer);
@@ -15033,6 +15060,8 @@ begin
   for I := 0 to 7 do
     if States.PlayerEnabled(I) then
       CheckEffects(I);
+
+  ZombieTakeRune;
 
   if States.GameTime mod ZOMBIE_STORM_FACTOR = 0 then
   begin

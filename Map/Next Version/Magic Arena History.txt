@@ -18,6 +18,7 @@ Magic Arena - Next Version
 - Check Raging Spurt coordinates after Hero movements by Threads of Death
 - Ability to use Threads of Death on zombies/illusions
 - Bowman: Decreased Revenge from Nowhere speed
+- Zombies can take rune for their owner
 
 
 v.2.173
