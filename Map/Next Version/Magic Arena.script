@@ -3093,7 +3093,8 @@ begin
       if U > 0 then
         O := States.UnitOwner(U);
 
-      if InRange(O, 8, 11) then
+      if (InRange(O, 8, 11))
+      and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
       begin
         T := States.UnitType(U);
         R := States.KaMRandom;
@@ -9349,7 +9350,8 @@ begin
                  if ((InRange(O, 0, 7))
                  and (not Players[O].HeroMagicImmunity)
                  and (not Players[O].HeroTotalImmunity))
-                 or (InRange(O, 8, 11)) then
+                 or ((InRange(O, 8, 11))
+                 and (Players[O].PlayersTeam <> Players[P].PlayersTeam)) then
                    Fear(P, X, Y);
 
       sAccurateShot: begin
