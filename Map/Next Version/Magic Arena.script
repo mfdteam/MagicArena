@@ -456,6 +456,7 @@ type
     ThreadsUnitDir: Integer;
     ThreadsTime: Integer;
     ThreadsStartTime: Integer;
+    ThreadsAttackTime: Integer;
     ThreadsAttacker: Integer;
     ThreadsTarget: Integer;
     ThreadsX: Integer;
@@ -589,6 +590,10 @@ type
     ZombieType: Integer;
     TeleportTime: Integer;
     KillTime: Integer;
+    ThreadsTime: Integer;
+    ThreadsX: Integer;
+    ThreadsY: Integer;
+    ThreadsDir: Integer;
   end;
 
 
@@ -1203,6 +1208,7 @@ begin
       HeroSilentStartTime := 0;
       AIChoiceTime := 10 + States.KaMRandomI(100) + States.KaMRandomI(200);
       ThreadsUnitDir := -1;
+      ThreadsAttackTime := 0;
       ThreadsAttacker := -1;
       ThreadsTarget := -1;
       ThreadsTime := -1;
@@ -1461,6 +1467,10 @@ begin
         TempZombies[Length(TempZombies) - 1].ZombieType := Zombies[I].ZombieType;
         TempZombies[Length(TempZombies) - 1].TeleportTime := Zombies[I].TeleportTime;
         TempZombies[Length(TempZombies) - 1].KillTime := Zombies[I].KillTime;
+        TempZombies[Length(TempZombies) - 1].ThreadsTime := Zombies[I].ThreadsTime;
+        TempZombies[Length(TempZombies) - 1].ThreadsX := Zombies[I].ThreadsX;
+        TempZombies[Length(TempZombies) - 1].ThreadsY := Zombies[I].ThreadsY;
+        TempZombies[Length(TempZombies) - 1].ThreadsDir := Zombies[I].ThreadsDir;
       end;
     SetLength(Zombies, Length(TempZombies));
     if Length(Zombies) > 0 then
@@ -1472,6 +1482,10 @@ begin
         Zombies[K].ZombieType := TempZombies[K].ZombieType;
         Zombies[K].TeleportTime := TempZombies[K].TeleportTime;
         Zombies[K].KillTime := TempZombies[K].KillTime;
+        Zombies[K].ThreadsTime := TempZombies[K].ThreadsTime;
+        Zombies[K].ThreadsX := TempZombies[K].ThreadsX;
+        Zombies[K].ThreadsY := TempZombies[K].ThreadsY;
+        Zombies[K].ThreadsDir := TempZombies[K].ThreadsDir;
       end;
   except
     LogError('Exception in the script: Something went wrong when trying to resize Zombies array (Exception ID: 11)', SHOW_ERROR_MSG);
@@ -2281,6 +2295,44 @@ begin
     5: Result := aY - 1;
     6: Result := aY;
     7: Result := aY + 1;
+  end;
+end;
+
+
+function FrontX(P: Integer): Integer;
+var
+  aX, aD: Integer;
+begin
+  aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+  aD := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+  case aD of
+    0: Result := aX;
+    1: Result := aX + 1;
+    2: Result := aX + 1;
+    3: Result := aX + 1;
+    4: Result := aX;
+    5: Result := aX - 1;
+    6: Result := aX - 1;
+    7: Result := aX - 1;
+  end;
+end;
+
+
+function FrontY(P: Integer): Integer;
+var
+  aY, aD: Integer;
+begin
+  aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+  aD := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+  case aD of
+    0: Result := aY - 1;
+    1: Result := aY - 1;
+    2: Result := aY;
+    3: Result := aY + 1;
+    4: Result := aY + 1;
+    5: Result := aY + 1;
+    6: Result := aY;
+    7: Result := aY - 1;
   end;
 end;
 
@@ -7145,12 +7197,15 @@ begin
         Actions.GroupOrderHalt(Players[P].Hero);
         Actions.GroupOrderWalk(Players[P].Hero, X2, Y2, D);
       end;
-      if (U > 0)
-      and (InRange(O, 0, 7))
+      if U <= 0 then
+        Exit;
+      if ((InRange(O, 0, 7))
       and (O <> P)
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity)
-      and (U = States.GroupMember(Players[O].Hero, 0))
+      and (U = States.GroupMember(Players[O].Hero, 0)))
+      or ((InRange(O, 8, 11))
+      and (InRange(States.UnitType(U), 14, 27)))
       and (States.MapTileObject(X2, Y2) <> WARRIOR_OBJECT7) then
       begin
         TilesRoadLength[P] := TilesRoadLength[P] + 4;
@@ -7192,56 +7247,68 @@ begin
              or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
-        Players[O].ThreadsStartTime := States.GameTime;
-        Players[O].ThreadsTime := States.GameTime + THREADS_DELAY;
-        Players[O].ThreadsAttacker := P;
-        Players[P].ThreadsTarget := O;
-        Players[O].MovedByThreads := True;
-        Players[O].ThreadsUnitDir := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
+        Players[P].ThreadsAttackTime := States.GameTime + THREADS_DELAY;
 
-        case D of
+        if InRange(O, 0, 7) then
+        begin
+          Players[O].ThreadsStartTime := States.GameTime;
+          Players[O].ThreadsTime := States.GameTime + THREADS_DELAY;
+          Players[O].ThreadsAttacker := P;
+          Players[P].ThreadsTarget := O;
+          Players[O].MovedByThreads := True;
+          Players[O].ThreadsUnitDir := States.UnitDirection(States.GroupMember(Players[O].Hero, 0));
 
-          0: begin
-               Players[O].ThreadsDX := 0;
-               Players[O].ThreadsDY := -1;
-             end;
+          case D of
 
-          1: begin
-               Players[O].ThreadsDX := 1;
-               Players[O].ThreadsDY := -1;
-             end;
+            0: begin
+                 Players[O].ThreadsDX := 0;
+                 Players[O].ThreadsDY := -1;
+               end;
 
-          2: begin
-               Players[O].ThreadsDX := 1;
-               Players[O].ThreadsDY := 0;
-             end;
+            1: begin
+                 Players[O].ThreadsDX := 1;
+                 Players[O].ThreadsDY := -1;
+               end;
 
-          3: begin
-               Players[O].ThreadsDX := 1;
-               Players[O].ThreadsDY := 1;
-             end;
+            2: begin
+                 Players[O].ThreadsDX := 1;
+                 Players[O].ThreadsDY := 0;
+               end;
 
-          4: begin
-               Players[O].ThreadsDX := 0;
-               Players[O].ThreadsDY := 1;
-             end;
+            3: begin
+                 Players[O].ThreadsDX := 1;
+                 Players[O].ThreadsDY := 1;
+               end;
 
-          5: begin
-               Players[O].ThreadsDX := -1;
-               Players[O].ThreadsDY := 1;
-             end;
+            4: begin
+                 Players[O].ThreadsDX := 0;
+                 Players[O].ThreadsDY := 1;
+               end;
 
-          6: begin
-               Players[O].ThreadsDX := -1;
-               Players[O].ThreadsDY := 0;
-             end;
+            5: begin
+                 Players[O].ThreadsDX := -1;
+                 Players[O].ThreadsDY := 1;
+               end;
 
-          7: begin
-               Players[O].ThreadsDX := -1;
-               Players[O].ThreadsDY := -1;
-             end;
+            6: begin
+                 Players[O].ThreadsDX := -1;
+                 Players[O].ThreadsDY := 0;
+               end;
+
+            7: begin
+                 Players[O].ThreadsDX := -1;
+                 Players[O].ThreadsDY := -1;
+               end;
+          end;
 
         end;
+
+        if InRange(O, 8, 11) then
+          if Length(Zombies) > 0 then
+            for I := 0 to Length(Zombies) - 1 do
+              if not States.UnitDead(Zombies[I].ID) then
+                if U = Zombies[I].ID then
+                  Zombies[I].ThreadsTime := Players[P].ThreadsAttackTime;
 
         Players[P].LastUsedSkill := sThreadsOfDeath;
         Players[P].RoadSkillDelay := Round(KNIGHT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
@@ -9409,25 +9476,25 @@ begin
       sShield: Shield(P, X, Y);
 
       sThreadsOfDeath: begin
-                       if U <= 0 then
-                         Exit;
-                       if ((InRange(O, 0, 7))
-                       and (Abs(X - X2) <= THREADS_RADIUS)
-                       and (Abs(Y - Y2) <= THREADS_RADIUS)
-                       and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-                       and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7))
-                       or ((InRange(O, 0, 7))
-                       and (Abs(X - X2) <= THREADS_ALLY_RADIUS)
-                       and (Abs(Y - Y2) <= THREADS_ALLY_RADIUS)
-                       and (Players[P].PlayersTeam = Players[O].PlayersTeam)
-                       and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7)) then
-                       begin
-                         TempRoadSkillDelay := Players[P].RoadSkillDelay;
-                         ThreadsOfDeath(P, X, Y);
-                         Players[P].RoadSkillDelay := TempRoadSkillDelay;
-                         Players[P].WineSkillDelay := Round(KNIGHT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                         if U <= 0 then
+                           Exit;
+                         if ((InRange(O, 0, 11))
+                         and (Abs(X - X2) <= THREADS_RADIUS)
+                         and (Abs(Y - Y2) <= THREADS_RADIUS)
+                         and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+                         and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7))
+                         or ((InRange(O, 0, 11))
+                         and (Abs(X - X2) <= THREADS_ALLY_RADIUS)
+                         and (Abs(Y - Y2) <= THREADS_ALLY_RADIUS)
+                         and (Players[P].PlayersTeam = Players[O].PlayersTeam)
+                         and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7)) then
+                         begin
+                           TempRoadSkillDelay := Players[P].RoadSkillDelay;
+                           ThreadsOfDeath(P, X, Y);
+                           Players[P].RoadSkillDelay := TempRoadSkillDelay;
+                           Players[P].WineSkillDelay := Round(KNIGHT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                         end;
                        end;
-                     end;
 
       sDeafeningClatter: begin
                            TempFieldSkillDelay := Players[P].FieldSkillDelay;
@@ -9964,6 +10031,7 @@ begin
         Players[P].RiftTime := 0;
         Players[P].MirrorTime := 0;
         RuneCleanupTime[P] := 0;
+        Players[P].ThreadsAttackTime := 0;
 
         if (InRange(Players[P].WerewolfTime - States.GameTime, 0, 49))
         and (InRange(Players[P].TempHeroType, 14, 27)) then
@@ -11568,6 +11636,7 @@ begin
     Players[O].RiftTime := 0;
     Players[O].MirrorTime := 0;
     RuneCleanupTime[O] := 0;
+    Players[O].ThreadsAttackTime := 0;
 
     for I := 0 to 7 do
     begin
@@ -12090,6 +12159,25 @@ begin
         Players[I1].HeroReborn := False;
 
       end;
+
+      if States.GameTime = Players[I1].ThreadsAttackTime then
+        if Length(Zombies) > 0 then
+          for I := 0 to Length(Zombies) - 1 do
+            if (Zombies[I].ThreadsTime = States.GameTime)
+            and (not States.UnitDead(Zombies[I].ID)) then
+            begin
+              H := States.UnitHunger(Zombies[I].ID);
+              SetLength(Zombies, Length(Zombies) + 1);
+              Zombies[Length(Zombies) - 1].Owner := Zombies[I].Owner;
+              Zombies[Length(Zombies) - 1].ThreadsDir := States.UnitDirection(Zombies[I].ID);
+              Zombies[Length(Zombies) - 1].ThreadsX := FrontX(I1);
+              Zombies[Length(Zombies) - 1].ThreadsY := FrontY(I1);
+              Z := Actions.GiveGroup(Players[Zombies[I].Owner].ZombiePlayer, States.UnitType(Zombies[I].ID), Zombies[Length(Zombies) - 1].ThreadsX, Zombies[Length(Zombies) - 1].ThreadsY, Zombies[Length(Zombies) - 1].ThreadsDir, 1, 1);
+              Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+              Zombies[Length(Zombies) - 1].ZombieType := Zombies[I].ZombieType;
+              Actions.GroupHungerSet(Z, H);
+              Actions.UnitKill(Zombies[I].ID, True);
+            end;
 
       if States.GameTime = Players[I1].ReplicaTime then
       begin

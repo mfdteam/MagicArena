@@ -16,6 +16,7 @@ Magic Arena - Next Version
 - If Knight kills unit on last Raging Spurt tile, he could take wrong location
 - Fixed objects placement on rune spawn
 - Check Raging Spurt coordinates after Hero movements by Threads of Death
+- Ability to use Threads of Death on zombies/illusions
 
 
 v.2.173
