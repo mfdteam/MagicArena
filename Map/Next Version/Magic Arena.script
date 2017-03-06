@@ -7443,8 +7443,10 @@ begin
     Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     if InRange(States.GameTime, Players[P].ThreadsStartTime, Players[P].ThreadsTime) then
     begin
-      X2 := Players[P].ThreadsX;
-      Y2 := Players[P].ThreadsY;
+      Players[P].ThreadsX := States.UnitPositionX(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[P].ThreadsAttacker].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) < MIN_Y);
+      Players[P].ThreadsY := States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[P].ThreadsAttacker].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) < MIN_Y);
+      X2 := Players[P].ThreadsX + Players[P].ThreadsDX;
+      Y2 := Players[P].ThreadsY + Players[P].ThreadsDY;
       Direction := Players[P].ThreadsUnitDir;
       Players[P].ThreadsTime := 0;
     end;
