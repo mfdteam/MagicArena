@@ -455,6 +455,7 @@ type
     AIChoiceTime: Integer;
     ThreadsUnitDir: Integer;
     ThreadsTime: Integer;
+    ThreadsStartTime: Integer;
     ThreadsAttacker: Integer;
     ThreadsTarget: Integer;
     ThreadsX: Integer;
@@ -7191,6 +7192,7 @@ begin
              or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
+        Players[O].ThreadsStartTime := States.GameTime;
         Players[O].ThreadsTime := States.GameTime + THREADS_DELAY;
         Players[O].ThreadsAttacker := P;
         Players[P].ThreadsTarget := O;
@@ -7439,6 +7441,13 @@ begin
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+    if InRange(States.GameTime, Players[P].ThreadsStartTime, Players[P].ThreadsTime) then
+    begin
+      X2 := Players[P].ThreadsX;
+      Y2 := Players[P].ThreadsY;
+      Direction := Players[P].ThreadsUnitDir;
+      Players[P].ThreadsTime := 0;
+    end;
     Desync := 0;
     R := States.KaMRandomI(SPURT_AI_RANDOM);
     Players[P].CurrentSpurtLength := 0;

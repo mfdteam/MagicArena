@@ -15,6 +15,7 @@ Magic Arena - Next Version
 - Raging Spurt near rune spawn could send Knight to a wrong location
 - If Knight kills unit on last Raging Spurt tile, he could take wrong location
 - Fixed objects placement on rune spawn
+- Check Raging Spurt coordinates after Hero movements by Threads of Death
 
 
 v.2.173
