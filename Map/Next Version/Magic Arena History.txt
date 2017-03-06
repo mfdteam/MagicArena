@@ -17,6 +17,7 @@ Magic Arena - Next Version
 - Fixed objects placement on rune spawn
 - Check Raging Spurt coordinates after Hero movements by Threads of Death
 - Ability to use Threads of Death on zombies/illusions
+- Bowman: Decreased Revenge from Nowhere speed
 
 
 v.2.173
