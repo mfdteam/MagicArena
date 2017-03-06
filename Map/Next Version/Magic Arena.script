@@ -345,7 +345,6 @@ const
   REBORN_TIME = 50;
   BOWMAN_PRISON_AI_CHANCE = 0.9;
   EFFECT_CHECK_FACTOR = 6;
-  FENCE_TIME = 60;
   RECRUIT_HUNGER = 115;
   VICTORY_DELAY = 300;
   TOWERS_CHECK_FACTOR = 10;
@@ -620,7 +619,6 @@ type
     TileType: Integer;
     TileDirection: Integer;
     ShieldTime: Integer;
-    ImmortalTime: Integer;
     TrackTime: Integer;
   end;
 
@@ -839,7 +837,6 @@ begin
     Tiles[aX][aY].TileType := States.MapTileType(aX, aY);
     Tiles[aX][aY].TileDirection := States.MapTileRotation(aX, aY);
     Tiles[aX][aY].ShieldTime := 0;
-    Tiles[aX][aY].ImmortalTime := 0;
     Tiles[aX][aY].TrackTime := 0;
   end;
 end;
@@ -1929,18 +1926,9 @@ begin
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
   end;
   if TileOnBattlefield(aX, aY) then
-  begin
     if (Tiles[aX][aY].ShieldTime > States.GameTime)
-    and (Tiles[aX][aY].ShieldTime > Tiles[aX][aY].ImmortalTime)
     and (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7) then
       Result := '|[$FCA986]<$113>[] (' + IntToStr((Tiles[aX][aY].ShieldTime - States.GameTime)/10) + ')';
-
-    if (Tiles[aX][aY].ImmortalTime > States.GameTime)
-    and (Tiles[aX][aY].ShieldTime < Tiles[aX][aY].ImmortalTime)
-    and (States.MapTileObject(aX, aY) = WARRIOR_OBJECT7) then
-      Result := '|[$29E286]<$114>[] ' + IntToStr((Tiles[aX][aY].ImmortalTime - States.GameTime)/10);
-  end;
-
 end;
 
 
@@ -9925,10 +9913,7 @@ begin
   begin
     aObj := States.MapTileObject(aX, aY);
     aTile := States.MapTileType(aX, aY);
-    if Tiles[aX][aY].ShieldTime > Tiles[aX][aY].ImmortalTime then
-      aTime := Tiles[aX][aY].ShieldTime;
-    if Tiles[aX][aY].ShieldTime <= Tiles[aX][aY].ImmortalTime then
-      aTime := Tiles[aX][aY].ImmortalTime;
+    aTime := Tiles[aX][aY].ShieldTime;
   end;
   if aObj = PikeObjects[P] then
     Exit;
@@ -12857,13 +12842,11 @@ begin
 
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (TilesRoadObjects[P][K] = BARB_OBJECT3)
-        and (States.GameTime > Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].ImmortalTime) then
+        and (States.GameTime > Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].ShieldTime) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], BARB_OBJECT3);
 
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (States.GameTime > Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].ImmortalTime)
         and (TilesRoadObjects[P][K] = KNIGHT_OBJECT4) then
         begin
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], KNIGHT_OBJECT4);
@@ -12873,7 +12856,6 @@ begin
 
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (States.GameTime > Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].ImmortalTime)
         and (TilesRoadObjects[P][K] = SCOUT_OBJECT6) then
         begin
           Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Skill := sBoomerang;
@@ -12882,7 +12864,6 @@ begin
 
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (States.GameTime > Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].ImmortalTime)
         and (TilesRoadObjects[P][K] = CIRCLE_FILL_OBJ) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], CIRCLE_FILL_OBJ);
 
@@ -12948,13 +12929,11 @@ begin
 
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (States.GameTime > Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].ImmortalTime)
         and (TilesFieldObjects[P][K] = BOWMAN_OBJECT5) then
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], BOWMAN_OBJECT5);
 
         if (InRange(States.GameTime, ClearTilesFieldTimes[P][K], 1 + ClearTilesFieldTimes[P][K]))
         and (States.GameTime > Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].ImmortalTime)
         and (TilesFieldObjects[P][K] = BOWMAN_OBJECT5) then
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], 255);
 
@@ -12964,13 +12943,11 @@ begin
 
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (TilesFieldObjects[P][K] = BARB_OBJECT3)
-        and (States.GameTime > Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].ImmortalTime) then
+        and (States.GameTime > Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].ShieldTime) then
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], BARB_OBJECT3);
 
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (States.GameTime > Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].ImmortalTime)
         and (TilesFieldObjects[P][K] = KNIGHT_OBJECT4) then
         begin
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], KNIGHT_OBJECT4);
@@ -12980,7 +12957,6 @@ begin
 
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (States.GameTime > Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].ImmortalTime)
         and (TilesFieldObjects[P][K] = CIRCLE_FILL_OBJ) then
           Actions.MapTileObjectSet(TilesFieldX[P][K], TilesFieldY[P][K], CIRCLE_FILL_OBJ);
 
@@ -13040,7 +13016,6 @@ begin
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (States.GameTime > Tiles[TilesWineX[P][K]][TilesWineY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesWineX[P][K]][TilesWineY[P][K]].ImmortalTime)
         and (TilesWineObjects[P][K] = BOWMAN_OBJECT5) then
           Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], BOWMAN_OBJECT5);
 
@@ -13050,13 +13025,11 @@ begin
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (TilesWineObjects[P][K] = BARB_OBJECT3)
-        and (States.GameTime > Tiles[TilesWineX[P][K]][TilesWineY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesWineX[P][K]][TilesWineY[P][K]].ImmortalTime) then
+        and (States.GameTime > Tiles[TilesWineX[P][K]][TilesWineY[P][K]].ShieldTime) then
           Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], BARB_OBJECT3);
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (States.GameTime > Tiles[TilesWineX[P][K]][TilesWineY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesWineX[P][K]][TilesWineY[P][K]].ImmortalTime)
         and (TilesWineObjects[P][K] = KNIGHT_OBJECT4) then
         begin
           Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], KNIGHT_OBJECT4);
@@ -13066,7 +13039,6 @@ begin
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (States.GameTime > Tiles[TilesWineX[P][K]][TilesWineY[P][K]].ShieldTime)
-        and (States.GameTime > Tiles[TilesWineX[P][K]][TilesWineY[P][K]].ImmortalTime)
         and (TilesWineObjects[P][K] = CIRCLE_FILL_OBJ) then
           Actions.MapTileObjectSet(TilesWineX[P][K], TilesWineY[P][K], CIRCLE_FILL_OBJ);
 
