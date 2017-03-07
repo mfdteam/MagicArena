@@ -12453,12 +12453,17 @@ begin
         Players[I1].HeroSilentTime := States.GameTime + SILENCE_SCOUT_TIME;
       end;
 
+      if States.GameTime = Players[I1].ThreadsTime - DELAY_OF_TURNING then
+      begin
+        Players[I1].ThreadsX := States.UnitPositionX(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].ThreadsAttacker].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) < MIN_Y);
+        Players[I1].ThreadsY := States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].ThreadsAttacker].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) < MIN_Y);
+        Actions.GroupKillAll(Players[I1].Hero, True);
+        Players[I1].Hero := Actions.GiveGroup(TEMP_PLAYER - Byte(States.PlayerIsAI(I1)), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+      end;
+
       if States.GameTime = Players[I1].ThreadsTime then
-        if (InRange(Players[I1].ThreadsAttacker, 0, 7))
-        and (States.GroupOwner(Players[I1].Hero) = I1) then
+        if (InRange(Players[I1].ThreadsAttacker, 0, 7)) then
         begin
-          Players[I1].ThreadsX := States.UnitPositionX(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].ThreadsAttacker].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) < MIN_Y);
-          Players[I1].ThreadsY := States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].ThreadsAttacker].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) < MIN_Y);
           Actions.GroupKillAll(Players[I1].Hero, True);
           Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].ThreadsDX + Players[I1].ThreadsX, Players[I1].ThreadsDY + Players[I1].ThreadsY, Players[I1].ThreadsUnitDir, 1, 1);
           Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
