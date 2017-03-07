@@ -351,6 +351,7 @@ const
   TOWERS_TILES_FACTOR = 2;
   ZOMBIE_ARRAY_CHECK_FACTOR = 200;
   ZOMBIE_TAKE_RUNES = True;
+  IDLE_CHECK_TIME = 200;
 
   DEBUG_MODE = True;
   CHANGE_RELIEF = True;
@@ -13793,6 +13794,8 @@ begin
             D2 := States.UnitDirection(States.GroupMember(Z, 0));
             if States.GroupIdle(Z) then
               Actions.GroupOrderWalk(Z, 25, 75, States.KaMRandomI(8));
+            if States.GameTime mod IDLE_CHECK_TIME = 0 then
+              Actions.GroupOrderWalk(Z, X2, Y2, States.KaMRandomI(8));
           end;
           DX := (X1 - X2) * (X1 - X2);
           DY := (Y1 - Y2) * (Y1 - Y2);
@@ -13837,6 +13840,8 @@ begin
             D2 := States.UnitDirection(States.GroupMember(Z, 0));
             if States.GroupIdle(Z) then
               Actions.GroupOrderWalk(Z, 45, 75, States.KaMRandomI(8));
+            if States.GameTime mod IDLE_CHECK_TIME = 0 then
+              Actions.GroupOrderWalk(Z, X2, Y2, States.KaMRandomI(8));
           end;
           DX := (X1 - X2) * (X1 - X2);
           DY := (Y1 - Y2) * (Y1 - Y2);
