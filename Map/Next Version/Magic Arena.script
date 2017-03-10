@@ -3724,6 +3724,12 @@ begin
     if (Abs(X2 - X) <= TELEPORT_RADIUS)
     and (Abs(Y2 - Y) <= TELEPORT_RADIUS) then
     begin
+      if States.PlayerIsAI(P) then
+      begin
+        Players[P].CastingSkill := True;
+        Players[P].SkillTime := States.GameTime + 4;
+        Actions.GroupOrderHalt(Players[P].Hero);
+      end;
       Players[P].LastUsedSkill := sTeleport;
       if States.PlayerIsAI(P) then 
         Players[P].TempHeroType := Players[P].HeroType;
@@ -3734,6 +3740,17 @@ begin
       Players[P].TeleportDir := NewDir;
       Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       Players[P].FieldSkillDelay := Round(LANCE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+      if (States.PlayerIsAI(P))
+      and (Players[P].HP > 0) then
+      begin
+        Actions.GroupOrderWalk(Players[P].Hero, X2, Y2, NewDir);
+        Players[P].SkillCastRespawnTime := States.GameTime + SKILL_RESPAWN_TIME;
+        Players[P].SkillCastDir := NewDir;
+        Players[P].SkillCastX := X2;
+        Players[P].SkillCastY := Y2;
+        Actions.GroupKillAll(Players[P].Hero, True);
+        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      end;
     end;
   end;
 
