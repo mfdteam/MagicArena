@@ -18,7 +18,9 @@ Magic Arena - Next Version
 - Check Raging Spurt coordinates after Hero movements by Threads of Death
 - Ability to use Threads of Death on zombies/illusions
 - Bowman: Decreased Revenge from Nowhere speed
-- Zombies can take rune for their owner
+- Zombies/illusions can take rune for their owner
+- Zombies/illusions should not stay idle if attak target is too far away
+- Stunning objects should have normal cleanup priority
 
 
 v.2.173
@@ -28,7 +30,7 @@ v.2.173
 - Axe Fighter - Werewolf: Disorientation cooldown -1 second 
 - Pikeman: now cast of Infernal tower has short delay and 8 tiles animation
 - Polish translation by Hoster
-- Now map needs less memory (reduced by 1,5 MB) 
+- Now map needs less hard disk space (reduced by 1,5 MB)
 - Fixed stolen Fear usage on zombies
 - HP indicator should blink when Hero has only 1 HP
 - Fixed Shield of Darkness animation

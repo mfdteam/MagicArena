@@ -719,8 +719,7 @@ begin
             and (States.MapTileObject(X, Y) <> BOWMAN_ROCKET)
             and (States.MapTileObject(X, Y) <> BOWMAN_OBJECT5)
             and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7)
-            and (not InRange(States.MapTileObject(X, Y), SHIELD_OBJECT, SHIELD_OBJECT8))
-            and (not InRange(States.MapTileObject(X, Y), SWORD_OBJECT, VAGA_OBJECT6));
+            and (not InRange(States.MapTileObject(X, Y), SHIELD_OBJECT, SHIELD_OBJECT8));
 
 end;
 
@@ -2379,7 +2378,6 @@ begin
       and (States.MapTileObject(PosX, PosY) <> CIRCLE_FILL_OBJ)
       and (States.MapTileObject(PosX, PosY) <> KNIGHT_OBJECT4)
       and (States.MapTileObject(PosX, PosY) <> VAGA_OBJECT8)
-      and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6))
       and (fSkill <> sDeadlyFireworks) then
       begin
         Tree := (aObj = 255)
@@ -2427,7 +2425,6 @@ begin
         and (States.MapTileObject(PosX, PosY) <> CIRCLE_FILL_OBJ)
         and (States.MapTileObject(PosX, PosY) <> KNIGHT_OBJECT4)
         and (States.MapTileObject(PosX, PosY) <> VAGA_OBJECT8)
-        and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6))
         and (not InRange(States.MapTileObject(PosX, PosY), SHIELD_OBJECT, SHIELD_OBJECT8)) then
         begin
           Tree := (aObj = 255)
@@ -2475,8 +2472,7 @@ begin
         and (States.MapTileObject(PosX, PosY) <> WARRIOR_OBJECT5)
         and (States.MapTileObject(PosX, PosY) <> CIRCLE_FILL_OBJ)
         and (States.MapTileObject(PosX, PosY) <> KNIGHT_OBJECT4)
-        and (States.MapTileObject(PosX, PosY) <> VAGA_OBJECT8)
-        and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6)) then
+        and (States.MapTileObject(PosX, PosY) <> VAGA_OBJECT8) then
           Actions.MapTileObjectSet(PosX, PosY, ShieldObjects[P]);
         if not aSaveCracking then
           if States.MapTileObject(PosX, PosY) = BARB_OBJECT then
@@ -2509,8 +2505,7 @@ begin
         and (States.MapTileObject(PosX, PosY) <> WARRIOR_OBJECT5)
         and (States.MapTileObject(PosX, PosY) <> CIRCLE_FILL_OBJ)
         and (States.MapTileObject(PosX, PosY) <> KNIGHT_OBJECT4)
-        and (States.MapTileObject(PosX, PosY) <> VAGA_OBJECT8)
-        and (not InRange(States.MapTileObject(PosX, PosY), SWORD_OBJECT1, VAGA_OBJECT6)) then
+        and (States.MapTileObject(PosX, PosY) <> VAGA_OBJECT8) then
         begin
           Tree := (aObj = 255)
           and (InRange(States.MapTileObject(PosX, PosY), 149, 172));
@@ -2753,8 +2748,7 @@ begin
       if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-      or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
     case Dir of
@@ -2916,8 +2910,7 @@ begin
       if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-      or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
     if Length(Zombies) > 0 then
@@ -3214,8 +3207,7 @@ begin
       if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-      or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
     case Direction of
@@ -3384,7 +3376,6 @@ begin
 
   if (TileOnBattlefield(X, Y))
   and (Players[P].Hero > 0)
-  and not (InRange(States.MapTileObject(X, Y), SWORD_OBJECT, VAGA_OBJECT6))
   and not (InRange(States.MapTileObject(X, Y), SHIELD_OBJECT, SHIELD_OBJECT8)) then
   begin
     if States.PlayerIsAI(P) then
@@ -3475,8 +3466,7 @@ begin
         if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7)
-        or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
       for I := TotemCirclesLength[P][TotemCirclesCounter[P]] downto TotemCirclesLength[P][TotemCirclesCounter[P]] - TOTEM_CYCLES * TOTEM_RADIUS + 1 do
@@ -3597,8 +3587,7 @@ begin
       if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-      or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
     case Direction of
@@ -3945,8 +3934,7 @@ begin
       if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7)
-      or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+      or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
     end;
@@ -4158,8 +4146,7 @@ begin
       if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-      or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
     case Direction of
@@ -4382,8 +4369,7 @@ begin
         if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
-        or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7)
-        or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+        or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
 
       end;
@@ -4514,8 +4500,7 @@ begin
       if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7)
-      or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+      or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
     end;
@@ -4936,8 +4921,7 @@ begin
         if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7)
-        or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
       end;
 
@@ -5076,8 +5060,7 @@ begin
         if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-        or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
       end;
@@ -5210,8 +5193,7 @@ begin
         if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7)
-        or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
       Players[P].LastUsedSkill := sRegen;
@@ -5480,8 +5462,7 @@ begin
         if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
-        or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7)
-        or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+        or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7) then
            ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
 
       FireworksCircles1Counter[P] := FireworksCircles1Counter[P] + 1;
@@ -5792,8 +5773,7 @@ begin
       if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-      or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
       begin
         SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := 0;
         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
@@ -6449,8 +6429,7 @@ begin
         if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7)
-        or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
     end;
@@ -6711,8 +6690,7 @@ begin
         if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-        or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
     case Direction of
@@ -7033,8 +7011,7 @@ begin
           if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
           or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
           or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
-          or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7)
-          or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+          or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7) then
             ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
 
       Players[O].HeroExiled := True;
@@ -7165,8 +7142,7 @@ begin
       for I := 1 to 33 do
         if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
-        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-        or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+        or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5) then
           ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
       Players[P].LastUsedSkill := sShield;
@@ -7260,8 +7236,7 @@ begin
             if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
              or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
              or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-             or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-             or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+             or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
         Players[P].ThreadsAttackTime := States.GameTime + THREADS_DELAY;
@@ -7489,8 +7464,7 @@ begin
       if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7)
-      or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+      or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
     Players[P].LastUsedSkill := sRagingSpurt;
@@ -8331,8 +8305,7 @@ begin
             if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
              or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
              or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
-             or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7)
-             or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+             or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7) then
                ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
 
         Players[O].ScoutSilenceStartTime := States.GameTime + SILENCE_SCOUT_DELAY;
@@ -8555,8 +8528,7 @@ begin
           if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
           or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
           or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
-          or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7)
-          or (InRange(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+          or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME + 2;
 
         M[P] := O;
@@ -8665,8 +8637,7 @@ begin
             if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
             or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
             or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-            or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-            or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+            or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
               ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
         Players[P].ReplicaType := States.UnitType(U);
@@ -8860,8 +8831,7 @@ begin
         if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7)
-        or (InRange(States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
 
     if not aStolen then
@@ -9151,8 +9121,7 @@ begin
             if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
              or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
              or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
-             or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7)
-             or (InRange(States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+             or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7) then
                ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
 
         if InRange(O, 0, 7) then
@@ -10515,8 +10484,7 @@ begin
       if (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = WARRIOR_OBJECT7)
-      or (InRange(States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+      or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] + CLEANUP_TIME;
 
     end;
@@ -10756,8 +10724,7 @@ begin
                   if (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BARB_OBJECT3)
                   or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_ROCKET)
                   or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_OBJECT5)
-                  or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = WARRIOR_OBJECT7)
-                  or (InRange(States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]), SWORD_OBJECT, VAGA_OBJECT6)) then
+                  or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = WARRIOR_OBJECT7) then
                   begin
                     ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] + CLEANUP_TIME + 5;
                     TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - I] := SKILL_CANCEL_OBJ;
