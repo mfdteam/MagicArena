@@ -25,6 +25,7 @@ const
   PIKE_WINE_DELAY = 350;
 
   BOWMAN_ROAD_DELAY = 120;
+  BOWMAN_CHARGE_DELAY = 50;
   BOWMAN_FIELD_DELAY = 140;
   BOWMAN_WINE_DELAY = 250;
 
@@ -119,6 +120,7 @@ const
   MENTAL_CYCLES = 1;
   MENTAL_DISTANCE = 8;
   TEN_K_SPEARS_WAVES = 1;
+  BOWMAN_CHARGES = 4;
 
 //Skills speed
 
@@ -580,6 +582,8 @@ type
     RiftY: Integer;
     RiftDir: Integer;
     MirrorTime: Integer;
+    RocketCharges: Integer;
+    RocketChargeTime: Integer;
   end;
 
 
@@ -1332,6 +1336,8 @@ begin
       RiftY := 0;
       RiftDir := -1;
       MirrorTime := 0;
+      RocketCharges := BOWMAN_CHARGES;
+      RocketChargeTime := 0;
     end;
   end;
 
