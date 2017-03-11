@@ -93,7 +93,7 @@ const
   RIFT_USAGE_RADIUS = 4;
   RIFT_ZOMBIE_RADIUS = 5;
   RIFT_ADD_ILLUSIONS = 2;
-  MIRROR_TIME = 50;
+  MIRROR_TIME = 60;
   REBEL_ZOMBIE_LIFE = 300;
 
   RAGE_RADIUS = 5;
@@ -11488,16 +11488,19 @@ end;
 
 procedure OnUnitAttacked(aID, aAttacker: Integer);
 var
-  P, Z, X, Y, T: Integer;
+  P, Z, X, Y, T, O: Integer;
 begin
   if Length(Zombies) <= 0 then
     Exit;
+  O := States.UnitOwner(aID);
   for I := 0 to Length(Zombies) - 1 do
     if not States.UnitDead(Zombies[I].ID) then
       if aAttacker = Zombies[I].ID then
       begin
         P := Zombies[I].Owner;
-        if Players[P].MirrorTime >= States.GameTime then
+        if (Players[P].MirrorTime >= States.GameTime)
+        and (not Players[O].HeroMagicImmunity)
+        and (not Players[O].HeroTotalImmunity) then
         begin
           SetLength(Zombies, Length(Zombies) + 1);
           Zombies[Length(Zombies) - 1].Owner := P;
