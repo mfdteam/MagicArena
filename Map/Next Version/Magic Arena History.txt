@@ -21,6 +21,7 @@ Magic Arena - Next Version
 - Zombies/illusions can take rune for their owner
 - Zombies/illusions should not stay idle if attak target is too far away
 - Stunning objects should have normal cleanup priority
+- Reworked Bowman's Rocket: Now has 4 charges
 
 
 v.2.173

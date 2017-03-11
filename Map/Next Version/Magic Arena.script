@@ -1564,6 +1564,8 @@ begin
         Players[P].RoadSkillDelay := 0;
         Players[P].FieldSkillDelay := 0;
         Players[P].WineSkillDelay := 0;
+        Players[P].RocketCharges := BOWMAN_CHARGES;
+        Players[P].RocketChargeTime := 0;
         RuneTaken := True;
         Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
       end;
@@ -1994,6 +1996,13 @@ begin
   if Players[P].WineSkillDelay > 0 then
     Players[P].WineSkillDelay := Players[P].WineSkillDelay - 1;
 
+  if (States.GameTime = Players[P].RocketChargeTime)
+  and (Players[P].RocketCharges <= BOWMAN_CHARGES - 1) then
+  begin
+    Players[P].RocketCharges := Players[P].RocketCharges + 1;
+    Players[P].RocketChargeTime := States.GameTime + Round(BOWMAN_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+  end; 
+
 end;
 
 
@@ -2147,7 +2156,10 @@ begin
   case UT of
     15: Result := '[$4C818B]<$8>[]';
     16: Result := '[$2222B2]<$9>[]';
-    17: Result := '[$0000FF]<$10>[]';
+    17: if Players[P].RocketCharges < BOWMAN_CHARGES then
+          Result := '[$0000FF]<$10>.[] <$138>: ' + IntToStr(Players[P].RocketCharges) + '/' + IntToStr(BOWMAN_CHARGES) + ' (+1 <$139> ' + IntToStr((Players[P].RocketChargeTime - States.GameTime)/10) + ')'
+        else
+          Result := '[$0000FF]<$10>.[] <$138>: ' + IntToStr(Players[P].RocketCharges) + '/' + IntToStr(BOWMAN_CHARGES);
     18: Result := '[$00A5FF]<$11>[]';
     19: Result := '[$4782FF]<$12>[]';
     20: Result := '[$B8B8B8]<$13>[]';
@@ -2195,7 +2207,16 @@ begin
     22: Result := '[$2580CE]<$52>[]';
     23: Result := '[$EE677A]<$30>[]';
     24: Result := '[$E6E1B4]<$137>[]';
-    25: Result := '[$AE209F]' + Players[P].StolenSkillName + '[]';
+    25: begin
+          Result := '[$AE209F]' + Players[P].StolenSkillName + '[]';
+          if Players[P].StolenSkillName = '<$10>' then
+          begin
+            if Players[P].RocketCharges < BOWMAN_CHARGES then
+              Result := Result +' . <$138>: ' + IntToStr(Players[P].RocketCharges) + '/' + IntToStr(BOWMAN_CHARGES) + ' (+1 <$139> ' + IntToStr((Players[P].RocketChargeTime - States.GameTime)/10) + ')'
+            else
+              Result := Result + '. <$138>: ' + IntToStr(Players[P].RocketCharges) + '/' + IntToStr(BOWMAN_CHARGES);
+          end;
+        end;
     26: Result := '[$1707A6]<$48>[]';
     27: Result := '[$00FC7C]<$31>[]';
   end;
@@ -6265,8 +6286,15 @@ begin
     end;
 
     Players[P].LastUsedSkill := sRocket;
+    if Players[P].RocketCharges > 0 then
+    begin
+      Players[P].RocketCharges := Players[P].RocketCharges - 1;
+      if Players[P].RocketCharges <= BOWMAN_CHARGES - 1 then
+        Players[P].RocketChargeTime := States.GameTime + Round(BOWMAN_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+    end;
 
-    Players[P].RoadSkillDelay := Round(BOWMAN_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+    if Players[P].RocketCharges = 0 then
+      Players[P].RoadSkillDelay := Round(BOWMAN_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
     ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 2 * CLEAR_ARRAY_FACTOR;
 
@@ -9242,6 +9270,8 @@ begin
         if InRange(O, 0, 7) then
         begin
           Players[P].WineSkillDelay := ROGUE_WINE_DELAY;
+          Players[P].RocketCharges := BOWMAN_CHARGES;
+          Players[P].RocketChargeTime := 0;
           if Players[P].StolenSkill <> sNone then
             Players[P].StolenSkillTime := STOLEN_SKILL_TIME;
         end;
@@ -10581,6 +10611,8 @@ begin
     Players[P].RoadSkillDelay := 0;
     Players[P].FieldSkillDelay := 0;
     Players[P].WineSkillDelay := 0;
+    Players[P].RocketCharges := BOWMAN_CHARGES;
+    Players[P].RocketChargeTime := 0;
     if TileOnRuneSpawn(aX, aY) then
       RuneTaken := True;
     Actions.MapTileObjectSet(aX, aY, 255);
