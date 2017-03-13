@@ -368,6 +368,7 @@ const
   CENTERSCREEN_X = 17;
   CENTERSCREEN_Y = 17;
   TEMP_PLAYER = 11;
+  AI_TEMP_PLAYER = 10;
 
 //Sound
 
@@ -2560,7 +2561,7 @@ end;
 procedure StartReChoice(P: Integer);
 begin
   Actions.GroupKillAll(Players[P].Hero, True);
-  Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+  Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
   Actions.FogCoverAll(P);
   Actions.FogRevealRect(P, 4, 4, 30, 30);
   Players[P].ReChoice := True;
@@ -3049,7 +3050,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sSpikedEarth;
@@ -3338,7 +3339,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sCrackingEarth;
@@ -3528,7 +3529,7 @@ begin
         Players[P].SkillCastX := X2;
         Players[P].SkillCastY := Y2;
         Actions.GroupKillAll(Players[P].Hero, True);
-        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       end;
 
       if TileOnRuneSpawn(X, Y) then
@@ -3718,7 +3719,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sFieryLance;
@@ -3751,33 +3752,21 @@ begin
     if (Abs(X2 - X) <= TELEPORT_RADIUS)
     and (Abs(Y2 - Y) <= TELEPORT_RADIUS) then
     begin
-      if States.PlayerIsAI(P) then
-      begin
-        Players[P].CastingSkill := True;
-        Players[P].SkillTime := States.GameTime + 4;
-        Actions.GroupOrderHalt(Players[P].Hero);
-      end;
       Players[P].LastUsedSkill := sTeleport;
       if States.PlayerIsAI(P) then 
         Players[P].TempHeroType := Players[P].HeroType;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].TeleportTime := States.GameTime + DELAY_OF_TURNING;
-      Players[P].TeleportX := X;
-      Players[P].TeleportY := Y;
-      Players[P].TeleportDir := NewDir;
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
-      Players[P].FieldSkillDelay := Round(LANCE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-      if (States.PlayerIsAI(P))
-      and (Players[P].HP > 0) then
+      if not States.PlayerIsAI(P) then
       begin
-        Actions.GroupOrderWalk(Players[P].Hero, X2, Y2, NewDir);
-        Players[P].SkillCastRespawnTime := States.GameTime + SKILL_RESPAWN_TIME;
-        Players[P].SkillCastDir := NewDir;
-        Players[P].SkillCastX := X2;
-        Players[P].SkillCastY := Y2;
-        Actions.GroupKillAll(Players[P].Hero, True);
-        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
-      end;
+        Players[P].TeleportTime := States.GameTime + DELAY_OF_TURNING;
+        Players[P].TeleportX := X;
+        Players[P].TeleportY := Y;
+        Players[P].TeleportDir := NewDir;
+        Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      end
+      else
+        Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, X, Y, NewDir, 1, 1);
+      Players[P].FieldSkillDelay := Round(LANCE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
     end;
   end;
 
@@ -4109,7 +4098,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := s10kSpears;
@@ -4294,7 +4283,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sAccurateShot;
@@ -4444,7 +4433,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 13] + CLEAR_ARRAY_FACTOR + 3;
@@ -4650,7 +4639,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sSniperShot;
@@ -4806,7 +4795,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sViseOfDeath;
@@ -4851,7 +4840,7 @@ begin
       Players[P].TeleportX := X;
       Players[P].TeleportY := Y;
       Players[P].TeleportDir := NewDir;
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
   end;
 
@@ -4875,7 +4864,7 @@ begin
         Players[P].TeleportX := X;
         Players[P].TeleportY := Y;
         Players[P].TeleportDir := NewDir;
-        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       end;
     end;
   
@@ -4991,7 +4980,7 @@ begin
         Players[P].SkillCastX := X2;
         Players[P].SkillCastY := Y2;
         Actions.GroupKillAll(Players[P].Hero, True);
-        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       end;
 
     end;
@@ -5703,7 +5692,7 @@ begin
     Players[P].RoadSkillDelay := 0;
     Players[P].FieldSkillDelay := 0;
     Actions.GroupKillAll(Players[P].Hero, True);
-    Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+    Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     Players[P].VagaX := X2;
     Players[P].VagaY := Y2;
     Players[P].VagaDir := NewDir;
@@ -6285,7 +6274,7 @@ begin
       Players[P].SkillCastX := X1;
       Players[P].SkillCastY := Y1;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sRocket;
@@ -6370,7 +6359,7 @@ begin
       Players[P].SkillCastX := X1;
       Players[P].SkillCastY := Y1;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sPrison;
@@ -6648,7 +6637,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
   end;
@@ -6986,7 +6975,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sFierySnake;
@@ -7533,7 +7522,7 @@ begin
     if not States.PlayerIsAI(P) then
     begin
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].WineSkillDelay := Round(KNIGHT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
@@ -8603,9 +8592,9 @@ begin
         Players[M[P]].MindDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
         
         Actions.GroupKillAll(Players[P].Hero, True);
-        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
         Actions.GroupKillAll(Players[O].Hero, True);
-        Players[O].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(O), O, TEMP_PLAYER), Players[O].HeroType, Players[O].TempX, Players[O].TempY, 4, 1, 1);
+        Players[O].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(O), AI_TEMP_PLAYER, TEMP_PLAYER), Players[O].HeroType, Players[O].TempX, Players[O].TempY, 4, 1, 1);
         
         Players[P].CaptureMind := True;
         Players[O].MindStunned := True;
@@ -8759,7 +8748,7 @@ begin
           end;
 
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       Players[P].FieldSkillDelay := Round(REBEL_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Players[P].LastUsedSkill := sRift;
     end;
@@ -9106,7 +9095,7 @@ begin
       Players[P].SkillCastX := X2;
       Players[P].SkillCastY := Y2;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
   end;
@@ -10006,7 +9995,7 @@ begin
         Actions.GroupKillAll(Players[P].Hero, False);
         Players[P].HeroReborn := True;
         Players[P].RebornTime := States.GameTime + REBORN_TIME;
-        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), P, TEMP_PLAYER), T, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), T, Players[P].TempX, Players[P].TempY, 4, 1, 1);
         Players[P].HeroInFearTime := 0;
         if (not Players[P].CaptureMind)
         and (not Players[P].MindStunned) then
@@ -11917,7 +11906,7 @@ begin
     if Players[O].HP > 0 then
     begin 
       Players[O].Hero := -1;
-      Players[O].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(O), O, TEMP_PLAYER), Players[O].HeroType, Players[O].TempX, Players[O].TempY, 4, 1, 1);
+      Players[O].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(O), AI_TEMP_PLAYER, TEMP_PLAYER), Players[O].HeroType, Players[O].TempX, Players[O].TempY, 4, 1, 1);
       Players[O].HeroReborn := True;
       Players[O].RebornTime := States.GameTime + REBORN_TIME;
       if not (Players[O].CaptureMind)
@@ -12153,7 +12142,7 @@ begin
         Players[I1].HeroExileY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].HeroExileDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
         Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), I1, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), AI_TEMP_PLAYER, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         Players[I1].HeroExileBackTime := States.GameTime + EXILE_TIME;
         Actions.MapTileSet(Players[I1].HeroExileX, Players[I1].HeroExileY, EXILE_TILE, States.KaMRandomI(4));
         if (I1 <> Players[I1].HeroExileGiver) 
@@ -12350,7 +12339,7 @@ begin
         Players[I1].VagaY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].VagaDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
         Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), I1, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), AI_TEMP_PLAYER, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         Players[I1].VagaAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
         if Players[I1].HP > 0 then
         begin
@@ -12499,7 +12488,7 @@ begin
         Players[I1].ThreadsX := States.UnitPositionX(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].ThreadsAttacker].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) < MIN_Y);
         Players[I1].ThreadsY := States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].ThreadsAttacker].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) < MIN_Y);
         Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), I1, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), AI_TEMP_PLAYER, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
       end;
 
       if States.GameTime = Players[I1].ThreadsTime then
@@ -12638,9 +12627,9 @@ begin
           Players[M[I1]].MindDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
 
           Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), I1, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+          Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), AI_TEMP_PLAYER, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
           Actions.GroupKillAll(Players[M[I1]].Hero, True);
-          Players[M[I1]].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(M[I1]), M[I1], TEMP_PLAYER), Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
+          Players[M[I1]].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(M[I1]), AI_TEMP_PLAYER, TEMP_PLAYER), Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
           Players[I1].MindAppearTime := States.GameTime + DELAY_OF_TURNING;
           Actions.FogCoverAll(I1);
           Actions.FogRevealRect(I1, 1, 39, 70, 109);
@@ -12734,13 +12723,13 @@ begin
           Players[M[I1]].MindY := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
           Players[M[I1]].MindDir := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
           Actions.GroupKillAll(Players[M[I1]].Hero, True);
-          Players[M[I1]].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(M[I1]), M[I1], TEMP_PLAYER), Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
+          Players[M[I1]].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(M[I1]), AI_TEMP_PLAYER, TEMP_PLAYER), Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
         end;
         Players[I1].MindX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
         Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
         Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), I1, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
+        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), AI_TEMP_PLAYER, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
         Players[I1].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
       end;
 
@@ -15371,7 +15360,7 @@ begin
       begin
         if States.GameTime >= Players[I].SkillCastRespawnTime then
           if Players[I].Hero > 0 then
-            if not TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[I].Hero, 0)), States.UnitPositionX(States.GroupMember(Players[I].Hero, 0))) then
+            if InRange(States.GroupOwner(Players[I].Hero), AI_TEMP_PLAYER, TEMP_PLAYER) then
               RespawnUnit(I);
 
         CheckRespawn(I);
