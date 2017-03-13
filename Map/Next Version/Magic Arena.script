@@ -683,8 +683,12 @@ end;
 
 function InRange(Value, Min, Max: Integer): Boolean;
 begin
-  Result := (Value >= Min)
-            and (Value <= Max);
+  if Min < Max then
+    Result := (Value >= Min)
+              and (Value <= Max)
+  else
+    Result := (Value >= Max)
+              and (Value <= Min);
 end;
 
 
