@@ -2138,9 +2138,9 @@ begin
     sSilence: Result := '<$411>';
     sMind: Result := '<$511>';
 
-    sReplica: Result := '<$314>';
-    sRift: Result := '<$414>';
-    sMirror: Result := '<$514>';
+    sReplica: Result := '<$312>';
+    sRift: Result := '<$412>';
+    sMirror: Result := '<$512>';
 
     sNone: Result := '<$57>'
 
@@ -2234,7 +2234,7 @@ begin
     21: Result := '<$311>';
     22: Result := '<$309>';
     23: Result := '<$302>';
-    24: Result := '<$314>';
+    24: Result := '<$312>';
     25: Result := '<$310>';
     26: Result := '<$308>';
     27: Result := '<$313>';
@@ -2254,7 +2254,7 @@ begin
     21: Result := '<$411>';
     22: Result := '<$409>';
     23: Result := '<$402>';
-    24: Result := '<$414>';
+    24: Result := '<$412>';
     25: Result := '<$410>';
     26: Result := '<$408>';
     27: Result := '<$413>';
@@ -2274,7 +2274,7 @@ begin
     21: Result := '<$511>';
     22: Result := '<$509>';
     23: Result := '<$502>';
-    24: Result := '<$514>';
+    24: Result := '<$512>';
     25: Result := '<$510>';
     26: Result := '<$508>';
     27: Result := '<$513>';
