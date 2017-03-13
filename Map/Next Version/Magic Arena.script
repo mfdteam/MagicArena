@@ -5721,7 +5721,7 @@ end;
 
 procedure LaunchRocket(P, X, Y: Integer);
 var
-  X1, Y1, aX, aY, Desync, DX, DY, DelayDelta: Integer;
+  X1, Y1, aX, aY, Desync, DX, DY: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -5732,13 +5732,14 @@ begin
   if not TileOnBattlefield(X, Y) then
     Exit;
 
+  if Players[P].RocketCharges <= 0 then
+    Exit;
+
   if (TileOnBattlefield(X, Y))
   and (Players[P].Hero > 0) then
   begin
 
     Desync := 0;
-
-    DelayDelta := IfThen(InRange(Players[P].RocketChargeTime - States.GameTime, 0, BOWMAN_ROAD_DELAY), Players[P].RocketChargeTime - States.GameTime, 1);
 
     X1 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y1 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
@@ -6291,12 +6292,10 @@ begin
     if Players[P].RocketCharges > 0 then
     begin
       Players[P].RocketCharges := Players[P].RocketCharges - 1 * Byte(Players[P].HeroType <> 25);
-      if (Players[P].RocketCharges <= BOWMAN_CHARGES - 1) then
-        Players[P].RocketChargeTime := States.GameTime + DelayDelta;
+      if (Players[P].RocketCharges <= BOWMAN_CHARGES - 1)
+      and (Players[P].RocketChargeTime <= States.GameTime) then
+        Players[P].RocketChargeTime := States.GameTime + Round(BOWMAN_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
     end;
-
-    if Players[P].RocketCharges = 0 then
-      Players[P].RoadSkillDelay := Round(BOWMAN_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
     ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 2 * CLEAR_ARRAY_FACTOR;
 
@@ -9288,7 +9287,7 @@ end;
 
 procedure UseStolenSkill(P, X, Y, Dir: Integer);
 var
-  X2, Y2, Direction, Desync, TempRoadSkillDelay, TempFieldSkillDelay, U, O, DelayDelta: Integer;
+  X2, Y2, Direction, Desync, TempRoadSkillDelay, TempFieldSkillDelay, U, O: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -9471,21 +9470,19 @@ begin
       sRocket: if (Abs(X - X2) <= ROCKET_USAGE_RADIUS)
                and (Abs(Y - Y2) <= ROCKET_USAGE_RADIUS)
                and (Abs(X - X2) > MIN_ROCKET_USAGE_RADIUS)
-               and (Abs(Y - Y2) > MIN_ROCKET_USAGE_RADIUS) then
+               and (Abs(Y - Y2) > MIN_ROCKET_USAGE_RADIUS)
+               and (Players[P].RocketCharges > 0) then
                begin
                  TempRoadSkillDelay := Players[P].RoadSkillDelay;
                  LaunchRocket(P, X, Y);
-                 DelayDelta := IfThen(InRange(Players[P].RocketChargeTime - States.GameTime, 0, BOWMAN_ROAD_DELAY), Players[P].RocketChargeTime - States.GameTime, 1);
                  Players[P].RoadSkillDelay := TempRoadSkillDelay;
                  if Players[P].RocketCharges > 0 then
                  begin
                    Players[P].RocketCharges := Players[P].RocketCharges - 1;
-                   if Players[P].RocketCharges <= BOWMAN_CHARGES - 1 then
-                     Players[P].RocketChargeTime := States.GameTime + DelayDelta;
+                   if (Players[P].RocketCharges <= BOWMAN_CHARGES - 1)
+                   and (Players[P].RocketChargeTime <= States.GameTime) then
+                     Players[P].RocketChargeTime := States.GameTime + Round(BOWMAN_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                  end;
-
-                 if Players[P].RocketCharges = 0 then
-                   Players[P].WineSkillDelay := Round(BOWMAN_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                end;
 
       sPrison: if (Abs(X - X2) <= PRISON_USAGE_RADIUS)
