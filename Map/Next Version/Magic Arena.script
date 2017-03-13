@@ -584,6 +584,9 @@ type
     MirrorTime: Integer;
     RocketCharges: Integer;
     RocketChargeTime: Integer;
+    LastRoadSkill: aSkill;
+    LastFieldSkill: aSkill;
+    LastWineSkill: aSkill;
   end;
 
 
@@ -1351,6 +1354,9 @@ begin
       MirrorTime := 0;
       RocketCharges := BOWMAN_CHARGES;
       RocketChargeTime := 0;
+      LastRoadSkill := sNone;
+      LastFieldSkill := sNone;
+      LastWineSkill := sNone;
     end;
   end;
 
@@ -2778,11 +2784,7 @@ begin
     begin
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := SWORD_OBJECT;
       if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-      begin
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
         Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sSpikedEarth;
-      end;
     end;
 
     for I := 1 to 4 do
@@ -2809,8 +2811,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sSpikedEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -2829,8 +2829,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sSpikedEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -2849,8 +2847,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sSpikedEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -2869,8 +2865,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sSpikedEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
         end;
@@ -2940,11 +2934,7 @@ begin
     begin
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := SWORD_OBJECT;
       if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-      begin
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
         Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sSpikedEarth;
-      end;
     end;
 
     for I := 1 to 4 do
@@ -2979,8 +2969,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sSpikedEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -2999,8 +2987,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sSpikedEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -3019,8 +3005,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sSpikedEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -3039,8 +3023,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 10 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sSpikedEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
         end;
@@ -3058,6 +3040,8 @@ begin
     end;
 
     Players[P].LastUsedSkill := sSpikedEarth;
+
+    Players[P].LastRoadSkill := sSpikedEarth;
 
     Players[P].RoadSkillDelay := Round(SWORD_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -3237,11 +3221,7 @@ begin
     begin
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := BARB_OBJECT;
       if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-      begin
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sCrackingEarth;
         Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
-      end;
     end;
 
     for I := 1 to 4 do
@@ -3268,8 +3248,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 73 + Round(DESYNC_FACTOR * Desync/BARB_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/BARB_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := BARB_OBJECT;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sCrackingEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -3288,8 +3266,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 73 + Round(DESYNC_FACTOR * Desync/BARB_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/BARB_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := BARB_OBJECT;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sCrackingEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -3308,8 +3284,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 73 + Round(DESYNC_FACTOR * Desync/BARB_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/BARB_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := BARB_OBJECT;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sCrackingEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -3328,8 +3302,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 73 + Round(DESYNC_FACTOR * Desync/BARB_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/BARB_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := BARB_OBJECT;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sCrackingEarth;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
         end;
@@ -3347,6 +3319,8 @@ begin
     end;
 
     Players[P].LastUsedSkill := sCrackingEarth;
+
+    Players[P].LastRoadSkill := sCrackingEarth;
 
     Players[P].RoadSkillDelay := Round(BARB_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -3469,16 +3443,10 @@ begin
       begin
         TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := BARB_OBJECT5;
         if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
-        begin
-          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
-          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := sTotem;
           Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
-        end;
       end;
 
       TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := BARB_OBJECT3;
-      Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-      Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sTotem;
 
       SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 38;
       ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 110;
@@ -3540,6 +3508,8 @@ begin
         RuneCleanupTime[P] := States.GameTime + 37;
 
       Players[P].LastUsedSkill := sTotem;
+
+      Players[P].LastWineSkill := sTotem;
 
       Players[P].WineSkillDelay := Round(BARB_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -3617,19 +3587,15 @@ begin
     Players[P].RoadSkillCancelTime := States.GameTime + 12;
 
     for I := 1 to 4 do
+    begin
       if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-      begin
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sFieryLance;
         Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
-      end;
-
-    for I := 1 to 4 do
       if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
+    end;
 
     case Direction of
 
@@ -3648,8 +3614,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := LANCE_OBJECT;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sFieryLance;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -3668,8 +3632,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := LANCE_OBJECT;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sFieryLance;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -3688,8 +3650,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := LANCE_OBJECT;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sFieryLance;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -3708,8 +3668,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/LANCE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := LANCE_OBJECT;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sFieryLance;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
         end;
@@ -3727,6 +3685,8 @@ begin
     end;
 
     Players[P].LastUsedSkill := sFieryLance;
+
+    Players[P].LastRoadSkill := sFieryLance;
 
     Players[P].RoadSkillDelay := Round(LANCE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -3967,22 +3927,13 @@ begin
 
     for I := 1 to 24 do
     begin
-
       if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
-      begin
-
-        Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
-        Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := s10kSpears;
         Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
-
-      end;
-
       if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
-
     end;
 
     for K := 0 to TEN_K_SPEARS_WAVES - 1 do
@@ -4008,8 +3959,6 @@ begin
                    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 38 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
                    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 33 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
                    TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-                   Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-                   Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := s10kSpears;
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                  end;
                end;
@@ -4033,8 +3982,6 @@ begin
                    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 38 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
                    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 33 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
                    TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-                   Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-                   Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := s10kSpears;
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                  end;
                end;
@@ -4058,8 +4005,6 @@ begin
                    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 38 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
                    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 33 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
                    TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-                   Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-                   Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := s10kSpears;
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                  end;
                end;
@@ -4083,8 +4028,6 @@ begin
                    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 38 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
                    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 33 + 16 * K + Round(DESYNC_FACTOR * Desync/LANCE_WINE_SPEED);
                    TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := LANCE_OBJECT;
-                   Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-                   Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := s10kSpears;
                    Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                  end;
                end;
@@ -4106,6 +4049,8 @@ begin
     end;
 
     Players[P].LastUsedSkill := s10kSpears;
+
+    Players[P].LastWineSkill := s10kSpears;
 
     Players[P].WineSkillDelay := Round(LANCE_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -4181,19 +4126,13 @@ begin
     begin   
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := XBOW_OBJECT2;
       if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-      begin
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sAccurateShot;
         Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
-      end;
-    end;
-
-    for I := 1 to 4 do
       if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
       or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
+    end;
 
     case Direction of
 
@@ -4212,8 +4151,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := XBOW_OBJECT3;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sAccurateShot;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -4232,8 +4169,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := XBOW_OBJECT3;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sAccurateShot;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -4252,8 +4187,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := XBOW_OBJECT3;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sAccurateShot;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -4272,8 +4205,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/XBOW_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := XBOW_OBJECT3;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sAccurateShot;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
         end;
@@ -4291,6 +4222,8 @@ begin
     end;
 
     Players[P].LastUsedSkill := sAccurateShot;
+
+    Players[P].LastRoadSkill := sAccurateShot;
 
     Players[P].RoadSkillDelay := Round(XBOW_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -4380,7 +4313,7 @@ begin
       TilesFieldX[P][Length(TilesFieldX[P]) - 13] := X - 1;
       TilesFieldY[P][Length(TilesFieldY[P]) - 13] := Y - 1;
 
-    Players[P].FieldSkillCancelTime := States.GameTime + 29;
+      Players[P].FieldSkillCancelTime := States.GameTime + 29;
 
       for I := 5 to 13 do
         TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := XBOW_OBJECT3;
@@ -4402,22 +4335,13 @@ begin
 
       for I := 1 to 13 do
       begin
-
         if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
-        begin
-
-          Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Owner := P;
-          Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Skill := sSuddenDeath;
           Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].ObjectRefreshTime := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 13];
-
-        end;
-
         if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
         or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
-
       end;
 
       Players[P].SuddenTime := States.GameTime + 66;
@@ -4425,6 +4349,8 @@ begin
       Players[P].SuddenY := Y;
 
       Players[P].LastUsedSkill := sSuddenDeath;
+
+      Players[P].LastFieldSkill := sSuddenDeath;
 
       Players[P].FieldSkillDelay := Round(XBOW_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -4533,22 +4459,13 @@ begin
 
     for I := 1 to 8 do
     begin
-
       if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
-      begin
-
-        Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
-        Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := sSniperShot;
         Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
-
-      end;
-
       if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
       or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
         ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
-
     end;
 
     case Direction of
@@ -4568,8 +4485,6 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := XBOW_OBJECT3;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sSniperShot;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
@@ -4588,8 +4503,6 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := XBOW_OBJECT3;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sSniperShot;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
@@ -4608,8 +4521,6 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := XBOW_OBJECT3;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sSniperShot;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
@@ -4628,8 +4539,6 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 17 + Round(DESYNC_FACTOR * Desync/XBOW_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := XBOW_OBJECT3;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sSniperShot;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
         end;
@@ -4647,6 +4556,8 @@ begin
     end;
 
     Players[P].LastUsedSkill := sSniperShot;
+
+    Players[P].LastWineSkill := sSniperShot;
 
     Players[P].WineSkillDelay := Round(XBOW_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -4724,8 +4635,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := PIKE_OBJECT9;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sViseOfDeath;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -4744,8 +4653,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := PIKE_OBJECT9;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sViseOfDeath;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -4764,8 +4671,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := PIKE_OBJECT9;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sViseOfDeath;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
@@ -4784,8 +4689,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 12 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 8 + Round(DESYNC_FACTOR * Desync/PIKE_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := PIKE_OBJECT9;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sViseOfDeath;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
         end;
@@ -4803,6 +4706,8 @@ begin
     end;
 
     Players[P].LastUsedSkill := sViseOfDeath;
+
+    Players[P].LastRoadSkill := sViseOfDeath;
 
     Players[P].RoadSkillDelay := Round(PIKE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -4959,11 +4864,7 @@ begin
       for I := 1 to 8 do
       begin
         if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
-        begin
-          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
-          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := sTower;
           Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
-        end;
         if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
@@ -4976,6 +4877,7 @@ begin
       Players[P].TowerY := Y;
       Players[P].WineSkillDelay := Round(PIKE_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Players[P].LastUsedSkill := sTower;
+      Players[P].LastWineSkill := sTower;
 
       if States.PlayerIsAI(P) then
       begin
@@ -5093,25 +4995,18 @@ begin
 
       for I := 1 to 9 do
       begin
-
         if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-        begin
-
-          Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
-          Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sDisorientation;
           Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 9];
-
-        end;
-
         if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
         or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
-
       end;
 
       Players[P].LastUsedSkill := sDisorientation;
+
+      Players[P].LastRoadSkill := sDisorientation;
 
       Players[P].RoadSkillDelay := Round(VAGA_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -5228,11 +5123,6 @@ begin
         ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := States.GameTime + 100;
         SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - I] := States.GameTime + 20;
         TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := VAGA_OBJECT;
-        if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
-        begin
-          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
-          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := sRegen;
-        end;
       end;
 
       for I := 1 to 13 do
@@ -5243,6 +5133,8 @@ begin
           ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
       Players[P].LastUsedSkill := sRegen;
+
+      Players[P].LastWineSkill := sRegen;
 
       Players[P].WineSkillDelay := Round(VAGA_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -5366,11 +5258,6 @@ begin
         TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := CIRCLE_FILL_OBJ;
         SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - I] := States.GameTime + 48;
         ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := States.GameTime + 58;
-        if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
-        begin
-          Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Owner := P;
-          Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Skill := sDeadlyFireworks;
-        end;
       end;
 
       TilesFieldX[P][Length(TilesFieldX[P]) - 20] := X2 + 1;
@@ -5497,11 +5384,7 @@ begin
       begin
         TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := AXE_OBJECT3;
         if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
-        begin
-          Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Owner := P;
-          Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].Skill := sDeadlyFireworks;
           Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].ObjectRefreshTime := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 26];
-        end;
       end;
 
       for I := 1 to 20 do
@@ -5659,6 +5542,8 @@ begin
 
       Players[P].LastUsedSkill := sDeadlyFireworks;
 
+      Players[P].LastFieldSkill := sDeadlyFireworks;
+
       Players[P].FieldSkillDelay := Round(AXE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
       TimeToClearFireworks1Array[P][FireworksCircles1Counter[P]] := FireworksCircles1[P][FireworksCircles1Counter[P]][FireworksCircles1Length[P][FireworksCircles1Counter[P]] - 1].AddTime + CLEAR_ARRAY_FACTOR;
@@ -5778,14 +5663,7 @@ begin
     TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y1 - 1;
 
     for I := 1 to 4 do
-    begin
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := BOWMAN_OBJECT;
-      if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-      begin
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sRocket;
-      end;
-    end;
 
     ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 4] := States.GameTime + 10;
     ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 3] := States.GameTime + 12;
@@ -6241,8 +6119,6 @@ begin
     ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := SetTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] + 20;
     SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := SetTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] + 3;
     TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := BOWMAN_ROCKET;
-    Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-    Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sRocket;
     Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
 
     Players[P].RocketTime := SetTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] + 60;
@@ -6262,6 +6138,9 @@ begin
     end;
 
     Players[P].LastUsedSkill := sRocket;
+
+    Players[P].LastRoadSkill := sRocket;
+
     if Players[P].RocketCharges > 0 then
     begin
       Players[P].RocketCharges := Players[P].RocketCharges - 1 * Byte(Players[P].HeroType <> 25);
@@ -6449,23 +6328,14 @@ begin
 
     for I := 1 to 8 do
     begin
-
       if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
-      begin
-
-        Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
-        Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := sRevengeFromNowhere;
         Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
-
-      end;
-
       if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
         if (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BARB_OBJECT3)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
         or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
           ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
-
     end;
 
     case Direction of
@@ -6485,8 +6355,6 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 24 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := BOWMAN_OBJECT3;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRevengeFromNowhere;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
@@ -6506,8 +6374,6 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 24 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := BOWMAN_OBJECT3;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRevengeFromNowhere;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
@@ -6527,8 +6393,6 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 24 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := BOWMAN_OBJECT3;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRevengeFromNowhere;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
@@ -6548,8 +6412,6 @@ begin
                ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 24 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := BOWMAN_OBJECT3;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRevengeFromNowhere;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
@@ -6589,8 +6451,6 @@ begin
       SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := CircleTime;
       ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I);
       TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := CIRCLE_FILL_OBJ;
-      Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-      Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRevengeFromNowhere;
 
       ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I);
 
@@ -6607,6 +6467,8 @@ begin
     TimeToClearExpArray[P][ExpCirclesCounter[P]] := ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - 1].AddTime + CLEAR_ARRAY_FACTOR;
 
     Players[P].LastUsedSkill := sRevengeFromNowhere;
+
+    Players[P].LastWineSkill := sRevengeFromNowhere;
 
     Players[P].WineSkillDelay := Round(BOWMAN_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -6711,11 +6573,7 @@ begin
     for I := 1 to 4 do
     begin
       if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-      begin
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sFierySnake;
         Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
-      end;
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := WARRIOR_OBJECT + 3 * Byte(States.KaMRandom > 0.65);
     end;
 
@@ -6776,8 +6634,6 @@ begin
                    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 23 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := WARRIOR_OBJECT3 - (States.KaMRandomI(2) + 1) * 3 * Byte(States.KaMRandomI(3) = 0);
-                   Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                   Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sFierySnake;
                    Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
                  end;
                end;
@@ -6831,8 +6687,6 @@ begin
                    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 23 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := WARRIOR_OBJECT3 - (States.KaMRandomI(2) + 1) * 3 * Byte(States.KaMRandomI(3) = 0);
-                   Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                   Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sFierySnake;
                    Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
                  end;
                end;
@@ -6886,8 +6740,6 @@ begin
                    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 23 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := WARRIOR_OBJECT3 - (States.KaMRandomI(2) + 1) * 3 * Byte(States.KaMRandomI(3) = 0);
-                   Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                   Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sFierySnake;
                    Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
                  end;
                end;
@@ -6941,8 +6793,6 @@ begin
                    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 23 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 18 + Round(DESYNC_FACTOR * Desync/WARRIOR_ROAD_SPEED);
                    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := WARRIOR_OBJECT3 - (States.KaMRandomI(2) + 1) * 3 * Byte(States.KaMRandomI(3) = 0);
-                   Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                   Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sFierySnake;
                    Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
                  end;
                end;
@@ -6963,6 +6813,8 @@ begin
     end;
 
     Players[P].LastUsedSkill := sFierySnake;
+
+    Players[P].LastRoadSkill := sFierySnake;
 
     Players[P].RoadSkillDelay := Round(WARRIOR_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -7120,14 +6972,7 @@ begin
       TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2;
 
       for I := 1 to 8 do
-      begin
         TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := WARRIOR_OBJECT6;
-        if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
-        begin
-          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Owner := P;
-          Tiles[TilesWineX[P][Length(TilesWineX[P]) - I]][TilesWineY[P][Length(TilesWineY[P]) - I]].Skill := sShield;
-        end;
-      end;
 
       ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 13;
       ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 14;
@@ -7180,6 +7025,9 @@ begin
           ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME;
 
       Players[P].LastUsedSkill := sShield;
+
+      Players[P].LastWineSkill := sShield;
+
       Players[P].WineSkillDelay := Round(WARRIOR_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 13] + CLEAR_ARRAY_FACTOR;
 
@@ -7582,8 +7430,6 @@ begin
                SpurtX[P][Desync - 1] := X2;
                SpurtY[P][Desync - 1] := Y1;
                SpurtDir[P][Desync - 1] := 0;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRagingSpurt;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                if (TileOnRuneSpawn(SpurtX[P][Desync - 1], SpurtY[P][Desync - 1]))
                and (not RuneTaken)
@@ -7627,8 +7473,6 @@ begin
                SpurtX[P][Desync - 1] := X1;
                SpurtY[P][Desync - 1] := Y2;
                SpurtDir[P][Desync - 1] := 2;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRagingSpurt;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                if (TileOnRuneSpawn(SpurtX[P][Desync - 1], SpurtY[P][Desync - 1]))
                and (not RuneTaken)
@@ -7672,8 +7516,6 @@ begin
                SpurtX[P][Desync - 1] := X2;
                SpurtY[P][Desync - 1] := Y1;
                SpurtDir[P][Desync - 1] := 4;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRagingSpurt;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                if (TileOnRuneSpawn(SpurtX[P][Desync - 1], SpurtY[P][Desync - 1]))
                and (not RuneTaken)
@@ -7717,8 +7559,6 @@ begin
                SpurtX[P][Desync - 1] := X1;
                SpurtY[P][Desync - 1] := Y2;
                SpurtDir[P][Desync - 1] := 6;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Owner := P;
-               Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].Skill := sRagingSpurt;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                if (TileOnRuneSpawn(SpurtX[P][Desync - 1], SpurtY[P][Desync - 1]))
                and (not RuneTaken)
@@ -7731,6 +7571,8 @@ begin
         end;
 
     Players[P].LastUsedSkill := sRagingSpurt;
+
+    Players[P].LastWineSkill := sRagingSpurt;
 
     ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] + 2 * CLEAR_ARRAY_FACTOR;
 
@@ -7843,14 +7685,7 @@ begin
     Players[P].RoadSkillCancelTime := States.GameTime + 10;
 
     for I := 1 to 4 do
-    begin
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := SCOUT_OBJECT5;
-      if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-      begin
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sBoomerang;
-      end;
-    end;
 
     if not States.PlayerIsAI(P) then
       Direction := Players[P].SkillDirection;
@@ -7895,8 +7730,6 @@ begin
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
              end;
@@ -7917,8 +7750,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
@@ -7942,8 +7773,6 @@ begin
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
              end;
@@ -7964,8 +7793,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
@@ -7991,8 +7818,6 @@ begin
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
              end;
@@ -8013,8 +7838,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
@@ -8038,8 +7861,6 @@ begin
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
              end;
@@ -8060,8 +7881,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
@@ -8087,8 +7906,6 @@ begin
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
              end;
@@ -8109,8 +7926,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
@@ -8134,8 +7949,6 @@ begin
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
              end;
@@ -8156,8 +7969,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
@@ -8183,8 +7994,6 @@ begin
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
              end;
@@ -8205,8 +8014,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
@@ -8230,8 +8037,6 @@ begin
                  ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                  TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                  Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
                end;
              end;
@@ -8252,8 +8057,6 @@ begin
                ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 16 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 14 + Round(DESYNC_FACTOR * Desync/SCOUT_ROAD_SPEED);
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SCOUT_OBJECT6;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Owner := P;
-               Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].Skill := sBoomerang;
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 70;
              end;
 
@@ -8262,6 +8065,8 @@ begin
     end;
 
     Players[P].LastUsedSkill := sBoomerang;
+
+    Players[P].LastRoadSkill := sBoomerang;
 
     Players[P].RoadSkillDelay := Round(SCOUT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
@@ -8646,14 +8451,7 @@ begin
         TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
    
         for I := 1 to 4 do
-        begin
           TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := REBEL_OBJECT;
-          if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-          begin
-            Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
-            Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sReplica;
-          end;
-        end;
     
         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 4] := States.GameTime + 8;
         ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 3] := States.GameTime + 10;
@@ -8688,6 +8486,7 @@ begin
 
         Players[P].RoadSkillDelay := Round(REBEL_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
         Players[P].LastUsedSkill := sReplica;
+        Players[P].LastRoadSkill := sReplica;
         ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
       end;
     end;
@@ -8839,14 +8638,7 @@ begin
     TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
    
     for I := 1 to 4 do
-    begin
       TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := ROGUE_OBJECT2;
-      if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-      begin
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sMentalBurst;
-      end;
-    end;
     
     ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 4] := States.GameTime + 10;
     ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 3] := States.GameTime + 12;
@@ -8886,13 +8678,9 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := CIRCLE_FILL_OBJ;
                TimeToClearRogueArray[P][RogueCirclesCounter[P]] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].LastRoadSkill := sMentalBurst;
                Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
-               begin
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Skill := sMentalBurst;
-               end;
              end;
 
         2,3: begin
@@ -8905,13 +8693,9 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := CIRCLE_FILL_OBJ;
                TimeToClearRogueArray[P][RogueCirclesCounter[P]] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].LastRoadSkill := sMentalBurst;
                Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
-               begin
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Skill := sMentalBurst;
-               end;
              end;
 
         4,5: begin
@@ -8924,13 +8708,9 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := CIRCLE_FILL_OBJ;
                TimeToClearRogueArray[P][RogueCirclesCounter[P]] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].LastRoadSkill := sMentalBurst;
                Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
-               begin
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Skill := sMentalBurst;
-               end;
              end;
 
         6,7: begin
@@ -8943,13 +8723,9 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := CIRCLE_FILL_OBJ;
                TimeToClearRogueArray[P][RogueCirclesCounter[P]] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].LastRoadSkill := sMentalBurst;
                Players[P].RoadSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
-               begin
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Skill := sMentalBurst;
-               end;
              end;
 
       end;
@@ -8987,13 +8763,9 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := CIRCLE_FILL_OBJ;
                TimeToClearStolenRogueArray[P][StolenRogueCirclesCounter[P]] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].LastRoadSkill := sMentalBurst;
                Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
-               begin
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Skill := sMentalBurst;
-               end;
              end;
 
         2,3: begin
@@ -9006,13 +8778,9 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := CIRCLE_FILL_OBJ;
                TimeToClearStolenRogueArray[P][StolenRogueCirclesCounter[P]] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].LastRoadSkill := sMentalBurst;
                Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
-               begin
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Skill := sMentalBurst;
-               end;
              end;
 
         4,5: begin
@@ -9025,13 +8793,9 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := CIRCLE_FILL_OBJ;
                TimeToClearStolenRogueArray[P][StolenRogueCirclesCounter[P]] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].LastRoadSkill := sMentalBurst;
                Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
-               begin
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Skill := sMentalBurst;
-               end;
              end;
 
         6,7: begin
@@ -9044,13 +8808,9 @@ begin
                TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 5] := CIRCLE_FILL_OBJ;
                TimeToClearStolenRogueArray[P][StolenRogueCirclesCounter[P]] := States.GameTime + Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                Players[P].LastUsedSkill := sMentalBurst;
+               Players[P].LastRoadSkill := sMentalBurst;
                Players[P].WineSkillDelay := Round(ROGUE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 5] + CLEAR_ARRAY_FACTOR;
-               if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - 5], TilesRoadY[P][Length(TilesRoadY[P]) - 5]) then
-               begin
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Owner := P;
-                 Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 5]][TilesRoadY[P][Length(TilesRoadY[P]) - 5]].Skill := sMentalBurst;
-               end;
              end;
 
       end;
@@ -12888,6 +12648,9 @@ begin
       and (TilesRoadObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
 
+        Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Skill := Players[P].LastRoadSkill;;
+        Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Owner := P;
+
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (TilesRoadObjects[P][K] = BARB_OBJECT3)
         and (States.GameTime > Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].ShieldTime) then
@@ -12970,6 +12733,9 @@ begin
       if TileOnBattlefield_2(TilesFieldX[P][K], TilesFieldY[P][K])
       and (TilesFieldObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
+
+        Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].Skill := Players[P].LastFieldSkill;
+        Tiles[TilesFieldX[P][K]][TilesFieldY[P][K]].Owner := P;
 
         if (InRange(States.GameTime, SetTilesFieldTimes[P][K], ClearTilesFieldTimes[P][K] - 1))
         and (TilesFieldObjects[P][K] = WARRIOR_OBJECT7) then
@@ -13057,6 +12823,9 @@ begin
       if TileOnBattlefield_2(TilesWineX[P][K], TilesWineY[P][K])
       and (TilesWineObjects[P][K] <> SKILL_CANCEL_OBJ) then
       begin
+
+        Tiles[TilesWineX[P][K]][TilesWineY[P][K]].Skill := Players[P].LastWineSkill;
+        Tiles[TilesWineX[P][K]][TilesWineY[P][K]].Owner := P;
 
         if (InRange(States.GameTime, SetTilesWineTimes[P][K], ClearTilesWineTimes[P][K] - 1))
         and (TilesWineObjects[P][K] = WARRIOR_OBJECT7) then
