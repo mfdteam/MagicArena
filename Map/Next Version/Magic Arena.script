@@ -696,6 +696,15 @@ begin
 end;
 
 
+function IfThenStr(Bool: Boolean; aTrue, aFalse: ANSIString): ANSIString;
+begin
+  if Bool then
+    Result := aTrue
+  else
+    Result := aFalse;
+end;
+
+
 function TileOnBattlefield(X, Y: Integer): Boolean;
 begin
   if X <= 0 then
@@ -1022,7 +1031,7 @@ end;
 
 procedure OnMissionStart;
 begin
-  Actions.PlayWAVFadeMusic(-1, 'EOA', 1);
+
   SetPlayersLeft;
   SetPlayersRight;
 
@@ -2155,10 +2164,7 @@ begin
   case UT of
     15: Result := '[$4C818B]<$8>[]';
     16: Result := '[$2222B2]<$9>[]';
-    17: if Players[P].RocketCharges < BOWMAN_CHARGES then
-          Result := '[$0000FF]<$10>.[] <$138>: ' + IntToStr(Players[P].RocketCharges) + '/' + IntToStr(BOWMAN_CHARGES) + ' (+1 <$139> ' + IntToStr((Players[P].RocketChargeTime - States.GameTime)/10) + ')'
-        else
-          Result := '[$0000FF]<$10>.[] <$138>: ' + IntToStr(Players[P].RocketCharges) + '/' + IntToStr(BOWMAN_CHARGES);
+    17: Result := '[$0000FF]<$10>.[] <$138>: ' + IntToStr(Players[P].RocketCharges) + '/' + IntToStr(BOWMAN_CHARGES) + IfThenStr(Players[P].RocketCharges < BOWMAN_CHARGES, ' (+1 <$139> ' + IntToStr((Players[P].RocketChargeTime - States.GameTime)/10) + ')', '');
     18: Result := '[$00A5FF]<$11>[]';
     19: Result := '[$4782FF]<$12>[]';
     20: Result := '[$B8B8B8]<$13>[]';
@@ -2209,12 +2215,7 @@ begin
     25: begin
           Result := '[$AE209F]' + Players[P].StolenSkillName + '[]';
           if Players[P].StolenSkillName = '<$10>' then
-          begin
-            if Players[P].RocketCharges < BOWMAN_CHARGES then
-              Result := Result +' . <$138>: ' + IntToStr(Players[P].RocketCharges) + '/' + IntToStr(BOWMAN_CHARGES) + ' (+1 <$139> ' + IntToStr((Players[P].RocketChargeTime - States.GameTime)/10) + ')'
-            else
-              Result := Result + '. <$138>: ' + IntToStr(Players[P].RocketCharges) + '/' + IntToStr(BOWMAN_CHARGES);
-          end;
+            Result := Result + '. <$138>: ' + IntToStr(Players[P].RocketCharges) + '/' + IntToStr(BOWMAN_CHARGES) + IfThenStr(Players[P].RocketCharges < BOWMAN_CHARGES, ' (+1 <$139> ' + IntToStr((Players[P].RocketChargeTime - States.GameTime)/10) + ')', '');
         end;
     26: Result := '[$1707A6]<$48>[]';
     27: Result := '[$00FC7C]<$31>[]';
