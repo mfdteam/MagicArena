@@ -1,27 +1,28 @@
-Magic Arena - Next Version
+Magic Arena - v.2.197
 
-- Custom debugger (WIP)
+- New Hero: Rebel
 - Status + sound when players get defeated (Hero has 0 HP)
-- Highlight Sacrificial Teleport cooldown in red when player can't use skill
-- AI Pikeman could step on Infernal Tower animation
 - When player gets defeated, all his zombies/illusions should die (reverted from 2.112)
 - Skills should be cancelled only if Hero dies during animation
 - Sound when player kills his ally
-- Added delay before teleportation (Teleport and Sacrificial Teleport skills)
-- New Hero: Rebel
-- Fixed arrays cleanup
+- Changed tiles near rune spawn
+- Less stone tiles on map. Now you can place field or winefield on every tile of the Arena
 - Fear and Spell Steal can lure enemy zombies/illusions
-- Raging Sppurt could still ignore Shield of Darkness
+- Added delay before teleportation (Teleport and Sacrificial Teleport skills)
+- Raging Spurt could still ignore Shield of Darkness
 - Raging Spurt near rune spawn could send Knight to a wrong location
 - If Knight kills unit on last Raging Spurt tile, he could take wrong location
-- Fixed objects placement on rune spawn
 - Check Raging Spurt coordinates after Hero movements by Threads of Death
 - Ability to use Threads of Death on zombies/illusions
+- Bowman: reworked  Rocket: Now has 4 charges, but with bigger delay
 - Bowman: Decreased Revenge from Nowhere speed
 - Zombies/illusions can take rune for their owner
 - Zombies/illusions should not stay idle if attak target is too far away
+- Highlight Sacrificial Teleport cooldown in red when player can't use skill
 - Stunning objects should have normal cleanup priority
-- Reworked Bowman's Rocket: Now has 4 charges
+- Fixed objects placement on rune spawn
+- Fixed bug when Rogue couldn't launch rocket in some places
+- Fixed arrays cleanup
 
 
 v.2.173
