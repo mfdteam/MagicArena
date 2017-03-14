@@ -67,7 +67,6 @@ const
   FEAR_LURE_CHANCE = 1;
   BOMB_RADIUS = 7;
   ROCKET_USAGE_RADIUS = 50;
-  MIN_ROCKET_USAGE_RADIUS = 0;
   PRISON_USAGE_RADIUS = 6;
   PRISON_RADIUS = 3;
   GRAVITY_RADIUS1 = 5;
@@ -5635,10 +5634,6 @@ begin
     or (Abs(Y - Y1) > ROCKET_USAGE_RADIUS) then
       Exit;
 
-    if (Abs(X - X1) < MIN_ROCKET_USAGE_RADIUS)
-    and (Abs(Y - Y1) < MIN_ROCKET_USAGE_RADIUS) then
-      Exit;
-
     DX := X - X1;
     if DX < 0 then
       DX := -1 * DX;
@@ -9204,8 +9199,6 @@ begin
 
       sRocket: if (Abs(X - X2) <= ROCKET_USAGE_RADIUS)
                and (Abs(Y - Y2) <= ROCKET_USAGE_RADIUS)
-               and (Abs(X - X2) > MIN_ROCKET_USAGE_RADIUS)
-               and (Abs(Y - Y2) > MIN_ROCKET_USAGE_RADIUS)
                and (Players[P].RocketCharges > 0) then
                begin
                  TempRoadSkillDelay := Players[P].RoadSkillDelay;
