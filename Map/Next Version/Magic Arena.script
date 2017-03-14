@@ -10364,7 +10364,8 @@ begin
         Actions.GroupOrderHalt(Players[P].Hero);
       end;
       if InRange(Tiles[aX][aY].Owner, 0, 7)
-      and (not Players[P].HeroStunned) then
+      and (not Players[P].HeroStunned)
+      and (Tiles[aX][aY].Skill = sSpikedEarth) then
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
@@ -10387,7 +10388,8 @@ begin
         Actions.GroupOrderHalt(Players[P].Hero);
       end;
       if InRange(Tiles[aX][aY].Owner, 0, 7)
-      and (not Players[P].HeroStunned) then
+      and (not Players[P].HeroStunned)
+      and (Tiles[aX][aY].Skill = sSpikedEarth) then
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
@@ -10410,7 +10412,8 @@ begin
         Actions.GroupOrderHalt(Players[P].Hero);
       end;
       if InRange(Tiles[aX][aY].Owner, 0, 7)
-      and (not Players[P].HeroStunned) then
+      and (not Players[P].HeroStunned)
+      and (Tiles[aX][aY].Skill = sDisorientation) then
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
@@ -10433,7 +10436,8 @@ begin
         Actions.GroupOrderHalt(Players[P].Hero);
       end;
       if InRange(Tiles[aX][aY].Owner, 0, 7)
-      and (not Players[P].HeroStunned) then
+      and (not Players[P].HeroStunned)
+      and (Tiles[aX][aY].Skill = sDeafeningClatter) then
       begin
         Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
