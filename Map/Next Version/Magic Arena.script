@@ -2619,6 +2619,8 @@ begin
   Players[P].WerewolfTime := 0;
   Players[P].DDTime := 0;
   Players[P].ReChargeTime := 0;
+  Players[P].RocketCharges := BOWMAN_CHARGES;
+  Players[P].RocketChargeTime := 0;
 
 end;
 
