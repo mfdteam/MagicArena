@@ -101,7 +101,6 @@ const
   GRAVITY_RADIUS = 5;
   FIREWORKS1_RADIUS = 5;
   FIREWORKS2_RADIUS = 4;
-  SILENCE_RADIUS = 8;
   DEAFENING_RADIUS = 4;
   MENTAL_RADIUS = 3;
   
@@ -132,7 +131,7 @@ const
   BARB_FIELD_SPEED = 1.6;
   BARB_WINE_SPEED = 0.3;
 
-  SWORD_ROAD_SPEED = 0.75;
+  SWORD_ROAD_SPEED = 1.5;
 
   PIKE_ROAD_SPEED = 1;
 
@@ -310,7 +309,7 @@ const
   SILENCE_SCOUT_DELAY = 12;
   EXILE_TIME = 40;
   EXILE_DELAY = 8;
-  SHIELD_TIME = 100;
+  SHIELD_TIME = 80;
   TOWER_DELAY = 15;
 
 //Game mechanics
@@ -2797,7 +2796,7 @@ begin
 
     case Dir of
 
-      0,1: for Y1 := Y2 - 1 downto Y2 - 4 do
+      0,1: for Y1 := Y2 - 1 downto Y2 - 3 do
              if TileOnBattlefield(X2, Y1) then
              begin
                Desync := Desync + 1;
@@ -2815,7 +2814,7 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
-      2,3: for X1 := X2 + 1 to X2 + 4 do
+      2,3: for X1 := X2 + 1 to X2 + 3 do
              if TileOnBattlefield(X1, Y2) then
              begin
                Desync := Desync + 1;
@@ -2833,7 +2832,7 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
-      4,5: for Y1 := Y2 + 1 to Y2 + 4 do
+      4,5: for Y1 := Y2 + 1 to Y2 + 3 do
              if TileOnBattlefield(X2, Y1) then
              begin
                Desync := Desync + 1;
@@ -2851,7 +2850,7 @@ begin
                Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
              end;
 
-      6,7: for X1 := X2 - 1 downto X2 - 4 do
+      6,7: for X1 := X2 - 1 downto X2 - 3 do
              if TileOnBattlefield(X1, Y2) then
              begin
                Desync := Desync + 1;
