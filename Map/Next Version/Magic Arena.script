@@ -11867,8 +11867,6 @@ end;
 
 
 procedure CheckExile(P: Integer);
-var
-  U: Integer;
 begin
   try
     if (States.GameTime = Players[P].HeroExileTime)
@@ -11970,6 +11968,7 @@ end;
 procedure CheckThreads(P: Integer);
 begin
   try
+
     if States.GameTime = Players[P].ThreadsTime - DELAY_OF_TURNING then
     begin
       Players[P].ThreadsX := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= MIN_Y, States.UnitPositionX(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastX);
@@ -11994,17 +11993,10 @@ begin
     and (Players[P].MovedByThreads) then
       Players[P].MovedByThreads := False;
 
-    if (States.GameTime = Players[P].KnightAppearTime)  
-    and (Players[P].Hero > 0) then   
-    begin
-      Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(P, Players[P].TempHeroType, Players[P].KnightX, Players[P].KnightY, Players[P].KnightDir, 1, 1);
-      Players[P].HeroType := Players[P].TempHeroType;
-      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
-    end;
   except
     LogError('Exception in the script: cannot check Threads status for invalid player', SHOW_ERROR_MSG);
   end;
+
 end;
 
 
@@ -12696,6 +12688,23 @@ begin
 end;
 
 
+procedure CheckKnightAppear(P: Integer);
+begin
+  try
+    if (States.GameTime = Players[P].KnightAppearTime)  
+    and (Players[P].Hero > 0) then   
+    begin
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(P, Players[P].TempHeroType, Players[P].KnightX, Players[P].KnightY, Players[P].KnightDir, 1, 1);
+      Players[P].HeroType := Players[P].TempHeroType;
+      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+    end;
+  except
+    LogError('Exception in the script: cannot check Knight appear status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
 procedure CheckKills(P: Integer);
 begin
   try
@@ -12843,6 +12852,7 @@ begin
       CheckMindBack(P);
       CheckMindImmunity(P);
       CheckScoutSilence(P);
+      CheckKnightAppear(P);
       CheckSpurtStart(P);
       CheckReChoice(P);
       CheckLocation(P);
@@ -15239,8 +15249,8 @@ begin
   if States.GameTime mod 12000 = 0 then
     AutoFeed;
 
-  for I := 0 to 7 do
-    CheckStatus(I);
+  for K := 0 to 7 do
+    CheckStatus(K);
 
   if States.GameTime < CHOOSE_HERO_TIMER then
   begin
