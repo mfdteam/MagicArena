@@ -352,10 +352,10 @@ const
   ZOMBIE_TAKE_RUNES = True;
   IDLE_CHECK_TIME = 200;
 
-  DEBUG_MODE = False;
+  DEBUG_MODE = True;
   CHANGE_RELIEF = True;
-  AI_ENABLED = False;
-  SHOW_ERROR_MSG = False;
+  AI_ENABLED = True;
+  SHOW_ERROR_MSG = True;
 
 //Battlefield
 
@@ -12818,35 +12818,38 @@ end;
 procedure CheckStatus(P: Integer);
 begin
   try
-    CheckHP(P);
-    CheckReborn(P);
-    CheckKills(P);
-    CheckExile(P);
-    CheckExileTile(P);
-    CheckExileBack(P);
-    CheckThreads(P);
-    CheckZombiesThreads(P);
-    CheckReplica(P);
-    CheckRift(P);
-    CheckTeleport(P);
-    CheckVaga(P);
-    CheckWerewolf(P);
-    CheckVagaBack(P);
-    CheckFieryTrack(P);
-    CheckFear(P);
-    CheckMind(P);
-    CheckMind2(P);
-    CheckMindAppear(P);
-    CheckMindCapture(P);
-    CheckMindBack(P);
-    CheckMindImmunity(P);
-    CheckScoutSilence(P);
-    CheckSpurtStart(P);
-    CheckReChoice(P);
-    CheckLocation(P);
-    ClearAISkills(P);
-    ClearBuffsDebuffsStatus(P);
-    ClearStatusString(P);
+    if States.PlayerEnabled(P) then
+    begin
+      CheckHP(P);
+      CheckReborn(P);
+      CheckKills(P);
+      CheckExile(P);
+      CheckExileTile(P);
+      CheckExileBack(P);
+      CheckThreads(P);
+      CheckZombiesThreads(P);
+      CheckReplica(P);
+      CheckRift(P);
+      CheckTeleport(P);
+      CheckVaga(P);
+      CheckWerewolf(P);
+      CheckVagaBack(P);
+      CheckFieryTrack(P);
+      CheckFear(P);
+      CheckMind(P);
+      CheckMind2(P);
+      CheckMindAppear(P);
+      CheckMindCapture(P);
+      CheckMindBack(P);
+      CheckMindImmunity(P);
+      CheckScoutSilence(P);
+      CheckSpurtStart(P);
+      CheckReChoice(P);
+      CheckLocation(P);
+      ClearAISkills(P);
+      ClearBuffsDebuffsStatus(P);
+      ClearStatusString(P);
+    end;
   except
     LogError('Exception in the script: something went wrong when trying to check status', SHOW_ERROR_MSG);
   end;
