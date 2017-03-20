@@ -1469,14 +1469,21 @@ end;
 
 procedure CheckRuneCleanup;
 begin
-  if States.MapTileObject(RUNE_X, RUNE_Y) = BARB_OBJECT3 then
-    RuneTaken := True;
-  for I := 0 to 7 do
-    if States.GameTime = RuneCleanupTime[I] then
+  try
+    if States.MapTileObject(RUNE_X, RUNE_Y) = BARB_OBJECT3 then
       RuneTaken := True;
-  if (not RuneTaken)
-  and (States.MapTileObject(RUNE_X, RUNE_Y) <> RuneObject) then
-    Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RuneObject);
+    for I := 0 to 7 do
+      if States.GameTime = RuneCleanupTime[I] then
+        RuneTaken := True;
+    if (not RuneTaken)
+    and (States.MapTileObject(RUNE_X, RUNE_Y) <> RuneObject) then
+      Actions.MapTileObjectSet(RUNE_X, RUNE_Y, RuneObject);
+    if (RuneTaken)
+    and (States.MapTileObject(RUNE_X, RUNE_Y) = RuneObject) then
+      Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
+  except
+    LogError('Something went wrong when trying to check rune cleanup', SHOW_ERROR_MSG);
+  end;
 end;
 
 
@@ -11795,842 +11802,1054 @@ begin
 end;
 
 
-procedure CheckStatus;
+//CHECK STATUS
+
+
+procedure CheckHP(P: Integer);
+begin
+  try
+    if Players[P].HP < 0 then
+      Players[P].HP := 0;
+
+    if Players[P].HP > MAX_HP then
+      Players[P].HP := MAX_HP;
+
+    if Players[P].HP = 0 then
+    begin
+      Players[P].HeroReborn := False;
+      Players[P].RebornTime := 0;
+      if Players[P].CaptureMind then
+      begin
+        Players[M[P]].HeroReborn := False;
+        Players[M[P]].RebornTime := 0;
+      end;
+      if not (Players[P].MovedToTribune)
+      and not (Players[P].CaptureMind) then
+      begin
+        if Players[P].MindStunned then
+        begin
+          Players[P].HeroType := Players[P].HeroMindType;
+          Players[M[P]].MindX := States.UnitPositionX(States.GroupMember(Players[M[P]].Hero, 0));
+          Players[M[P]].MindY := States.UnitPositionY(States.GroupMember(Players[M[P]].Hero, 0));
+          Players[M[P]].MindDir := States.UnitDirection(States.GroupMember(Players[M[P]].Hero, 0));
+          Players[P].StunnedMindTime := States.GameTime + 1;
+          Players[M2[P]].CaptureMindTime := States.GameTime + 1;
+        end;
+        Actions.FogRevealAll(P);
+        Actions.CinematicStart(P);
+        Actions.CinematicPanTo(P, Players[P].TribuneX, Players[P].TribuneY, 0);
+        Actions.CinematicEnd(P);
+        Actions.GroupKillAll(Players[P].Hero, True);
+        Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].TribuneX, Players[P].TribuneY, 4, 1, 1);
+        Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+        Actions.GroupBlockOrders(Players[P].Hero, True);
+        Players[P].MovedToTribune := True;
+      end;
+    end;
+
+    if (Players[P].HP <= 0)
+    and (not States.FogRevealed(P, 2, 40)) then
+      Actions.FogRevealAll(P);
+
+    if (Players[P].HP > 0)
+    and (States.FogRevealed(P, Players[P].TempX, Players[P].TempY))
+    and (not States.PlayerVictorious(P)) then
+    begin
+      Actions.FogCoverAll(P);
+      Actions.FogRevealRect(P, 1, 39, 70, 109);
+    end;
+
+  except
+    LogError('Exception in the script: cannot update HP for invalid player', SHOW_ERROR_MSG);
+  end;
+
+end;
+
+
+procedure CheckExile(P: Integer);
 var
-  I1, aX, aY, U, Z, H: Integer;
+  U: Integer;
+begin
+  try
+    if (States.GameTime = Players[P].HeroExileTime)
+    and (InRange(Players[P].HeroExileGiver, 0, 7)) then
+    begin
+      if (InRange(Players[P].WerewolfTime - States.GameTime, 0, 49))
+      and (InRange(Players[P].TempHeroType, 14, 27)) then
+      begin
+        Players[P].HeroType := Players[P].TempHeroType;
+        Players[P].WerewolfTime := 0;
+        Players[P].RoadSkillDelay := 0;
+        Players[P].FieldSkillDelay := 0;
+        Players[P].WineSkillDelay := AXE_WINE_DELAY * (1 - Round(RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - WEREWOLF_TIME;
+      end;
+      Players[P].HeroExileX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      Players[P].HeroExileY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+      Players[P].HeroExileDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].HeroExileBackTime := States.GameTime + EXILE_TIME;
+      Actions.MapTileSet(Players[P].HeroExileX, Players[P].HeroExileY, EXILE_TILE, States.KaMRandomI(4));
+      if (P <> Players[P].HeroExileGiver) 
+      and (not Players[P].MindStunned) then
+      begin
+        Players[P].PlayerStatusTime := States.GameTime + EXILE_TIME + 5;
+        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$110> ' + '[$' + States.PlayerColorText(Players[P].HeroExileGiver) + ']' + States.PlayerName(Players[P].HeroExileGiver) + '[]';
+        Players[Players[P].HeroExileGiver].PlayerStatusTime := States.GameTime + EXILE_TIME + 5;
+        Players[Players[P].HeroExileGiver].PlayerStatus := Players[Players[P].HeroExileGiver].PlayerStatus + '|<$111> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]';
+      end;
+    end;
+  except
+    LogError('Exception in the script: cannot update Exile status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckExileTile(P: Integer);
+begin
+  try
+    if States.GameTime < Players[P].HeroExileBackTime then
+      if States.MapTileType(Players[P].HeroExileX, Players[P].HeroExileY) <> EXILE_TILE then
+        Actions.MapTileSet(Players[P].HeroExileX, Players[P].HeroExileY, EXILE_TILE, States.KaMRandomI(4));
+  except
+    LogError('Exception in the script: cannot update Exile tile for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckExileBack(P: Integer);
+var
+  U: Integer;
+begin
+  try
+    if States.GameTime = Players[P].HeroExileBackTime then
+    begin
+      U := States.UnitAt(Players[P].HeroExileX, Players[P].HeroExileY);
+      Players[P].HeroExiled := False;
+      Actions.GroupKillAll(Players[P].Hero, True);
+      if U <= 0 then
+        Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].HeroExileX, Players[P].HeroExileY, Players[P].HeroExileDir, 1, 1)
+      else
+        Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].HeroExileX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].HeroExileY + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].HeroExileDir, 1, 1);
+      Actions.MapTileSet(Players[P].HeroExileX, Players[P].HeroExileY, Tiles[Players[P].HeroExileX][Players[P].HeroExileY].TileType, Tiles[Players[P].HeroExileX][Players[P].HeroExileY].TileDirection);
+      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+    end;
+  except
+    LogError('Exception in the script: cannot update Exile Back status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckReborn(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].RebornTime then
+    begin
+      if (InRange(P, 0, 3))
+      and (not States.PlayerAllianceCheck(Players[4].ZombiePlayer, P)) then
+        Actions.PlayerAllianceChange(Players[4].ZombiePlayer, P, True, True);
+      if (InRange(P, 4, 7))
+      and (not States.PlayerAllianceCheck(Players[0].ZombiePlayer, P)) then
+        Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, True, True);
+      Players[P].HeroTotalImmunity := True;
+      Players[P].HeroTotalImmunityTime := States.GameTime + TOTAL_IMMUNITY_TIME;
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
+      Actions.CinematicStart(P);
+      Actions.CinematicPanTo(P, Players[P].SpawnX, Players[P].SpawnY, 0);
+      Actions.CinematicEnd(P);
+      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+      Players[P].HeroReborn := False;
+    end;
+  except
+    LogError('Exception in the script: cannot check Reborn status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckThreads(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].ThreadsTime - DELAY_OF_TURNING then
+    begin
+      Players[P].ThreadsX := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= MIN_Y, States.UnitPositionX(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastX);
+      Players[P].ThreadsY := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= MIN_Y, States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastY);
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+    end;
+
+    if (States.GameTime = Players[P].ThreadsTime)
+    and (InRange(Players[P].ThreadsAttacker, 0, 7)) then
+    begin
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].ThreadsDX + Players[P].ThreadsX, Players[P].ThreadsDY + Players[P].ThreadsY, Players[P].ThreadsUnitDir, 1, 1);
+      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+      if Players[P].HeroStunned then
+        Actions.GroupBlockOrders(Players[P].Hero, True);
+      Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+      Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[P].ThreadsAttacker) + ']' + States.PlayerName(Players[P].ThreadsAttacker) + '[]<$71> ' + SkillName(sThreadsOfDeath);
+    end;
+
+    if (States.GameTime >= Players[P].ThreadsTime + THREADS_DELAY)
+    and (Players[P].MovedByThreads) then
+      Players[P].MovedByThreads := False;
+
+    if (States.GameTime = Players[P].KnightAppearTime)  
+    and (Players[P].Hero > 0) then   
+    begin
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(P, Players[P].TempHeroType, Players[P].KnightX, Players[P].KnightY, Players[P].KnightDir, 1, 1);
+      Players[P].HeroType := Players[P].TempHeroType;
+      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+    end;
+  except
+    LogError('Exception in the script: cannot check Threads status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckZombiesThreads(P: Integer);
+var
+  Z, H: Integer;
+begin
+  try
+    if (States.GameTime = Players[P].ThreadsAttackTime)
+    and (Length(Zombies) > 0) then
+      for I := 0 to Length(Zombies) - 1 do
+        if (Zombies[I].ThreadsTime = States.GameTime)
+        and (not States.UnitDead(Zombies[I].ID)) then
+        begin
+          H := States.UnitHunger(Zombies[I].ID);
+          SetLength(Zombies, Length(Zombies) + 1);
+          Zombies[Length(Zombies) - 1].Owner := Zombies[I].Owner;
+          Zombies[Length(Zombies) - 1].ThreadsDir := States.UnitDirection(Zombies[I].ID);
+          Zombies[Length(Zombies) - 1].ThreadsX := FrontX(P);
+          Zombies[Length(Zombies) - 1].ThreadsY := FrontY(P);
+          Z := Actions.GiveGroup(Players[Zombies[I].Owner].ZombiePlayer, States.UnitType(Zombies[I].ID), Zombies[Length(Zombies) - 1].ThreadsX, Zombies[Length(Zombies) - 1].ThreadsY, Zombies[Length(Zombies) - 1].ThreadsDir, 1, 1);
+          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+          Zombies[Length(Zombies) - 1].ZombieType := Zombies[I].ZombieType;
+          Actions.GroupHungerSet(Z, H);
+          Actions.UnitKill(Zombies[I].ID, True);
+        end;
+  except
+    LogError('Exception in the script: cannot check zombies to move for invalid owner', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckReplica(P: Integer);
+var
+  Z, H: Integer;
   R: Single;
   Lure: Boolean;
 begin
-
-  if (RuneTaken)
-  and (States.MapTileObject(RUNE_X, RUNE_Y) = RuneObject) then
-    Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
-
-  for I1 := 0 to 7 do
-    if Players[I1].Hero > 0 then
-    begin 
-
-      if Players[I1].HP < 0 then
-        Players[I1].HP := 0;
-
-      if Players[I1].HP > MAX_HP then
-        Players[I1].HP := MAX_HP;
-
-      if Players[I1].HP = 0 then
+  try
+    if States.GameTime = Players[P].ReplicaTime then
+    begin
+      if (InRange(Players[P].ReplicaTarget, 0, 7))
+      and (Players[P].Hero > 0)
+      and (Players[Players[P].ReplicaTarget].Hero > 0) then
       begin
-        Players[I1].HeroReborn := False;
-        Players[I1].RebornTime := 0;
-        if Players[I1].CaptureMind then
-        begin
-          Players[M[I1]].HeroReborn := False;
-          Players[M[I1]].RebornTime := 0;
-        end;
-        if not (Players[I1].MovedToTribune)
-        and not (Players[I1].CaptureMind) then
-        begin
-          if Players[I1].MindStunned then
+        Players[P].ReplicaX := IfThen(TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[Players[P].ReplicaTarget].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[Players[P].ReplicaTarget].Hero, 0))), BackX(Players[P].ReplicaTarget), Players[Players[P].ReplicaTarget].LastX);
+        Players[P].ReplicaY := IfThen(TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[Players[P].ReplicaTarget].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[Players[P].ReplicaTarget].Hero, 0))), BackY(Players[P].ReplicaTarget), Players[Players[P].ReplicaTarget].LastY);
+        Players[P].ReplicaDir := States.UnitDirection(States.GroupMember(Players[Players[P].ReplicaTarget].Hero, 0));
+        SetLength(Zombies, Length(Zombies) + 1);
+        Zombies[Length(Zombies) - 1].Owner := P;
+        Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].ReplicaType, Players[P].ReplicaX, Players[P].ReplicaY, Players[P].ReplicaDir, 1, 1);
+        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+        Zombies[Length(Zombies) - 1].ZombieType := 3;
+        Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[P].DD)));
+      end;
+
+      if Length(Zombies) > 0 then
+        for I := 0 to Length(Zombies) - 1 do
+          if (Zombies[I].KillTime = States.GameTime)
+          and (not States.UnitDead(Zombies[I].ID)) then
           begin
-            Players[I1].HeroType := Players[I1].HeroMindType;
-            Players[M[I1]].MindX := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
-            Players[M[I1]].MindY := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
-            Players[M[I1]].MindDir := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
-            Players[I1].StunnedMindTime := States.GameTime + 1;
-            Players[M2[I1]].CaptureMindTime := States.GameTime + 1;
-          end;
-          Actions.FogRevealAll(I1);
-          Actions.CinematicStart(I1);
-          Actions.CinematicPanTo(I1, Players[I1].TribuneX, Players[I1].TribuneY, 0);
-          Actions.CinematicEnd(I1);
-          Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].TribuneX, Players[I1].TribuneY, 4, 1, 1);
-          Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-          Actions.GroupBlockOrders(Players[I1].Hero, True);
-          Players[I1].MovedToTribune := True;
-        end;
-      end;
-
-      if (Players[I1].HP <= 0)
-      and (not States.FogRevealed(I1, 2, 40)) then
-        Actions.FogRevealAll(I1);
-
-      if (Players[I1].HP > 0)
-      and (States.FogRevealed(I1, Players[I1].TempX, Players[I1].TempY))
-      and (not States.PlayerVictorious(I1)) then
-      begin
-        Actions.FogCoverAll(I1);
-        Actions.FogRevealRect(I1, 1, 39, 70, 109);
-      end;
-
-      if States.GameTime = Players[I1].PlayerStatusTime then
-        Players[I1].PlayerStatus := '';
-
-      if (States.GameTime = Players[I1].ReChoiceTime)
-      and (Players[I1].ReChoice) then
-        EndReChoice(I1);
-
-      if (States.GameTime = Players[I1].HeroExileTime)
-      and (InRange(Players[I1].HeroExileGiver, 0, 7)) then
-      begin
-        if (InRange(Players[I1].WerewolfTime - States.GameTime, 0, 49))
-        and (InRange(Players[I1].TempHeroType, 14, 27)) then
-        begin
-          Players[I1].HeroType := Players[I1].TempHeroType;
-          Players[I1].WerewolfTime := 0;
-          Players[I1].RoadSkillDelay := 0;
-          Players[I1].FieldSkillDelay := 0;
-          Players[I1].WineSkillDelay := AXE_WINE_DELAY * (1 - Round(RECHARGE_FACTOR * Byte(Players[I1].ReCharge))) - WEREWOLF_TIME;
-        end;
-        Players[I1].HeroExileX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
-        Players[I1].HeroExileY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
-        Players[I1].HeroExileDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), AI_TEMP_PLAYER, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
-        Players[I1].HeroExileBackTime := States.GameTime + EXILE_TIME;
-        Actions.MapTileSet(Players[I1].HeroExileX, Players[I1].HeroExileY, EXILE_TILE, States.KaMRandomI(4));
-        if (I1 <> Players[I1].HeroExileGiver) 
-        and (not Players[I1].MindStunned) then
-        begin
-          Players[I1].PlayerStatusTime := States.GameTime + EXILE_TIME + 5;
-          Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$110> ' + '[$' + States.PlayerColorText(Players[I1].HeroExileGiver) + ']' + States.PlayerName(Players[I1].HeroExileGiver) + '[]';
-          Players[Players[I1].HeroExileGiver].PlayerStatusTime := States.GameTime + EXILE_TIME + 5;
-          Players[Players[I1].HeroExileGiver].PlayerStatus := Players[Players[I1].HeroExileGiver].PlayerStatus + '|<$111> ' + '[$' + States.PlayerColorText(I1) + ']' + States.PlayerName(I1) + '[]';
-        end;
-      end;
-
-      if States.GameTime < Players[I1].HeroExileBackTime then
-        if States.MapTileType(Players[I1].HeroExileX, Players[I1].HeroExileY) <> EXILE_TILE then
-          Actions.MapTileSet(Players[I1].HeroExileX, Players[I1].HeroExileY, EXILE_TILE, States.KaMRandomI(4));
-
-      if States.GameTime = Players[I1].HeroExileBackTime then
-      begin
-        U := States.UnitAt(Players[I1].HeroExileX, Players[I1].HeroExileY);
-        Players[I1].HeroExiled := False;
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        if U <= 0 then
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].HeroExileX, Players[I1].HeroExileY, Players[I1].HeroExileDir, 1, 1)
-        else
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].HeroExileX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[I1].HeroExileY + States.KaMRandomI(2) - States.KaMRandomI(2), Players[I1].HeroExileDir, 1, 1);
-        Actions.MapTileSet(Players[I1].HeroExileX, Players[I1].HeroExileY, Tiles[Players[I1].HeroExileX][Players[I1].HeroExileY].TileType, Tiles[Players[I1].HeroExileX][Players[I1].HeroExileY].TileDirection);
-        Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-      end;
-
-      if Players[I1].HeroStunned then
-      begin
-        Actions.GroupOrderHalt(Players[I1].Hero);
-        Actions.GroupBlockOrders(Players[I1].Hero, True);
-        if TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0))) then
-          if States.GameTime mod 3 = 1 then
-            Actions.MapTileSet(States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)), STUN_ANIMATION, States.KaMRandomI(4));
-      end;
-
-      if States.GameTime = Players[I1].RebornTime then
-      begin
-
-        if (InRange(I1, 0, 3))
-        and (not States.PlayerAllianceCheck(Players[4].ZombiePlayer, I1)) then
-          Actions.PlayerAllianceChange(Players[4].ZombiePlayer, I1, True, True);
-
-        if (InRange(I1, 4, 7))
-        and (not States.PlayerAllianceCheck(Players[0].ZombiePlayer, I1)) then
-          Actions.PlayerAllianceChange(Players[0].ZombiePlayer, I1, True, True);
-
-        Players[I1].HeroTotalImmunity := True;
-        Players[I1].HeroTotalImmunityTime := States.GameTime + TOTAL_IMMUNITY_TIME;
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].SpawnX, Players[I1].SpawnY, Players[I1].Direction, 1, 1);
-        Actions.CinematicStart(I1);
-        Actions.CinematicPanTo(I1, Players[I1].SpawnX, Players[I1].SpawnY, 0);
-        Actions.CinematicEnd(I1);
-        Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-        Players[I1].HeroReborn := False;
-
-      end;
-
-      if States.GameTime = Players[I1].ThreadsAttackTime then
-        if Length(Zombies) > 0 then
-          for I := 0 to Length(Zombies) - 1 do
-            if (Zombies[I].ThreadsTime = States.GameTime)
-            and (not States.UnitDead(Zombies[I].ID)) then
+            R := States.KaMRandom;
+            Lure := R < REPLICA_LURE_CHANCE;
+            if Lure then
             begin
               H := States.UnitHunger(Zombies[I].ID);
+              Players[P].ReplicaType := States.UnitType(Zombies[I].ID);
+              Players[P].ReplicaX := States.UnitPositionX(Zombies[I].ID);
+              Players[P].ReplicaY := States.UnitPositionY(Zombies[I].ID);
+              Players[P].ReplicaDir := States.UnitDirection(Zombies[I].ID);
               SetLength(Zombies, Length(Zombies) + 1);
-              Zombies[Length(Zombies) - 1].Owner := Zombies[I].Owner;
-              Zombies[Length(Zombies) - 1].ThreadsDir := States.UnitDirection(Zombies[I].ID);
-              Zombies[Length(Zombies) - 1].ThreadsX := FrontX(I1);
-              Zombies[Length(Zombies) - 1].ThreadsY := FrontY(I1);
-              Z := Actions.GiveGroup(Players[Zombies[I].Owner].ZombiePlayer, States.UnitType(Zombies[I].ID), Zombies[Length(Zombies) - 1].ThreadsX, Zombies[Length(Zombies) - 1].ThreadsY, Zombies[Length(Zombies) - 1].ThreadsDir, 1, 1);
+              Zombies[Length(Zombies) - 1].Owner := P;
+              Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].ReplicaType, Players[P].ReplicaX, Players[P].ReplicaY, Players[P].ReplicaDir, 1, 1);
               Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-              Zombies[Length(Zombies) - 1].ZombieType := Zombies[I].ZombieType;
+              Zombies[Length(Zombies) - 1].ZombieType := 3;
               Actions.GroupHungerSet(Z, H);
-              Actions.UnitKill(Zombies[I].ID, True);
             end;
-
-      if States.GameTime = Players[I1].ReplicaTime then
-      begin
-        if (InRange(Players[I1].ReplicaTarget, 0, 7))
-        and (Players[I1].Hero > 0)
-        and (Players[Players[I1].ReplicaTarget].Hero > 0) then
-        begin
-          if TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0))) then
-          begin
-            Players[I1].ReplicaX := BackX(Players[I1].ReplicaTarget);
-            Players[I1].ReplicaY := BackY(Players[I1].ReplicaTarget);
-          end
-          else
-          begin
-            Players[I1].ReplicaX := Players[Players[I1].ReplicaTarget].LastX;
-            Players[I1].ReplicaY := Players[Players[I1].ReplicaTarget].LastY;
+            Actions.UnitKill(Zombies[I].ID, Lure);
           end;
-          Players[I1].ReplicaDir := States.UnitDirection(States.GroupMember(Players[Players[I1].ReplicaTarget].Hero, 0));
-          SetLength(Zombies, Length(Zombies) + 1);
-          Zombies[Length(Zombies) - 1].Owner := I1;
-          Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].ReplicaType, Players[I1].ReplicaX, Players[I1].ReplicaY, Players[I1].ReplicaDir, 1, 1);
-          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-          Zombies[Length(Zombies) - 1].ZombieType := 3;
-          Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[I1].DD)));
-        end;
+    end;
+  except
+    LogError('Exception in the script: cannot check Replica status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
 
-        if Length(Zombies) > 0 then
-          for I := 0 to Length(Zombies) - 1 do
-            if (Zombies[I].KillTime = States.GameTime)
-            and (not States.UnitDead(Zombies[I].ID)) then
-            begin
-              R := States.KaMRandom;
-              Lure := R < REPLICA_LURE_CHANCE;
-              if Lure then
-              begin
-                H := States.UnitHunger(Zombies[I].ID);
-                Players[I1].ReplicaType := States.UnitType(Zombies[I].ID);
-                Players[I1].ReplicaX := States.UnitPositionX(Zombies[I].ID);
-                Players[I1].ReplicaY := States.UnitPositionY(Zombies[I].ID);
-                Players[I1].ReplicaDir := States.UnitDirection(Zombies[I].ID);
-                SetLength(Zombies, Length(Zombies) + 1);
-                Zombies[Length(Zombies) - 1].Owner := I1;
-                Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].ReplicaType, Players[I1].ReplicaX, Players[I1].ReplicaY, Players[I1].ReplicaDir, 1, 1);
-                Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-                Zombies[Length(Zombies) - 1].ZombieType := 3;
-                Actions.GroupHungerSet(Z, H);
-              end;
-              Actions.UnitKill(Zombies[I].ID, Lure);
-            end;
-      end;
 
-      if States.GameTime = Players[I1].RiftTime then
-      begin
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].RiftX, Players[I1].RiftY, Players[I1].RiftDir, 1, 1);
-        Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-        if Length(Zombies) > 0 then
-          for I := 0 to Length(Zombies) - 1 do
-            if (Zombies[I].Owner = I1)
-            and (Zombies[I].TeleportTime = States.GameTime)
-            and (not States.UnitDead(Zombies[I].ID)) then
-            begin
-              SetLength(Zombies, Length(Zombies) + 1);
-              Zombies[Length(Zombies) - 1].Owner := I1;
-              Zombies[Length(Zombies) - 1].ZombieType := Zombies[I].ZombieType;
-              Zombies[Length(Zombies) - 1].Hunger := States.UnitHunger(Zombies[I].ID);
-              Z := Actions.GiveGroup(Players[I1].ZombiePlayer, States.UnitType(Zombies[I].ID), Players[I1].RiftX, Players[I1].RiftY, States.KaMRandomI(8), 1, 1);
-              Actions.GroupHungerSet(Z, Zombies[Length(Zombies) - 1].Hunger);
-              Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-              Actions.UnitKill(Zombies[I].ID, True);
-            end;
-        for K := 0 to RIFT_ADD_ILLUSIONS - 1 do
-        begin
-          SetLength(Zombies, Length(Zombies) + 1);
-          Zombies[Length(Zombies) - 1].Owner := I1;
-          Z := Actions.GiveGroup(Players[I1].ZombiePlayer, Players[I1].HeroType, Players[I1].RiftX + States.KaMRandomI(3) - States.KaMRandomI(3), Players[I1].RiftY + States.KaMRandomI(3) - States.KaMRandomI(3), Players[I1].RiftDir, 1, 1);
-          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-          Zombies[Length(Zombies) - 1].ZombieType := 3;
-          Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[I1].DD)));
-        end;
-      end;
-
-      if States.GameTime = Players[I1].TeleportTime then
-      begin
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].TeleportX, Players[I1].TeleportY, Players[I1].TeleportDir, 1, 1);
-        Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-      end;
-
-      if States.GameTime = Players[I1].VagaAppearTime then
-      begin
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(I1, 27, Players[I1].VagaX, Players[I1].VagaY, Players[I1].VagaDir, 1, 1);
-        Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-        Players[I1].WerewolfTime := States.GameTime + WEREWOLF_TIME;
-        if Players[I1].HP > 0 then
-        begin
-          Actions.FogCoverAll(I1);
-          Actions.FogRevealRect(I1, 1, 39, 70, 109);
-        end;
-      end;
-
-      if States.GameTime = Players[I1].KillsCountTime then
-      begin
-        Players[I1].DoubleKill := False;
-        Players[I1].TripleKill := False;
-        Players[I1].Rampage := False;
-        SetLength(Players[I1].KillTimes, 0);
-        Players[I1].KillsCountTime := 0;
-      end;
-
-      if States.GameTime = Players[I1].WerewolfTime then
-      begin
-        Players[I1].VagaX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
-        Players[I1].VagaY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
-        Players[I1].VagaDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), AI_TEMP_PLAYER, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
-        Players[I1].VagaAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
-        if Players[I1].HP > 0 then
-        begin
-          Actions.FogCoverAll(I1);
-          Actions.FogRevealRect(I1, 1, 39, 70, 109);
-        end;
-      end;
-
-      if States.GameTime = Players[I1].VagaAppearTimeBack then  
-      begin
-        if Players[I1].Hero > 0 then   
-        begin
-          Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].TempHeroType, Players[I1].VagaX, Players[I1].VagaY, Players[I1].VagaDir, 1, 1);
-          Players[I1].HeroType := Players[I1].TempHeroType;
-          Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-          Players[I1].RoadSkillDelay := 0;
-          Players[I1].FieldSkillDelay := 0;
-          Players[I1].WineSkillDelay := AXE_WINE_DELAY * (1 - Round(RECHARGE_FACTOR * Byte(Players[I1].ReCharge))) - WEREWOLF_TIME;
-          if Players[I1].HP > 0 then
+procedure CheckRift(P: Integer);
+var
+  Z: Integer;
+begin
+  try
+    if States.GameTime = Players[P].RiftTime then
+    begin
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].RiftX, Players[P].RiftY, Players[P].RiftDir, 1, 1);
+      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+      if Length(Zombies) > 0 then
+        for I := 0 to Length(Zombies) - 1 do
+          if (Zombies[I].Owner = P)
+          and (Zombies[I].TeleportTime = States.GameTime)
+          and (not States.UnitDead(Zombies[I].ID)) then
           begin
-            Actions.FogCoverAll(I1);
-            Actions.FogRevealRect(I1, 1, 39, 70, 109);
+            SetLength(Zombies, Length(Zombies) + 1);
+            Zombies[Length(Zombies) - 1].Owner := P;
+            Zombies[Length(Zombies) - 1].ZombieType := Zombies[I].ZombieType;
+            Zombies[Length(Zombies) - 1].Hunger := States.UnitHunger(Zombies[I].ID);
+            Z := Actions.GiveGroup(Players[P].ZombiePlayer, States.UnitType(Zombies[I].ID), Players[P].RiftX, Players[P].RiftY, States.KaMRandomI(8), 1, 1);
+            Actions.GroupHungerSet(Z, Zombies[Length(Zombies) - 1].Hunger);
+            Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+            Actions.UnitKill(Zombies[I].ID, True);
           end;
-        end;
-      end;
-
-      if States.GameTime = Players[I1].KnightAppearTime then  
+      for K := 0 to RIFT_ADD_ILLUSIONS - 1 do
       begin
-        if Players[I1].Hero > 0 then   
+        SetLength(Zombies, Length(Zombies) + 1);
+        Zombies[Length(Zombies) - 1].Owner := P;
+        Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, Players[P].RiftX + States.KaMRandomI(3) - States.KaMRandomI(3), Players[P].RiftY + States.KaMRandomI(3) - States.KaMRandomI(3), Players[P].RiftDir, 1, 1);
+        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+        Zombies[Length(Zombies) - 1].ZombieType := 3;
+        Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[P].DD)));
+      end;
+    end;
+  except
+    LogError('Exception in the script: cannot check Rift status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckTeleport(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].TeleportTime then
+    begin
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].TeleportX, Players[P].TeleportY, Players[P].TeleportDir, 1, 1);
+      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+    end;
+  except
+    LogError('Exception in the script: cannot check teleport for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckVaga(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].VagaAppearTime then
+    begin
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(P, 27, Players[P].VagaX, Players[P].VagaY, Players[P].VagaDir, 1, 1);
+      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+      Players[P].WerewolfTime := States.GameTime + WEREWOLF_TIME;
+      if Players[P].HP > 0 then
+      begin
+        Actions.FogCoverAll(P);
+        Actions.FogRevealRect(P, 1, 39, 70, 109);
+      end;
+    end;
+  except
+    LogError('Exception in the script: cannot check Vaga appear status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckWerewolf(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].WerewolfTime then
+    begin
+      Players[P].VagaX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      Players[P].VagaY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+      Players[P].VagaDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].VagaAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
+      if Players[P].HP > 0 then
+      begin
+        Actions.FogCoverAll(P);
+        Actions.FogRevealRect(P, 1, 39, 70, 109);
+      end;
+    end;
+  except
+    LogError('Exception in the script: cannot check Werewolf status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckVagaBack(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].VagaAppearTimeBack then  
+    begin
+      if Players[P].Hero > 0 then   
+      begin
+        Actions.GroupKillAll(Players[P].Hero, True);
+        Players[P].Hero := Actions.GiveGroup(P, Players[P].TempHeroType, Players[P].VagaX, Players[P].VagaY, Players[P].VagaDir, 1, 1);
+        Players[P].HeroType := Players[P].TempHeroType;
+        Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+        Players[P].RoadSkillDelay := 0;
+        Players[P].FieldSkillDelay := 0;
+        Players[P].WineSkillDelay := AXE_WINE_DELAY * (1 - Round(RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - WEREWOLF_TIME;
+        if Players[P].HP > 0 then
         begin
-          Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].TempHeroType, Players[I1].KnightX, Players[I1].KnightY, Players[I1].KnightDir, 1, 1);
-          Players[I1].HeroType := Players[I1].TempHeroType;
-          Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-        end;
-      end;
-
-      if (States.PlayerEnabled(I1))
-      and (Players[I1].Hero > 0) then
-      begin
-        if (States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0)) < MIN_Y)
-        and (States.GroupOwner(Players[I1].Hero) = I1)
-        and (Players[I1].HP > 0) then
-        begin
-          Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].LastX, Players[I1].LastY, Players[I1].LastDir, 1, 1);
-        end;
-      end;
-
-      if States.GameTime = Players[I1].TrackStartTime then
-      begin
-        Players[I1].SettingTrack := True;
-        Players[I1].TrackStopTime := States.GameTime + TRACK_TIME;
-      end;
-
-      if States.GameTime = Players[I1].TrackStopTime then
-      begin
-        Players[I1].SettingTrack := False;
-      end;
-
-      if States.GameTime = Players[I1].TowerTime then
-        PlaceTower(I1);
-
-      if States.GameTime = Players[I1].FireworkTime then
-        for aX := Players[I1].FireworkX - FIREWORKS1_RADIUS - FIREWORKS2_RADIUS - 2 to Players[I1].FireworkX + FIREWORKS1_RADIUS + FIREWORKS2_RADIUS + 2 do
-        for aY := Players[I1].FireworkY - FIREWORKS1_RADIUS - FIREWORKS2_RADIUS - 2 to Players[I1].FireworkY + FIREWORKS1_RADIUS + FIREWORKS2_RADIUS + 2 do
-          if (States.MapTileObject(aX, aY) = AXE_OBJECT2)
-          or (States.MapTileObject(aX, aY) = CIRCLE_FILL_OBJ) then
-            Actions.MapTileObjectSet(aX, aY, 255);
-
-      if States.GameTime = Players[I1].SuddenTime then
-        for aX := Players[I1].SuddenX - 1 to Players[I1].SuddenX + 1 do
-        for aY := Players[I1].SuddenY - 1 to Players[I1].SuddenY + 1 do
-          if States.MapTileObject(aX, aY) = XBOW_OBJECT3 then
-            Actions.MapTileObjectSet(aX, aY, 255);
-
-      if States.GameTime = Players[I1].RocketTime then
-        for aX := Players[I1].RocketX - 1 to Players[I1].RocketX + 1 do
-        for aY := Players[I1].RocketY - 1 to Players[I1].RocketY + 1 do
-          if States.MapTileObject(aX, aY) = BOWMAN_ROCKET2 then
-            Actions.MapTileObjectSet(aX, aY, 255);
-
-      if (Players[I1].SettingTrack)
-      and ((States.GameTime - Players[I1].TrackStopTime) mod TRACK_FACTOR = 0)
-      and (States.GroupOwner(Players[I1].Hero) = I1)
-      and (Players[I1].Hero > 0)
-      and (Players[I1].HP > 0) then
-        if TileOnBattlefield(BackX(I1), BackY(I1)) then
-        begin
-          TilesFieldLength[I1] := TilesFieldLength[I1] + 1;
-          SetLength(TilesFieldX[I1], TilesFieldLength[I1]);
-          SetLength(TilesFieldY[I1], TilesFieldLength[I1]);
-          SetLength(ClearTilesFieldTimes[I1], TilesFieldLength[I1]);
-          SetLength(SetTilesFieldTimes[I1], TilesFieldLength[I1]);
-          SetLength(TilesFieldObjects[I1], TilesFieldLength[I1]);  
-          TilesFieldX[I1][Length(TilesFieldX[I1]) - 1] := BackX(I1);    
-          TilesFieldY[I1][Length(TilesFieldY[I1]) - 1] := BackY(I1);
-          Tiles[BackX(I1)][BackY(I1)].TrackTime := Players[I1].TrackStopTime + 5;
-          TilesFieldObjects[I1][Length(TilesFieldObjects[I1]) - 1] := VAGA_OBJECT8;    
-          ClearTilesFieldTimes[I1][Length(ClearTilesFieldTimes[I1]) - 1] := Players[I1].TrackStopTime + 3;    
-          SetTilesFieldTimes[I1][Length(SetTilesFieldTimes[I1]) - 1] := States.GameTime + 1;
-          Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Owner := I1;
-          Tiles[TilesFieldX[I1][Length(TilesFieldX[I1]) - 1]][TilesFieldY[I1][Length(TilesFieldY[I1]) - 1]].Skill := sTrack;
-        end;
-
-      if (States.GameTime >= Players[I1].GravityTime)
-      and (Players[I1].MovedByGravity) then
-        Players[I1].MovedByGravity := False;
-
-      if (States.GameTime >= Players[I1].HeroSilentTime)
-      and (Players[I1].HeroSilent) then
-        Players[I1].HeroSilent := False;
-
-      if (States.GameTime >= Players[I1].ReChargeTime)
-      and (Players[I1].ReCharge) then
-        Players[I1].ReCharge := False;
-
-      if (States.GameTime >= Players[I1].PreparingTime)
-      and (Players[I1].Preparing) then
-        Players[I1].Preparing := False;
-
-      if States.GameTime = Players[I1].SpurtStartTime then
-      begin
-        StartSpurt(I1);
-        if not Players[I1].HeroMagicImmunity then
-        begin
-          Players[I1].HeroMagicImmunityTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
-          Players[I1].HeroMagicImmunity := True;
-        end;
-        Players[I1].Preparing := True;
-        Players[I1].PreparingTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(I1));
-      end;
-
-      if (States.GameTime = Players[I1].ScoutSilenceStartTime)
-      and (InRange(Players[I1].ScoutSilenceGiver, 0, 11)) then
-      begin
-        Players[I1].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$73> ' + '[$' + States.PlayerColorText(Players[I1].ScoutSilenceGiver) + ']' + States.PlayerName(Players[I1].ScoutSilenceGiver) + '[]<$71> ' + SkillName(sSilence);
-        Players[I1].HeroSilent := True;
-        Players[I1].HeroSilentTime := States.GameTime + SILENCE_SCOUT_TIME;
-      end;
-
-      if States.GameTime = Players[I1].ThreadsTime - DELAY_OF_TURNING then
-      begin
-        Players[I1].ThreadsX := States.UnitPositionX(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].ThreadsAttacker].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) < MIN_Y);
-        Players[I1].ThreadsY := States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[I1].ThreadsAttacker].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[Players[I1].ThreadsAttacker].Hero, 0)) < MIN_Y);
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), AI_TEMP_PLAYER, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
-      end;
-
-      if States.GameTime = Players[I1].ThreadsTime then
-        if (InRange(Players[I1].ThreadsAttacker, 0, 7)) then
-        begin
-          Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[I1].ThreadsDX + Players[I1].ThreadsX, Players[I1].ThreadsDY + Players[I1].ThreadsY, Players[I1].ThreadsUnitDir, 1, 1);
-          Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-          if Players[I1].HeroStunned then
-            Actions.GroupBlockOrders(Players[I1].Hero, True);
-          Players[I1].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-          Players[I1].PlayerStatus := Players[I1].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[I1].ThreadsAttacker) + ']' + States.PlayerName(Players[I1].ThreadsAttacker) + '[]<$71> ' + SkillName(sThreadsOfDeath);
-        end;
-
-      if (States.GameTime >= Players[I1].ThreadsTime + THREADS_DELAY)
-      and (Players[I1].MovedByThreads) then
-        Players[I1].MovedByThreads := False;
-
-      if States.GameTime = Players[I1].SkillTime then
-        Players[I1].CastingSkill := False;
-
-      if (States.GameTime >= Players[I1].HeroMagicImmunityTime)
-      and (Players[I1].HeroMagicImmunity) then
-        Players[I1].HeroMagicImmunity := False;
-
-      if (States.GameTime >= Players[I1].HeroTotalImmunityTime)
-      and (Players[I1].HeroTotalImmunity) then
-        Players[I1].HeroTotalImmunity := False;
-
-      if (States.GameTime >= Players[I1].DDTime)
-      and (Players[I1].DD) then
-        Players[I1].DD := False;
-
-      if (States.GameTime >= Players[I1].HeroStunnedTime)
-      and (Players[I1].HeroStunned) then
-      begin
-        Players[I1].HeroStunned := False;
-        if Players[I1].Hero > 0 then
-        begin
-          Actions.GroupBlockOrders(Players[I1].Hero, False);
-          Actions.GroupOrderHalt(Players[I1].Hero);
-        end;
-      end;
-
-      if (Players[I1].HeroInFear)
-      and not (Players[I1].HeroStunned) then
-      begin
-        if Players[I1].Hero > 0 then
-        begin
-          Actions.GroupOrderWalk(Players[I1].Hero, States.KaMRandomI(48) + 12, States.KaMRandomI(48) + 51, States.KaMRandomI(8));
-        end;
-      end;
-
-      if (States.GameTime >= Players[I1].HeroInFearTime)
-      and (Players[I1].HeroInFear) then
-      begin
-        Players[I1].HeroInFear := False;
-        if Players[I1].Hero > 0 then
-        begin
-          Actions.GroupBlockOrders(Players[I1].Hero, False);
-          Actions.GroupOrderHalt(Players[I1].Hero);
-        end;
-      end;
-
-      if States.GameTime = Players[I1].MindTime then
-      begin
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[M[I1]].MindX, Players[M[I1]].MindY, Players[M[I1]].MindDir, 1, 1);
-        Actions.GroupKillAll(Players[M[I1]].Hero, True);
-        Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
-        Actions.GroupBlockOrders(Players[I1].Hero, True);
-        Actions.GroupOrderHalt(Players[I1].Hero); 
-        Actions.GroupBlockOrders(Players[M[I1]].Hero, True);
-        Actions.GroupOrderHalt(Players[M[I1]].Hero);  
-        Players[I1].MindTime2 := States.GameTime + 30;
-        Players[M[I1]].HeroStunned := True;
-        Players[M[I1]].HeroStunnedTime := States.GameTime + 30;
-        Actions.FogCoverAll(I1);
-        Actions.FogRevealRect(I1, 1, 39, 70, 109);
-        Actions.FogCoverAll(M[I1]);
-        Actions.FogRevealRect(M[I1], 1, 39, 70, 109);
-      end;
-
-      if States.GameTime = Players[I1].MindTime2 then
-      begin
-        if (Players[I1].HeroExiled) or (Players[M[I1]].HeroExiled) then
-        begin
-          Players[I1].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[I1].ReCharge)));
-          Players[I1].CaptureMind := False;
-          Players[M[I1]].MindStunned := False;
-          Actions.GroupBlockOrders(Players[I1].Hero, False);
-        end;
-        if (Players[I1].CaptureMind) and (Players[M[I1]].MindStunned) then
-        begin
-          if Length(Zombies) > 0 then
-          for K := 0 to Length(Zombies) - 1 do
-            if Zombies[K].Owner = M[I1] then
-              Zombies[K].Owner := -1;
-          Players[I1].TempSpawnX := Players[I1].SpawnX;
-          Players[I1].TempSpawnY := Players[I1].SpawnY;
-          Players[M[I1]].TempSpawnX := Players[M[I1]].SpawnX;
-          Players[M[I1]].TempSpawnY := Players[M[I1]].SpawnY;
-          Players[I1].SpawnX := Players[M[I1]].SpawnX;
-          Players[I1].SpawnY := Players[M[I1]].SpawnY;
-          Players[M[I1]].SpawnX := Players[I1].TempSpawnX;
-          Players[M[I1]].SpawnY := Players[I1].TempSpawnY;
-          Players[I1].TempDirection := Players[I1].Direction;
-          Players[M[I1]].TempDirection := Players[M[I1]].Direction;
-          Players[I1].Direction := Players[M[I1]].Direction;
-          Players[M[I1]].Direction := Players[I1].TempDirection;
-          Players[M[I1]].TempLastX := Players[M[I1]].LastX;
-          Players[M[I1]].TempLastY := Players[M[I1]].LastY;
-          Players[M[I1]].LastX := Players[I1].LastX;
-          Players[M[I1]].LastY := Players[I1].LastY;
-        
-          Players[I1].HeroMindType := Players[I1].HeroType;
-          Players[M[I1]].HeroMindType := Players[M[I1]].HeroType;
-          Players[I1].TempHeroMindType := Players[I1].TempHeroType;
-          Players[I1].TempStolenSkill := Players[I1].StolenSkill;
-          Players[I1].TempStolenSkillTime := Players[I1].StolenSkillTime;
-          Players[I1].TempStolenSkillName := Players[I1].StolenSkillName;
-          Players[I1].TempReCharge := Players[I1].ReCharge;
-          Players[I1].TempReChargeTime := Players[I1].ReChargeTime;
-          Players[I1].TempDD := Players[I1].DD;
-          Players[I1].TempDDTime := Players[I1].DDTime;
-          Players[I1].TempHeroMagicImmunity :=  Players[I1].HeroMagicImmunity;
-          Players[I1].TempHeroMagicImmunityTime := Players[I1].HeroMagicImmunityTime;
-          Players[I1].TempHeroTotalImmunity :=  Players[I1].HeroTotalImmunity;
-          Players[I1].TempHeroTotalImmunityTime := Players[I1].HeroTotalImmunityTime;
-          
-          Players[I1].MindX := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
-          Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
-          Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
-          Players[M[I1]].MindX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
-          Players[M[I1]].MindY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
-          Players[M[I1]].MindDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
-
-          Actions.GroupKillAll(Players[I1].Hero, True);
-          Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), AI_TEMP_PLAYER, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
-          Actions.GroupKillAll(Players[M[I1]].Hero, True);
-          Players[M[I1]].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(M[I1]), AI_TEMP_PLAYER, TEMP_PLAYER), Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
-          Players[I1].MindAppearTime := States.GameTime + DELAY_OF_TURNING;
-          Actions.FogCoverAll(I1);
-          Actions.FogRevealRect(I1, 1, 39, 70, 109);
-          Actions.FogCoverAll(M[I1]);
-          Actions.FogRevealRect(M[I1], 1, 39, 70, 109);
-        end;
-      end;
-
-      if States.GameTime = Players[I1].MindAppearTime then
-      begin
-        Actions.FogCoverAll(I1);
-        Actions.FogRevealRect(I1, 1, 39, 70, 109);
-        Actions.FogCoverAll(M[I1]);
-        Actions.FogRevealRect(M[I1], 1, 39, 70, 109);
-        if Players[M[I1]].HeroType = 27 then
-        begin
-          Players[I1].WerewolfTime := Players[M[I1]].WerewolfTime;
-          Players[M[I1]].WerewolfTime := 0;
-          Players[M[I1]].HeroMindType := 15;
-        end;
-
-        Players[I1].HeroType := Players[M[I1]].HeroType;
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(I1, Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
-        Players[I1].HeroStunned := Players[M[I1]].HeroStunned;
-        Players[I1].HeroStunnedTime := Players[M[I1]].HeroStunnedTime;
-        Players[M[I1]].HeroStunned := True;
-        Players[M[I1]].HeroType := Players[I1].HeroMindType;
-        Actions.GroupKillAll(Players[M[I1]].Hero, True);
-        Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[M[I1]].MindX, Players[M[I1]].MindY, Players[M[I1]].MindDir, 1, 1);
-        Players[I1].TempHeroType := Players[M[I1]].TempHeroType;
-
-        Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-        Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
-        Actions.GroupBlockOrders(Players[M[I1]].Hero, True);
-        Actions.GroupOrderHalt(Players[M[I1]].Hero);  
- 
-        Players[I1].StolenSkill := Players[M[I1]].StolenSkill;
-        Players[I1].StolenSkillTime := Players[M[I1]].StolenSkillTime;
-        Players[I1].StolenSkillName := Players[M[I1]].StolenSkillName;
-        Players[I1].ReCharge := Players[M[I1]].ReCharge;
-        Players[I1].ReChargeTime := Players[M[I1]].ReChargeTime;
-        Players[I1].DD := Players[M[I1]].DD;
-        Players[I1].DDTime := Players[M[I1]].DDTime;
-        Players[M[I1]].HeroMagicImmunity := Players[I1].HeroMagicImmunity;
-        Players[M[I1]].HeroMagicImmunityTime := Players[I1].HeroMagicImmunityTime;
-        Players[M[I1]].HeroTotalImmunity := Players[I1].HeroTotalImmunity;
-        Players[M[I1]].HeroTotalImmunityTime := Players[I1].HeroTotalImmunityTime;
-        Players[I1].Preparing := Players[M[I1]].Preparing;
-        Players[I1].PreparingTime := Players[M[I1]].PreparingTime;
-        Players[I1].HeroInFear := Players[M[I1]].HeroInFear;
-        Players[I1].HeroInFearTime := Players[M[I1]].HeroInFearTime;
-        Players[I1].SettingTrack := Players[M[I1]].SettingTrack;
-        Players[I1].TrackStopTime := Players[M[I1]].TrackStopTime;
-        Players[M[I1]].SettingTrack := False;
-        Players[M[I1]].TrackStopTime := 0;
-        Players[I1].RoadSkillDelay := Players[M[I1]].RoadSkillDelay;
-        Players[I1].FieldSkillDelay := Players[M[I1]].FieldSkillDelay;
-        Players[I1].WineSkillDelay := Players[M[I1]].WineSkillDelay;
-        if Players[M[I1]].PlayersTeam = 1 then
-        begin
-          Players[M[I1]].PlayersTeam := 0;
-          Players[M[I1]].UsedPlayersTeam := True;
-        end;
-        if (Players[M[I1]].PlayersTeam = 0) and (not Players[M[I1]].UsedPlayersTeam) then
-          Players[M[I1]].PlayersTeam := 1;
-        Players[M[I1]].UsedPlayersTeam := False;
-        Players[I1].HeroMagicImmunity := True;
-        Players[I1].HeroMagicImmunityTime := States.GameTime + CAPTURE_MIND_TIME;
-        Players[M[I1]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
-        Players[M[I1]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME; 
-        Players[I1].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME;
-        Players[I1].MindMagicImmunityTime := States.GameTime + CAPTURE_MIND_TIME - 10;
-      end;
-      
-      if States.GameTime = Players[I1].MindMagicImmunityTime then
-      begin
-        Players[M[I1]].HeroMagicImmunity := True;
-        Players[M[I1]].HeroMagicImmunityTime := States.GameTime + 10;
-      end;
-
-      if States.GameTime = Players[I1].CaptureMindTime then
-      begin
-        if Players[M[I1]].HP > 0 then 
-        begin
-          Actions.FogCoverAll(I1);
-          Actions.FogRevealRect(I1, 1, 39, 70, 109);
-          Actions.FogCoverAll(M[I1]);
-          Actions.FogRevealRect(M[I1], 1, 39, 70, 109);
-          Players[M[I1]].MindX := States.UnitPositionX(States.GroupMember(Players[M[I1]].Hero, 0));
-          Players[M[I1]].MindY := States.UnitPositionY(States.GroupMember(Players[M[I1]].Hero, 0));
-          Players[M[I1]].MindDir := States.UnitDirection(States.GroupMember(Players[M[I1]].Hero, 0));
-          Actions.GroupKillAll(Players[M[I1]].Hero, True);
-          Players[M[I1]].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(M[I1]), AI_TEMP_PLAYER, TEMP_PLAYER), Players[M[I1]].HeroType, Players[M[I1]].TempX, Players[M[I1]].TempY, 4, 1, 1);
-        end;
-        Players[I1].MindX := States.UnitPositionX(States.GroupMember(Players[I1].Hero, 0));
-        Players[I1].MindY := States.UnitPositionY(States.GroupMember(Players[I1].Hero, 0));
-        Players[I1].MindDir := States.UnitDirection(States.GroupMember(Players[I1].Hero, 0));
-        Actions.GroupKillAll(Players[I1].Hero, True);
-        Players[I1].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(I1), AI_TEMP_PLAYER, TEMP_PLAYER), Players[I1].HeroType, Players[I1].TempX, Players[I1].TempY, 4, 1, 1);
-        Players[I1].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
-      end;
-
-      if States.GameTime = Players[I1].MindAppearTimeBack then
-      begin
-        Players[I1].CaptureMind := False;
-        Players[M[I1]].MindStunned := False;
-        if (Players[I1].Hero > 0)
-        and (Players[M[I1]].Hero > 0) then
-        begin
-          if Players[I1].HeroType = 27 then
-          begin
-            Players[M[I1]].WerewolfTime := Players[I1].WerewolfTime;
-            Players[I1].WerewolfTime := 0;
-            Players[M[I1]].HeroMindType := 27;
-          end;          
-          Players[I1].HeroType := Players[I1].HeroMindType;
-          Players[M[I1]].HeroType := Players[M[I1]].HeroMindType;
-          Players[I1].TempHeroType := Players[I1].TempHeroMindType;
-          if (not Players[M[I1]].HeroReborn) and (not Players[M[I1]].HeroExiled) then
-          begin
-            Actions.GroupKillAll(Players[I1].Hero, True);
-            Players[I1].Hero := Actions.GiveGroup(I1, Players[I1].HeroType, Players[M[I1]].MindX, Players[M[I1]].MindY, Players[M[I1]].MindDir, 1, 1);
-            Actions.CinematicStart(I1);
-            Actions.CinematicPanTo(I1, Players[M[I1]].MindX, Players[M[I1]].MindY, 0);
-            Actions.CinematicEnd(I1);
-          end;
-          if (not Players[I1].HeroReborn) then
-          begin
-            Actions.GroupKillAll(Players[M[I1]].Hero, True);
-            Players[M[I1]].Hero := Actions.GiveGroup(M[I1], Players[M[I1]].HeroType, Players[I1].MindX, Players[I1].MindY, Players[I1].MindDir, 1, 1);
-            Actions.CinematicStart(M[I1]);
-            Actions.CinematicPanTo(M[I1], Players[I1].MindX, Players[I1].MindY, 0);
-            Actions.CinematicEnd(M[I1]);
-          end;
-          
-          Players[I1].SpawnX := Players[I1].TempSpawnX;
-          Players[I1].SpawnY := Players[I1].TempSpawnY;
-          Players[M[I1]].SpawnX := Players[M[I1]].TempSpawnX;
-          Players[M[I1]].SpawnY := Players[M[I1]].TempSpawnY;
-          Players[M[I1]].LastX := Players[M[I1]].TempLastX;
-          Players[M[I1]].LastY := Players[M[I1]].TempLastY;
-          Players[I1].Direction := Players[I1].TempDirection;
-          Players[M[I1]].Direction := Players[M[I1]].TempDirection;
-
-          Players[M[I1]].RoadSkillDelay := Players[I1].RoadSkillDelay;
-          Players[M[I1]].FieldSkillDelay := Players[I1].FieldSkillDelay;
-          Players[M[I1]].WineSkillDelay := Players[I1].WineSkillDelay;
-          Players[I1].RoadSkillDelay := 0;
-          Players[I1].FieldSkillDelay := 0;
-          Players[I1].WineSkillDelay := Round(SCOUT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[I1].ReCharge)));
-          Players[M[I1]].LastUsedSkill := Players[I1].LastUsedSkill;
-          Players[M[I1]].StolenSkill := Players[I1].StolenSkill;
-          Players[M[I1]].StolenSkillTime := Players[I1].StolenSkillTime;
-          Players[M[I1]].StolenSkillName := Players[I1].StolenSkillName;
-          Players[I1].StolenSkill := Players[I1].TempStolenSkill;
-          Players[I1].StolenSkillTime := Players[I1].TempStolenSkillTime;
-          Players[I1].StolenSkillName := Players[I1].TempStolenSkillName;
-          Players[M[I1]].ReCharge := Players[I1].ReCharge;
-          Players[I1].ReCharge := Players[I1].TempReCharge;
-          Players[M[I1]].ReChargeTime := Players[I1].ReChargeTime;
-          Players[I1].ReChargeTime := Players[I1].TempReChargeTime;
-          Players[M[I1]].DD := Players[I1].DD;
-          Players[I1].DD := Players[I1].TempDD;
-          Players[M[I1]].DDTime := Players[I1].DDTime;
-          Players[I1].DDTime := Players[I1].TempDDTime;
-          Players[I1].HeroMagicImmunity :=  Players[I1].TempHeroMagicImmunity;
-          Players[I1].HeroMagicImmunityTime := Players[I1].TempHeroMagicImmunityTime;
-          Players[I1].HeroTotalImmunity :=  Players[I1].TempHeroTotalImmunity;
-          Players[I1].HeroTotalImmunityTime := Players[I1].TempHeroTotalImmunityTime;
-          Players[M[I1]].Preparing := Players[I1].Preparing;
-          Players[M[I1]].PreparingTime := Players[I1].PreparingTime;
-          if Players[I1].Preparing then
-          begin
-            Players[I1].Preparing := False;
-            Players[I1].PreparingTime := 0;
-            Players[I1].HeroStunned := False;
-            Players[I1].HeroStunnedTime := 0;
-          end;
-          if Players[I1].SpurtStartTime < States.GameTime then
-            for I := 0 to Players[I1].CurrentSpurtLength - 1 do
-              if SpurtTimes[I1][I] > States.GameTime then
-                SpurtTimes[I1][I] := 0;
-          if Players[I1].SpurtStartTime > States.GameTime then
-          begin
-            Players[M[I1]].SpurtStartTime := Players[I1].SpurtStartTime;
-            Players[M[I1]].CurrentSpurtLength := Players[I1].CurrentSpurtLength;
-            Players[I1].SpurtStartTime := 0;
-            Players[I1].CurrentSpurtLength := 0;
-            for I := 0 to Players[M[I1]].CurrentSpurtLength - 1 do
-            begin
-              SpurtX[M[I1]][I] := SpurtX[I1][I];
-              SpurtY[M[I1]][I] := SpurtY[I1][I];
-              SpurtTimes[M[I1]][I] := SpurtTimes[I1][I];
-              SpurtDir[M[I1]][I] := SpurtDir[I1][I];
-              Tiles[SpurtX[M[I1]][I]][SpurtY[M[I1]][I]].Owner := M[I1];
-              SpurtTimes[I1][I] := 0;
-            end;
-            TilesWineLength[M[I1]] := TilesWineLength[I1];
-            SetLength(TilesWineX[M[I1]], TilesWineLength[M[I1]]);
-            SetLength(TilesWineY[M[I1]], TilesWineLength[M[I1]]);
-            SetLength(TilesWineObjects[M[I1]], TilesWineLength[M[I1]]);
-            SetLength(SetTilesWineTimes[M[I1]], TilesWineLength[M[I1]]);
-            SetLength(ClearTilesWineTimes[M[I1]], TilesWineLength[M[I1]]);
-            for K := 1 to TilesWineLength[M[I1]] - 1 do
-            begin
-              TilesWineX[M[I1]][K] := TilesWineX[I1][K];
-              TilesWineY[M[I1]][K] := TilesWineY[I1][K];
-              TilesWineObjects[M[I1]][K] := TilesWineObjects[I1][K];
-              SetTilesWineTimes[M[I1]][K] := SetTilesWineTimes[I1][K];
-              ClearTilesWineTimes[M[I1]][K] := ClearTilesWineTimes[I1][K];
-            end;
-            ClearWineTilesArrayTime[M[I1]] := ClearWineTilesArrayTime[I1];
-            Players[I1].SpurtStartTime := 0;
-          end;
-          Players[M[I1]].HeroInFear := Players[I1].HeroInFear;
-          Players[M[I1]].HeroInFearTime := Players[I1].HeroInFearTime;
-          Players[I1].TempHeroReborn := Players[M[I1]].HeroReborn;
-          Players[I1].TempRebornTime := Players[M[I1]].RebornTime;
-          Players[M[I1]].HeroReborn := Players[I1].HeroReborn;
-          Players[M[I1]].RebornTime := Players[I1].RebornTime;
-          Players[I1].HeroReborn :=  Players[I1].TempHeroReborn;
-          Players[I1].RebornTime := Players[I1].TempRebornTime;
-          Players[M[I1]].HeroStunned := Players[I1].HeroStunned;
-          Players[M[I1]].HeroStunnedTime := Players[I1].HeroStunnedTime;
-          Players[M[I1]].SettingTrack := Players[I1].SettingTrack;
-          Players[M[I1]].TrackStopTime := Players[I1].TrackStopTime;
-          Players[I1].SettingTrack := False;
-          Players[I1].TrackStopTime := 0;
-          Players[I1].HeroExileTime := Players[M[I1]].HeroExileTime;
-          Players[I1].HeroExileBackTime := Players[M[I1]].HeroExileBackTime;
-          Players[I1].HeroExileX := Players[M[I1]].HeroExileX;
-          Players[I1].HeroExileY := Players[M[I1]].HeroExileY;
-          Players[I1].HeroExileGiver := Players[M[I1]].HeroExileGiver;
-          Players[I1].HeroExileDir := Players[M[I1]].HeroExileDir;
-          Players[I1].HeroExiled := Players[M[I1]].HeroExiled;
-          Players[M[I1]].HeroExiled := False;
-          Players[M[I1]].HeroExileBackTime := 0;
-          if Players[M[I1]].PlayersTeam = 1 then
-          begin
-            Players[M[I1]].PlayersTeam := 0;
-            Players[M[I1]].UsedPlayersTeam := True;
-          end;
-          if (Players[M[I1]].PlayersTeam = 0) and (not Players[M[I1]].UsedPlayersTeam) then
-            Players[M[I1]].PlayersTeam := 1;
-          Players[M[I1]].UsedPlayersTeam := False;
-          Players[M[I1]].LastUsedSkill := Players[I1].LastUsedSkill;
-          Players[I1].LastUsedSkill := sMind;
-          Actions.GroupHungerSet(Players[I1].Hero, States.UnitMaxHunger);
-          Actions.GroupHungerSet(Players[M[I1]].Hero, States.UnitMaxHunger);
-          Players[M[I1]].HeroMagicImmunity := True;
-          Players[M[I1]].HeroMagicImmunityTime := States.GameTime + 20;
-          if Length(Zombies) > 0 then
-          for K := 0 to Length(Zombies) - 1 do
-            if Zombies[K].Owner = -1 then
-              Zombies[K].Owner := M[I1];
+          Actions.FogCoverAll(P);
+          Actions.FogRevealRect(P, 1, 39, 70, 109);
         end;
       end;
     end;
+  except
+    LogError('Exception in the script: cannot check Vaga appear back status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckFieryTrack(P: Integer);
+begin
+  try
+
+    if States.GameTime = Players[P].TrackStartTime then
+    begin
+      Players[P].SettingTrack := True;
+      Players[P].TrackStopTime := States.GameTime + TRACK_TIME;
+    end;
+
+    if States.GameTime = Players[P].TrackStopTime then
+      Players[P].SettingTrack := False;
+
+    if (Players[P].SettingTrack)
+    and ((States.GameTime - Players[P].TrackStopTime) mod TRACK_FACTOR = 0)
+    and (States.GroupOwner(Players[P].Hero) = P)
+    and (Players[P].Hero > 0)
+    and (Players[P].HP > 0)
+    and (TileOnBattlefield(BackX(P), BackY(P))) then
+    begin
+      TilesFieldLength[P] := TilesFieldLength[P] + 1;
+      SetLength(TilesFieldX[P], TilesFieldLength[P]);
+      SetLength(TilesFieldY[P], TilesFieldLength[P]);
+      SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
+      SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
+      SetLength(TilesFieldObjects[P], TilesFieldLength[P]);  
+      TilesFieldX[P][Length(TilesFieldX[P]) - 1] := BackX(P);    
+      TilesFieldY[P][Length(TilesFieldY[P]) - 1] := BackY(P);
+      Tiles[BackX(P)][BackY(P)].TrackTime := Players[P].TrackStopTime + 5;
+      TilesFieldObjects[P][Length(TilesFieldObjects[P]) - 1] := VAGA_OBJECT8;    
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := Players[P].TrackStopTime + 3;    
+      SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 1] := States.GameTime + 1;
+      Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - 1]][TilesFieldY[P][Length(TilesFieldY[P]) - 1]].Owner := P;
+      Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - 1]][TilesFieldY[P][Length(TilesFieldY[P]) - 1]].Skill := sTrack;
+    end;
+
+  except
+    LogError('Exception in the script: cannot check Fiery Track status for invalid player', SHOW_ERROR_MSG);
+  end;
+
+end;
+
+
+procedure CheckFear(P: Integer);
+begin
+  try
+
+    if (Players[P].HeroInFear)
+    and not (Players[P].HeroStunned)
+    and (Players[P].Hero > 0) then
+      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(48) + 12, States.KaMRandomI(48) + 51, States.KaMRandomI(8));
+
+    if (States.GameTime >= Players[P].HeroInFearTime)
+    and (Players[P].HeroInFear)
+    and (Players[P].Hero > 0) then
+    begin
+      Players[P].HeroInFear := False;
+      Actions.GroupBlockOrders(Players[P].Hero, False);
+      Actions.GroupOrderHalt(Players[P].Hero);
+    end;
+
+  except
+    LogError('Exception in the script: cannot check Fear status for invalid player', SHOW_ERROR_MSG);
+  end;
+
+end;
+
+
+procedure CheckMind(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].MindTime then
+    begin
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[M[P]].MindX, Players[M[P]].MindY, Players[M[P]].MindDir, 1, 1);
+      Actions.GroupKillAll(Players[M[P]].Hero, True);
+      Players[M[P]].Hero := Actions.GiveGroup(M[P], Players[M[P]].HeroType, Players[P].MindX, Players[P].MindY, Players[P].MindDir, 1, 1);
+      Actions.GroupBlockOrders(Players[P].Hero, True);
+      Actions.GroupOrderHalt(Players[P].Hero); 
+      Actions.GroupBlockOrders(Players[M[P]].Hero, True);
+      Actions.GroupOrderHalt(Players[M[P]].Hero);  
+      Players[P].MindTime2 := States.GameTime + 30;
+      Players[M[P]].HeroStunned := True;
+      Players[M[P]].HeroStunnedTime := States.GameTime + 30;
+      Actions.FogCoverAll(P);
+      Actions.FogRevealRect(P, 1, 39, 70, 109);
+      Actions.FogCoverAll(M[P]);
+      Actions.FogRevealRect(M[P], 1, 39, 70, 109);
+    end;
+  except
+    LogError('Exception in the script: cannot check Mind status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckMind2(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].MindTime2 then
+    begin
+      if (Players[P].HeroExiled)
+      or (Players[M[P]].HeroExiled) then
+      begin
+        Players[P].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+        Players[P].CaptureMind := False;
+        Players[M[P]].MindStunned := False;
+        Actions.GroupBlockOrders(Players[P].Hero, False);
+      end;
+      if (Players[P].CaptureMind)
+      and (Players[M[P]].MindStunned) then
+      begin
+        Players[P].TempSpawnX := Players[P].SpawnX;
+        Players[P].TempSpawnY := Players[P].SpawnY;
+        Players[M[P]].TempSpawnX := Players[M[P]].SpawnX;
+        Players[M[P]].TempSpawnY := Players[M[P]].SpawnY;
+        Players[P].SpawnX := Players[M[P]].SpawnX;
+        Players[P].SpawnY := Players[M[P]].SpawnY;
+        Players[M[P]].SpawnX := Players[P].TempSpawnX;
+        Players[M[P]].SpawnY := Players[P].TempSpawnY;
+        Players[P].TempDirection := Players[P].Direction;
+        Players[M[P]].TempDirection := Players[M[P]].Direction;
+        Players[P].Direction := Players[M[P]].Direction;
+        Players[M[P]].Direction := Players[P].TempDirection;
+        Players[M[P]].TempLastX := Players[M[P]].LastX;
+        Players[M[P]].TempLastY := Players[M[P]].LastY;
+        Players[M[P]].LastX := Players[P].LastX;
+        Players[M[P]].LastY := Players[P].LastY;        
+        Players[P].HeroMindType := Players[P].HeroType;
+        Players[M[P]].HeroMindType := Players[M[P]].HeroType;
+        Players[P].TempHeroMindType := Players[P].TempHeroType;
+        Players[P].TempStolenSkill := Players[P].StolenSkill;
+        Players[P].TempStolenSkillTime := Players[P].StolenSkillTime;
+        Players[P].TempStolenSkillName := Players[P].StolenSkillName;
+        Players[P].TempReCharge := Players[P].ReCharge;
+        Players[P].TempReChargeTime := Players[P].ReChargeTime;
+        Players[P].TempDD := Players[P].DD;
+        Players[P].TempDDTime := Players[P].DDTime;
+        Players[P].TempHeroMagicImmunity :=  Players[P].HeroMagicImmunity;
+        Players[P].TempHeroMagicImmunityTime := Players[P].HeroMagicImmunityTime;
+        Players[P].TempHeroTotalImmunity :=  Players[P].HeroTotalImmunity;
+        Players[P].TempHeroTotalImmunityTime := Players[P].HeroTotalImmunityTime;          
+        Players[P].MindX := States.UnitPositionX(States.GroupMember(Players[M[P]].Hero, 0));
+        Players[P].MindY := States.UnitPositionY(States.GroupMember(Players[M[P]].Hero, 0));
+        Players[P].MindDir := States.UnitDirection(States.GroupMember(Players[M[P]].Hero, 0));
+        Players[M[P]].MindX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+        Players[M[P]].MindY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+        Players[M[P]].MindDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+        Actions.GroupKillAll(Players[P].Hero, True);
+        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+        Actions.GroupKillAll(Players[M[P]].Hero, True);
+        Players[M[P]].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(M[P]), AI_TEMP_PLAYER, TEMP_PLAYER), Players[M[P]].HeroType, Players[M[P]].TempX, Players[M[P]].TempY, 4, 1, 1);
+        Players[P].MindAppearTime := States.GameTime + DELAY_OF_TURNING;
+        Actions.FogCoverAll(P);
+        Actions.FogRevealRect(P, 1, 39, 70, 109);
+        Actions.FogCoverAll(M[P]);
+        Actions.FogRevealRect(M[P], 1, 39, 70, 109);
+      end;
+    end;
+  except
+    LogError('Exception in the script: cannot check Mind2 status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckMindAppear(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].MindAppearTime then
+    begin
+      Actions.FogCoverAll(P);
+      Actions.FogRevealRect(P, 1, 39, 70, 109);
+      Actions.FogCoverAll(M[P]);
+      Actions.FogRevealRect(M[P], 1, 39, 70, 109);
+      if Players[M[P]].HeroType = 27 then
+      begin
+        Players[P].WerewolfTime := Players[M[P]].WerewolfTime;
+        Players[M[P]].WerewolfTime := 0;
+        Players[M[P]].HeroMindType := 15;
+      end;
+      Players[P].HeroType := Players[M[P]].HeroType;
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(P, Players[M[P]].HeroType, Players[P].MindX, Players[P].MindY, Players[P].MindDir, 1, 1);
+      Players[P].HeroStunned := Players[M[P]].HeroStunned;
+      Players[P].HeroStunnedTime := Players[M[P]].HeroStunnedTime;
+      Players[M[P]].HeroStunned := True;
+      Players[M[P]].HeroType := Players[P].HeroMindType;
+      Actions.GroupKillAll(Players[M[P]].Hero, True);
+      Players[M[P]].Hero := Actions.GiveGroup(M[P], Players[M[P]].HeroType, Players[M[P]].MindX, Players[M[P]].MindY, Players[M[P]].MindDir, 1, 1);
+      Players[P].TempHeroType := Players[M[P]].TempHeroType;
+      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+      Actions.GroupHungerSet(Players[M[P]].Hero, States.UnitMaxHunger);
+      Actions.GroupBlockOrders(Players[M[P]].Hero, True);
+      Actions.GroupOrderHalt(Players[M[P]].Hero);  
+      Players[P].StolenSkill := Players[M[P]].StolenSkill;
+      Players[P].StolenSkillTime := Players[M[P]].StolenSkillTime;
+      Players[P].StolenSkillName := Players[M[P]].StolenSkillName;
+      Players[P].ReCharge := Players[M[P]].ReCharge;
+      Players[P].ReChargeTime := Players[M[P]].ReChargeTime;
+      Players[P].DD := Players[M[P]].DD;
+      Players[P].DDTime := Players[M[P]].DDTime;
+      Players[M[P]].HeroMagicImmunity := Players[P].HeroMagicImmunity;
+      Players[M[P]].HeroMagicImmunityTime := Players[P].HeroMagicImmunityTime;
+      Players[M[P]].HeroTotalImmunity := Players[P].HeroTotalImmunity;
+      Players[M[P]].HeroTotalImmunityTime := Players[P].HeroTotalImmunityTime;
+      Players[P].Preparing := Players[M[P]].Preparing;
+      Players[P].PreparingTime := Players[M[P]].PreparingTime;
+      Players[P].HeroInFear := Players[M[P]].HeroInFear;
+      Players[P].HeroInFearTime := Players[M[P]].HeroInFearTime;
+      Players[P].SettingTrack := Players[M[P]].SettingTrack;
+      Players[P].TrackStopTime := Players[M[P]].TrackStopTime;
+      Players[M[P]].SettingTrack := False;
+      Players[M[P]].TrackStopTime := 0;
+      Players[P].RoadSkillDelay := Players[M[P]].RoadSkillDelay;
+      Players[P].FieldSkillDelay := Players[M[P]].FieldSkillDelay;
+      Players[P].WineSkillDelay := Players[M[P]].WineSkillDelay;
+      if Players[M[P]].PlayersTeam = 1 then
+      begin
+        Players[M[P]].PlayersTeam := 0;
+        Players[M[P]].UsedPlayersTeam := True;
+      end;
+      if (Players[M[P]].PlayersTeam = 0)
+      and (not Players[M[P]].UsedPlayersTeam) then
+        Players[M[P]].PlayersTeam := 1;
+      Players[M[P]].UsedPlayersTeam := False;
+      Players[P].HeroMagicImmunity := True;
+      Players[P].HeroMagicImmunityTime := States.GameTime + CAPTURE_MIND_TIME;
+      Players[M[P]].HeroStunnedTime := States.GameTime + CAPTURE_MIND_TIME;
+      Players[M[P]].StunnedMindTime := States.GameTime + CAPTURE_MIND_TIME; 
+      Players[P].CaptureMindTime := States.GameTime + CAPTURE_MIND_TIME;
+      Players[P].MindMagicImmunityTime := States.GameTime + CAPTURE_MIND_TIME - 10;
+    end;
+  except
+    LogError('Exception in the script: cannot check Mind Appear status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckMindCapture(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].CaptureMindTime then
+    begin
+      if Players[M[P]].HP > 0 then 
+      begin
+        Actions.FogCoverAll(P);
+        Actions.FogRevealRect(P, 1, 39, 70, 109);
+        Actions.FogCoverAll(M[P]);
+        Actions.FogRevealRect(M[P], 1, 39, 70, 109);
+        Players[M[P]].MindX := States.UnitPositionX(States.GroupMember(Players[M[P]].Hero, 0));
+        Players[M[P]].MindY := States.UnitPositionY(States.GroupMember(Players[M[P]].Hero, 0));
+        Players[M[P]].MindDir := States.UnitDirection(States.GroupMember(Players[M[P]].Hero, 0));
+        Actions.GroupKillAll(Players[M[P]].Hero, True);
+        Players[M[P]].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(M[P]), AI_TEMP_PLAYER, TEMP_PLAYER), Players[M[P]].HeroType, Players[M[P]].TempX, Players[M[P]].TempY, 4, 1, 1);
+      end;
+      Players[P].MindX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      Players[P].MindY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+      Players[P].MindDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
+    end;
+  except
+    LogError('Exception in the script: cannot check Mind Capture status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckMindBack(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].MindAppearTimeBack then
+    begin
+      Players[P].CaptureMind := False;
+      Players[M[P]].MindStunned := False;
+      if (Players[P].Hero > 0)
+      and (Players[M[P]].Hero > 0) then
+      begin
+        if Players[P].HeroType = 27 then
+        begin
+          Players[M[P]].WerewolfTime := Players[P].WerewolfTime;
+          Players[P].WerewolfTime := 0;
+          Players[M[P]].HeroMindType := 27;
+        end;          
+        Players[P].HeroType := Players[P].HeroMindType;
+        Players[M[P]].HeroType := Players[M[P]].HeroMindType;
+        Players[P].TempHeroType := Players[P].TempHeroMindType;
+        if (not Players[M[P]].HeroReborn)
+        and (not Players[M[P]].HeroExiled) then
+        begin
+          Actions.GroupKillAll(Players[P].Hero, True);
+          Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[M[P]].MindX, Players[M[P]].MindY, Players[M[P]].MindDir, 1, 1);
+          Actions.CinematicStart(P);
+          Actions.CinematicPanTo(P, Players[M[P]].MindX, Players[M[P]].MindY, 0);
+          Actions.CinematicEnd(P);
+        end;
+        if (not Players[P].HeroReborn) then
+        begin
+          Actions.GroupKillAll(Players[M[P]].Hero, True);
+          Players[M[P]].Hero := Actions.GiveGroup(M[P], Players[M[P]].HeroType, Players[P].MindX, Players[P].MindY, Players[P].MindDir, 1, 1);
+          Actions.CinematicStart(M[P]);
+          Actions.CinematicPanTo(M[P], Players[P].MindX, Players[P].MindY, 0);
+          Actions.CinematicEnd(M[P]);
+        end;
+        Players[P].SpawnX := Players[P].TempSpawnX;
+        Players[P].SpawnY := Players[P].TempSpawnY;
+        Players[M[P]].SpawnX := Players[M[P]].TempSpawnX;
+        Players[M[P]].SpawnY := Players[M[P]].TempSpawnY;
+        Players[M[P]].LastX := Players[M[P]].TempLastX;
+        Players[M[P]].LastY := Players[M[P]].TempLastY;
+        Players[P].Direction := Players[P].TempDirection;
+        Players[M[P]].Direction := Players[M[P]].TempDirection;
+        Players[M[P]].RoadSkillDelay := Players[P].RoadSkillDelay;
+        Players[M[P]].FieldSkillDelay := Players[P].FieldSkillDelay;
+        Players[M[P]].WineSkillDelay := Players[P].WineSkillDelay;
+        Players[P].RoadSkillDelay := 0;
+        Players[P].FieldSkillDelay := 0;
+        Players[P].WineSkillDelay := Round(SCOUT_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+        Players[M[P]].LastUsedSkill := Players[P].LastUsedSkill;
+        Players[M[P]].StolenSkill := Players[P].StolenSkill;
+        Players[M[P]].StolenSkillTime := Players[P].StolenSkillTime;
+        Players[M[P]].StolenSkillName := Players[P].StolenSkillName;
+        Players[P].StolenSkill := Players[P].TempStolenSkill;
+        Players[P].StolenSkillTime := Players[P].TempStolenSkillTime;
+        Players[P].StolenSkillName := Players[P].TempStolenSkillName;
+        Players[M[P]].ReCharge := Players[P].ReCharge;
+        Players[P].ReCharge := Players[P].TempReCharge;
+        Players[M[P]].ReChargeTime := Players[P].ReChargeTime;
+        Players[P].ReChargeTime := Players[P].TempReChargeTime;
+        Players[M[P]].DD := Players[P].DD;
+        Players[P].DD := Players[P].TempDD;
+        Players[M[P]].DDTime := Players[P].DDTime;
+        Players[P].DDTime := Players[P].TempDDTime;
+        Players[P].HeroMagicImmunity :=  Players[P].TempHeroMagicImmunity;
+        Players[P].HeroMagicImmunityTime := Players[P].TempHeroMagicImmunityTime;
+        Players[P].HeroTotalImmunity :=  Players[P].TempHeroTotalImmunity;
+        Players[P].HeroTotalImmunityTime := Players[P].TempHeroTotalImmunityTime;
+        Players[M[P]].Preparing := Players[P].Preparing;
+        Players[M[P]].PreparingTime := Players[P].PreparingTime;
+        if Players[P].Preparing then
+        begin
+          Players[P].Preparing := False;
+          Players[P].PreparingTime := 0;
+          Players[P].HeroStunned := False;
+          Players[P].HeroStunnedTime := 0;
+        end;
+        if Players[P].SpurtStartTime < States.GameTime then
+          for I := 0 to Players[P].CurrentSpurtLength - 1 do
+            if SpurtTimes[P][I] > States.GameTime then
+              SpurtTimes[P][I] := 0;
+        if Players[P].SpurtStartTime > States.GameTime then
+        begin
+          Players[M[P]].SpurtStartTime := Players[P].SpurtStartTime;
+          Players[M[P]].CurrentSpurtLength := Players[P].CurrentSpurtLength;
+          Players[P].SpurtStartTime := 0;
+          Players[P].CurrentSpurtLength := 0;
+          for I := 0 to Players[M[P]].CurrentSpurtLength - 1 do
+          begin
+            SpurtX[M[P]][I] := SpurtX[P][I];
+            SpurtY[M[P]][I] := SpurtY[P][I];
+            SpurtTimes[M[P]][I] := SpurtTimes[P][I];
+            SpurtDir[M[P]][I] := SpurtDir[P][I];
+            Tiles[SpurtX[M[P]][I]][SpurtY[M[P]][I]].Owner := M[P];
+            SpurtTimes[P][I] := 0;
+          end;
+          TilesWineLength[M[P]] := TilesWineLength[P];
+          SetLength(TilesWineX[M[P]], TilesWineLength[M[P]]);
+          SetLength(TilesWineY[M[P]], TilesWineLength[M[P]]);
+          SetLength(TilesWineObjects[M[P]], TilesWineLength[M[P]]);
+          SetLength(SetTilesWineTimes[M[P]], TilesWineLength[M[P]]);
+          SetLength(ClearTilesWineTimes[M[P]], TilesWineLength[M[P]]);
+          for K := 1 to TilesWineLength[M[P]] - 1 do
+          begin
+            TilesWineX[M[P]][K] := TilesWineX[P][K];
+            TilesWineY[M[P]][K] := TilesWineY[P][K];
+            TilesWineObjects[M[P]][K] := TilesWineObjects[P][K];
+            SetTilesWineTimes[M[P]][K] := SetTilesWineTimes[P][K];
+            ClearTilesWineTimes[M[P]][K] := ClearTilesWineTimes[P][K];
+          end;
+          ClearWineTilesArrayTime[M[P]] := ClearWineTilesArrayTime[P];
+          Players[P].SpurtStartTime := 0;
+        end;
+        Players[M[P]].HeroInFear := Players[P].HeroInFear;
+        Players[M[P]].HeroInFearTime := Players[P].HeroInFearTime;
+        Players[P].TempHeroReborn := Players[M[P]].HeroReborn;
+        Players[P].TempRebornTime := Players[M[P]].RebornTime;
+        Players[M[P]].HeroReborn := Players[P].HeroReborn;
+        Players[M[P]].RebornTime := Players[P].RebornTime;
+        Players[P].HeroReborn :=  Players[P].TempHeroReborn;
+        Players[P].RebornTime := Players[P].TempRebornTime;
+        Players[M[P]].HeroStunned := Players[P].HeroStunned;
+        Players[M[P]].HeroStunnedTime := Players[P].HeroStunnedTime;
+        Players[M[P]].SettingTrack := Players[P].SettingTrack;
+        Players[M[P]].TrackStopTime := Players[P].TrackStopTime;
+        Players[P].SettingTrack := False;
+        Players[P].TrackStopTime := 0;
+        Players[P].HeroExileTime := Players[M[P]].HeroExileTime;
+        Players[P].HeroExileBackTime := Players[M[P]].HeroExileBackTime;
+        Players[P].HeroExileX := Players[M[P]].HeroExileX;
+        Players[P].HeroExileY := Players[M[P]].HeroExileY;
+        Players[P].HeroExileGiver := Players[M[P]].HeroExileGiver;
+        Players[P].HeroExileDir := Players[M[P]].HeroExileDir;
+        Players[P].HeroExiled := Players[M[P]].HeroExiled;
+        Players[M[P]].HeroExiled := False;
+        Players[M[P]].HeroExileBackTime := 0;
+        if Players[M[P]].PlayersTeam = 1 then
+        begin
+          Players[M[P]].PlayersTeam := 0;
+          Players[M[P]].UsedPlayersTeam := True;
+        end;
+        if (Players[M[P]].PlayersTeam = 0)
+        and (not Players[M[P]].UsedPlayersTeam) then
+          Players[M[P]].PlayersTeam := 1;
+        Players[M[P]].UsedPlayersTeam := False;
+        Players[M[P]].LastUsedSkill := Players[P].LastUsedSkill;
+        Players[P].LastUsedSkill := sMind;
+        Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+        Actions.GroupHungerSet(Players[M[P]].Hero, States.UnitMaxHunger);
+        Players[M[P]].HeroMagicImmunity := True;
+        Players[M[P]].HeroMagicImmunityTime := States.GameTime + 20;
+      end;
+    end;
+  except
+    LogError('Exception in the script: cannot check Mind Back status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckMindImmunity(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].MindMagicImmunityTime then
+    begin
+      Players[M[P]].HeroMagicImmunity := True;
+      Players[M[P]].HeroMagicImmunityTime := States.GameTime + 10;
+    end;
+  except
+    LogError('Exception in the script: cannot check Mind Immunity status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckScoutSilence(P: Integer);
+begin
+  try
+    if (States.GameTime = Players[P].ScoutSilenceStartTime)
+    and (InRange(Players[P].ScoutSilenceGiver, 0, 11)) then
+    begin
+      Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+      Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$73> ' + '[$' + States.PlayerColorText(Players[P].ScoutSilenceGiver) + ']' + States.PlayerName(Players[P].ScoutSilenceGiver) + '[]<$71> ' + SkillName(sSilence);
+      Players[P].HeroSilent := True;
+      Players[P].HeroSilentTime := States.GameTime + SILENCE_SCOUT_TIME;
+    end;
+  except
+    LogError('Exception in the script: cannot check Scout Silence status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckSpurtStart(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].SpurtStartTime then
+    begin
+      StartSpurt(P);
+      if not Players[P].HeroMagicImmunity then
+      begin
+        Players[P].HeroMagicImmunityTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+        Players[P].HeroMagicImmunity := True;
+      end;
+      Players[P].Preparing := True;
+      Players[P].PreparingTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+    end;
+  except
+    LogError('Exception in the script: cannot check Spurt Start status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckKills(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].KillsCountTime then
+    begin
+      Players[P].DoubleKill := False;
+      Players[P].TripleKill := False;
+      Players[P].Rampage := False;
+      SetLength(Players[P].KillTimes, 0);
+      Players[P].KillsCountTime := 0;
+    end;
+  except
+    LogError('Exception in the script: cannot check kills status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckReChoice(P: Integer);
+begin
+  try
+    if (States.GameTime = Players[P].ReChoiceTime)
+    and (Players[P].ReChoice) then
+      EndReChoice(P);
+  except
+    LogError('Exception in the script: cannot check ReChoice status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckLocation(P: Integer);
+begin
+  try
+    if (States.PlayerEnabled(P))
+    and (Players[P].Hero > 0) then
+      if (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) < MIN_Y)
+      and (States.GroupOwner(Players[P].Hero) = P)
+      and (Players[P].HP > 0) then
+      begin
+        Actions.GroupKillAll(Players[P].Hero, True);
+        Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].LastX, Players[P].LastY, Players[P].LastDir, 1, 1);
+      end;
+  except
+    LogError('Exception in the script: cannot check location for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure ClearAISkills(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].SkillTime then
+      Players[P].CastingSkill := False;
+  except
+    LogError('Exception in the script: cannot clear AI skills for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure ClearBuffsDebuffsStatus(P: Integer);
+begin
+  try
+
+    if (States.GameTime >= Players[P].HeroMagicImmunityTime)
+    and (Players[P].HeroMagicImmunity) then
+      Players[P].HeroMagicImmunity := False;
+
+    if (States.GameTime >= Players[P].HeroTotalImmunityTime)
+    and (Players[P].HeroTotalImmunity) then
+      Players[P].HeroTotalImmunity := False;
+
+    if (States.GameTime >= Players[P].DDTime)
+    and (Players[P].DD) then
+      Players[P].DD := False;
+
+    if (States.GameTime >= Players[P].ReChargeTime)
+    and (Players[P].ReCharge) then
+      Players[P].ReCharge := False;
+
+    if (States.GameTime >= Players[P].PreparingTime)
+    and (Players[P].Preparing) then
+      Players[P].Preparing := False;
+
+    if (States.GameTime >= Players[P].GravityTime)
+    and (Players[P].MovedByGravity) then
+      Players[P].MovedByGravity := False;
+
+    if (States.GameTime >= Players[P].HeroSilentTime)
+    and (Players[P].HeroSilent) then
+      Players[P].HeroSilent := False;
+
+    if (States.GameTime >= Players[P].HeroStunnedTime)
+    and (Players[P].HeroStunned) then
+    begin
+      Players[P].HeroStunned := False;
+      if Players[P].Hero > 0 then
+      begin
+        Actions.GroupBlockOrders(Players[P].Hero, False);
+        Actions.GroupOrderHalt(Players[P].Hero);
+      end;
+    end;
+
+  except
+    LogError('Exception in the script: cannot clear buffs/debuffs for invalid player', SHOW_ERROR_MSG);
+  end;
+
+end;
+
+
+procedure ClearStatusString(P: Integer);
+begin
+  try
+    if States.GameTime = Players[P].PlayerStatusTime then
+      Players[P].PlayerStatus := '';
+  except
+    LogError('Exception in the script: cannot clear status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckStatus(P: Integer);
+begin
+  try
+    CheckHP(P);
+    CheckReborn(P);
+    CheckKills(P);
+    CheckExile(P);
+    CheckExileTile(P);
+    CheckExileBack(P);
+    CheckThreads(P);
+    CheckZombiesThreads(P);
+    CheckReplica(P);
+    CheckRift(P);
+    CheckTeleport(P);
+    CheckVaga(P);
+    CheckWerewolf(P);
+    CheckVagaBack(P);
+    CheckFieryTrack(P);
+    CheckFear(P);
+    CheckMind(P);
+    CheckMind2(P);
+    CheckMindAppear(P);
+    CheckMindCapture(P);
+    CheckMindBack(P);
+    CheckMindImmunity(P);
+    CheckScoutSilence(P);
+    CheckSpurtStart(P);
+    CheckReChoice(P);
+    CheckLocation(P);
+    ClearAISkills(P);
+    ClearBuffsDebuffsStatus(P);
+    ClearStatusString(P);
+  except
+    LogError('Exception in the script: something went wrong when trying to check status', SHOW_ERROR_MSG);
+  end;
 end;
 
 
@@ -14876,6 +15095,8 @@ begin
       CheckDelays(I);
       CheckStolenSkillTime(I);
       CheckAlliances(I);
+      if States.GameTime = Players[I].TowerTime then
+        PlaceTower(I);
     end;
 
   for N[13] := 0 to 11 do
@@ -15015,7 +15236,8 @@ begin
   if States.GameTime mod 12000 = 0 then
     AutoFeed;
 
-  CheckStatus;
+  for I := 0 to 7 do
+    CheckStatus(I);
 
   if States.GameTime < CHOOSE_HERO_TIMER then
   begin
