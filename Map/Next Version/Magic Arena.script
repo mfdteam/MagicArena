@@ -12752,6 +12752,67 @@ begin
 end;
 
 
+procedure CheckFireworksCleanup(P: Integer);
+var
+  aX, aY: Integer;
+begin
+  try
+    if States.GameTime = Players[P].FireworkTime then
+      for aX := Players[P].FireworkX - FIREWORKS1_RADIUS - FIREWORKS2_RADIUS - 2 to Players[P].FireworkX + FIREWORKS1_RADIUS + FIREWORKS2_RADIUS + 2 do
+      for aY := Players[P].FireworkY - FIREWORKS1_RADIUS - FIREWORKS2_RADIUS - 2 to Players[P].FireworkY + FIREWORKS1_RADIUS + FIREWORKS2_RADIUS + 2 do
+        if (States.MapTileObject(aX, aY) = AXE_OBJECT2)
+        or (States.MapTileObject(aX, aY) = CIRCLE_FILL_OBJ) then
+          Actions.MapTileObjectSet(aX, aY, 255);
+  except
+    LogError('Exception in the script: cannot check Fireworks cleanup for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckSuddenCleanup(P: Integer);
+var
+  aX, aY: Integer;
+begin
+  try
+    if States.GameTime = Players[P].SuddenTime then
+      for aX := Players[P].SuddenX - 1 to Players[P].SuddenX + 1 do
+      for aY := Players[P].SuddenY - 1 to Players[P].SuddenY + 1 do
+        if States.MapTileObject(aX, aY) = XBOW_OBJECT3 then
+          Actions.MapTileObjectSet(aX, aY, 255);
+  except
+    LogError('Exception in the script: cannot check Sudden Death cleanup for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckRocketCleanup(P: Integer);
+var
+  aX, aY: Integer;
+begin
+  try
+    if States.GameTime = Players[P].RocketTime then
+      for aX := Players[P].RocketX - 1 to Players[P].RocketX + 1 do
+      for aY := Players[P].RocketY - 1 to Players[P].RocketY + 1 do
+        if States.MapTileObject(aX, aY) = BOWMAN_ROCKET2 then
+          Actions.MapTileObjectSet(aX, aY, 255);
+  except
+    LogError('Exception in the script: cannot check Rocket cleanup for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckSkillsCleanup(P: Integer);
+begin
+  try
+    CheckFireworksCleanup(P);
+    CheckSuddenCleanup(P);
+    CheckRocketCleanup(P);
+  except
+    LogError('Something went wrong when trying to check skills cleanup', SHOW_ERROR_MSG);
+  end;
+end;
+
+
 procedure ClearAISkills(P: Integer);
 begin
   try
@@ -12856,6 +12917,7 @@ begin
       CheckSpurtStart(P);
       CheckReChoice(P);
       CheckLocation(P);
+      CheckSkillsCleanup(P);
       ClearAISkills(P);
       ClearBuffsDebuffsStatus(P);
       ClearStatusString(P);
