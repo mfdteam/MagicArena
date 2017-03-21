@@ -631,7 +631,6 @@ type
 
 
 var
-  I, J, K: Integer;
   Players: array[0..11] of aPlayer;
   ClearTilesRoadTimes, SetTilesRoadTimes, TilesRoadX, TilesRoadY, TilesRoadObjects,
   ClearTilesFieldTimes, SetTilesFieldTimes, TilesFieldX, TilesFieldY, TilesFieldObjects,
@@ -817,6 +816,7 @@ end;
 procedure KillUnneeded;
 var
   Units: array of Integer;
+  J, K: Integer;
 begin
   for J := 0 to 7 do
   begin
@@ -836,6 +836,7 @@ end;
 procedure AutoFeed;
 var
   UnitsToFeed: array of Integer;
+  I, K: Integer;
 begin
   for I := 0 to 8 do
   begin
@@ -958,6 +959,8 @@ end;
 
 
 procedure SetScreen;
+var
+  I: Integer;
 begin
   for I := 0 to 7 do
     if States.PlayerEnabled(I) then
@@ -971,7 +974,7 @@ end;
 
 procedure SortScoresLeft;
 var
-  Temp: Integer;
+  I, Temp: Integer;
 begin
   if Length(PlayersLeft) <= 0 then
     Exit;
@@ -988,7 +991,7 @@ end;
 
 procedure SortScoresRight;
 var
-  Temp: Integer;
+  I, Temp: Integer;
 begin
   if Length(PlayersRight) <= 0 then
     Exit;
@@ -1004,6 +1007,8 @@ end;
 
 
 procedure SetPlayersLeft;
+var
+  I: Integer;
 begin
   for I := 0 to 3 do
     if States.PlayerEnabled(I) then
@@ -1020,6 +1025,8 @@ end;
 
 
 procedure SetPlayersRight;
+var
+  I: Integer;
 begin
   for I := 4 to 7 do
     if States.PlayerEnabled(I) then
@@ -1036,6 +1043,8 @@ end;
 
 
 procedure OnMissionStart;
+var
+  I, K: Integer;
 begin
 
   SetPlayersLeft;
@@ -1468,6 +1477,8 @@ end;
 
 
 procedure CheckRuneCleanup;
+var
+  I: Integer;
 begin
   try
     if States.MapTileObject(RUNE_X, RUNE_Y) = BARB_OBJECT3 then
@@ -1490,6 +1501,7 @@ end;
 procedure CheckZombieArray;
 var
   TempZombies: array of aZombie;
+  I, K: Integer;
 begin
   if Length(Zombies) <= 0 then
     Exit;
@@ -1532,7 +1544,7 @@ end;
 
 procedure GetRuneEffect(P, aRune: Integer);
 var
-  Z: Integer;
+  I, Z: Integer;
 begin
   try
 
@@ -1607,7 +1619,7 @@ end;
 
 procedure ZombieTakeRune;
 var
-  aX, aY, O, aRune: Integer;
+  I, aX, aY, O, aRune: Integer;
 begin
   if RuneTaken then
     Exit;
@@ -2676,6 +2688,7 @@ end;
 procedure OnBeacon(P, X, Y: Integer);
 var
   Random: Boolean;
+  I: Integer;
 begin
   if not DEBUG_MODE then
     Exit;
@@ -2734,7 +2747,7 @@ end;
 
 procedure ZombieStun(P, U: Integer);
 var
-  X1, X2, Y1, Y2, Desync, Dir: Integer;
+  I, X1, X2, Y1, Y2, Desync, Dir: Integer;
 begin
 
   if U <= 0 then
@@ -2881,7 +2894,7 @@ end;
 
 procedure SpikedEarth(P, X, Y, Dir: Integer);
 var
-  X1, Y1, X2, Y2, Desync, Direction: Integer;
+  I, K, X1, Y1, X2, Y2, Desync, Direction: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -3170,7 +3183,7 @@ end;
 
 procedure CrackingEarth(P, X, Y, Dir: Integer);
 var
-  X1, Y1, X2, Y2, Desync, Direction: Integer;
+  I, X1, Y1, X2, Y2, Desync, Direction: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -3340,7 +3353,7 @@ end;
 
 procedure WaveOfRage(P, X, Y: Integer);
 var
-  X2, Y2: Integer;
+  I, X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -3388,7 +3401,7 @@ end;
 
 procedure TotemOfAncestors(P, X, Y: Integer);
 var
-  X2, Y2, Direction: Integer;
+  I, X2, Y2, Direction: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -3537,7 +3550,7 @@ end;
 
 procedure FieryLance(P, X, Y, Dir: Integer);
 var
-  X1, Y1, X2, Y2, Desync, Direction: Integer;
+  I, X1, Y1, X2, Y2, Desync, Direction: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -3746,7 +3759,7 @@ end;
 
 procedure TenThousandsSpears(P, X, Y, Dir: Integer);
 var
-  X1, Y1, X2, Y2, Desync, Direction: Integer;
+  I, K, X1, Y1, X2, Y2, Desync, Direction: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4073,7 +4086,7 @@ end;
 
 procedure AccurateShot(P, X, Y, Dir: Integer);
 var
-  X1, Y1, X2, Y2, Desync, Direction: Integer;
+  I, X1, Y1, X2, Y2, Desync, Direction: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4243,7 +4256,7 @@ end;
 
 procedure SuddenDeath(P, X, Y: Integer);
 var
-  X2, Y2: Integer;
+  I, X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4382,7 +4395,7 @@ end;
 
 procedure SniperShot(P, X, Y, Dir: Integer);
 var
-  X1, Y1, X2, Y2, Desync, Direction: Integer;
+  I, X1, Y1, X2, Y2, Desync, Direction: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4580,7 +4593,7 @@ end;
 
 procedure ViseOfDeath(P, X, Y, Dir: Integer);
 var
-  X1, Y1, X2, Y2, Desync, Direction: Integer;
+  I, X1, Y1, X2, Y2, Desync, Direction: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4789,7 +4802,7 @@ end;
 
 procedure InfernalTower(P, X, Y: Integer);
 var
-  X2, Y2, Direction: Integer;
+  I, X2, Y2, Direction: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -4932,7 +4945,7 @@ end;
 
 procedure Disorientation(P, X, Y: Integer);
 var
-  X2, Y2: Integer;
+  I, X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -5050,7 +5063,7 @@ end;
 
 procedure Regen(P, X, Y: Integer);
 var
-  X2, Y2: Integer;
+  I, X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -5159,7 +5172,7 @@ end;
 
 procedure Gravity(P, X, Y: Integer);
 var
-  X2, Y2: Integer;
+  I, X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -5213,7 +5226,7 @@ end;
 
 procedure DeadlyFireworks(P, X, Y: Integer);
 var
-  X2, Y2: Integer;
+  I, X2, Y2: Integer;
   R: array[0..9] of Integer;
 begin
   if Players[P].Hero <= 0 then
@@ -5606,7 +5619,7 @@ end;
 
 procedure LaunchRocket(P, X, Y: Integer);
 var
-  X1, Y1, aX, aY, Desync, DX, DY: Integer;
+  I, X1, Y1, aX, aY, Desync, DX, DY: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -6241,7 +6254,7 @@ end;
 
 procedure RevengeFromNowhere(P, X, Y, Dir: Integer);
 var
-  X2, Y2, X1, Y1, Direction, Desync, CircleTime: Integer;
+  I, X2, Y2, X1, Y1, Direction, Desync, CircleTime: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -6499,7 +6512,7 @@ end;
 
 procedure FierySnake(P, X, Y, Dir: Integer);
 var
-  X1, Y1, X2, Y2, Desync, DX1, DX2, DX3, DY1, DY2, DY3, Direction, R: Integer;
+  I, X1, Y1, X2, Y2, Desync, DX1, DX2, DX3, DY1, DY2, DY3, Direction, R: Integer;
   Place: Boolean;
 begin
   if Players[P].Hero <= 0 then
@@ -6830,7 +6843,7 @@ end;
 
 procedure Exile(P, X, Y: Integer);
 var
-  X2, Y2, O, U: Integer;
+  I, X2, Y2, O, U: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -6917,7 +6930,7 @@ end;
 
 procedure Shield(P, X, Y: Integer);
 var
-  X2, Y2, aX, aY, C: Integer;
+  I, X2, Y2, aX, aY, C: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -7044,7 +7057,7 @@ end;
 
 procedure ThreadsOfDeath(P, X, Y: Integer);
 var
-  X2, Y2, U, O, D: Integer;
+  I, X2, Y2, U, O, D: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -7199,7 +7212,7 @@ end;
 
 procedure DeafeningClatter(P, X, Y: Integer);
 var
-  X2, Y2: Integer;
+  I, X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -7254,7 +7267,7 @@ end;
 
 procedure RagingSpurt(P, X, Y: Integer);
 var
-  X2, Y2, R: Integer;
+  I, X2, Y2, R: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -7630,7 +7643,7 @@ end;
 
 procedure Boomerang(P, X, Y, D: Integer);
 var
-  X1, Y1, X2, Y2, DX1, DY1, DX2, DY2, Desync, Direction: Integer;
+  I, X1, Y1, X2, Y2, DX1, DY1, DX2, DY2, Desync, Direction: Integer;
   Wall: Boolean;
 begin
   if Players[P].Hero <= 0 then
@@ -8082,7 +8095,7 @@ end;
 
 procedure Silence(P, X, Y: Integer);
 var
- X2, Y2, U, O: Integer;
+  I, X2, Y2, U, O: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -8164,7 +8177,7 @@ end;
 
 procedure Mind(P, X, Y: Integer);
 var
- X2, Y2, U, O: Integer;
+  I, X2, Y2, U, O: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -8408,7 +8421,7 @@ end;
 
 procedure Replica(P, X, Y: Integer);
 var
-  U, O, X2, Y2: Integer;
+  I, U, O, X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -8500,7 +8513,7 @@ end;
 
 procedure Rift(P, X, Y: Integer);
 var
-  X2, Y2, X1, Y1: Integer;
+  I, X2, Y2, X1, Y1: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -8564,7 +8577,7 @@ end;
 
 procedure MentalBurst(P, X, Y, Dir: Integer; aStolen: Boolean);
 var
-  X2, Y2, Direction, Desync: Integer;
+  I, X2, Y2, Direction, Desync: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -8852,7 +8865,7 @@ end;
 
 procedure StealSkill(P, X, Y: Integer);
 var
-  X2, Y2, U, O, Z, T, H: Integer;
+  I, X2, Y2, U, O, Z, T, H: Integer;
   R: Single;
   Lure: Boolean;
 begin 
@@ -9646,7 +9659,7 @@ end;
 procedure OnHouseDestroyed(H, D: Integer);
 var
   Units: array of Integer;
-  Owner: Integer;
+  I, Owner: Integer;
 begin
   Owner := States.HouseOwner(H);
   Units := States.PlayerGetAllUnits(Owner);
@@ -9690,7 +9703,7 @@ end;
 
 procedure CheckTiles(P: Integer);
 var
-  T, aX, aY, aObj, aTile, aTime, Z: Integer;
+  I, K, T, aX, aY, aObj, aTile, aTime, Z: Integer;
 begin
   aObj := -1;
   aTile := -1;
@@ -10460,7 +10473,7 @@ end;
 procedure CheckTilesForAI;
 var
   AIUnits: array of Integer;
-  aObj, aX, aY, aTile: Integer;
+  I, J, K, aObj, aX, aY, aTile: Integer;
 begin
   aObj := -1;
   for J := 9 to 11 do
@@ -10594,7 +10607,7 @@ end;
 procedure CheckVictoryDefeat;
 var
   TeamHP: array[0..1] of Integer;
-  P: Integer;
+  I, J, K, P: Integer;
 begin
   for I := 0 to 1 do
     TeamHP[I] := 0;
@@ -10699,6 +10712,8 @@ end;
 
 
 procedure CheckTotemCircles(P: Integer);
+var
+  I, K: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -10718,6 +10733,8 @@ end;
 
 
 procedure CheckRageCircles(P: Integer);
+var
+  I, K: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -10737,7 +10754,7 @@ end;
 
 procedure CheckFireworks1Circles(P: Integer);
 var
-  aRelief, PosX, PosY: Integer;
+  I, K, aRelief, PosX, PosY: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -10782,7 +10799,7 @@ end;
 
 procedure CheckFireworks2Circles(P: Integer);
 var
-  aRelief, PosX, PosY: Integer;
+  I, K, aRelief, PosX, PosY: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -10827,7 +10844,7 @@ end;
 
 procedure CheckFireworks3Circles(P: Integer);
 var
-  aRelief, PosX, PosY: Integer;
+  I, K, aRelief, PosX, PosY: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -10872,7 +10889,7 @@ end;
 
 procedure CheckFireworks4Circles(P: Integer);
 var
-  aRelief, PosX, PosY: Integer;
+  I, K, aRelief, PosX, PosY: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -10917,7 +10934,7 @@ end;
 
 procedure CheckFireworks5Circles(P: Integer);
 var
-  aRelief, PosX, PosY: Integer;
+  I, K, aRelief, PosX, PosY: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -10962,7 +10979,7 @@ end;
 
 procedure CheckExpCircles(P: Integer);
 var
-  aRelief, PosX, PosY: Integer;
+  I, K, aRelief, PosX, PosY: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -11006,6 +11023,8 @@ end;
 
 
 procedure CheckKnightCircles(P: Integer);
+var
+  I, K: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -11027,7 +11046,7 @@ end;
 
 procedure CheckRogueCircles(P: Integer);
 var
-  aRelief, PosX, PosY: Integer;
+  I, K, aRelief, PosX, PosY: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -11072,7 +11091,7 @@ end;
 
 procedure CheckStolenRogueCircles(P: Integer);
 var
-  aRelief, PosX, PosY: Integer;
+  I, K, aRelief, PosX, PosY: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -11116,6 +11135,8 @@ end;
 
 
 procedure CheckViseCircles(P: Integer);
+var
+  I, K: Integer;
 begin
   if States.PlayerEnabled(P) then
     for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
@@ -11138,7 +11159,7 @@ end;
 
 procedure CheckGravityCircles(P: Integer);
 var
-  X, Y, O, U, G, UT, CC, OT, HT, ZT, aX, aY: Integer;
+  I, X, Y, O, U, G, UT, CC, OT, HT, ZT, aX, aY: Integer;
 begin
   if States.PlayerEnabled(P) then
     if GravityCirclesLength[P] > 0 then
@@ -11248,6 +11269,8 @@ end;
 
 
 procedure OnUnitWounded(aID, aAttacker: Integer);
+var
+  I: Integer;
 begin
   if Length(Zombies) <= 0 then
     Exit;
@@ -11264,7 +11287,7 @@ end;
 
 procedure OnUnitAttacked(aID, aAttacker: Integer);
 var
-  P, Z, X, Y, T, O: Integer;
+  I, P, Z, X, Y, T, O: Integer;
 begin
   if Length(Zombies) <= 0 then
     Exit;
@@ -11294,7 +11317,7 @@ end;
 
 procedure OnUnitDied(aID, aKiller: Integer);
 var
-  O, aX, aY, X, Y: Integer;
+  I, K, O, aX, aY, X, Y: Integer;
 begin
   if aID <= 0 then
     Exit;
@@ -11676,6 +11699,8 @@ end;
 
 
 procedure RandomChoice;
+var
+  I: Integer;
 begin
   for I := 0 to 7 do
     if (States.PlayerEnabled(I)) then
@@ -11695,6 +11720,8 @@ end;
 
 
 procedure SetHeroes;
+var
+  I, J, K: Integer;
 begin
 
   for J := 0 to Length(AISoldiers) - 1 do
@@ -11733,6 +11760,8 @@ end;
 
 procedure CheckTowers;
 var
+  I, K: Integer;
+var
   TowersLeft, TowersRight: array of Integer;
 begin
   TowersLeft := States.PlayerGetAllHouses(10);
@@ -11752,7 +11781,7 @@ end;
 procedure CheckTowersTiles;
 var
   TowersLeft, TowersRight: array of Integer;
-  X, Y, X1, Y1: Integer;
+  I, K, X, Y, X1, Y1: Integer;
 begin
   TowersLeft := States.PlayerGetAllHouses(10);
   TowersRight := States.PlayerGetAllHouses(11);
@@ -12002,7 +12031,7 @@ end;
 
 procedure CheckZombiesThreads(P: Integer);
 var
-  Z, H: Integer;
+  I, Z, H: Integer;
 begin
   try
     if (States.GameTime = Players[P].ThreadsAttackTime)
@@ -12031,7 +12060,7 @@ end;
 
 procedure CheckReplica(P: Integer);
 var
-  Z, H: Integer;
+  I, Z, H: Integer;
   R: Single;
   Lure: Boolean;
 begin
@@ -12085,7 +12114,7 @@ end;
 
 procedure CheckRift(P: Integer);
 var
-  Z: Integer;
+  I, K, Z: Integer;
 begin
   try
     if States.GameTime = Players[P].RiftTime then
@@ -12478,6 +12507,8 @@ end;
 
 
 procedure CheckMindBack(P: Integer);
+var
+  I, K: Integer;
 begin
   try
     if States.GameTime = Players[P].MindAppearTimeBack then
@@ -12930,7 +12961,7 @@ end;
 
 procedure CheckTileRoadObjects(P: Integer);
 var
-  aRelief: Integer;
+  K, aRelief: Integer;
 begin
   for K := 0 to TilesRoadLength[P] - 1 do
   begin
@@ -13016,7 +13047,7 @@ end;
 
 procedure CheckTileFieldObjects(P: Integer);
 var
-  aRelief, C: Integer;
+  K, aRelief, C: Integer;
 begin
   for K := 0 to TilesFieldLength[P] - 1 do
   begin
@@ -13107,6 +13138,8 @@ end;
 
 
 procedure CheckTileWineObjects(P: Integer);
+var
+  K: Integer;
 begin
   for K := 0 to TilesWineLength[P] - 1 do
   begin
@@ -13174,6 +13207,8 @@ end;
 
 
 procedure ClearArrays;
+var
+  I, K: Integer;
 begin
 
   for I := 0 to 11 do
@@ -13621,7 +13656,7 @@ begin
   if Players[P].Hero <= 0 then
     Exit;
 
-  if not States.PlayerIsAI(I) then
+  if not States.PlayerIsAI(P) then
     Exit;
 
   if not AI_ENABLED then
@@ -13719,7 +13754,7 @@ begin
   if Players[P].Hero <= 0 then
     Exit;
 
-  if not States.PlayerIsAI(I) then
+  if not States.PlayerIsAI(P) then
     Exit;
 
   if not AI_ENABLED then
@@ -13844,7 +13879,7 @@ end;
 procedure ZombieStormLeft;
 var
   GR: array of Integer;
-  X1, X2, Y1, Y2, D1, D2, H, Z, DX, DY: Integer;
+  I, K, X1, X2, Y1, Y2, D1, D2, H, Z, DX, DY: Integer;
 begin
   GR := States.PlayerGetAllGroups(11);
   if Length(PlayersLeft) > 0 then
@@ -13890,7 +13925,7 @@ end;
 procedure ZombieStormRight;
 var
   GL: array of Integer;
-  X1, X2, Y1, Y2, D1, D2, H, Z, DX, DY: Integer;
+  I, K, X1, X2, Y1, Y2, D1, D2, H, Z, DX, DY: Integer;
 begin
   GL := States.PlayerGetAllGroups(10);
   if Length(PlayersRight) > 0 then
@@ -15120,7 +15155,7 @@ end;
 procedure OnTick;
 var
   N: array[0..19] of Integer;
-  S1, S2, S3, S4, S5, S6, S7, S8: Integer;  
+  I, K, S1, S2, S3, S4, S5, S6, S7, S8: Integer;  
 begin
 
   if (GameOver)
