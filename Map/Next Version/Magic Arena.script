@@ -11998,7 +11998,8 @@ procedure CheckThreads(P: Integer);
 begin
   try
 
-    if States.GameTime = Players[P].ThreadsTime - DELAY_OF_TURNING then
+    if (States.GameTime = Players[P].ThreadsTime - DELAY_OF_TURNING)
+    and (InRange(Players[P].ThreadsAttacker, 0, 7)) then
     begin
       Players[P].ThreadsX := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= MIN_Y, States.UnitPositionX(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastX);
       Players[P].ThreadsY := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= MIN_Y, States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastY);
