@@ -11994,10 +11994,9 @@ begin
 end;
 
 
-procedure CheckThreads(P: Integer);
+procedure CheckThreadsPrepare(P: Integer);
 begin
   try
-
     if (States.GameTime = Players[P].ThreadsTime - DELAY_OF_TURNING)
     and (InRange(Players[P].ThreadsAttacker, 0, 7)) then
     begin
@@ -12006,6 +12005,15 @@ begin
       Actions.GroupKillAll(Players[P].Hero, True);
       Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
+  except
+    LogError('Exception in the script: cannot check Threads Prepare status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckThreads(P: Integer);
+begin
+  try
 
     if (States.GameTime = Players[P].ThreadsTime)
     and (InRange(Players[P].ThreadsAttacker, 0, 7)) then
@@ -12928,6 +12936,7 @@ begin
       CheckExile(P);
       CheckExileTile(P);
       CheckExileBack(P);
+      CheckThreadsPrepare(P);
       CheckThreads(P);
       CheckZombiesThreads(P);
       CheckReplica(P);
