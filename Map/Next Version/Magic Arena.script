@@ -13226,7 +13226,7 @@ begin
 
     if States.GameTime = ClearRoadTilesArrayTime[I] then
     begin
-      TilesRoadLength[I] := 1;
+      TilesRoadLength[I] := 0;
       SetLength(TilesRoadX[I], TilesRoadLength[I]);
       SetLength(TilesRoadY[I], TilesRoadLength[I]);
       SetLength(ClearTilesRoadTimes[I], TilesRoadLength[I]);
@@ -13236,7 +13236,7 @@ begin
 
     if States.GameTime = ClearFieldTilesArrayTime[I] then
     begin
-      TilesFieldLength[I] := 1;
+      TilesFieldLength[I] := 0;
       SetLength(TilesFieldX[I], TilesFieldLength[I]);
       SetLength(TilesFieldY[I], TilesFieldLength[I]);
       SetLength(ClearTilesFieldTimes[I], TilesFieldLength[I]);
@@ -13246,7 +13246,7 @@ begin
 
     if States.GameTime = ClearWineTilesArrayTime[I] then
     begin
-      TilesWineLength[I] := 1;
+      TilesWineLength[I] := 0;
       SetLength(TilesWineX[I], TilesWineLength[I]);
       SetLength(TilesWineY[I], TilesWineLength[I]);
       SetLength(ClearTilesWineTimes[I], TilesWineLength[I]);
