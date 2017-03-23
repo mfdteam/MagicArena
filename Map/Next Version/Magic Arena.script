@@ -12605,29 +12605,30 @@ begin
           Players[M[P]].CurrentSpurtLength := Players[P].CurrentSpurtLength;
           Players[P].SpurtStartTime := 0;
           Players[P].CurrentSpurtLength := 0;
-          for I := 0 to Players[M[P]].CurrentSpurtLength - 1 do
-          begin
-            SpurtX[M[P]][I] := SpurtX[P][I];
-            SpurtY[M[P]][I] := SpurtY[P][I];
-            SpurtTimes[M[P]][I] := SpurtTimes[P][I];
-            SpurtDir[M[P]][I] := SpurtDir[P][I];
-            Tiles[SpurtX[M[P]][I]][SpurtY[M[P]][I]].Owner := M[P];
-            SpurtTimes[P][I] := 0;
-          end;
+          if Players[M[P]].CurrentSpurtLength > 0 then
+            for I := 0 to Players[M[P]].CurrentSpurtLength - 1 do
+            begin
+              SpurtX[M[P]][I] := SpurtX[P][I];
+              SpurtY[M[P]][I] := SpurtY[P][I];
+              SpurtTimes[M[P]][I] := SpurtTimes[P][I];
+              SpurtDir[M[P]][I] := SpurtDir[P][I];
+              SpurtTimes[P][I] := 0;
+            end;
           TilesWineLength[M[P]] := TilesWineLength[P];
           SetLength(TilesWineX[M[P]], TilesWineLength[M[P]]);
           SetLength(TilesWineY[M[P]], TilesWineLength[M[P]]);
           SetLength(TilesWineObjects[M[P]], TilesWineLength[M[P]]);
           SetLength(SetTilesWineTimes[M[P]], TilesWineLength[M[P]]);
           SetLength(ClearTilesWineTimes[M[P]], TilesWineLength[M[P]]);
-          for K := 1 to TilesWineLength[M[P]] - 1 do
-          begin
-            TilesWineX[M[P]][K] := TilesWineX[P][K];
-            TilesWineY[M[P]][K] := TilesWineY[P][K];
-            TilesWineObjects[M[P]][K] := TilesWineObjects[P][K];
-            SetTilesWineTimes[M[P]][K] := SetTilesWineTimes[P][K];
-            ClearTilesWineTimes[M[P]][K] := ClearTilesWineTimes[P][K];
-          end;
+          if TilesWineLength[M[P]] > 0 then
+            for K := 0 to TilesWineLength[M[P]] - 1 do
+            begin
+              TilesWineX[M[P]][K] := TilesWineX[P][K];
+              TilesWineY[M[P]][K] := TilesWineY[P][K];
+              TilesWineObjects[M[P]][K] := TilesWineObjects[P][K];
+              SetTilesWineTimes[M[P]][K] := SetTilesWineTimes[P][K];
+              ClearTilesWineTimes[M[P]][K] := ClearTilesWineTimes[P][K];
+            end;
           ClearWineTilesArrayTime[M[P]] := ClearWineTilesArrayTime[P];
           Players[P].SpurtStartTime := 0;
         end;
