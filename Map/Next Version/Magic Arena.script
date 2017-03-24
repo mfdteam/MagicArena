@@ -585,6 +585,12 @@ type
     LastRoadSkill: aSkill;
     LastFieldSkill: aSkill;
     LastWineSkill: aSkill;
+    LureType: Integer;
+    LureX: Integer;
+    LureY: Integer;
+    LureDir: Integer;
+    LureTime: Integer;
+    LureHunger: Integer;
   end;
 
 
@@ -1364,6 +1370,12 @@ begin
       LastRoadSkill := sNone;
       LastFieldSkill := sNone;
       LastWineSkill := sNone;
+      LureType := 0;
+      LureX := 0;
+      LureY := 0;
+      LureDir := 0;
+      LureTime := 0;
+      LureHunger := 0;
     end;
   end;
 
@@ -3109,7 +3121,7 @@ end;
 
 procedure Fear(P, X, Y: Integer);
 var
-  X2, Y2, U, O, T, Z, H: Integer;
+  X2, Y2, U, O: Integer;
   R: Single;
   Lure: Boolean;
 begin
@@ -3135,18 +3147,16 @@ begin
       if (InRange(O, 8, 11))
       and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
       begin
-        T := States.UnitType(U);
         R := States.KaMRandom;
         Lure := R < FEAR_LURE_CHANCE;
         if Lure then
         begin
-          H := States.UnitHunger(U);
-          SetLength(Zombies, Length(Zombies) + 1);
-          Zombies[Length(Zombies) - 1].Owner := P;
-          Z := Actions.GiveGroup(Players[P].ZombiePlayer, T, X, Y, States.KaMRandomI(8), 1, 1);
-          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-          Zombies[Length(Zombies) - 1].ZombieType := 3;
-          Actions.GroupHungerSet(Z, H);
+          Players[P].LureType := States.UnitType(U);
+          Players[P].LureX := X;
+          Players[P].LureY := Y;
+          Players[P].LureDir := States.UnitDirection(U);
+          Players[P].LureTime := States.GameTime + DELAY_OF_TURNING;
+          Players[P].LureHunger := States.UnitHunger(U);
         end;
         Actions.UnitKill(U, Lure);
         Players[P].LastUsedSkill := sFear;
@@ -8873,7 +8883,7 @@ end;
 
 procedure StealSkill(P, X, Y: Integer);
 var
-  I, X2, Y2, U, O, Z, T, H: Integer;
+  I, X2, Y2, U, O: Integer;
   R: Single;
   Lure: Boolean;
 begin 
@@ -8949,17 +8959,15 @@ begin
         and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
         begin
           R := States.KaMRandom;
-          Lure := R < STEALSKILL_LURE_CHANCE;
-          T := States.UnitType(U);          
+          Lure := R < STEALSKILL_LURE_CHANCE;         
           if Lure then
           begin
-            H := States.UnitHunger(U);
-            SetLength(Zombies, Length(Zombies) + 1);
-            Zombies[Length(Zombies) - 1].Owner := P;
-            Z := Actions.GiveGroup(Players[P].ZombiePlayer, T, X, Y, States.KaMRandomI(8), 1, 1);
-            Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-            Zombies[Length(Zombies) - 1].ZombieType := 3;
-            Actions.GroupHungerSet(Z, H);
+            Players[P].LureType := States.UnitType(U);
+            Players[P].LureX := X;
+            Players[P].LureY := Y;
+            Players[P].LureDir := States.UnitDirection(U);
+            Players[P].LureTime := States.GameTime + DELAY_OF_TURNING;
+            Players[P].LureHunger := States.UnitHunger(U);
             Actions.UnitKill(U, Lure);
           end;
         end;
@@ -12075,9 +12083,29 @@ begin
 end;
 
 
+procedure CheckLure(P: Integer);
+var
+  Z: Integer;
+begin
+  try
+    if States.GameTime = Players[P].LureTime then
+    begin
+       SetLength(Zombies, Length(Zombies) + 1);
+       Zombies[Length(Zombies) - 1].Owner := P;
+       Zombies[Length(Zombies) - 1].ZombieType := 3;
+       Z := Actions.GiveGroup(Players[p].ZombiePlayer, Players[P].LureType, Players[P].LureX, Players[P].LureY, Players[P].LureDir, 1, 1);
+       Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+       Actions.GroupHungerSet(Z, Players[P].LureHunger);
+    end;
+  except
+    LogError('Exception in the script: cannot check lured zombies for invalid owner', SHOW_ERROR_MSG);
+  end;
+end;
+
+
 procedure CheckReplica(P: Integer);
 var
-  I, Z, H: Integer;
+  I, Z: Integer;
   R: Single;
   Lure: Boolean;
 begin
@@ -12108,17 +12136,12 @@ begin
             Lure := R < REPLICA_LURE_CHANCE;
             if Lure then
             begin
-              H := States.UnitHunger(Zombies[I].ID);
-              Players[P].ReplicaType := States.UnitType(Zombies[I].ID);
-              Players[P].ReplicaX := States.UnitPositionX(Zombies[I].ID);
-              Players[P].ReplicaY := States.UnitPositionY(Zombies[I].ID);
-              Players[P].ReplicaDir := States.UnitDirection(Zombies[I].ID);
-              SetLength(Zombies, Length(Zombies) + 1);
-              Zombies[Length(Zombies) - 1].Owner := P;
-              Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].ReplicaType, Players[P].ReplicaX, Players[P].ReplicaY, Players[P].ReplicaDir, 1, 1);
-              Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-              Zombies[Length(Zombies) - 1].ZombieType := 3;
-              Actions.GroupHungerSet(Z, H);
+              Players[P].LureType := States.UnitType(Zombies[I].ID);
+              Players[P].LureX := States.UnitPositionX(Zombies[I].ID);
+              Players[P].LureY := States.UnitPositionY(Zombies[I].ID);
+              Players[P].LureDir := States.UnitDirection(Zombies[I].ID);;
+              Players[P].LureTime := States.GameTime + DELAY_OF_TURNING;
+              Players[P].LureHunger := States.UnitHunger(Zombies[I].ID);
             end;
             Actions.UnitKill(Zombies[I].ID, Lure);
           end;
@@ -12950,6 +12973,7 @@ begin
       CheckThreadsPrepare(P);
       CheckThreads(P);
       CheckZombiesThreads(P);
+      CheckLure(P);
       CheckReplica(P);
       CheckRift(P);
       CheckTeleport(P);
