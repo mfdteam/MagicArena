@@ -79,7 +79,7 @@ const
   STEALSKILL_LURE_CHANCE = 0.7;
   MIND_RADIUS = 4;
   SILENCE_SCOUT_RADIUS = 6;
-  TOWER_RADIUS = 4;
+  TOWER_RADIUS = 5;
   EXILE_RADIUS = 3;
   EXILE_ALLY_RADIUS = 7;
   SHIELD_RADIUS = 7;
@@ -310,7 +310,7 @@ const
   EXILE_TIME = 40;
   EXILE_DELAY = 8;
   SHIELD_TIME = 80;
-  TOWER_DELAY = 14;
+  TOWER_DELAY = 25;
 
 //Game mechanics
 
@@ -344,7 +344,7 @@ const
   REBORN_TIME = 50;
   BOWMAN_PRISON_AI_CHANCE = 0.9;
   EFFECT_CHECK_FACTOR = 6;
-  RECRUIT_HUNGER = 115;
+  RECRUIT_HUNGER = 158;
   VICTORY_DELAY = 300;
   TOWERS_CHECK_FACTOR = 10;
   TOWERS_TILES_FACTOR = 2;
@@ -4858,28 +4858,28 @@ begin
       for I := 5 to 8 do
         TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := PIKE_OBJECT10;
 
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 8;
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 12;
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 6;
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 10;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 16;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 16;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 16;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 16;
 
-      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 4;
-      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 8;
-      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 2;
-      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 6;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 1;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 1;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 1;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 1;
     
       for I := 1 to 4 do
         TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := PIKE_OBJECT11;
     
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 9;
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 13;
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 11;
-      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 7;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 24;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 24;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 24;
+      ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 24;
     
-      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 5;
-      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 1;
-      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 7;
-      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 8;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 8;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 8;
+      SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 8;
 
       for I := 1 to 8 do
       begin
@@ -4935,7 +4935,7 @@ begin
     Zombies[Length(Zombies) - 1].ZombieType := 0;
     Actions.UnitHungerSet(Recruit, RECRUIT_HUNGER + States.UnitLowHunger);
     Actions.HouseAddWaresTo(Tower, 1, 5);
-    Actions.HouseAddDamage(Tower, 200);
+    Actions.HouseAddDamage(Tower, 185);
   end;
 end;
 
@@ -11804,11 +11804,11 @@ begin
         for Y1 := Y - 2 to Y + 1 do
           if TileOnBattlefield(X1, Y1) then
           begin
-            if InRange(States.HouseDamage(TowersLeft[I]), 200, 205) then
+            if InRange(States.HouseDamage(TowersLeft[I]), 185, 195) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 3, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersLeft[I]), 206, 210) then
+            if InRange(States.HouseDamage(TowersLeft[I]), 196, 205) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 2, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersLeft[I]), 211, 215) then
+            if InRange(States.HouseDamage(TowersLeft[I]), 206, 215) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 1, Tiles[X1][Y1].TileDirection);
             if InRange(States.HouseDamage(TowersLeft[I]), 216, 250) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE, Tiles[X1][Y1].TileDirection);
@@ -11825,11 +11825,11 @@ begin
         for Y1 := Y - 2 to Y + 1 do
           if TileOnBattlefield(X1, Y1) then
           begin
-            if InRange(States.HouseDamage(TowersRight[K]), 200, 205) then
+            if InRange(States.HouseDamage(TowersRight[K]), 185, 195) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 3, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersRight[K]), 206, 210) then
+            if InRange(States.HouseDamage(TowersRight[K]), 196, 205) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 2, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersRight[K]), 211, 215) then
+            if InRange(States.HouseDamage(TowersRight[K]), 206, 215) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 1, Tiles[X1][Y1].TileDirection);
             if InRange(States.HouseDamage(TowersRight[K]), 216, 250) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE, Tiles[X1][Y1].TileDirection);
