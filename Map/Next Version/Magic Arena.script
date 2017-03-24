@@ -12516,6 +12516,8 @@ begin
       Actions.GroupKillAll(Players[P].Hero, True);
       Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       Players[P].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
+      if SpurtTimes[P][Players[P].CurrentSpurtLength - 1] >= Players[P].MindAppearTimeBack then
+        Players[P].MindAppearTimeBack := SpurtTimes[P][Players[P].CurrentSpurtLength - 1] + 1;
     end;
   except
     LogError('Exception in the script: cannot check Mind Capture status for invalid player', SHOW_ERROR_MSG);
