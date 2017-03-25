@@ -344,7 +344,7 @@ const
   REBORN_TIME = 50;
   BOWMAN_PRISON_AI_CHANCE = 0.9;
   EFFECT_CHECK_FACTOR = 6;
-  RECRUIT_HUNGER = 158;
+  RECRUIT_HUNGER = 161;
   VICTORY_DELAY = 300;
   TOWERS_CHECK_FACTOR = 10;
   TOWERS_TILES_FACTOR = 2;
@@ -11812,13 +11812,13 @@ begin
         for Y1 := Y - 2 to Y + 1 do
           if TileOnBattlefield(X1, Y1) then
           begin
-            if InRange(States.HouseDamage(TowersLeft[I]), 185, 195) then
+            if InRange(States.HouseDamage(TowersLeft[I]), 185, 190) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 3, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersLeft[I]), 196, 205) then
+            if InRange(States.HouseDamage(TowersLeft[I]), 191, 195) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 2, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersLeft[I]), 206, 215) then
+            if InRange(States.HouseDamage(TowersLeft[I]), 196, 200) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 1, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersLeft[I]), 216, 250) then
+            if InRange(States.HouseDamage(TowersLeft[I]), 201, 250) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE, Tiles[X1][Y1].TileDirection);
           end;
       end;
@@ -11833,13 +11833,13 @@ begin
         for Y1 := Y - 2 to Y + 1 do
           if TileOnBattlefield(X1, Y1) then
           begin
-            if InRange(States.HouseDamage(TowersRight[K]), 185, 195) then
+            if InRange(States.HouseDamage(TowersRight[K]), 185, 190) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 3, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersRight[K]), 196, 205) then
+            if InRange(States.HouseDamage(TowersRight[K]), 191, 195) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 2, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersRight[K]), 206, 215) then
+            if InRange(States.HouseDamage(TowersRight[K]), 196, 200) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 1, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersRight[K]), 216, 250) then
+            if InRange(States.HouseDamage(TowersRight[K]), 201, 250) then
               Actions.MapTileSet(X1, Y1, INFERNAL_TILE, Tiles[X1][Y1].TileDirection);
           end;
       end;
@@ -12973,7 +12973,6 @@ begin
       CheckThreadsPrepare(P);
       CheckThreads(P);
       CheckZombiesThreads(P);
-      CheckLure(P);
       CheckReplica(P);
       CheckRift(P);
       CheckTeleport(P);
@@ -12989,6 +12988,7 @@ begin
       CheckMindBack(P);
       CheckMindImmunity(P);
       CheckScoutSilence(P);
+      CheckLure(P);
       CheckKnightAppear(P);
       CheckSpurtStart(P);
       CheckReChoice(P);
