@@ -527,6 +527,7 @@ type
     GravityUser: Integer;
     MovedByThreads: Boolean;
     SpurtStartTime: Integer;
+    SpurtEndTime: Integer;
     CurrentSpurtLength: Integer;
     RebornTime: Integer;
     HeroReborn: Boolean;
@@ -1318,6 +1319,7 @@ begin
       GravityUser := -1;
       MovedByThreads := False;
       SpurtStartTime := 0;
+      SpurtEndTime := 0;
       CurrentSpurtLength := 0;
       RebornTime := 0;
       HeroReborn := False;
@@ -7610,6 +7612,8 @@ begin
 
     ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] + 2 * CLEAR_ARRAY_FACTOR;
 
+    Players[P].SpurtEndTime := ClearWineTilesArrayTime[P] + 1;
+
   end;
 
 end;
@@ -12539,9 +12543,9 @@ begin
       Actions.GroupKillAll(Players[P].Hero, True);
       Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       Players[P].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
-      if Players[P].CurrentSpurtLength > 0 then
-        if SpurtTimes[P][Players[P].CurrentSpurtLength - 1] >= Players[P].MindAppearTimeBack then
-          Players[P].MindAppearTimeBack := SpurtTimes[P][Players[P].CurrentSpurtLength - 1] + 1;
+      if (Players[P].CurrentSpurtLength > 0)
+      and (Players[P].SpurtEndTime >= Players[P].MindAppearTimeBack) then
+        Players[P].MindAppearTimeBack := Players[P].SpurtEndTime + 1;
     end;
   except
     LogError('Exception in the script: cannot check Mind Capture status for invalid player', SHOW_ERROR_MSG);
@@ -12942,6 +12946,10 @@ begin
         Actions.GroupOrderHalt(Players[P].Hero);
       end;
     end;
+
+    if (Players[P].MindStunned)
+    and (not Players[M2[P]].CaptureMind) then
+      Players[P].MindStunned := False;
 
   except
     LogError('Exception in the script: cannot clear buffs/debuffs for invalid player', SHOW_ERROR_MSG);
