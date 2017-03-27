@@ -7612,7 +7612,7 @@ begin
 
     ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] + 2 * CLEAR_ARRAY_FACTOR;
 
-    Players[P].SpurtEndTime := ClearWineTilesArrayTime[P] + 1;
+    Players[P].SpurtEndTime := SpurtTimes[P][Desync - 1];
 
   end;
 
@@ -12731,15 +12731,18 @@ end;
 procedure CheckMindSpurt(P: Integer);
 begin
   try
-    if (Players[P].CurrentSpurtLength > 0)
-    and (Players[P].SpurtEndTime >= Players[P].CaptureMindTime) then
-    begin
-      Players[P].HeroMagicImmunityTime := Players[P].SpurtEndTime + 1;
-      Players[M[P]].HeroStunnedTime := Players[P].SpurtEndTime + 1;
-      Players[M[P]].StunnedMindTime := Players[P].SpurtEndTime + 1; 
-      Players[P].CaptureMindTime := Players[P].SpurtEndTime + 1;
-      Players[P].MindMagicImmunityTime := Players[P].SpurtEndTime - 9;
-    end;
+    if InRange(P, 0, 7) then
+      if InRange(M[P], 0, 7) then
+        if (Players[P].CurrentSpurtLength > 0)
+        and (Players[P].SpurtEndTime >= Players[P].CaptureMindTime) then
+        begin
+          Players[P].HeroMagicImmunityTime := Players[P].SpurtEndTime + 1;
+          Players[M[P]].HeroStunnedTime := Players[P].SpurtEndTime + 1;
+          Players[M[P]].StunnedMindTime := Players[P].SpurtEndTime + 1; 
+          Players[P].CaptureMindTime := Players[P].SpurtEndTime + 1;
+          Players[P].MindAppearTimeBack := Players[P].SpurtEndTime + 1 + DELAY_OF_TURNING;
+          Players[P].MindMagicImmunityTime := Players[P].SpurtEndTime - 9;
+        end;
   except
     LogError('Exception in the script: cannot check Raging Spurt status for invalid Mind', SHOW_ERROR_MSG);
   end;
@@ -13006,13 +13009,13 @@ begin
       CheckVagaBack(P);
       CheckFieryTrack(P);
       CheckFear(P);
+      CheckMindSpurt(P);
       CheckMind(P);
       CheckMind2(P);
       CheckMindAppear(P);
       CheckMindCapture(P);
       CheckMindBack(P);
       CheckMindImmunity(P);
-      CheckMindSpurt(P);
       CheckScoutSilence(P);
       CheckLure(P);
       CheckKnightAppear(P);
