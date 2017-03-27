@@ -12543,9 +12543,6 @@ begin
       Actions.GroupKillAll(Players[P].Hero, True);
       Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       Players[P].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
-      if (Players[P].CurrentSpurtLength > 0)
-      and (Players[P].SpurtEndTime >= Players[P].MindAppearTimeBack) then
-        Players[P].MindAppearTimeBack := Players[P].SpurtEndTime + 1;
     end;
   except
     LogError('Exception in the script: cannot check Mind Capture status for invalid player', SHOW_ERROR_MSG);
@@ -12633,7 +12630,7 @@ begin
           Players[P].HeroStunned := False;
           Players[P].HeroStunnedTime := 0;
         end;
-        if (Players[P].SpurtStartTime < States.GameTime)
+        {if (Players[P].SpurtStartTime < States.GameTime)
         and (Players[P].CurrentSpurtLength > 0) then
           for I := 0 to Players[P].CurrentSpurtLength - 1 do
             if SpurtTimes[P][I] > States.GameTime then
@@ -12670,7 +12667,7 @@ begin
             end;
           ClearWineTilesArrayTime[M[P]] := ClearWineTilesArrayTime[P];
           Players[P].SpurtStartTime := 0;
-        end;
+        end;}
         Players[M[P]].HeroInFear := Players[P].HeroInFear;
         Players[M[P]].HeroInFearTime := Players[P].HeroInFearTime;
         Players[P].TempHeroReborn := Players[M[P]].HeroReborn;
@@ -12727,6 +12724,24 @@ begin
     end;
   except
     LogError('Exception in the script: cannot check Mind Immunity status for invalid player', SHOW_ERROR_MSG);
+  end;
+end;
+
+
+procedure CheckMindSpurt(P: Integer);
+begin
+  try
+    if (Players[P].CurrentSpurtLength > 0)
+    and (Players[P].SpurtEndTime >= Players[P].CaptureMindTime) then
+    begin
+      Players[P].HeroMagicImmunityTime := Players[P].SpurtEndTime + 1;
+      Players[M[P]].HeroStunnedTime := Players[P].SpurtEndTime + 1;
+      Players[M[P]].StunnedMindTime := Players[P].SpurtEndTime + 1; 
+      Players[P].CaptureMindTime := Players[P].SpurtEndTime + 1;
+      Players[P].MindMagicImmunityTime := Players[P].SpurtEndTime - 9;
+    end;
+  except
+    LogError('Exception in the script: cannot check Raging Spurt status for invalid Mind', SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12997,6 +13012,7 @@ begin
       CheckMindCapture(P);
       CheckMindBack(P);
       CheckMindImmunity(P);
+      CheckMindSpurt(P);
       CheckScoutSilence(P);
       CheckLure(P);
       CheckKnightAppear(P);
