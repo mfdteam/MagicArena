@@ -1977,7 +1977,7 @@ function MindStatus(P: Integer): ANSIString;
 begin
   if (Players[P].CaptureMind)
   and (Players[P].CaptureMindTime - States.GameTime > 0) then
-    Result := '|[$11FF11]<$104>[] ' + '[$' + States.PlayerColorText(M[P]) + ']' + States.PlayerName(M[P]) + '[$FFFFFF]; <$39>: ' + HPColor(M[P]) + IntToStr(Players[M[P]].HP) + '[$FFFFFF] (' + IntToStr((Players[P].CaptureMindTime - States.GameTime)/10) + ')' 
+    Result := '|[$11FF11]<$104>[] ' + '[$' + States.PlayerColorText(M[P]) + ']' + States.PlayerName(M[P]) + '[$FFFFFF]; <$39>: ' + HPColor(M[P]) + IntToStr(Players[M[P]].HP) + '[$FFFFFF] (' + IntToStr((Players[P].CaptureMindTime - States.GameTime)/10) + ')[]' 
 
   else
 
@@ -7323,6 +7323,7 @@ begin
     Actions.GroupBlockOrders(Players[P].Hero, True);
     Players[P].HeroStunned := True;
     Players[P].SpurtStartTime := States.GameTime + 27 + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+    Players[P].SpurtEndTime := Players[P].SpurtStartTime + 2 + Round(DESYNC_FACTOR * SPURT_LENGTH/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
 
     TilesWineLength[P] := TilesWineLength[P] + 8;
     SetLength(TilesWineX[P], TilesWineLength[P]);
@@ -7611,8 +7612,6 @@ begin
     Players[P].LastWineSkill := sRagingSpurt;
 
     ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] + 2 * CLEAR_ARRAY_FACTOR;
-
-    Players[P].SpurtEndTime := SpurtTimes[P][Desync - 1];
 
   end;
 
@@ -12551,8 +12550,6 @@ end;
 
 
 procedure CheckMindBack(P: Integer);
-var
-  I, K: Integer;
 begin
   try
     if States.GameTime = Players[P].MindAppearTimeBack then
@@ -12621,53 +12618,6 @@ begin
         Players[P].HeroMagicImmunityTime := Players[P].TempHeroMagicImmunityTime;
         Players[P].HeroTotalImmunity :=  Players[P].TempHeroTotalImmunity;
         Players[P].HeroTotalImmunityTime := Players[P].TempHeroTotalImmunityTime;
-        Players[M[P]].Preparing := Players[P].Preparing;
-        Players[M[P]].PreparingTime := Players[P].PreparingTime;
-        if Players[P].Preparing then
-        begin
-          Players[P].Preparing := False;
-          Players[P].PreparingTime := 0;
-          Players[P].HeroStunned := False;
-          Players[P].HeroStunnedTime := 0;
-        end;
-        {if (Players[P].SpurtStartTime < States.GameTime)
-        and (Players[P].CurrentSpurtLength > 0) then
-          for I := 0 to Players[P].CurrentSpurtLength - 1 do
-            if SpurtTimes[P][I] > States.GameTime then
-              SpurtTimes[P][I] := 0;
-        if Players[P].SpurtStartTime > States.GameTime then
-        begin
-          Players[M[P]].SpurtStartTime := Players[P].SpurtStartTime;
-          Players[M[P]].CurrentSpurtLength := Players[P].CurrentSpurtLength;
-          Players[P].SpurtStartTime := 0;
-          Players[P].CurrentSpurtLength := 0;
-          if Players[M[P]].CurrentSpurtLength > 0 then
-            for I := 0 to Players[M[P]].CurrentSpurtLength - 1 do
-            begin
-              SpurtX[M[P]][I] := SpurtX[P][I];
-              SpurtY[M[P]][I] := SpurtY[P][I];
-              SpurtTimes[M[P]][I] := SpurtTimes[P][I];
-              SpurtDir[M[P]][I] := SpurtDir[P][I];
-              SpurtTimes[P][I] := 0;
-            end;
-          TilesWineLength[M[P]] := TilesWineLength[P];
-          SetLength(TilesWineX[M[P]], TilesWineLength[M[P]]);
-          SetLength(TilesWineY[M[P]], TilesWineLength[M[P]]);
-          SetLength(TilesWineObjects[M[P]], TilesWineLength[M[P]]);
-          SetLength(SetTilesWineTimes[M[P]], TilesWineLength[M[P]]);
-          SetLength(ClearTilesWineTimes[M[P]], TilesWineLength[M[P]]);
-          if TilesWineLength[M[P]] > 0 then
-            for K := 0 to TilesWineLength[M[P]] - 1 do
-            begin
-              TilesWineX[M[P]][K] := TilesWineX[P][K];
-              TilesWineY[M[P]][K] := TilesWineY[P][K];
-              TilesWineObjects[M[P]][K] := TilesWineObjects[P][K];
-              SetTilesWineTimes[M[P]][K] := SetTilesWineTimes[P][K];
-              ClearTilesWineTimes[M[P]][K] := ClearTilesWineTimes[P][K];
-            end;
-          ClearWineTilesArrayTime[M[P]] := ClearWineTilesArrayTime[P];
-          Players[P].SpurtStartTime := 0;
-        end;}
         Players[M[P]].HeroInFear := Players[P].HeroInFear;
         Players[M[P]].HeroInFearTime := Players[P].HeroInFearTime;
         Players[P].TempHeroReborn := Players[M[P]].HeroReborn;
@@ -12733,8 +12683,9 @@ begin
   try
     if InRange(P, 0, 7) then
       if InRange(M[P], 0, 7) then
-        if (Players[P].CurrentSpurtLength > 0)
-        and (Players[P].SpurtEndTime >= Players[P].CaptureMindTime) then
+        if (Players[P].SpurtEndTime >= Players[P].CaptureMindTime)
+        and (Players[P].CaptureMind)
+        and (Players[M[P]].MindStunned) then
         begin
           Players[P].HeroMagicImmunityTime := Players[P].SpurtEndTime + 1;
           Players[M[P]].HeroStunnedTime := Players[P].SpurtEndTime + 1;
