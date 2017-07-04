@@ -10667,95 +10667,104 @@ var
   AIUnits: array of Integer;
   I, J, K, aObj, aX, aY, aTile: Integer;
 begin
-  aObj := -1;
-  for J := 9 to 11 do
-  if States.PlayerEnabled(J) then
-    if not States.PlayerDefeated(J) then
-    begin
-      AIUnits := States.PlayerGetAllUnits(J);
-      if Length(AIUnits) > 0 then
-        for K := 0 to Length(AIUnits) - 1 do
-        begin
-          if AIUnits[K] > 0 then
+  try
+    aObj := -1;
+    for J := 9 to 11 do
+    if States.PlayerEnabled(J) then
+      if not States.PlayerDefeated(J) then
+      begin
+        AIUnits := States.PlayerGetAllUnits(J);
+        if Length(AIUnits) > 0 then
+          for K := 0 to Length(AIUnits) - 1 do
           begin
-            aX := States.UnitPositionX(AIUnits[K]);
-            aY := States.UnitPositionY(AIUnits[K]);
-          end;
-          if TileOnBattlefield(aX, aY) then
-          begin
-            aObj := States.MapTileObject(aX, aY);
-            aTile := States.MapTileType(aX, aY);
-            if (ObjectType(aObj) = otKill)
-            or ((aTile = INFERNAL_TILE)
-            and (States.UnitType(AIUnits[K]) <> 13))
-            and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
+            if AIUnits[K] > 0 then
             begin
-              Actions.UnitKill(AIUnits[K], False);
-
-              if aObj = BOWMAN_ROCKET then
+              aX := States.UnitPositionX(AIUnits[K]);
+              aY := States.UnitPositionY(AIUnits[K]);
+            end;
+            if TileOnBattlefield(aX, aY) then
+            begin
+              aObj := States.MapTileObject(aX, aY);
+              aTile := States.MapTileType(aX, aY);
+              if (ObjectType(aObj) = otKill)
+              or ((aTile = INFERNAL_TILE)
+              and (States.UnitType(AIUnits[K]) <> 13))
+              and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
               begin
-                ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := 0;
-                TilesRoadLength[Tiles[aX][aY].Owner] := TilesRoadLength[Tiles[aX][aY].Owner] + 9;
-                SetLength(TilesRoadX[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
-                SetLength(TilesRoadY[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
-                SetLength(ClearTilesRoadTimes[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
-                SetLength(SetTilesRoadTimes[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
-                SetLength(TilesRoadObjects[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
+                Actions.UnitKill(AIUnits[K], False);
 
-                TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 1] := aX;
-                TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 1] := aY;
-                TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 2] := aX;
-                TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 2] := aY - 1;
-                TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 3] := aX;
-                TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 3] := aY + 1;
-                TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 4] := aX - 1;
-                TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 4] := aY;
-                TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 5] := aX + 1;
-                TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 5] := aY;
-                TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 6] := aX + 1;
-                TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 6] := aY + 1;
-                TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 7] := aX + 1;
-                TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 7] := aY - 1;
-                TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 8] := aX - 1;
-                TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 8] := aY + 1;
-                TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 9] := aX - 1;
-                TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 9] := aY - 1;
-
-                for I := 1 to 9 do
+                if (aObj = BOWMAN_ROCKET)
+                and (Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) > 0) then
                 begin
-                  TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - I] := BOWMAN_ROCKET2;
-                  ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 45 + States.KaMRandomI(3);
-                  SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 15 + States.KaMRandomI(3);
+                  ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := 0;
+                  TilesRoadLength[Tiles[aX][aY].Owner] := TilesRoadLength[Tiles[aX][aY].Owner] + 9;
+                  SetLength(TilesRoadX[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
+                  SetLength(TilesRoadY[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
+                  SetLength(ClearTilesRoadTimes[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
+                  SetLength(SetTilesRoadTimes[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
+                  SetLength(TilesRoadObjects[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
 
-                  if TileOnBattlefield(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) then
+                  TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 1] := aX;
+                  TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 1] := aY;
+                  TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 2] := aX;
+                  TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 2] := aY - 1;
+                  TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 3] := aX;
+                  TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 3] := aY + 1;
+                  TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 4] := aX - 1;
+                  TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 4] := aY;
+                  TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 5] := aX + 1;
+                  TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 5] := aY;
+                  TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 6] := aX + 1;
+                  TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 6] := aY + 1;
+                  TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 7] := aX + 1;
+                  TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 7] := aY - 1;
+                  TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 8] := aX - 1;
+                  TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 8] := aY + 1;
+                  TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 9] := aX - 1;
+                  TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 9] := aY - 1;
+
+                  for I := 1 to 9 do
                   begin
-                    Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].Owner := Tiles[aX][aY].Owner;
-                    Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].Skill := sRocket;
-                    Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9];
+                    TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - I] := BOWMAN_ROCKET2;
+                    ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 45 + States.KaMRandomI(3);
+                    SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 15 + States.KaMRandomI(3);
+
+                    if TileOnBattlefield(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) then
+                    begin
+                      Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].Owner := Tiles[aX][aY].Owner;
+                      Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].Skill := sRocket;
+                      Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9];
+                    end;
+
+                    if (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BARB_OBJECT3)
+                    or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_ROCKET)
+                    or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_OBJECT5)
+                    or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = WARRIOR_OBJECT7) then
+                    begin
+                      ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] + CLEANUP_TIME + 5;
+                      TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - I] := SKILL_CANCEL_OBJ;
+                    end;
+
                   end;
 
-                  if (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BARB_OBJECT3)
-                  or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_ROCKET)
-                  or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_OBJECT5)
-                  or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = WARRIOR_OBJECT7) then
-                  begin
-                    ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] + CLEANUP_TIME + 5;
-                    TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - I] := SKILL_CANCEL_OBJ;
-                  end;
+                  TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - 1] := BOWMAN_ROCKET2;
+                  ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 45 + States.KaMRandomI(3);
+                  SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 15;
 
-                end;
-
-                TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - 1] := BOWMAN_ROCKET2;
-                ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 45 + States.KaMRandomI(3);
-                SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 15;
-
-                ClearRoadTilesArrayTime[Tiles[aX][aY].Owner] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9] + CLEAR_ARRAY_FACTOR + 2;
+                  ClearRoadTilesArrayTime[Tiles[aX][aY].Owner] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9] + CLEAR_ARRAY_FACTOR + 2;
          
+                end;
               end;
             end;
-          end;
-      end;
+        end;
+    end;
+
+  except
+
+    LogError('Exception in the script: cannot check tiles for invalid AI player', SHOW_ERROR_MSG);
+
   end;
+
 end;
 
 
