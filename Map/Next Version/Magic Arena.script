@@ -15534,10 +15534,14 @@ begin
   if States.GameTime = CHOOSE_HERO_TIMER then
   begin
     RandomChoice;
-    for I := 0 to 7 do
+    for I := 0 to 3 do
       if (States.PlayerEnabled(I))
       and (Players[I].HeroChosen) then
-        Players[I].TempHero := Actions.GiveGroup(I, Players[I].HeroType, 18, 14, 4, 1, 1);
+        Players[I].TempHero := Actions.GiveGroup(I, Players[I].HeroType, 16, 15, 4, 1, 1);
+    for I := 4 to 7 do
+      if (States.PlayerEnabled(I))
+      and (Players[I].HeroChosen) then
+        Players[I].TempHero := Actions.GiveGroup(I, Players[I].HeroType, 19, 15, 4, 1, 1);
     for K := 0 to 7 do
       if Players[K].TempHero > 0 then
       begin
