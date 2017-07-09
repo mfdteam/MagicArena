@@ -9801,8 +9801,8 @@ begin
           if (SetTilesWineTimes[M2[P]][I] > States.GameTime)
           and (States.GameTime <= Players[M2[P]].WineSkillCancelTime) then
           begin
-        SetTilesWineTimes[M2[P]][I] := 0;
-        TilesWineObjects[M2[P]][I] := SKILL_CANCEL_OBJ;
+            SetTilesWineTimes[M2[P]][I] := 0;
+            TilesWineObjects[M2[P]][I] := SKILL_CANCEL_OBJ;
           end;
 
     Players[P].TrackStartTime := 0;
@@ -12532,6 +12532,8 @@ end;
 
 
 procedure CheckFear(P: Integer);
+var
+  aX, aY: Integer;
 begin
   try
 
@@ -12541,7 +12543,11 @@ begin
     if (Players[P].HeroInFear)
     and not (Players[P].HeroStunned)
     and (Players[P].Hero > 0) then
-      Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(48) + 12, States.KaMRandomI(48) + 51, States.KaMRandomI(8));
+    begin
+      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+      Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(3) - States.KaMRandomI(3), aY + States.KaMRandomI(3) - States.KaMRandomI(3), States.KaMRandomI(8));
+    end;
 
     if (States.GameTime >= Players[P].HeroInFearTime)
     and (Players[P].HeroInFear)
