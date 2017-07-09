@@ -11414,7 +11414,8 @@ begin
                   and (States.MapTileObject(aX, aY) <> WARRIOR_OBJECT7) then
                   begin
                     Actions.GroupKillAll(Players[O].Hero, True);
-                    Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8), 1, 1);
+                    while States.StatArmyCount(O) = 0 do
+                      Players[O].Hero := Actions.GiveGroup(O, Players[O].HeroType, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8), 1, 1);
                     Actions.GroupHungerSet(Players[O].Hero, States.UnitMaxHunger);
                     if not Players[O].MovedByGravity then
                     begin
