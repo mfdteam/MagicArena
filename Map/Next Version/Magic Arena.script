@@ -1858,7 +1858,12 @@ end;
 function RegenStatus(P: Integer): ANSIString;
 begin
   if Players[P].RegenDelay - States.GameTime > 0 then
-    Result := '|[$25FF10]<$1>[] (<$7> ' + IntToStr((Players[P].RegenDelay - States.GameTime)/10) + ')'
+  begin
+    if Players[P].HP < MAX_HP then
+      Result := '|[$25FF10]<$1>[] (<$7> ' + IntToStr((Players[P].RegenDelay - States.GameTime)/10) + ')'
+    else
+      Result := '|[$BABCAA]<$140>[]';
+  end
 
   else
 
@@ -10418,7 +10423,8 @@ begin
         Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
         if InRange(Tiles[aX][aY].Owner, 0, 7) then
         begin
-          if Tiles[aX][aY].Skill = sRegen then
+          if (Tiles[aX][aY].Skill = sRegen)
+          and (Players[P].HP < MAX_HP) then
           begin
             Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
             Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
