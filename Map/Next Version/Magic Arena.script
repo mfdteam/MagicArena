@@ -8648,11 +8648,20 @@ begin
       Direction := Dir;
     end;
 
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-
-    if not States.PlayerIsAI(P) then
-      Direction := Players[P].SkillDirection;
+    if not Players[P].HeroExiled then
+    begin
+      X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+      if not States.PlayerIsAI(P) then
+        Direction := Players[P].SkillDirection;
+    end
+    else
+    begin
+      X2 := Players[P].HeroExileX;
+      Y2 := Players[P].HeroExileY;
+      if not States.PlayerIsAI(P) then
+        Direction := Players[P].HeroExileDir;
+    end;
 
     if (InRange(Direction, 0, 1))
     and (not TileOnBattlefield(X2, Y2 - MENTAL_DISTANCE)) then
@@ -8928,8 +8937,16 @@ begin
   if (TileOnBattlefield(X, Y))
   and (Players[P].Hero > 0) then
   begin
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    if not Players[P].HeroExiled then
+    begin
+      X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    end
+    else
+    begin
+      X2 := Players[P].HeroExileX;
+      Y2 := Players[P].HeroExileY;
+    end;
     if (Abs(X2 - X) <= STEAL_RADIUS)
     and (Abs(Y2 - Y) <= STEAL_RADIUS)
     and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
@@ -9108,15 +9125,24 @@ begin
       Direction := Dir;
     end;
 
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    if not Players[P].HeroExiled then
+    begin
+      X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+      if not States.PlayerIsAI(P) then
+        Direction := Players[P].SkillDirection;
+    end
+    else
+    begin
+      X2 := Players[P].HeroExileX;
+      Y2 := Players[P].HeroExileY;
+      if not States.PlayerIsAI(P) then
+        Direction := Players[P].HeroExileDir;
+    end;
 
     U := States.UnitAt(X, Y);
     if U > 0 then
       O := States.UnitOwner(U);
-
-    if not States.PlayerIsAI(P) then
-      Direction := Players[P].SkillDirection;
 
     case Players[P].StolenSkill of
 
@@ -9508,11 +9534,11 @@ begin
     Exit;
 
   if (States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P)
-  and (Players[P].HeroType <> 26) then
+  and (not Players[P].HeroExiled) then
     Exit;
 
   if (Players[P].HeroExileBackTime > States.GameTime)
-  and (Players[P].HeroType <> 26) then
+  and (Players[P].HeroExileGiver <> P) then
     Exit;
 
 //Use skills
@@ -9580,10 +9606,12 @@ begin
   if Players[P].HeroReborn then
     Exit;
 
-  if States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P then
+  if (States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P)
+  and (not Players[P].HeroExiled) then
     Exit;
 
-  if Players[P].HeroExileBackTime > States.GameTime then
+  if (Players[P].HeroExileBackTime > States.GameTime)
+  and (Players[P].HeroExileGiver <> P) then
     Exit;
 
 //Use skills
@@ -9652,11 +9680,11 @@ begin
     Exit;
 
   if (States.UnitOwner(States.GroupMember(Players[P].Hero, 0)) <> P)
-  and (Players[P].HeroType <> 26) then
+  and (not Players[P].HeroExiled) then
     Exit;
 
   if (Players[P].HeroExileBackTime > States.GameTime)
-  and (Players[P].HeroType <> 26) then
+  and (Players[P].HeroExileGiver <> P) then
     Exit;
 
 //Use skills
