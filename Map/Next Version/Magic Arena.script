@@ -636,6 +636,7 @@ type
     TileDirection: Integer;
     ShieldTime: Integer;
     TrackTime: Integer;
+    PrisonTime: Integer;
   end;
 
 
@@ -876,6 +877,7 @@ begin
     Tiles[aX][aY].TileDirection := States.MapTileRotation(aX, aY);
     Tiles[aX][aY].ShieldTime := 0;
     Tiles[aX][aY].TrackTime := 0;
+    Tiles[aX][aY].PrisonTime := 0;
   end;
 end;
 
@@ -913,6 +915,10 @@ begin
       if (aObj = WARRIOR_OBJECT7)
       and (TileOnBattlefield(aX, aY))
       and (States.GameTime > Tiles[aX][aY].ShieldTime) then
+        Actions.MapTileObjectSet(aX, aY, 255);
+      if (aObj = BOWMAN_OBJECT5)
+      and (TileOnBattlefield(aX, aY))
+      and (States.GameTime > Tiles[aX][aY].PrisonTime) then
         Actions.MapTileObjectSet(aX, aY, 255);
       if (aObj = VAGA_OBJECT8)
       and (TileOnBattlefield(aX, aY))
@@ -6260,6 +6266,7 @@ begin
       and (((X - aX) * (X - aX) + (Y - aY) * (Y - aY)) <= PRISON_RADIUS * PRISON_RADIUS)
       and (((X - aX) * (X - aX) + (Y - aY) * (Y - aY)) > (PRISON_RADIUS - 2) * (PRISON_RADIUS - 2)) then
       begin
+        Tiles[aX][aY].PrisonTime := States.GameTime + PRISON_TIME + 1;
         TilesFieldLength[P] := TilesFieldLength[P] + 1;
         SetLength(TilesFieldX[P], TilesFieldLength[P]);
         SetLength(TilesFieldY[P], TilesFieldLength[P]);
@@ -13929,7 +13936,6 @@ begin
           Actions.PlayerAllianceChange(Players[0].ZombiePlayer, P, False, False);
 
       end;
-
 
       if Tiles[aX][aY].ShieldTime >= States.GameTime then
       begin
