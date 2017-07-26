@@ -592,6 +592,7 @@ type
     LureDir: Integer;
     LureTime: Integer;
     LureHunger: Integer;
+    LureZombieType: Integer;
     ZombieStunTime: Integer;
   end;
 
@@ -1379,6 +1380,7 @@ begin
       LureDir := 0;
       LureTime := 0;
       LureHunger := 0;
+      LureZombieType := 0;
       ZombieStunTime := 0;
     end;
   end;
@@ -3152,7 +3154,7 @@ end;
 
 procedure Fear(P, X, Y: Integer);
 var
-  X2, Y2, U, O: Integer;
+  X2, Y2, U, O, K: Integer;
   R: Single;
   Lure: Boolean;
 begin
@@ -3188,6 +3190,10 @@ begin
           Players[P].LureDir := States.UnitDirection(U);
           Players[P].LureTime := States.GameTime + DELAY_OF_TURNING;
           Players[P].LureHunger := States.UnitHunger(U);
+          if Length(Zombies) > 0 then
+            for K := 0 to Length(Zombies) - 1 do
+              if U = Zombies[K].ID then
+                Players[P].LureZombieType := Zombies[K].ZombieType;
         end;
         Actions.UnitKill(U, Lure);
         Players[P].LastUsedSkill := sFear;
@@ -9017,6 +9023,10 @@ begin
             Players[P].LureDir := States.UnitDirection(U);
             Players[P].LureTime := States.GameTime + DELAY_OF_TURNING;
             Players[P].LureHunger := States.UnitHunger(U);
+            if Length(Zombies) > 0 then
+              for I := 0 to Length(Zombies) - 1 do
+                if U = Zombies[I].ID then
+                  Players[P].LureZombieType := Zombies[I].ZombieType;
             Actions.UnitKill(U, Lure);
           end;
         end;
@@ -12336,7 +12346,7 @@ begin
     begin
        SetLength(Zombies, Length(Zombies) + 1);
        Zombies[Length(Zombies) - 1].Owner := P;
-       Zombies[Length(Zombies) - 1].ZombieType := 3;
+       Zombies[Length(Zombies) - 1].ZombieType := Players[P].LureZombieType;
        Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].LureType, Players[P].LureX, Players[P].LureY, Players[P].LureDir, 1, 1);
        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
        Actions.GroupHungerSet(Z, Players[P].LureHunger);
@@ -12383,9 +12393,10 @@ begin
               Players[P].LureType := States.UnitType(Zombies[I].ID);
               Players[P].LureX := States.UnitPositionX(Zombies[I].ID);
               Players[P].LureY := States.UnitPositionY(Zombies[I].ID);
-              Players[P].LureDir := States.UnitDirection(Zombies[I].ID);;
+              Players[P].LureDir := States.UnitDirection(Zombies[I].ID);
               Players[P].LureTime := States.GameTime + DELAY_OF_TURNING;
               Players[P].LureHunger := States.UnitHunger(Zombies[I].ID);
+              Players[P].LureZombieType := Zombies[I].ZombieType;
             end;
             Actions.UnitKill(Zombies[I].ID, Lure);
           end;
