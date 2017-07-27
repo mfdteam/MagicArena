@@ -2824,7 +2824,7 @@ begin
   begin
     TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := SWORD_OBJECT;
     if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-      Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+      Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 1;
   end;
 
   for I := 1 to 4 do
@@ -2882,7 +2882,7 @@ begin
              ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 11 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
              SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
              TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-             Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+             Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 1;
            end;
 
     2,3: for X1 := X2 + 1 to X2 + 3 do
@@ -2900,7 +2900,7 @@ begin
              ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 11 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
              SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
              TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-             Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+             Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 1;
            end;
 
     4,5: for Y1 := Y2 + 1 to Y2 + 3 do
@@ -2918,7 +2918,7 @@ begin
              ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 11 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
              SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
              TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-             Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+             Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 1;
            end;
 
     6,7: for X1 := X2 - 1 downto X2 - 3 do
@@ -2936,7 +2936,7 @@ begin
              ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 11 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
              SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/SWORD_ROAD_SPEED);
              TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := SWORD_OBJECT1 + States.KaMRandomI(3);
-             Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
+             Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - 1]][TilesRoadY[P][Length(TilesRoadY[P]) - 1]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + 1;
            end;
       end;
 
