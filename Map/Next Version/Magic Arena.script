@@ -6265,7 +6265,8 @@ begin
       and (((X - aX) * (X - aX) + (Y - aY) * (Y - aY)) <= PRISON_RADIUS * PRISON_RADIUS)
       and (((X - aX) * (X - aX) + (Y - aY) * (Y - aY)) > (PRISON_RADIUS - 2) * (PRISON_RADIUS - 2)) then
       begin
-        Tiles[aX][aY].PrisonTime := States.GameTime + PRISON_TIME + 1;
+        if Tiles[aX][aY].ShieldTime < States.GameTime + PRISON_TIME + 1 then
+          Tiles[aX][aY].PrisonTime := States.GameTime + PRISON_TIME + 1;
         TilesFieldLength[P] := TilesFieldLength[P] + 1;
         SetLength(TilesFieldX[P], TilesFieldLength[P]);
         SetLength(TilesFieldY[P], TilesFieldLength[P]);
