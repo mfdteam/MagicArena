@@ -348,7 +348,6 @@ const
   VICTORY_DELAY = 300;
   TOWERS_CHECK_FACTOR = 10;
   TOWERS_TILES_FACTOR = 2;
-  ZOMBIE_ARRAY_CHECK_FACTOR = 200;
   ZOMBIE_TAKE_RUNES = True;
   IDLE_CHECK_TIME = 200;
 
@@ -11610,6 +11609,8 @@ begin
     SortScoresRight;
   end;
 
+  CheckZombieArray;
+
   O := States.UnitOwner(aID);
   aX := States.UnitPositionX(aID);
   aY := States.UnitPositionY(aID);
@@ -15522,9 +15523,6 @@ begin
 
   if States.GameTime mod TILES_RECHECK_TIME = 0 then
     CheckTileCleanup(True);
-
-  if States.GameTime mod ZOMBIE_ARRAY_CHECK_FACTOR = 0 then
-    CheckZombieArray;
 
   for I := 0 to 7 do
     if States.PlayerEnabled(I) then
