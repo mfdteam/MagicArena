@@ -10026,6 +10026,11 @@ begin
         Players[P].DDTime := 0;
         Players[P].ReChargeTime := 0;
 
+        if (Tiles[aX][aY].Skill = sRocket)
+        and (Tiles[aX][aY].Owner = P)
+        and (States.GameTime < Players[P].RoadSkillCancelTime) then
+          Players[P].RoadSkillCancelTime := 0;
+
         if States.GameTime < Players[P].MindTime2 then
         begin
           Players[P].MindTime2 := 0;
