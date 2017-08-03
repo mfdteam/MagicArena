@@ -11610,8 +11610,6 @@ begin
     SortScoresRight;
   end;
 
-  CheckZombieArray;
-
   O := States.UnitOwner(aID);
   aX := States.UnitPositionX(aID);
   aY := States.UnitPositionY(aID);
@@ -11633,6 +11631,9 @@ begin
     end;
 
   end;
+
+  if InRange(O, 8, 11) then
+    CheckZombieArray;
 
   if (InRange(O, 0, 7))
   and (InRange(aKiller, 9, 11)) then
@@ -12329,6 +12330,8 @@ begin
   try
     if (States.GameTime = Players[P].ThreadsAttackTime)
     and (Length(Zombies) > 0) then
+    begin
+      CheckZombieArray;
       for I := 0 to Length(Zombies) - 1 do
         if (Zombies[I].ThreadsTime = States.GameTime)
         and (not States.UnitDead(Zombies[I].ID)) then
@@ -12345,6 +12348,7 @@ begin
           Actions.GroupHungerSet(Z, H);
           Actions.UnitKill(Zombies[I].ID, True);
         end;
+      end;
   except
     LogError('Exception in the script: cannot check zombies to move for invalid owner', SHOW_ERROR_MSG);
   end;
@@ -12441,6 +12445,12 @@ begin
             Zombies[Length(Zombies) - 1].Owner := P;
             Zombies[Length(Zombies) - 1].ZombieType := Zombies[I].ZombieType;
             Zombies[Length(Zombies) - 1].Hunger := States.UnitHunger(Zombies[I].ID);
+            Zombies[Length(Zombies) - 1].TeleportTime := Zombies[I].TeleportTime;
+            Zombies[Length(Zombies) - 1].KillTime := Zombies[I].KillTime;
+            Zombies[Length(Zombies) - 1].ThreadsTime := Zombies[I].ThreadsTime;
+            Zombies[Length(Zombies) - 1].ThreadsX := Zombies[I].ThreadsX;
+            Zombies[Length(Zombies) - 1].ThreadsY := Zombies[I].ThreadsY;
+            Zombies[Length(Zombies) - 1].ThreadsDir := Zombies[I].ThreadsDir;
             Z := Actions.GiveGroup(Players[P].ZombiePlayer, States.UnitType(Zombies[I].ID), Players[P].RiftX, Players[P].RiftY, States.KaMRandomI(8), 1, 1);
             Actions.GroupHungerSet(Z, Zombies[Length(Zombies) - 1].Hunger);
             Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
