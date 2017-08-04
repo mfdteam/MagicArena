@@ -6,10 +6,13 @@ Magic Arena v.2.xxx
 - New status, when you try to heal with 12 hp
 - Fixed a lot of bugs related with Raging Spurt under Mind Control
 - Fixed map bugs, when you couldn't place field of winefield in some tiles
+- Fixed bug when Rocket stop flying when Bowman commit suicide by another Rocket or its animation 
+- Now Prison used by Rogue works better (earlier it could stay forever on the land)
 - Fixed bug when feared hero didn't move in Bowman's prison
 - Fixed bug when hero could disappear by combo Gravity+Prison
 - Fixed bugs with using spells in Exile
 - Fixed bug when lured by Sword Fighter zombies couldn't use Spiked Earth
+- Fixed bug when Knight couldn't pull summon controlled by Rebel by Threads of Death after using Reality Rift
 - Sword Fighter: Cooldown of Spiked Earth is decreased from 12 to 11 seconds
 - Sword Fighter: Speed of Spiked Earth is greatly increased
 - Sword Fighter: Length of Spiked Earth activated by zombies is decreased from 4 to 3 tiles
@@ -17,6 +20,7 @@ Magic Arena v.2.xxx
 - Sword Fighter: Zombie Summon's radius of using is increased from 3 to 4 tiles 
 - Sword Fighter: Fear's radius of using is decreased from 5 to 4 tiles
 - Sword Fighter: Duration of Fear is decreased from 8 to 7 seconds
+- Crossbowman: Speed of Snipershot is increased
 - Pikeman: Radius of using Infernal tower is increased from 4 to 5 tiles
 - Pikeman: Duration of Infernal Tower is increased from 10 to 15 seconds (now can shoot 5 stones instead of 3)
 - Pikeman: Delay of using Infernal Tower is increased from short to medium
@@ -27,6 +31,9 @@ Magic Arena v.2.xxx
 - Warrior: Duration of Exile is decreased from 4 to 3 seconds
 - Warrior: Duration of Shield of Darkness is decreased from 10 to 8 seconds
 - Scout: Radius of using Silence is decreased from 6 to 5 tiles
+- Rebel: Chanse of luring summon with Mirror is increased from 30% to 45%
+- Rebel: Chanse of killing summon with Mirror is increased from 50% to 65%
+- Rebel: Mirror Shards cooldown is decreased from 30 to 28 seconds
 - A lot of minor bugfixes
 
 v.2.197
