@@ -122,7 +122,7 @@ const
 //Skills speed
 
   XBOW_ROAD_SPEED = 4;
-  XBOW_WINE_SPEED = 6;
+  XBOW_WINE_SPEED = 8;
 
   LANCE_ROAD_SPEED = 3;
   LANCE_WINE_SPEED = 15;
