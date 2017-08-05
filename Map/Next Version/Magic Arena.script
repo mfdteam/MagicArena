@@ -6442,8 +6442,8 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X2;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 24 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 25 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
+               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 21 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := BOWMAN_OBJECT3;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
@@ -6461,8 +6461,8 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 24 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 25 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
+               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 21 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := BOWMAN_OBJECT3;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
@@ -6480,8 +6480,8 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X2;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 24 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 25 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
+               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 21 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := BOWMAN_OBJECT3;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
@@ -6499,8 +6499,8 @@ begin
                SetLength(TilesWineObjects[P], TilesWineLength[P]);
                TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
                TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2;
-               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 24 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
-               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 20 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
+               ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 25 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
+               SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 21 + Round(DESYNC_FACTOR * Desync/BOWMAN_WINE_SPEED);
                TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := BOWMAN_OBJECT3;
                Tiles[TilesWineX[P][Length(TilesWineX[P]) - 1]][TilesWineY[P][Length(TilesWineY[P]) - 1]].ObjectRefreshTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
                CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
