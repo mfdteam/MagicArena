@@ -12165,6 +12165,10 @@ begin
     and (not States.FogRevealed(P, 2, 40)) then
       Actions.FogRevealAll(P);
 
+    if (Players[P].HP <= 0)
+    and (Players[P].MovedToTribune) then
+      Actions.GroupBlockOrders(Players[P].Hero, True);
+
     if (Players[P].HP > 0)
     and (States.FogRevealed(P, Players[P].TempX, Players[P].TempY))
     and (not States.PlayerVictorious(P)) then
