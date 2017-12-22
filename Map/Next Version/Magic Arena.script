@@ -683,14 +683,6 @@ var
   RuneCleanupTime: array[0..7] of Integer;
 
 
-procedure LogError(aMsg: ANSIString; aShowMsg: Boolean);
-begin
-  Actions.Log(aMsg);
-  if aShowMsg then
-    Actions.ShowMsg(-1, aMsg);
-end;
-
-
 function InRange(Value, Min, Max: Integer): Boolean;
 begin
   if Min < Max then
@@ -717,6 +709,20 @@ begin
     Result := aTrue
   else
     Result := aFalse;
+end;
+
+
+procedure LogError(aMsg: ANSIString; aValues: array of Integer; aShowMsg: Boolean);
+var
+  I: Integer;
+  Values: ANSIString;
+begin
+  Values := ' ';
+  for I := Low(aValues) to High(aValues) do
+    Values := Values + IntToStr(aValues[I]) + IfThenStr(I <> High(aValues), ', ', '');
+  Actions.Log(aMsg + Values);
+  if aShowMsg then
+    Actions.ShowMsg(-1, aMsg + Values);
 end;
 
 
@@ -971,7 +977,7 @@ begin
 
   except
 
-    LogError('Exception in the script: cannot choose hero for invalid AI player (Exception ID: 1)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot choose hero for invalid AI player (Exception ID: 1):', [P], SHOW_ERROR_MSG);
 
   end;
 
@@ -1522,7 +1528,7 @@ begin
     and (States.MapTileObject(RUNE_X, RUNE_Y) = RuneObject) then
       Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
   except
-    LogError('Something went wrong when trying to check rune cleanup', SHOW_ERROR_MSG);
+    LogError('Something went wrong when trying to check rune cleanup:', [States.GameTime, RUNE_X, RUNE_Y, RuneObject], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1566,7 +1572,7 @@ begin
         Zombies[K].ThreadsDir := TempZombies[K].ThreadsDir;
       end;
   except
-    LogError('Exception in the script: Something went wrong when trying to resize Zombies array (Exception ID: 11)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: Something went wrong when trying to resize Zombies array (Exception ID: 11):', [Length(TempZombies), Length(Zombies)], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1639,7 +1645,7 @@ begin
 
   except
 
-    LogError('Exception in the script: cannot check rune effect for invalid player or object ' + IntToStr(aRune) + ' is not a rune (Exception ID: 2)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check rune effect for invalid player or object ' + IntToStr(aRune) + ' is not a rune (Exception ID: 2):', [P, aRune], SHOW_ERROR_MSG);
 
   end;
 
@@ -1684,7 +1690,7 @@ begin
     if Players[P].StolenSkillTime > 0 then
       Players[P].StolenSkillTime := Players[P].StolenSkillTime - 1;
   except
-    LogError('Exception in the script: cannot update stolen skill timer for invalid player (Exception ID: 3)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update stolen skill timer for invalid player (Exception ID: 3):', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1700,7 +1706,7 @@ begin
         13..24: Result := IntToStr(Players[P].HP);
       end;
   except
-    LogError('Exception in the script: cannot update HP string for invalid player (Exception ID: 4)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update HP string for invalid player (Exception ID: 4):', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1717,7 +1723,7 @@ begin
       else   Result := '[$000000]';
     end;
   except
-    LogError('Exception in the script: cannot update HP counter highlight color for invalid player (Exception ID: 5)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update HP counter highlight color for invalid player (Exception ID: 5):', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1734,7 +1740,7 @@ begin
       else     Result := '[$0000FF]';
     end;
   except
-    LogError('Exception in the script: cannot update kills counter highlight color for invalid player (Exception ID: 6)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update kills counter highlight color for invalid player (Exception ID: 6):', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1747,7 +1753,7 @@ begin
     else
       Result := '[$0000FF]';
   except
-    LogError('Exception in the script: cannot update ReChoice status highlight color for invalid player (Exception ID: 7)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update ReChoice status highlight color for invalid player (Exception ID: 7):', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1760,7 +1766,7 @@ begin
     else
       Result := '';
   except
-    LogError('Exception in the script: cannot update gameplay status for invalid player (Exception ID: 8)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update gameplay status for invalid player (Exception ID: 8):', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1774,7 +1780,7 @@ begin
     else
       Result := '[$FFFFFF]';
   except
-    LogError('Exception in the script: cannot update sacrificial teleport status highlight color for invalid player (Exception ID: 9)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update sacrificial teleport status highlight color for invalid player (Exception ID: 9):', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1789,7 +1795,7 @@ begin
     else
       Result := '[$FFFFFF]';
   except
-    LogError('Exception in the script: cannot update stolen sacrificial teleport status highlight color for invalid player (Exception ID: 10)', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update stolen sacrificial teleport status highlight color for invalid player (Exception ID: 10):', [P], SHOW_ERROR_MSG);
   end;
 end; 
 
@@ -9987,7 +9993,7 @@ begin
 
   except
 
-    LogError('Exception in the script: cannot cancel skills for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot cancel skills for invalid player:', [P], SHOW_ERROR_MSG);
 
   end;
 
@@ -10775,7 +10781,7 @@ end;
 procedure CheckTilesForAI;
 var
   AIUnits: array of Integer;
-  I, J, K, aObj, aX, aY, aTile: Integer;
+  I, J, K, aObj, aX, aY, aTile, aU: Integer;
 begin
   try
     aObj := -1;
@@ -10791,6 +10797,7 @@ begin
             begin
               aX := States.UnitPositionX(AIUnits[K]);
               aY := States.UnitPositionY(AIUnits[K]);
+              aU := AIUnits[K];
             end;
             if TileOnBattlefield(aX, aY) then
             begin
@@ -10871,7 +10878,7 @@ begin
 
   except
 
-    LogError('Exception in the script: cannot check tiles for invalid AI player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check tiles for invalid AI player:', [aX, aY, Tiles[aX][aY].Owner, aU], SHOW_ERROR_MSG);
 
   end;
 
@@ -12208,7 +12215,7 @@ begin
     end;
 
   except
-    LogError('Exception in the script: cannot update HP for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update HP for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 
 end;
@@ -12246,7 +12253,7 @@ begin
       end;
     end;
   except
-    LogError('Exception in the script: cannot update Exile status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update Exile status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12258,7 +12265,7 @@ begin
       if States.MapTileType(Players[P].HeroExileX, Players[P].HeroExileY) <> EXILE_TILE then
         Actions.MapTileSet(Players[P].HeroExileX, Players[P].HeroExileY, EXILE_TILE, States.KaMRandomI(4));
   except
-    LogError('Exception in the script: cannot update Exile tile for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update Exile tile for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12281,7 +12288,7 @@ begin
       Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
     end;
   except
-    LogError('Exception in the script: cannot update Exile Back status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update Exile Back status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12308,7 +12315,7 @@ begin
       Players[P].HeroReborn := False;
     end;
   except
-    LogError('Exception in the script: cannot check Reborn status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Reborn status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12325,7 +12332,7 @@ begin
       Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
   except
-    LogError('Exception in the script: cannot check Threads Prepare status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Threads Prepare status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12351,7 +12358,7 @@ begin
       Players[P].MovedByThreads := False;
 
   except
-    LogError('Exception in the script: cannot check Threads status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Threads status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 
 end;
@@ -12384,7 +12391,7 @@ begin
         end;
       end;
   except
-    LogError('Exception in the script: cannot check zombies to move for invalid owner', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check zombies to move for invalid owner:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12404,7 +12411,7 @@ begin
        Actions.GroupHungerSet(Z, Players[P].LureHunger);
     end;
   except
-    LogError('Exception in the script: cannot check lured zombies for invalid owner', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check lured zombies for invalid owner:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12454,7 +12461,7 @@ begin
           end;
     end;
   except
-    LogError('Exception in the script: cannot check Replica status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Replica status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12501,7 +12508,7 @@ begin
       end;
     end;
   except
-    LogError('Exception in the script: cannot check Rift status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Rift status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12516,7 +12523,7 @@ begin
       Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
     end;
   except
-    LogError('Exception in the script: cannot check teleport for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check teleport for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12537,7 +12544,7 @@ begin
       end;
     end;
   except
-    LogError('Exception in the script: cannot check Vaga appear status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Vaga appear status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12560,7 +12567,7 @@ begin
       end;
     end;
   except
-    LogError('Exception in the script: cannot check Werewolf status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Werewolf status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12587,7 +12594,7 @@ begin
       end;
     end;
   except
-    LogError('Exception in the script: cannot check Vaga appear back status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Vaga appear back status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12629,7 +12636,7 @@ begin
     end;
 
   except
-    LogError('Exception in the script: cannot check Fiery Track status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Fiery Track status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 
 end;
@@ -12663,7 +12670,7 @@ begin
     end;
 
   except
-    LogError('Exception in the script: cannot check Fear status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Fear status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 
 end;
@@ -12685,7 +12692,7 @@ begin
                 ZombieStun(P, Zombies[K].ID);
 
   except
-    LogError('Exception in the script: cannot check Stun for invalid Zombie', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Stun for invalid Zombie:', [P], SHOW_ERROR_MSG);
   end;
 
 end;
@@ -12713,7 +12720,7 @@ begin
       Actions.FogRevealRect(M[P], 1, 39, 70, 109);
     end;
   except
-    LogError('Exception in the script: cannot check Mind status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Mind status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12782,7 +12789,7 @@ begin
       end;
     end;
   except
-    LogError('Exception in the script: cannot check Mind2 status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Mind2 status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12855,7 +12862,7 @@ begin
       Players[P].MindMagicImmunityTime := States.GameTime + CAPTURE_MIND_TIME - 10;
     end;
   except
-    LogError('Exception in the script: cannot check Mind Appear status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Mind Appear status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12885,7 +12892,7 @@ begin
       Players[P].MindAppearTimeBack := States.GameTime + DELAY_OF_TURNING;
     end;
   except
-    LogError('Exception in the script: cannot check Mind Capture status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Mind Capture status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13000,7 +13007,7 @@ begin
       end;
     end;
   except
-    LogError('Exception in the script: cannot check Mind Back status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Mind Back status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13014,7 +13021,7 @@ begin
       Players[M[P]].HeroMagicImmunityTime := States.GameTime + 10;
     end;
   except
-    LogError('Exception in the script: cannot check Mind Immunity status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Mind Immunity status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13036,7 +13043,7 @@ begin
           Players[P].MindMagicImmunityTime := Players[P].SpurtEndTime - 9;
         end;
   except
-    LogError('Exception in the script: cannot check Raging Spurt status for invalid Mind', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Raging Spurt status for invalid Mind:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13054,7 +13061,7 @@ begin
       CancelSkills(P);
     end;
   except
-    LogError('Exception in the script: cannot check Scout Silence status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Scout Silence status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13074,7 +13081,7 @@ begin
       Players[P].PreparingTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
     end;
   except
-    LogError('Exception in the script: cannot check Spurt Start status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Spurt Start status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13091,7 +13098,7 @@ begin
       Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
     end;
   except
-    LogError('Exception in the script: cannot check Knight appear status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Knight appear status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13108,7 +13115,7 @@ begin
       Players[P].KillsCountTime := 0;
     end;
   except
-    LogError('Exception in the script: cannot check kills status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check kills status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13120,7 +13127,7 @@ begin
     and (Players[P].ReChoice) then
       EndReChoice(P);
   except
-    LogError('Exception in the script: cannot check ReChoice status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check ReChoice status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13138,7 +13145,7 @@ begin
         Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].LastX, Players[P].LastY, Players[P].LastDir, 1, 1);
       end;
   except
-    LogError('Exception in the script: cannot check location for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check location for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13155,7 +13162,7 @@ begin
         or (States.MapTileObject(aX, aY) = CIRCLE_FILL_OBJ) then
           Actions.MapTileObjectSet(aX, aY, 255);
   except
-    LogError('Exception in the script: cannot check Fireworks cleanup for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Fireworks cleanup for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13171,7 +13178,7 @@ begin
         if States.MapTileObject(aX, aY) = XBOW_OBJECT3 then
           Actions.MapTileObjectSet(aX, aY, 255);
   except
-    LogError('Exception in the script: cannot check Sudden Death cleanup for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Sudden Death cleanup for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13187,7 +13194,7 @@ begin
         if States.MapTileObject(aX, aY) = BOWMAN_ROCKET2 then
           Actions.MapTileObjectSet(aX, aY, 255);
   except
-    LogError('Exception in the script: cannot check Rocket cleanup for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Rocket cleanup for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13199,7 +13206,7 @@ begin
     CheckSuddenCleanup(P);
     CheckRocketCleanup(P);
   except
-    LogError('Something went wrong when trying to check skills cleanup', SHOW_ERROR_MSG);
+    LogError('Something went wrong when trying to check skills cleanup:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13210,7 +13217,7 @@ begin
     if States.GameTime = Players[P].SkillTime then
       Players[P].CastingSkill := False;
   except
-    LogError('Exception in the script: cannot clear AI skills for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot clear AI skills for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13269,7 +13276,7 @@ begin
       Players[P].MindStunned := False;
 
   except
-    LogError('Exception in the script: cannot clear buffs/debuffs for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot clear buffs/debuffs for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 
 end;
@@ -13281,7 +13288,7 @@ begin
     if States.GameTime = Players[P].PlayerStatusTime then
       Players[P].PlayerStatus := '';
   except
-    LogError('Exception in the script: cannot clear status for invalid player', SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot clear status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -13328,7 +13335,7 @@ begin
       ClearStatusString(P);
     end;
   except
-    LogError('Exception in the script: something went wrong when trying to check status', SHOW_ERROR_MSG);
+    LogError('Exception in the script: something went wrong when trying to check status:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
