@@ -2667,7 +2667,8 @@ begin
   Players[P].RoadSkillDelay := 0;
   Players[P].FieldSkillDelay := 0;
   Players[P].WineSkillDelay := 0;
-  Players[P].ReChoiceAllowed := False;
+  if not DEBUG_MODE then
+    Players[P].ReChoiceAllowed := False;
   Players[P].VagaAppearTimeBack := 0;
   Players[P].VagaAppearTime := 0;
   Players[P].HeroStunnedTime := 0;
