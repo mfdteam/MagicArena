@@ -722,7 +722,7 @@ begin
     Values := Values + IntToStr(aValues[I]) + IfThenStr(I <> High(aValues), ', ', '');
   Actions.Log(aMsg + Values);
   if aShowMsg then
-    Actions.ShowMsg(-1, aMsg + Values);
+    Actions.ShowMsg(-1, '<$1000> ' + aMsg + Values);
 end;
 
 
@@ -977,7 +977,7 @@ begin
 
   except
 
-    LogError('Exception in the script: cannot choose hero for invalid AI player (Exception ID: 1):', [P], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot choose hero for invalid AI player:', [P], SHOW_ERROR_MSG);
 
   end;
 
@@ -1572,7 +1572,7 @@ begin
         Zombies[K].ThreadsDir := TempZombies[K].ThreadsDir;
       end;
   except
-    LogError('Exception in the script: Something went wrong when trying to resize Zombies array (Exception ID: 11):', [Length(TempZombies), Length(Zombies)], SHOW_ERROR_MSG);
+    LogError('Exception in the script: Something went wrong when trying to resize Zombies array:', [Length(TempZombies), Length(Zombies)], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1645,7 +1645,7 @@ begin
 
   except
 
-    LogError('Exception in the script: cannot check rune effect for invalid player or object ' + IntToStr(aRune) + ' is not a rune (Exception ID: 2):', [P, aRune], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check rune effect for invalid player or object ' + IntToStr(aRune) + ' is not a rune:', [P, aRune], SHOW_ERROR_MSG);
 
   end;
 
@@ -1690,7 +1690,7 @@ begin
     if Players[P].StolenSkillTime > 0 then
       Players[P].StolenSkillTime := Players[P].StolenSkillTime - 1;
   except
-    LogError('Exception in the script: cannot update stolen skill timer for invalid player (Exception ID: 3):', [P], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update stolen skill timer for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1706,7 +1706,7 @@ begin
         13..24: Result := IntToStr(Players[P].HP);
       end;
   except
-    LogError('Exception in the script: cannot update HP string for invalid player (Exception ID: 4):', [P], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update HP string for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1723,7 +1723,7 @@ begin
       else   Result := '[$000000]';
     end;
   except
-    LogError('Exception in the script: cannot update HP counter highlight color for invalid player (Exception ID: 5):', [P], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update HP counter highlight color for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1740,7 +1740,7 @@ begin
       else     Result := '[$0000FF]';
     end;
   except
-    LogError('Exception in the script: cannot update kills counter highlight color for invalid player (Exception ID: 6):', [P], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update kills counter highlight color for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1753,7 +1753,7 @@ begin
     else
       Result := '[$0000FF]';
   except
-    LogError('Exception in the script: cannot update ReChoice status highlight color for invalid player (Exception ID: 7):', [P], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update ReChoice status highlight color for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1766,7 +1766,7 @@ begin
     else
       Result := '';
   except
-    LogError('Exception in the script: cannot update gameplay status for invalid player (Exception ID: 8):', [P], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update gameplay status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1780,7 +1780,7 @@ begin
     else
       Result := '[$FFFFFF]';
   except
-    LogError('Exception in the script: cannot update sacrificial teleport status highlight color for invalid player (Exception ID: 9):', [P], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update sacrificial teleport status highlight color for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -1795,7 +1795,7 @@ begin
     else
       Result := '[$FFFFFF]';
   except
-    LogError('Exception in the script: cannot update stolen sacrificial teleport status highlight color for invalid player (Exception ID: 10):', [P], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot update stolen sacrificial teleport status highlight color for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end; 
 
@@ -12545,7 +12545,7 @@ begin
       end;
     end;
   except
-    LogError('Exception in the script: cannot check Vaga appear status for invalid player:', [P], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Vagabond appear status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 
@@ -12595,7 +12595,7 @@ begin
       end;
     end;
   except
-    LogError('Exception in the script: cannot check Vaga appear back status for invalid player:', [P], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check Vagabond appear back status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
 end;
 

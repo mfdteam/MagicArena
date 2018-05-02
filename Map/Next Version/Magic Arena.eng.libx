@@ -178,3 +178,4 @@
 511:Mind Control. Radius of using: 4 tiles, Duration: 15 seconds, Cooldown: 50 seconds, Animation: 8 tiled (don't kill), Delay: long, Effect: Scout captures the mind of enemy, and he can control him, but he can't control himself. Your target is immortal.
 512:Mirror Shards. Cooldown: 28 seconds, Duration: 6 seconds, Animation: -, Delay: -, Effect: Every attack of your illusions will spawn one more illusion.
 513:Regen. Radius of using: 6 tiles, Area: 3x3, Cooldown: 60 seconds, Delay: medium, Animation: 4 tiles, Duration: 8 seconds, Effects: +1 HP. You can get 1 HP once in 9 seconds. It means that you can earn 1 HP for 1 using the skill. Be careful: your enemies can steal your healing bushes.
+1000:An error has occurred in the script while playing Magic Arena. Please contact map developers and report following data:
