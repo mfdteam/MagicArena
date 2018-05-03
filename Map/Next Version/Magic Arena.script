@@ -6967,6 +6967,8 @@ begin
     and (Abs(Y2 - Y) <= EXILE_ALLY_RADIUS)
     and (not Players[O].HeroMagicImmunity)
     and (not Players[O].HeroTotalImmunity)
+    and (not Players[O].MindStunned) //Serega is cheater!
+    and (not Players[O].CaptureMind)
     and (Players[O].PlayersTeam = Players[P].PlayersTeam)) then
     begin
       TilesFieldLength[P] := TilesFieldLength[P] + 4;
@@ -9398,6 +9400,8 @@ begin
                 and (Abs(Y - Y2) <= EXILE_ALLY_RADIUS)
                 and (not Players[O].HeroMagicImmunity)
                 and (not Players[O].HeroTotalImmunity)
+                and (not Players[O].MindStunned) //Serega is cheater!
+                and (not Players[O].CaptureMind)
                 and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7)) then
                 begin
                   TempFieldSkillDelay := Players[P].FieldSkillDelay;
