@@ -6958,6 +6958,8 @@ begin
     and (U = States.GroupMember(Players[O].Hero, 0))
     and (not Players[O].HeroMagicImmunity)
     and (not Players[O].HeroTotalImmunity)
+    and (not Players[O].MindStunned) //Serega is cheater!
+    and (not Players[O].CaptureMind)
     and ((Abs(X2 - X) <= EXILE_RADIUS)
     and (Abs(Y2 - Y) <= EXILE_RADIUS)
     and (Players[O].PlayersTeam <> Players[P].PlayersTeam))
@@ -9387,6 +9389,8 @@ begin
                 and (Abs(Y - Y2) <= EXILE_RADIUS)
                 and (not Players[O].HeroMagicImmunity)
                 and (not Players[O].HeroTotalImmunity)
+                and (not Players[O].MindStunned) //Serega is cheater!
+                and (not Players[O].CaptureMind)
                 and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7))
                 or ((InRange(O, 0, 7))
                 and (Players[P].PlayersTeam = Players[O].PlayersTeam)
