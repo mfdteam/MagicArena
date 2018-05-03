@@ -8488,7 +8488,7 @@ begin
           or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_ROCKET)
           or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = BOWMAN_OBJECT5)
           or (States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) = WARRIOR_OBJECT7) then
-          ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME + 2;
+            ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - I] + CLEANUP_TIME + 2;
 
         M[P] := O;
         M2[O] := P;
@@ -15687,12 +15687,12 @@ begin
     for I := 0 to 3 do
       if (States.PlayerEnabled(I))
       and (Players[I].HeroChosen) then
-        TeamInfo[0] := TeamInfo[0] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]' + ReChoiceColor(I) + ' {R} []' + ':' + PlayerInfo(I);
+        TeamInfo[0] := TeamInfo[0] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]' + ReChoiceColor(I) + ' {R} []' + IfThenStr(DEBUG_MODE, ' (T' + IntToStr(Players[I].PlayersTeam) + ') ', '') + ':' + PlayerInfo(I);
 
     for I := 4 to 7 do
       if (States.PlayerEnabled(I))
       and (Players[I].HeroChosen) then
-        TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]' + ReChoiceColor(I) + ' {R} []' + ':' + PlayerInfo(I);
+        TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]' + ReChoiceColor(I) + ' {R} []' + IfThenStr(DEBUG_MODE, ' (T' + IntToStr(Players[I].PlayersTeam) + ') ', '') + ':' + PlayerInfo(I);
 
     for I := 0 to Length(SortedPlayersLeft) - 1 do
       Scores[0] := Scores[0] + '|[$' + States.PlayerColorText(SortedPlayersLeft[I]) + ']' + States.PlayerName(SortedPlayersLeft[I]) + '[]: ' + KillsColor(SortedPlayersLeft[I]) + IntToStr(Players[SortedPlayersLeft[I]].Kills) + '[]';
