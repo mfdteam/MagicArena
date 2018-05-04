@@ -442,6 +442,7 @@ type
     TempDDTime : Integer;
     TempDD: Boolean;
     PlayersTeam: Integer;
+    TempPlayersTeam: Integer;
     UsedPlayersTeam: Boolean;
     CastingSkill: Boolean;
     SkillTime: Integer;
@@ -1211,11 +1212,16 @@ begin
   end;
 
   for I := 8 to 9 do
+  begin
     Players[I].PlayersTeam := -1;
+    Players[I].TempPlayersTeam := -1;
+  end;
 
   Players[10].PlayersTeam := 0;
+  Players[10].TempPlayersTeam := 0;
 
   Players[11].PlayersTeam := 1;
+  Players[11].TempPlayersTeam := 1;
 
   for I := 0 to 7 do
     if States.PlayerEnabled(I) then
@@ -1419,6 +1425,7 @@ begin
       TribuneX := 43 + 2 * I;
       ZombiePlayer := 10;
       PlayersTeam := 0;
+      TempPlayersTeam := 0;
     end;
   end;
 
@@ -1433,6 +1440,7 @@ begin
       TribuneX := 55 + ((I - 4) * 2);
       ZombiePlayer := 11;
       PlayersTeam := 1;
+      TempPlayersTeam := 1;
     end;
   end;
 
@@ -6969,14 +6977,14 @@ begin
     and (not Players[O].CaptureMind)
     and ((Abs(X2 - X) <= EXILE_RADIUS)
     and (Abs(Y2 - Y) <= EXILE_RADIUS)
-    and (Players[O].PlayersTeam <> Players[P].PlayersTeam))
+    and (Players[O].TempPlayersTeam <> Players[P].TempPlayersTeam))
     or ((Abs(X2 - X) <= EXILE_ALLY_RADIUS)
     and (Abs(Y2 - Y) <= EXILE_ALLY_RADIUS)
     and (not Players[O].HeroMagicImmunity)
     and (not Players[O].HeroTotalImmunity)
     and (not Players[O].MindStunned) //Serega is cheater!
     and (not Players[O].CaptureMind)
-    and (Players[O].PlayersTeam = Players[P].PlayersTeam)) then
+    and (Players[O].TempPlayersTeam = Players[P].TempPlayersTeam)) then
     begin
       TilesFieldLength[P] := TilesFieldLength[P] + 4;
       SetLength(TilesFieldX[P], TilesFieldLength[P]);
@@ -7176,10 +7184,10 @@ begin
       O := States.UnitOwner(U);
     if ((Abs(X2 - X) <= THREADS_RADIUS)
     and (Abs(Y2 - Y) <= THREADS_RADIUS)
-    and (Players[O].PlayersTeam <> Players[P].PlayersTeam))
+    and (Players[O].TempPlayersTeam <> Players[P].TempPlayersTeam))
     or ((Abs(X2 - X) <= THREADS_ALLY_RADIUS)
     and (Abs(Y2 - Y) <= THREADS_ALLY_RADIUS)
-    and (Players[O].PlayersTeam = Players[P].PlayersTeam)) then
+    and (Players[O].TempPlayersTeam = Players[P].TempPlayersTeam)) then
     begin
       if States.PlayerIsAI(P) then
       begin
@@ -9393,7 +9401,7 @@ begin
                 if U <= 0 then
                   Exit;
                 if ((InRange(O, 0, 7))
-                and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+                and (Players[P].TempPlayersTeam <> Players[O].TempPlayersTeam)
                 and (Abs(X - X2) <= EXILE_RADIUS)
                 and (Abs(Y - Y2) <= EXILE_RADIUS)
                 and (not Players[O].HeroMagicImmunity)
@@ -9402,7 +9410,7 @@ begin
                 and (not Players[O].CaptureMind)
                 and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7))
                 or ((InRange(O, 0, 7))
-                and (Players[P].PlayersTeam = Players[O].PlayersTeam)
+                and (Players[P].TempPlayersTeam = Players[O].TempPlayersTeam)
                 and (Abs(X - X2) <= EXILE_ALLY_RADIUS)
                 and (Abs(Y - Y2) <= EXILE_ALLY_RADIUS)
                 and (not Players[O].HeroMagicImmunity)
@@ -9426,12 +9434,12 @@ begin
                          if ((InRange(O, 0, 11))
                          and (Abs(X - X2) <= THREADS_RADIUS)
                          and (Abs(Y - Y2) <= THREADS_RADIUS)
-                         and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+                         and (Players[P].TempPlayersTeam <> Players[O].TempPlayersTeam)
                          and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7))
                          or ((InRange(O, 0, 11))
                          and (Abs(X - X2) <= THREADS_ALLY_RADIUS)
                          and (Abs(Y - Y2) <= THREADS_ALLY_RADIUS)
-                         and (Players[P].PlayersTeam = Players[O].PlayersTeam)
+                         and (Players[P].TempPlayersTeam = Players[O].TempPlayersTeam)
                          and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7)) then
                          begin
                            TempRoadSkillDelay := Players[P].RoadSkillDelay;
@@ -15709,12 +15717,12 @@ begin
     for I := 0 to 3 do
       if (States.PlayerEnabled(I))
       and (Players[I].HeroChosen) then
-        TeamInfo[0] := TeamInfo[0] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]' + ReChoiceColor(I) + ' {R} []' + IfThenStr(DEBUG_MODE, ' (T' + IntToStr(Players[I].PlayersTeam) + ') ', '') + ':' + PlayerInfo(I);
+        TeamInfo[0] := TeamInfo[0] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]' + ReChoiceColor(I) + ' {R} []' + IfThenStr(DEBUG_MODE, ' ([$BE662A]CT' + IntToStr(Players[I].PlayersTeam) + '[], [$7037AF]TT' + IntToStr(Players[I].TempPlayersTeam) + '[])', '') + ':' + PlayerInfo(I);
 
     for I := 4 to 7 do
       if (States.PlayerEnabled(I))
       and (Players[I].HeroChosen) then
-        TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]' + ReChoiceColor(I) + ' {R} []' + IfThenStr(DEBUG_MODE, ' (T' + IntToStr(Players[I].PlayersTeam) + ') ', '') + ':' + PlayerInfo(I);
+        TeamInfo[1] := TeamInfo[1] + '|[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + '[]' + ReChoiceColor(I) + ' {R} []' + IfThenStr(DEBUG_MODE, ' ([$BE662A]CT' + IntToStr(Players[I].PlayersTeam) + '[], [$7037AF]TT' + IntToStr(Players[I].TempPlayersTeam) + '[])', '') + ':' + PlayerInfo(I);
 
     for I := 0 to Length(SortedPlayersLeft) - 1 do
       Scores[0] := Scores[0] + '|[$' + States.PlayerColorText(SortedPlayersLeft[I]) + ']' + States.PlayerName(SortedPlayersLeft[I]) + '[]: ' + KillsColor(SortedPlayersLeft[I]) + IntToStr(Players[SortedPlayersLeft[I]].Kills) + '[]';
