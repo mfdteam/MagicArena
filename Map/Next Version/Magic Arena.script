@@ -2693,7 +2693,8 @@ begin
   if not TileOnBattlefield(X, Y) then
     Exit;
   if (HT <> 13)
-  and (HT <> 21) then
+  and (HT <> 21)
+  and (HT <> 27) then
     Exit;
   if HT = 13 then
   begin
@@ -2723,6 +2724,12 @@ begin
   and (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) = Players[P].SpawnY)
   and (not Players[P].ReChoiceAllowed) then
     Actions.ShowMsg(P, '<$65>');
+  if (HT = 27)
+  and (Players[P].HP < START_HP) then
+  begin
+    Actions.ShowMsg(-1, 'DEBUG: regen ' + IntToStr(START_HP - Players[P].HP) + ' HP for ' + States.PlayerName(P));
+    Players[P].HP := START_HP;
+  end;
 end;
 
 
@@ -12089,6 +12096,21 @@ begin
 end;
 
 
+procedure UnlockDebug;
+var
+  I: Integer;
+begin
+  if not DEBUG_MODE then
+    Exit;
+  for I := 0 to 7 do
+    if States.PlayerEnabled(I) then
+    begin
+      Actions.HouseAllow(I, 27, True);
+      Actions.HouseUnlock(I, 27);
+    end;
+end;
+
+
 procedure CheckTowers;
 var
   I, K: Integer;
@@ -15753,7 +15775,10 @@ begin
   end;
 
   if States.GameTime = GAME_START_TIME then
+  begin
     SetHeroes;
+    UnlockDebug;
+  end;
 
   if States.GameTime > GAME_START_TIME then
     CheckVictoryDefeat;
