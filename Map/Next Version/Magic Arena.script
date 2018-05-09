@@ -10704,7 +10704,9 @@ begin
   begin
     if (not States.PlayerDefeated(P))
     and (not Players[P].HeroMagicImmunity)
-    and (not Players[P].HeroTotalImmunity) then
+    and (not Players[P].HeroTotalImmunity)
+    and (not Players[P].MindStunned)
+    and (not Players[P].CaptureMind) then
     begin
       if Players[P].Hero > 0 then
       begin
@@ -10728,7 +10730,9 @@ begin
   begin
     if (not States.PlayerDefeated(P))
     and (not Players[P].HeroMagicImmunity)
-    and (not Players[P].HeroTotalImmunity) then
+    and (not Players[P].HeroTotalImmunity)
+    and (not Players[P].MindStunned)
+    and (not Players[P].CaptureMind) then
     begin
       if Players[P].Hero > 0 then
       begin
@@ -10752,7 +10756,9 @@ begin
   begin
     if (not States.PlayerDefeated(P))
     and (not Players[P].HeroMagicImmunity)
-    and (not Players[P].HeroTotalImmunity) then
+    and (not Players[P].HeroTotalImmunity)
+    and (not Players[P].MindStunned)
+    and (not Players[P].CaptureMind) then
     begin
       if Players[P].Hero > 0 then
       begin
@@ -10776,7 +10782,9 @@ begin
   begin
     if (not States.PlayerDefeated(P))
     and (not Players[P].HeroMagicImmunity)
-    and (not Players[P].HeroTotalImmunity) then
+    and (not Players[P].HeroTotalImmunity)
+    and (not Players[P].MindStunned)
+    and (not Players[P].CaptureMind) then
     begin
       if Players[P].Hero > 0 then
       begin
@@ -13291,7 +13299,10 @@ begin
 
     if (States.GameTime >= Players[P].HeroSilentTime)
     and (Players[P].HeroSilent) then
+    begin
       Players[P].HeroSilent := False;
+      Actions.GroupBlockOrders(Players[P].Hero, False);
+    end;
 
     if (States.GameTime >= Players[P].HeroStunnedTime)
     and (Players[P].HeroStunned) then
