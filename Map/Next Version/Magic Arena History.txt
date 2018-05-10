@@ -1,4 +1,4 @@
-Magic Arena v.2.xxx
+Magic Arena v.2.245
 
 - Now every spell will be cancelled if your hero becomes under control spells (stuns, silence, fear effects)
 - Now every lured summon appears in the tile when this summon was, not near
@@ -13,6 +13,8 @@ Magic Arena v.2.xxx
 - Fixed bugs with using spells in Exile
 - Fixed bug when lured by Sword Fighter zombies couldn't use Spiked Earth
 - Fixed bug when Knight couldn't pull summon controlled by Rebel by Threads of Death after using Reality Rift
+- Fixed bug when radius of Threads of Death and Exile was 7 for all targets when you are under Mind Control (instead of 5 and 4)
+- Fixed bug when burst by Revenge From Nowhere could be cancelled if you shoot right on unwalkable tiles near rune spawn
 - Sword Fighter: Cooldown of Spiked Earth is decreased from 12 to 11 seconds
 - Sword Fighter: Speed of Spiked Earth is greatly increased
 - Sword Fighter: Length of Spiked Earth activated by zombies is decreased from 4 to 3 tiles
@@ -31,6 +33,7 @@ Magic Arena v.2.xxx
 - Warrior: Duration of Exile is decreased from 4 to 3 seconds
 - Warrior: Duration of Shield of Darkness is decreased from 10 to 8 seconds
 - Scout: Radius of using Silence is decreased from 6 to 5 tiles
+- Now scout can’t disrupt Mind Control with Exile
 - Rebel: Chanse of luring summon with Mirror is increased from 30% to 45%
 - Rebel: Chanse of killing summon with Mirror is increased from 50% to 65%
 - Rebel: Mirror Shards cooldown is decreased from 30 to 28 seconds
