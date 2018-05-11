@@ -33,9 +33,9 @@ Magic Arena v.2.245
 - Warrior: Duration of Exile is decreased from 4 to 3 seconds
 - Warrior: Duration of Shield of Darkness is decreased from 10 to 8 seconds
 - Scout: Radius of using Silence is decreased from 6 to 5 tiles
-- Now scout can’t disrupt Mind Control with Exile
-- Rebel: Chanse of luring summon with Mirror is increased from 30% to 45%
-- Rebel: Chanse of killing summon with Mirror is increased from 50% to 65%
+- Now scout can't disrupt Mind Control with Exile
+- Rebel: Chance of luring summon with Mirror is increased from 30% to 45%
+- Rebel: Chance of killing summon with Mirror is increased from 50% to 65%
 - Rebel: Mirror Shards cooldown is decreased from 30 to 28 seconds
 - A lot of minor bugfixes
 
@@ -58,7 +58,7 @@ v.2.197
 - Bowman: reworked  Rocket: Now has 4 charges, but with bigger delay
 - Bowman: Decreased Revenge from Nowhere speed
 - Zombies/illusions can take rune for their owner
-- Zombies/illusions should not stay idle if attak target is too far away
+- Zombies/illusions should not stay idle if attack target is too far away
 - Highlight Sacrificial Teleport cooldown in red when player can't use skill
 - Stunning objects should have normal cleanup priority
 - Fixed objects placement on rune spawn
@@ -101,7 +101,7 @@ v. 2.163
 - Removed annoying kick from rune spawns
 - Check Raging Spurt coordinates and direction when spurt starts
 - Players can choose random hero (place road under recruit)
-- Barbarian: Cracking Earth now doesn't stop if hero died after animation, cooldown reduced from 10 to 7 seconds; Cooldown of Wave of Rage reduesd from 17 to 15 seconds; Totem of Ancestors now can destroy runes, radius of using increased from 6 to 7 tiles
+- Barbarian: Cracking Earth now doesn't stop if hero died after animation, cooldown reduced from 10 to 7 seconds; Cooldown of Wave of Rage reduced from 17 to 15 seconds; Totem of Ancestors now can destroy runes, radius of using increased from 6 to 7 tiles
 - Sword Fighter. Radius of using Zombie summon reduced from 4 to 3 tiles; now Zombie Summon with Double Damage will spawn zombie-barbarian instead of 2 militias
 - Bowman: Revenge from Nowhere burst now has no blind zones
 - Pikeman: Vise of Death should block Bowman's rockets
