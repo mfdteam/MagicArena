@@ -1,4 +1,4 @@
-//Script version 2.197 (15 mar 2017)
+//Script version 2.245 (11 may 2018)
 
 const
 
@@ -351,9 +351,9 @@ const
   ZOMBIE_TAKE_RUNES = True;
   IDLE_CHECK_TIME = 200;
 
-  DEBUG_MODE = True;
+  DEBUG_MODE = False;
   CHANGE_RELIEF = True;
-  AI_ENABLED = True;
+  AI_ENABLED = False;
   SHOW_ERROR_MSG = True;
 
 //Battlefield
