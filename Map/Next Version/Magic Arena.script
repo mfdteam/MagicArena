@@ -351,10 +351,11 @@ const
   ZOMBIE_TAKE_RUNES = True;
   IDLE_CHECK_TIME = 200;
 
-  DEBUG_MODE = False;
+  DEBUG_MODE = True;
   CHANGE_RELIEF = True;
-  AI_ENABLED = False;
+  AI_ENABLED = True;
   SHOW_ERROR_MSG = True;
+  DEATH_ANIMATION = False;
 
 //Battlefield
 
@@ -2701,6 +2702,8 @@ begin
   if not TileOnBattlefield(X, Y) then
     Exit;
   if (HT <> 13)
+  and (HT <> 14)
+  and (HT <> 9)
   and (HT <> 21)
   and (HT <> 27) then
     Exit;
@@ -2737,6 +2740,20 @@ begin
   begin
     Actions.ShowMsg(-1, 'DEBUG: regen ' + IntToStr(START_HP - Players[P].HP) + ' HP for ' + States.PlayerName(P));
     Players[P].HP := START_HP;
+  end;
+  if HT = 14 then
+  begin
+    Actions.ShowMsg(-1, 'DEBUG: reset cooldowns for ' + States.PlayerName(P));
+    Players[P].RoadSkillDelay := 0;
+    Players[P].FieldSkillDelay := 0;
+    Players[P].WineSkillDelay := 0;
+    Players[P].RocketCharges := BOWMAN_CHARGES;
+    Players[P].RocketChargeTime := 0;
+  end;
+  if HT = 9 then
+  begin
+    Actions.ShowMsg(-1, 'DEBUG: ' + States.PlayerName(P) + ' has reset the rune');
+    RuneTime := 0;
   end;
 end;
 
@@ -7733,7 +7750,7 @@ begin
   and (Players[P].HP > 0)
   and (TileOnBattlefield(SpurtX[P][Step], SpurtY[P][Step])) then
   begin
-    Actions.GroupKillAll(Players[P].Hero, True);
+    Actions.GroupKillAll(Players[P].Hero, not DEATH_ANIMATION);
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, SpurtX[P][Step], SpurtY[P][Step], SpurtDir[P][Step], 1, 1);
     Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
     if (TileOnRuneSpawn(SpurtX[P][Step], SpurtY[P][Step]))
@@ -7749,7 +7766,7 @@ begin
   and (States.GameTime > CHOOSE_HERO_TIMER)
   and (Players[P].HP > 0) then
   begin
-    Actions.GroupKillAll(Players[P].Hero, True);
+    Actions.GroupKillAll(Players[P].Hero, not DEATH_ANIMATION);
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, SpurtX[P][Players[P].CurrentSpurtLength - 1], SpurtY[P][Players[P].CurrentSpurtLength - 1], SpurtDir[P][Players[P].CurrentSpurtLength - 1], 1, 1);
     Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
   end;
@@ -12123,6 +12140,10 @@ begin
     begin
       Actions.HouseAllow(I, 27, True);
       Actions.HouseUnlock(I, 27);
+      Actions.HouseAllow(I, 14, True);
+      Actions.HouseUnlock(I, 14);
+      Actions.HouseAllow(I, 9, True);
+      Actions.HouseUnlock(I, 9);
     end;
 end;
 
