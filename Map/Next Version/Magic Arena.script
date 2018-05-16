@@ -7439,6 +7439,8 @@ begin
     Players[P].HeroStunned := True;
     Players[P].SpurtStartTime := States.GameTime + 27 + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
     Players[P].SpurtEndTime := Players[P].SpurtStartTime + 2 + Round(DESYNC_FACTOR * SPURT_LENGTH/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+    Players[P].Preparing := True;
+    Players[P].PreparingTime := (States.GameTime + SPURT_TIME + 5) - ((SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P)));
 
     TilesWineLength[P] := TilesWineLength[P] + 8;
     SetLength(TilesWineX[P], TilesWineLength[P]);
@@ -13146,8 +13148,6 @@ begin
         Players[P].HeroMagicImmunityTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
         Players[P].HeroMagicImmunity := True;
       end;
-      Players[P].Preparing := True;
-      Players[P].PreparingTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
     end;
   except
     LogError('Exception in the script: cannot check Spurt Start status for invalid player:', [P], SHOW_ERROR_MSG);
