@@ -8255,8 +8255,6 @@ begin
         O := States.UnitOwner(U);
       if (U > 0)
       and (U = States.GroupMember(Players[O].Hero, 0))
-      and (not Players[O].HeroInFear)
-      and (not Players[O].HeroStunned)
       and (not Players[O].HeroSilent)
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity)
@@ -9509,6 +9507,7 @@ begin
                 and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
                 and (not Players[O].HeroMagicImmunity)
                 and (not Players[O].HeroTotalImmunity)
+                and (not Players[O].HeroSilent)
                 and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7) then
                 begin
                   TempFieldSkillDelay := Players[P].FieldSkillDelay;
