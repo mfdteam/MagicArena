@@ -12654,6 +12654,7 @@ begin
         Players[P].RoadSkillDelay := 0;
         Players[P].FieldSkillDelay := 0;
         Players[P].WineSkillDelay := AXE_WINE_DELAY * (1 - Round(RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - WEREWOLF_TIME;
+        Players[P].SettingTrack := False;
         if Players[P].HP > 0 then
         begin
           Actions.FogCoverAll(P);
