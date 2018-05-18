@@ -12086,8 +12086,6 @@ begin
         and (not AI_ENABLED) then
           Exit;
         Players[I].HeroType := States.KaMRandomI(12) + 15;
-        if Players[I].HeroType = 24 then
-          Players[I].HeroType := States.KaMRandomI(9) + 15;
         Players[I].HeroChosen := True;
         Players[I].TempHeroType := Players[I].HeroType;
       end;
