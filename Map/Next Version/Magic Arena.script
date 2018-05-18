@@ -9958,7 +9958,8 @@ begin
       if Players[I].HeroExileGiver = P then
         Players[I].HeroExileGiver := -1;
 
-      if Players[I].ThreadsTarget = P then
+      if (Players[I].ThreadsTarget = P)
+      and (Players[P].ThreadsTime - States.GameTime > DELAY_OF_TURNING * 2) then
       begin
         Players[P].ThreadsTime := 0;
         Players[P].MovedByThreads := False;
@@ -10207,7 +10208,8 @@ begin
           if Players[I].HeroExileGiver = P then
             Players[I].HeroExileGiver := -1;
 
-          if Players[I].ThreadsTarget = P then
+          if (Players[I].ThreadsTarget = P)
+          and (Players[P].ThreadsTime - States.GameTime > DELAY_OF_TURNING * 2) then
           begin
             Players[P].ThreadsTime := 0;
             Players[P].MovedByThreads := False;
