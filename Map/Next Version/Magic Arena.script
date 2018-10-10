@@ -8271,6 +8271,7 @@ begin
       and (not Players[O].HeroSilent)
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity)
+      and (not Players[O].MindStunned)
       and (O <> P)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
       begin
@@ -13142,7 +13143,8 @@ begin
       Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$73> ' + '[$' + States.PlayerColorText(Players[P].ScoutSilenceGiver) + ']' + States.PlayerName(Players[P].ScoutSilenceGiver) + '[]<$71> ' + SkillName(sSilence);
       Players[P].HeroSilent := True;
       Players[P].HeroSilentTime := States.GameTime + SILENCE_SCOUT_TIME;
-      CancelSkills(P);
+      if not Players[P].MindStunned then
+        CancelSkills(P);
     end;
   except
     LogError('Exception in the script: cannot check Scout Silence status for invalid player:', [P], SHOW_ERROR_MSG);
