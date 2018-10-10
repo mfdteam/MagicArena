@@ -14453,6 +14453,41 @@ begin
               and (States.MapTileObject(States.UnitPositionX(U), States.UnitPositionY(U)) <> WARRIOR_OBJECT7);  
 end;
 
+procedure AIAxe(P: Integer);
+var
+  X, Y, aX, aY, U, O: Integer;
+begin
+
+  if not DEBUG_MODE then
+    Exit;
+
+  if (States.KaMRandomI(10) > 5)
+  and (Players[P].RoadSkillDelay = 0)
+  and (Players[P].Hero > 0) then
+    if States.GroupMember(Players[P].Hero, 0) > 0 then
+    begin
+      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+      for X := (aX - 1) to (aX + 1) do
+      for Y := (aY - 1) to (aY + 1) do
+      begin
+        U := States.UnitAt(X, Y);
+        if (U > 0) then
+        begin
+          O := States.UnitOwner(U);
+          if (P <> O)
+          and (CanUseSkillAgainstUnit(P, U))
+          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+          and (States.KaMRandom > 0.1) then 
+          begin
+            Gravity(P, aX, aY);
+            Exit;
+          end;
+        end;
+      end;
+    end;
+end;
+
 
 procedure AISword(P: Integer);
 var
@@ -15910,6 +15945,11 @@ begin
       AIWalkAfterSkill(I);
 
       AIWalkIdle(I);
+      
+      if Players[I].Hero > 0 then
+        if States.GroupMember(Players[I].Hero, 0) > 0 then
+          if AICanUseSkills(I, 15) then
+            AIAxe(I);
 
       if Players[I].Hero > 0 then
         if States.GroupMember(Players[I].Hero, 0) > 0 then
