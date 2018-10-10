@@ -10740,7 +10740,8 @@ begin
     and (not Players[P].HeroMagicImmunity)
     and (not Players[P].HeroTotalImmunity)
     and (not Players[P].MindStunned)
-    and (not Players[P].CaptureMind) then
+    and (not Players[P].CaptureMind)
+    and (players[P].HeroStunnedTime < STUNNED_TIME) then
     begin
       if Players[P].Hero > 0 then
       begin
@@ -10766,7 +10767,8 @@ begin
     and (not Players[P].HeroMagicImmunity)
     and (not Players[P].HeroTotalImmunity)
     and (not Players[P].MindStunned)
-    and (not Players[P].CaptureMind) then
+    and (not Players[P].CaptureMind)
+    and (players[P].HeroStunnedTime < STUNNED_ANIMATION_TIME) then
     begin
       if Players[P].Hero > 0 then
       begin
@@ -10792,7 +10794,8 @@ begin
     and (not Players[P].HeroMagicImmunity)
     and (not Players[P].HeroTotalImmunity)
     and (not Players[P].MindStunned)
-    and (not Players[P].CaptureMind) then
+    and (not Players[P].CaptureMind)
+    and (players[P].HeroStunnedTime < SHOCK_TIME) then
     begin
       if Players[P].Hero > 0 then
       begin
@@ -10818,7 +10821,8 @@ begin
     and (not Players[P].HeroMagicImmunity)
     and (not Players[P].HeroTotalImmunity)
     and (not Players[P].MindStunned)
-    and (not Players[P].CaptureMind) then
+    and (not Players[P].CaptureMind)
+    and (players[P].HeroStunnedTime < DEAFENING_TIME) then
     begin
       if Players[P].Hero > 0 then
       begin
