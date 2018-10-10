@@ -5327,7 +5327,18 @@ begin
     Players[P].RoadSkillDelay := Round(AXE_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
 
     TimeToClearGravityArray[P] := GravityCircles[P][0].AddTime + CLEAR_ARRAY_FACTOR;
-
+    
+    if (States.PlayerIsAI(P))
+    and (Players[P].HP > 0) then
+      begin
+        Actions.GroupOrderWalk(Players[P].Hero, X2, Y2, States.KaMRandomI(8));
+        Players[P].SkillCastRespawnTime := States.GameTime + SKILL_RESPAWN_TIME;
+        Players[P].SkillCastX := X2;
+        Players[P].SkillCastY := Y2;
+        Actions.GroupKillAll(Players[P].Hero, True);
+        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      end;
+      
     end;
 
   end;
@@ -14452,6 +14463,7 @@ begin
               and (not Players[States.UnitOwner(U)].HeroTotalImmunity)
               and (States.MapTileObject(States.UnitPositionX(U), States.UnitPositionY(U)) <> WARRIOR_OBJECT7);  
 end;
+
 
 procedure AIAxe(P: Integer);
 var
