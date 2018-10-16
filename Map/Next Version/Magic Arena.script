@@ -13032,6 +13032,8 @@ begin
         Players[M[P]].LastY := Players[M[P]].TempLastY;
         Players[P].Direction := Players[P].TempDirection;
         Players[M[P]].Direction := Players[M[P]].TempDirection;
+        Players[M[P]].ReCharge := Players[P].ReCharge;
+        Players[P].ReCharge := Players[P].TempReCharge;
         Players[M[P]].RoadSkillDelay := Players[P].RoadSkillDelay;
         Players[M[P]].FieldSkillDelay := Players[P].FieldSkillDelay;
         Players[M[P]].WineSkillDelay := Players[P].WineSkillDelay;
@@ -13045,8 +13047,6 @@ begin
         Players[P].StolenSkill := Players[P].TempStolenSkill;
         Players[P].StolenSkillTime := Players[P].TempStolenSkillTime;
         Players[P].StolenSkillName := Players[P].TempStolenSkillName;
-        Players[M[P]].ReCharge := Players[P].ReCharge;
-        Players[P].ReCharge := Players[P].TempReCharge;
         Players[M[P]].ReChargeTime := Players[P].ReChargeTime;
         Players[P].ReChargeTime := Players[P].TempReChargeTime;
         Players[M[P]].DD := Players[P].DD;
