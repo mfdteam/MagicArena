@@ -12413,10 +12413,12 @@ begin
       if Players[P].MindStunned then
         Players[P].Hero := Actions.GiveGroup(M2[P], 21, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
       if not Players[P].MindStunned then
+      begin
         Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
-      Actions.CinematicStart(P);
-      Actions.CinematicPanTo(P, Players[P].SpawnX, Players[P].SpawnY, 0);
-      Actions.CinematicEnd(P);
+        Actions.CinematicStart(P);
+        Actions.CinematicPanTo(P, Players[P].SpawnX, Players[P].SpawnY, 0);
+        Actions.CinematicEnd(P);
+      end;
       Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
       Players[P].HeroReborn := False;
     end;
