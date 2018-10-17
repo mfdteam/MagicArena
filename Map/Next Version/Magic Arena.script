@@ -350,7 +350,10 @@ const
   TOWERS_TILES_FACTOR = 2;
   ZOMBIE_TAKE_RUNES = True;
   IDLE_CHECK_TIME = 200;
+  ARENA_FACTOR = 1800;
+  ARENA_CYCLES = 10;
 
+  NEW_ARENA = False;
   DEBUG_MODE = True;
   CHANGE_RELIEF = True;
   AI_ENABLED = True;
@@ -684,6 +687,7 @@ var
   GameOver: Boolean;
   VictoryTime: Integer;
   RuneCleanupTime: array[0..7] of Integer;
+  ArenaCycles: Integer;
 
 
 function InRange(Value, Min, Max: Integer): Boolean;
@@ -737,7 +741,8 @@ begin
     Exit;
   Result := (InRange(X, MIN_X, MAX_X))
             and (InRange(Y, MIN_Y, MAX_Y))
-            and (States.MapTileType(X, Y) <> 202);
+            and (States.MapTileType(X, Y) <> 202)
+            and (States.MapTileType(X, Y) <> 245);
 end;
 
 
@@ -1090,6 +1095,8 @@ begin
 
   RuneTaken := True;
   RuneObject := 255;
+
+  ArenaCycles := -1;
 
   FirstBlood := False;
 
@@ -15679,6 +15686,34 @@ begin
 end;
 
 
+procedure CheckArena;
+var
+  I, aX, aY: Integer;
+begin
+  if not NEW_ARENA then
+    Exit;
+  if ArenaCycles < ARENA_CYCLES - 1 then
+    ArenaCycles := ArenaCycles + 1;
+  for I := 0 to ArenaCycles do
+  begin
+    for aX := MIN_X to MAX_X do
+    begin
+      Actions.MapTileSet(aX, MIN_Y + I, 245, 0);
+      Actions.MapTileSet(aX, MAX_Y - I, 245, 0);
+      Actions.MapTileObjectSet(aX, MIN_Y + I, 255);
+      Actions.MapTileObjectSet(aX, MAX_Y - I, 255);
+    end;
+    for aY := MIN_Y to MAX_Y do
+    begin
+      Actions.MapTileSet(MIN_X + I, aY, 245, 0);
+      Actions.MapTileSet(MAX_X - I, aY, 245, 0);
+      Actions.MapTileObjectSet(MIN_X + I, aY, 255);
+      Actions.MapTileObjectSet(MAX_X - I, aY, 255);
+    end;
+  end;
+end;
+
+
 procedure OnTick;
 var
   N: array[0..19] of Integer;
@@ -15710,6 +15745,9 @@ begin
       CheckEffects(I);
 
   ZombieTakeRune;
+
+  if States.GameTime mod ARENA_FACTOR = 0 then
+    CheckArena;
 
   if States.GameTime mod ZOMBIE_STORM_FACTOR = 0 then
   begin
