@@ -491,6 +491,7 @@ type
     MindX: Integer;
     MindY: Integer;
     MindDir: Integer;
+    MindFull: Boolean;
     PikeX: Integer;
     PikeY: Integer;
     PikeDir: Integer;
@@ -669,7 +670,7 @@ var
   TeamInfo, Scores: array[0..1] of ANSIString;
   ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime: array[0..11] of Integer;
   RuneTime: Integer;
-  M, M2: array[0..7] of Integer;
+  M, M2, Q: array[0..7] of Integer;
   AISoldiers: array of Integer;
   SpurtTimes, SpurtX, SpurtY, SpurtDir: array[0..11] of array[0..SPURT_LENGTH - 1] of Integer;
   RUNE_Y: Integer;
@@ -1133,6 +1134,7 @@ begin
   begin
     M[I] := -1;
     M2[I] := -1;
+    Q[I] := 0;
   end;
 
   for I := 0 to 3 do
@@ -1311,6 +1313,7 @@ begin
       MindX := 0;
       MindY := 0;
       MindDir := 0;
+      MindFull := False;
       PikeX := 0;
       PikeY := 0;
       PikeDir := 0;
@@ -8538,6 +8541,7 @@ begin
 
         M[P] := O;
         M2[O] := P;
+        Q[P] := P;
 
         Players[P].MindX := X;
         Players[P].MindY := Y;
@@ -11709,7 +11713,7 @@ end;
 
 procedure OnUnitDied(aID, aKiller: Integer);
 var
-  I, K, O, aX, aY, X, Y: Integer;
+  I, K, O, aX, aY, X, Y, T: Integer;
 begin
   if aID <= 0 then
     Exit;
@@ -11719,14 +11723,23 @@ begin
     SortScoresLeft;
     SortScoresRight;
   end;
-
+  
   O := States.UnitOwner(aID);
   aX := States.UnitPositionX(aID);
   aY := States.UnitPositionY(aID);
 
   if InRange(O, 0, 7) then
   begin
-
+  
+    for I := 0 to 7 do
+      if (Players[Q[I]].CaptureMind)
+      and (Players[Q[I]].MindFull) then
+      begin
+        T := States.UnitType(aID);
+        if T = 21 then
+          O := M[Q[I]];
+      end;
+  
     for X := aX - ANIMATION_CHECK_RADIUS to aX + ANIMATION_CHECK_RADIUS do
     for Y := aY - ANIMATION_CHECK_RADIUS to aY + ANIMATION_CHECK_RADIUS do
       if TileOnBattlefield(X, Y) then
@@ -12397,7 +12410,10 @@ begin
       Players[P].HeroTotalImmunity := True;
       Players[P].HeroTotalImmunityTime := States.GameTime + TOTAL_IMMUNITY_TIME;
       Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
+      if Players[P].MindStunned then
+        Players[P].Hero := Actions.GiveGroup(M2[P], 21, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
+      if not Players[P].MindStunned then
+        Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
       Actions.CinematicStart(P);
       Actions.CinematicPanTo(P, Players[P].SpawnX, Players[P].SpawnY, 0);
       Actions.CinematicEnd(P);
@@ -12832,6 +12848,8 @@ begin
       if (Players[P].CaptureMind)
       and (Players[M[P]].MindStunned) then
       begin
+        Players[P].MindFull := True;
+        Players[M[P]].MindFull := True;
         Players[P].TempSpawnX := Players[P].SpawnX;
         Players[P].TempSpawnY := Players[P].SpawnY;
         Players[M[P]].TempSpawnX := Players[M[P]].SpawnX;
@@ -12894,21 +12912,15 @@ begin
       Actions.FogRevealRect(P, 1, 39, 70, 109);
       Actions.FogCoverAll(M[P]);
       Actions.FogRevealRect(M[P], 1, 39, 70, 109);
-      if Players[M[P]].HeroType = 27 then
-      begin
-        Players[P].WerewolfTime := Players[M[P]].WerewolfTime;
-        Players[M[P]].WerewolfTime := 0;
-        Players[M[P]].HeroMindType := 15;
-      end;
+      Players[P].WerewolfTime := Players[M[P]].WerewolfTime;
       Players[P].HeroType := Players[M[P]].HeroType;
       Actions.GroupKillAll(Players[P].Hero, True);
       Players[P].Hero := Actions.GiveGroup(P, Players[M[P]].HeroType, Players[P].MindX, Players[P].MindY, Players[P].MindDir, 1, 1);
       Players[P].HeroStunned := Players[M[P]].HeroStunned;
       Players[P].HeroStunnedTime := Players[M[P]].HeroStunnedTime;
       Players[M[P]].HeroStunned := True;
-      Players[M[P]].HeroType := Players[P].HeroMindType;
       Actions.GroupKillAll(Players[M[P]].Hero, True);
-      Players[M[P]].Hero := Actions.GiveGroup(M[P], Players[M[P]].HeroType, Players[M[P]].MindX, Players[M[P]].MindY, Players[M[P]].MindDir, 1, 1);
+      Players[M[P]].Hero := Actions.GiveGroup(P, 21, Players[M[P]].MindX, Players[M[P]].MindY, Players[M[P]].MindDir, 1, 1);
       Players[P].TempHeroType := Players[M[P]].TempHeroType;
       Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
       Actions.GroupHungerSet(Players[M[P]].Hero, States.UnitMaxHunger);
@@ -13095,6 +13107,9 @@ begin
         Actions.GroupHungerSet(Players[M[P]].Hero, States.UnitMaxHunger);
         Players[M[P]].HeroMagicImmunity := True;
         Players[M[P]].HeroMagicImmunityTime := States.GameTime + 20;
+        Players[P].MindFull := False;
+        Players[M[P]].MindFull := False;
+        Q[P] := 0;
       end;
     end;
   except
