@@ -6491,7 +6491,7 @@ begin
 
     case Direction of
 
-      0,1: for Y1 := Y2 - 2 downto Y2 - 18 do
+      0,1: for Y1 := Y2 - 2 downto Y2 - 15 do
              if TileOnBattlefield(X2, Y1) then
              begin
                Desync := Desync + 1;
@@ -6510,7 +6510,7 @@ begin
                CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
-      2,3: for X1 := X2 + 2 to X2 + 18 do
+      2,3: for X1 := X2 + 2 to X2 + 15 do
              if TileOnBattlefield(X1, Y2) then
              begin
                Desync := Desync + 1;
@@ -6529,7 +6529,7 @@ begin
                CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
-      4,5: for Y1 := Y2 + 2 to Y2 + 18 do
+      4,5: for Y1 := Y2 + 2 to Y2 + 15 do
              if TileOnBattlefield(X2, Y1) then
              begin
                Desync := Desync + 1;
@@ -6548,7 +6548,7 @@ begin
                CircleTime := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1];
              end;
 
-      6,7: for X1 := X2 - 2 downto X2 - 18 do
+      6,7: for X1 := X2 - 2 downto X2 - 15 do
              if TileOnBattlefield(X1, Y2) then
              begin
                Desync := Desync + 1;
