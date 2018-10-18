@@ -350,10 +350,10 @@ const
   TOWERS_TILES_FACTOR = 2;
   ZOMBIE_TAKE_RUNES = True;
   IDLE_CHECK_TIME = 200;
-  ARENA_FACTOR = 1800;
+  ARENA_FACTOR = 180;
   ARENA_CYCLES = 10;
 
-  NEW_ARENA = False;
+  NEW_ARENA = True;
   DEBUG_MODE = True;
   CHANGE_RELIEF = True;
   AI_ENABLED = True;
@@ -361,6 +361,7 @@ const
   DEATH_ANIMATION = False;
 
 //Battlefield
+
 
   MIN_X = 12;
   MAX_X = 59;
@@ -647,6 +648,7 @@ type
 
 
 var
+  CurrentMaxX, CurrentMinX, CurrentMaxY, CurrentMinY: Integer;
   Players: array[0..11] of aPlayer;
   ClearTilesRoadTimes, SetTilesRoadTimes, TilesRoadX, TilesRoadY, TilesRoadObjects,
   ClearTilesFieldTimes, SetTilesFieldTimes, TilesFieldX, TilesFieldY, TilesFieldObjects,
@@ -739,8 +741,8 @@ begin
     Exit;
   if Y <= 0 then
     Exit;
-  Result := (InRange(X, MIN_X, MAX_X))
-            and (InRange(Y, MIN_Y, MAX_Y))
+  Result := (InRange(X, CurrentMinX, CurrentMaxX))
+            and (InRange(Y, CurrentMinY, CurrentMaxY))
             and (States.MapTileType(X, Y) <> 202)
             and (States.MapTileType(X, Y) <> 245);
 end;
@@ -876,8 +878,8 @@ procedure CheckTilesInfo;
 var
   aX, aY: Integer;
 begin
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
+  for aX := CurrentMinX to CurrentMaxX do
+  for aY := CurrentMinY to CurrentMaxY do
   begin
     Tiles[aX][aY].X := aX;
     Tiles[aX][aY].Y := aY;
@@ -905,8 +907,8 @@ begin
   if not CHANGE_RELIEF then
     Exit;
 
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
+  for aX := CurrentMinX to CurrentMaxX do
+  for aY := CurrentMinY to CurrentMaxY do
     if (States.MapTileHeight(aX, aY) <> Tiles[aX][aY].Relief)
     and (States.GameTime > Tiles[aX][aY].ReliefRefreshTime) then
       Actions.MapTileHeightSet(aX, aY, Tiles[aX][aY].Relief);
@@ -918,8 +920,8 @@ procedure CheckTileCleanup(CheckShields: Boolean);
 var
   aX, aY, aObj: Integer;
 begin
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
+  for aX := CurrentMinX to CurrentMaxX do
+  for aY := CurrentMinY to CurrentMaxY do
   begin
     if (States.MapTileType(aX, aY) = Tiles[aX][aY].TileType)
     and (States.MapTileRotation(aX, aY) <> Tiles[aX][aY].TileDirection) then
@@ -1080,6 +1082,11 @@ procedure OnMissionStart;
 var
   I, K: Integer;
 begin
+
+  CurrentMinX := MIN_X;
+  CurrentMaxX := MAX_X;
+  CurrentMinY := MIN_Y;
+  CurrentMaxY := MAX_Y;
 
   SetPlayersLeft;
   SetPlayersRight;
@@ -6593,17 +6600,17 @@ begin
           6,7: ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X := ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X + 1;
         end;
 
-      if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X > MAX_X then
-        ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X := MAX_X;
+      if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X > CurrentMaxX then
+        ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X := CurrentMaxX;
 
-      if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y > MAX_Y then
-        ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y := MAX_Y;
+      if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y > CurrentMaxY then
+        ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y := CurrentMaxY;
 
-      if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X < MIN_X then
-        ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X := MIN_X;
+      if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X < CurrentMinX then
+        ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X := CurrentMinX;
 
-      if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y < MIN_Y then
-        ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y := MIN_Y;
+      if ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y < CurrentMinY then
+        ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y := CurrentMinY;
 
       TilesWineX[P][Length(TilesWineX[P]) - 1] := ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].X;    
       TilesWineY[P][Length(TilesWineY[P]) - 1] := ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Y;
@@ -7560,8 +7567,8 @@ begin
     Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     if InRange(States.GameTime, Players[P].ThreadsStartTime, Players[P].ThreadsTime) then
     begin
-      Players[P].ThreadsX := States.UnitPositionX(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[P].ThreadsAttacker].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) < MIN_Y);
-      Players[P].ThreadsY := States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= MIN_Y) + Players[Players[P].ThreadsAttacker].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) < MIN_Y);
+      Players[P].ThreadsX := States.UnitPositionX(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= CurrentMinY) + Players[Players[P].ThreadsAttacker].LastX * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) < CurrentMinY);
+      Players[P].ThreadsY := States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= CurrentMinY) + Players[Players[P].ThreadsAttacker].LastY * Byte(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) < CurrentMinY);
       X2 := Players[P].ThreadsX + Players[P].ThreadsDX;
       Y2 := Players[P].ThreadsY + Players[P].ThreadsDY;
       Direction := Players[P].ThreadsUnitDir;
@@ -12441,8 +12448,8 @@ begin
     if (States.GameTime = Players[P].ThreadsTime - DELAY_OF_TURNING)
     and (InRange(Players[P].ThreadsAttacker, 0, 7)) then
     begin
-      Players[P].ThreadsX := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= MIN_Y, States.UnitPositionX(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastX);
-      Players[P].ThreadsY := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= MIN_Y, States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastY);
+      Players[P].ThreadsX := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= CurrentMinY, States.UnitPositionX(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastX);
+      Players[P].ThreadsY := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= CurrentMinY, States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastY);
       Actions.GroupKillAll(Players[P].Hero, True);
       Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
@@ -13251,7 +13258,7 @@ begin
   try
     if (States.PlayerEnabled(P))
     and (Players[P].Hero > 0) then
-      if (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) < MIN_Y)
+      if (States.UnitPositionY(States.GroupMember(Players[P].Hero, 0)) < CurrentMinY)
       and (States.GroupOwner(Players[P].Hero) = P)
       and (Players[P].HP > 0) then
       begin
@@ -13902,8 +13909,8 @@ procedure ClearDefence(P: Integer);
 var
   aX, aY: Integer;
 begin
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
+  for aX := CurrentMinX to CurrentMaxX do
+  for aY := CurrentMinY to CurrentMaxY do
     if States.MapTileObject(aX, aY) = ShieldObjects[P] then
       Actions.MapTileObjectSet(aX, aY, 255);
 end;
@@ -13913,8 +13920,8 @@ procedure ClearPikeObj(P: Integer);
 var
   aX, aY: Integer;
 begin
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
+  for aX := CurrentMinX to CurrentMaxX do
+  for aY := CurrentMinY to CurrentMaxY do
     if States.MapTileObject(aX, aY) = PikeObjects[P] then
       Actions.MapTileObjectSet(aX, aY, 255);
 end;
@@ -13965,8 +13972,8 @@ begin
       Tiles[aX][aY].TreeTime := States.GameTime;
     end;
 
-  for aX := MIN_X to MAX_X do
-  for aY := MIN_Y to MAX_Y do
+  for aX := CurrentMinX to CurrentMaxX do
+  for aY := CurrentMinY to CurrentMaxY do
     if States.GameTime mod aX * TREES_GROW_FACTOR = 0 then
     begin
 
@@ -14963,7 +14970,7 @@ begin
         0, 1: begin
                 aX1 := aX;
                 aX2 := aX;
-                aY1 := MIN_Y;
+                aY1 := CurrentMinY;
                 aY2 := aY - 1;
               end;
 
@@ -14971,18 +14978,18 @@ begin
                 aX1 := aX;
                 aX2 := aX;
                 aY1 := aY + 1;
-                aY2 := MAX_Y;
+                aY2 := CurrentMaxY;
               end;
 
         2, 3: begin
                 aX1 := aX + 1;
-                aX2 := MAX_X;
+                aX2 := CurrentMaxX;
                 aY1 := aY;
                 aY2 := aY;
               end;
 
         6, 7: begin
-                aX1 := MIN_X;
+                aX1 := CurrentMinX;
                 aX2 := aX - 1;
                 aY1 := aY;
                 aY2 := aY;
@@ -15688,27 +15695,40 @@ end;
 
 procedure CheckArena;
 var
-  I, aX, aY: Integer;
+  I, K, aX, aY: Integer;
 begin
   if not NEW_ARENA then
     Exit;
+  ArenaCycles := ArenaCycles + 1;
   if ArenaCycles < ARENA_CYCLES - 1 then
-    ArenaCycles := ArenaCycles + 1;
-  for I := 0 to ArenaCycles do
   begin
-    for aX := MIN_X to MAX_X do
+    for aX := CurrentMinX to CurrentMaxX do
     begin
-      Actions.MapTileSet(aX, MIN_Y + I, 245, 0);
-      Actions.MapTileSet(aX, MAX_Y - I, 245, 0);
-      Actions.MapTileObjectSet(aX, MIN_Y + I, 255);
-      Actions.MapTileObjectSet(aX, MAX_Y - I, 255);
+      Actions.MapTileSet(aX, CurrentMinY, 245, 0);
+      Actions.MapTileSet(aX, CurrentMaxY, 245, 0);
+      Actions.MapTileObjectSet(aX, CurrentMinY, 255);
+      Actions.MapTileObjectSet(aX, CurrentMaxY, 255);
     end;
-    for aY := MIN_Y to MAX_Y do
+    for aY := CurrentMinY to CurrentMaxY do
     begin
-      Actions.MapTileSet(MIN_X + I, aY, 245, 0);
-      Actions.MapTileSet(MAX_X - I, aY, 245, 0);
-      Actions.MapTileObjectSet(MIN_X + I, aY, 255);
-      Actions.MapTileObjectSet(MAX_X - I, aY, 255);
+      Actions.MapTileSet(CurrentMinX, aY, 245, 0);
+      Actions.MapTileSet(CurrentMaxX, aY, 245, 0);
+      Actions.MapTileObjectSet(CurrentMinX, aY, 255);
+      Actions.MapTileObjectSet(CurrentMaxX, aY, 255);
+    end;
+    CurrentMinX := CurrentMinX + 1;
+    CurrentMaxX := CurrentMaxX - 1;
+    CurrentMinY := CurrentMinY + 1;
+    CurrentMaxY := CurrentMaxY - 1;
+    for I := 0 to 3 do
+    begin
+      Players[I].SpawnX := CurrentMinX + 7;
+      Players[I].SpawnY := CurrentMinY + I * (11 - ArenaCycles);
+    end;
+    for K := 4 to 7 do
+    begin
+      Players[K].SpawnX := CurrentMaxX - 7;
+      Players[K].SpawnY := CurrentMinY + (K - 4) * (11 - ArenaCycles);
     end;
   end;
 end;
