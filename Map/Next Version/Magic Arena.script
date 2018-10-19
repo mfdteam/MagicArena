@@ -353,10 +353,10 @@ const
   ARENA_FACTOR = 180;
   ARENA_CYCLES = 10;
 
-  NEW_ARENA = True;
-  DEBUG_MODE = True;
+  NEW_ARENA = False;
+  DEBUG_MODE = False;
   CHANGE_RELIEF = True;
-  AI_ENABLED = True;
+  AI_ENABLED = False;
   SHOW_ERROR_MSG = True;
   DEATH_ANIMATION = False;
 
