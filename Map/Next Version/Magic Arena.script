@@ -11727,7 +11727,7 @@ end;
 
 procedure OnUnitDied(aID, aKiller: Integer);
 var
-  I, K, O, aX, aY, X, Y, T: Integer;
+  I, K, O, aX, aY, X, Y, G: Integer;
 begin
   if aID <= 0 then
     Exit;
@@ -11741,19 +11741,15 @@ begin
   O := States.UnitOwner(aID);
   aX := States.UnitPositionX(aID);
   aY := States.UnitPositionY(aID);
-
+  G := States.UnitsGroup(aID); 
+  
   if InRange(O, 0, 7) then
   begin
-  
-    for I := 0 to 7 do
-      if (Players[Q[I]].CaptureMind)
-      and (Players[Q[I]].MindFull) then
-      begin
-        T := States.UnitType(aID);
-        if T = 21 then
-          O := M[Q[I]];
-      end;
-  
+
+    if (Players[O].CaptureMind)
+    and (Players[O].Hero <> G) then
+      O := M[Q[O]];     
+
     for X := aX - ANIMATION_CHECK_RADIUS to aX + ANIMATION_CHECK_RADIUS do
     for Y := aY - ANIMATION_CHECK_RADIUS to aY + ANIMATION_CHECK_RADIUS do
       if TileOnBattlefield(X, Y) then
