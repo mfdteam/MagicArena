@@ -12455,7 +12455,7 @@ begin
       Players[P].HeroTotalImmunityTime := States.GameTime + TOTAL_IMMUNITY_TIME;
       Actions.GroupKillAll(Players[P].Hero, True);
       if Players[P].MindStunned then
-      Players[P].Hero := Actions.GiveGroup(M2[P], Players[M2[P]].HeroMindType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
+        Players[P].Hero := Actions.GiveGroup(M2[P], Players[M2[P]].HeroMindType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
       if not Players[P].MindStunned then
       begin
         Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
@@ -12964,7 +12964,7 @@ begin
       Players[P].HeroStunnedTime := Players[M[P]].HeroStunnedTime;
       Players[M[P]].HeroStunned := True;
       Actions.GroupKillAll(Players[M[P]].Hero, True);
-      Players[M[P]].Hero := Actions.GiveGroup(P, 21, Players[M[P]].MindX, Players[M[P]].MindY, Players[M[P]].MindDir, 1, 1);
+      Players[M[P]].Hero := Actions.GiveGroup(P, Players[P].HeroMindType, Players[M[P]].MindX, Players[M[P]].MindY, Players[M[P]].MindDir, 1, 1);
       Players[P].TempHeroType := Players[M[P]].TempHeroType;
       Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
       Actions.GroupHungerSet(Players[M[P]].Hero, States.UnitMaxHunger);
