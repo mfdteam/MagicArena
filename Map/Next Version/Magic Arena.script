@@ -495,7 +495,6 @@ type
     MindX: Integer;
     MindY: Integer;
     MindDir: Integer;
-    MindFull: Boolean;
     PikeX: Integer;
     PikeY: Integer;
     PikeDir: Integer;
@@ -536,6 +535,8 @@ type
     SpurtEndTime: Integer;
     CurrentSpurtLength: Integer;
     RebornTime: Integer;
+    RebornMindTime: Integer;
+    RebornMindTime2: Integer;
     HeroReborn: Boolean;
     TempHeroReborn: Boolean;
     TempRebornTime: Integer;
@@ -1148,7 +1149,7 @@ begin
   begin
     M[I] := -1;
     M2[I] := -1;
-    Q[I] := 0;
+    Q[I] := -1;
   end;
 
   for I := 0 to 3 do
@@ -1327,7 +1328,6 @@ begin
       MindX := 0;
       MindY := 0;
       MindDir := 0;
-      MindFull := False;
       PikeX := 0;
       PikeY := 0;
       PikeDir := 0;
@@ -1365,7 +1365,11 @@ begin
       SpurtEndTime := 0;
       CurrentSpurtLength := 0;
       RebornTime := 0;
+      RebornMindTime := 0;
+      RebornMindTime2 := 0;
       HeroReborn := False;
+      TempHeroReborn := False;
+      TempRebornTime := 0;
       MovedToTribune := False;
       FireworkTime := 0;
       FireworkX := 0;
@@ -1861,14 +1865,35 @@ end;
 
 function RebornStatus(P: Integer): ANSIString;
 begin
-  if Players[P].RebornTime - States.GameTime > 0 then
+  if (Players[P].RebornTime - States.GameTime > 0)
+  and not (Players[P].MindStunned) then
     Result := '|[$BAECDA]<$83>[] (' + IntToStr((Players[P].RebornTime - States.GameTime)/10) + ')'
-
+    
   else
 
     Result := '';
+
 end;
 
+function RebornMindStatus(P: Integer): ANSIString;
+begin
+  if (Players[P].RebornMindTime - States.GameTime > 0) then
+      Result := '|' + States.UnitTypeName(Players[P].HeroMindType) + ': [$BAECDA]<$83>[] (' + IntToStr((Players[P].RebornMindTime - States.GameTime)/10) + ')'
+      
+  else   
+        
+    Result := '';  
+end;
+
+function RebornMindStatus2(P: Integer): ANSIString;
+begin
+  if (Players[P].RebornMindTime2 - States.GameTime > 0) then
+      Result := '|[$BAECDA]<$83>[] (' + IntToStr((Players[P].RebornMindTime2 - States.GameTime)/10) + ')'
+      
+  else   
+        
+    Result := '';  
+end;
 
 function DefeatStatus(P: Integer): ANSIString;
 begin
@@ -1946,7 +1971,8 @@ end;
 function ImmortalStatus(P: Integer): ANSIString;
 begin
   if (Players[P].HeroMagicImmunity)
-  and not (Players[P].CaptureMind) then
+  and not (Players[P].CaptureMind)
+  and not (Players[P].MindStunned) then
     Result := '|[$1515DF]<$5>[] (' + IntToStr((Players[P].HeroMagicImmunityTime - States.GameTime)/10) + ')'
 
   else
@@ -1961,7 +1987,8 @@ end;
 
 function TotalImmunityStatus(P: Integer): ANSIString;
 begin
-  if Players[P].HeroTotalImmunity then
+  if Players[P].HeroTotalImmunity
+  and not (Players[P].MindStunned) then
     Result := '|[$2235EF]<$116>[] (' + IntToStr((Players[P].HeroTotalImmunityTime - States.GameTime)/10) + ')'
 
   else
@@ -2082,7 +2109,8 @@ function StatusText(P: Integer): ANSIString;
 begin
   Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) + WerewolfStatus(P) + RegenStatus(P) + DDStatus(P)
   + SilenceStatus(P) + PreparingStatus(P) + ExileStatus(P) + ShieldStatus(P) + ReChargeStatus(P) + RogueStatus(P) + MirrorStatus(P)
-  + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + FieryTrackStatus(P) + TotalImmunityStatus(P) + StatusKill(P) + DefeatStatus(P) + GameplayStatus(P);
+  + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + RebornMindStatus(P) + RebornMindStatus2(P) + FieryTrackStatus(P) 
+  + TotalImmunityStatus(P) + StatusKill(P) + DefeatStatus(P) + GameplayStatus(P);
 end;
 
 
@@ -10127,6 +10155,8 @@ begin
       if Players[P].HP > 0 then
       begin 
         Actions.GroupKillAll(Players[P].Hero, False);
+        if Players[P].MindStunned then
+          Players[M2[P]].RebornMindTime := States.GameTime + REBORN_TIME;
         Players[P].HeroReborn := True;
         Players[P].RebornTime := States.GameTime + REBORN_TIME;
         Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), T, Players[P].TempX, Players[P].TempY, 4, 1, 1);
@@ -12103,9 +12133,13 @@ begin
       and not (Players[O].MindStunned) then
         Players[States.UnitOwner(aID)].HP := Players[States.UnitOwner(aID)].HP - 1;
       if Players[O].CaptureMind then
+      begin
         Players[M[O]].HP := Players[M[O]].HP - 1;
+        Players[M[O]].RebornMindTime2 := States.GameTime + REBORN_TIME;
+      end;
       if Players[O].MindStunned then
         begin
+          Players[M2[O]].RebornMindTime := States.GameTime + REBORN_TIME;
           Players[M2[O]].HP := Players[M2[O]].HP - 1;
           Actions.GroupBlockOrders(Players[O].Hero, True);
           Actions.GroupOrderHalt(Players[O].Hero);
@@ -12421,7 +12455,7 @@ begin
       Players[P].HeroTotalImmunityTime := States.GameTime + TOTAL_IMMUNITY_TIME;
       Actions.GroupKillAll(Players[P].Hero, True);
       if Players[P].MindStunned then
-        Players[P].Hero := Actions.GiveGroup(M2[P], 21, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
+      Players[P].Hero := Actions.GiveGroup(M2[P], Players[M2[P]].HeroMindType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
       if not Players[P].MindStunned then
       begin
         Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].SpawnX, Players[P].SpawnY, Players[P].Direction, 1, 1);
@@ -12860,8 +12894,6 @@ begin
       if (Players[P].CaptureMind)
       and (Players[M[P]].MindStunned) then
       begin
-        Players[P].MindFull := True;
-        Players[M[P]].MindFull := True;
         Players[P].TempSpawnX := Players[P].SpawnX;
         Players[P].TempSpawnY := Players[P].SpawnY;
         Players[M[P]].TempSpawnX := Players[M[P]].SpawnX;
@@ -13119,9 +13151,6 @@ begin
         Actions.GroupHungerSet(Players[M[P]].Hero, States.UnitMaxHunger);
         Players[M[P]].HeroMagicImmunity := True;
         Players[M[P]].HeroMagicImmunityTime := States.GameTime + 20;
-        Players[P].MindFull := False;
-        Players[M[P]].MindFull := False;
-        Q[P] := 0;
       end;
     end;
   except
@@ -13827,6 +13856,31 @@ begin
 
 end;
 
+procedure CheckLinks(P: Integer);
+var
+  G, K, Count: Integer;
+  Groups: array of Integer;
+begin
+  if Players[P].CaptureMind then
+  begin
+    Groups := States.PlayerGetAllGroups(P);
+    for K := 0 to length(Groups) - 1 do
+    begin
+      if Groups[K] > 0 then
+      begin
+        G := Groups[K];
+        Count := States.GroupMemberCount(G);
+        if Count > 1 then
+        begin
+          Actions.GroupKillAll(G, True);
+          Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[M[P]].LastX, Players[M[P]].LastY, Players[P].Direction, 1, 1);
+          Players[M[P]].Hero := Actions.GiveGroup(P, 21, Players[P].LastX, Players[P].LastY, Players[M[P]].Direction, 1, 1);
+          Actions.ShowMsg(P, '<$999>'); //Easter egg
+        end;
+      end;
+    end;
+  end;
+end;
 
 procedure CheckEffects(P: Integer);
 var
@@ -15758,7 +15812,10 @@ begin
 
   for I := 0 to 7 do
     if States.PlayerEnabled(I) then
+    begin
       CheckEffects(I);
+      CheckLinks(I);
+    end;
 
   ZombieTakeRune;
 
