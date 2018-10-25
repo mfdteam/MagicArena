@@ -11997,30 +11997,68 @@ begin
   begin
     if InRange(LastAttacker, 0, 11) then
     begin
-      if not Players[O].MindStunned then 
-        Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
-      Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
       Players[LastAttacker].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-      if (LastAttackerUnitType = 13)
-      and (not Players[O].MindStunned) then
+      if not Players[O].CaptureMind then
       begin
-        Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$105> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
-        Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$106> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
-        if (Players[O].HP > 1)
-        and (Players[LastAttacker].DD) then
+        Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
+        if not Players[O].MindStunned then
+          Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+      end;
+      if Players[O].CaptureMind then
+      begin
+        if Players[LastAttacker].MindStunned then
         begin
-          Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
-          Players[O].HP := Players[O].HP - 1;
+          Players[M2[LastAttacker]].Kills := Players[M2[LastAttacker]].Kills + 1;
+          Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+        end;
+        if not Players[LastAttacker].MindStunned then 
+          for I := 0 to 7 do
+            if Players[I].PlayersTeam = Players[LastAttacker].PlayersTeam then
+              Actions.PlayWAV(I, 'Retard', 1);
+      end;
+      
+      if (LastAttackerUnitType = 13) then
+      begin
+        if not (Players[O].CaptureMind)
+        and not (Players[O].MindStunned) then
+        begin
+          Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$105> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
+          Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$106> ' + '[$' + States.PlayerColorText(O) + ']' + States.PlayerName(O) + '[]';
+          if (Players[O].HP > 1)
+          and (Players[LastAttacker].DD) then
+          begin
+            Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
+            Players[O].HP := Players[O].HP - 1;
+          end;
+        end;
+        if Players[O].CaptureMind then
+        begin
+          if Players[LastAttacker].MindStunned then
+          begin
+            Players[O].PlayerStatus := Players[O].PlayerStatus + '|<$84> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + ' [$FFFFFF]<$141>' + '[]';
+            Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$120> ' + '[]';
+          end;
+          if not Players[LastAttacker].MindStunned then 
+          begin
+            Players[M[O]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+            Players[M[O]].PlayerStatus := Players[M[O]].PlayerStatus + '|<$105> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
+            Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$106> ' + '[$' + States.PlayerColorText(M[O]) + ']' + States.PlayerName(M[O]) + '[]';
+          end;
+          if (Players[O].HP > 1)
+          and (Players[LastAttacker].DD) then
+            Players[O].HP := Players[O].HP - 1;
+        end;
+        if Players[O].MindStunned then
+        begin
+          Players[M2[O]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+          Players[M2[O]].PlayerStatus := Players[M2[O]].PlayerStatus + '|<$105> ' + '[$' + States.PlayerColorText(LastAttacker) + ']' + States.PlayerName(LastAttacker) + '[]';
+          Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$106> ' + '[$' + States.PlayerColorText(M2[O]) + ']' + States.PlayerName(M2[O]) + '[]';
+          if (Players[M2[O]].HP > 1)
+          and (Players[LastAttacker].DD) then
+            Players[M2[O]].HP := Players[M2[O]].HP - 1;
         end;
       end;
-      if (LastAttackerUnitType = 13)
-      and (Players[O].MindStunned) then
-      begin
-        Players[LastAttacker].PlayerStatus := Players[LastAttacker].PlayerStatus + '|<$120> ' + '[]';
-        if (Players[O].HP > 1)
-        and (Players[LastAttacker].DD) then
-          Players[O].HP := Players[O].HP - 1;
-      end;
+      
       if (LastAttackerUnitType = 14)
       and not (Players[O].MindStunned) then
       begin
