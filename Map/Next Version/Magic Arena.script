@@ -11067,6 +11067,8 @@ procedure CheckArenaTimer;
 begin
   if States.GameTime < GAME_START_TIME then
     Exit;
+  if not NEW_ARENA then
+    Exit;
   if ArenaTime > 0 then
     ArenaTime := ArenaTime - 1;
   if ArenaTime = 0 then
@@ -16099,7 +16101,7 @@ begin
       + '||<$35>: ' + RoadSkillName(I, Players[I].HeroType) + IfThenStr(Players[I].HeroType <> 17, '. <$34>: ' + IntToStr(Players[I].RoadSkillDelay/10), '.')
       + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '.' + SacrificialTeleportColor(I) + ' <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10) + '[]'
       + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '.' + StolenSacrificialTeleportColor(I) + IfThenStr(Players[I].StolenSkillName <> '<$10>', ' <$34>: ' + IntToStr(Players[I].WineSkillDelay/10) + '[]', '')
-      + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + '||<$145>: ' + IntToStr(ArenaTime/10) + '|'
+      + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + IfThenStr(ArenaTime > 0, '||<$145>: ' + IntToStr(ArenaTime/10) + '|', '')
       + StatusText(I) + '|||<$41>:|' + TeamInfo[0] + '|||<$79>:|' + Scores[0]);
     end;
 
@@ -16113,7 +16115,7 @@ begin
       + '||<$35>: ' + RoadSkillName(I, Players[I].HeroType) + IfThenStr(Players[I].HeroType <> 17, '. <$34>: ' + IntToStr(Players[I].RoadSkillDelay/10), '.')
       + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '.' + SacrificialTeleportColor(I) + ' <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10) + '[]'
       + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '.' + StolenSacrificialTeleportColor(I)  + IfThenStr(Players[I].StolenSkillName <> '<$10>', ' <$34>: ' + IntToStr(Players[I].WineSkillDelay/10) + '[]', '')
-      + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + '||<$145>: ' + IntToStr(ArenaTime/10) + '|'
+      + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + IfThenStr(ArenaTime > 0, '||<$145>: ' + IntToStr(ArenaTime/10) + '|', '')
       + StatusText(I) + '|||<$41>:|' + TeamInfo[1] + '|||<$79>:|' + Scores[1]);
     end;
 
