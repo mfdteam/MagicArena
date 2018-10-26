@@ -15883,7 +15883,7 @@ end;
 
 procedure CheckArena;
 var
-  I, K, aX, aY: Integer;
+  I, J, K, aX, aY, aX1, aY1: Integer;
 begin
   if not NEW_ARENA then
     Exit;
@@ -15908,20 +15908,178 @@ begin
       Tiles[CurrentMinX][aY].TileType := 245;
       Tiles[CurrentMaxX][aY].TileType := 245;
     end;
+    for J := 0 to 7 do
+      for aX1 := Players[J].SpawnX - 1 to Players[J].SpawnX + 1 do
+        for aY1 := Players[J].SpawnY - 1 to Players[J].SpawnY + 1 do
+        begin
+          Actions.MapTileSet(aX1, aY1, 36, States.KaMRandomI(4));
+          Tiles[aX1][aY1].TileType := 36;
+          Tiles[aX1][aY1].TileDirection := States.MapTileRotation(aX1, aY1);
+        end;
     CurrentMinX := CurrentMinX + 1;
     CurrentMaxX := CurrentMaxX - 1;
     CurrentMinY := CurrentMinY + 1;
     CurrentMaxY := CurrentMaxY - 1;
-    for I := 0 to 3 do
-    begin
-      Players[I].SpawnX := CurrentMinX + 7;
-      Players[I].SpawnY := CurrentMinY + I * (11 - ArenaCycles);
+    case MAX_Y - CurrentMaxY of
+      1: begin
+           for I := 0 to 3 do
+             Players[I].SpawnX := CurrentMinX + 6;
+           for K := 4 to 7 do
+             Players[K].SpawnX := CurrentMaxX - 6;
+           Players[0].SpawnY := CurrentMinY + 6;
+           Players[1].SpawnY := Players[0].SpawnY + 11;
+           Players[2].SpawnY := Players[1].SpawnY + 11;
+           Players[3].SpawnY := CurrentMaxY - 6;
+           Players[4].SpawnY := CurrentMinY + 6;
+           Players[5].SpawnY := Players[0].SpawnY + 11;
+           Players[6].SpawnY := Players[1].SpawnY + 11;
+           Players[7].SpawnY := CurrentMaxY - 6;
+         end;
+      2: begin
+           for I := 0 to 3 do
+             Players[I].SpawnX := CurrentMinX + 6;
+           for K := 4 to 7 do
+             Players[K].SpawnX := CurrentMaxX - 6;
+           Players[0].SpawnY := CurrentMinY + 6;
+           Players[1].SpawnY := Players[0].SpawnY + 10;
+           Players[2].SpawnY := Players[1].SpawnY + 11;
+           Players[3].SpawnY := CurrentMaxY - 6;
+           Players[4].SpawnY := CurrentMinY + 6;
+           Players[5].SpawnY := Players[0].SpawnY + 10;
+           Players[6].SpawnY := Players[1].SpawnY + 11;
+           Players[7].SpawnY := CurrentMaxY - 6;
+         end;
+      3: begin
+           for I := 0 to 3 do
+             Players[I].SpawnX := CurrentMinX + 6;
+           for K := 4 to 7 do
+             Players[K].SpawnX := CurrentMaxX - 6;
+           Players[0].SpawnY := CurrentMinY + 6;
+           Players[1].SpawnY := Players[0].SpawnY + 9;
+           Players[2].SpawnY := Players[1].SpawnY + 11;
+           Players[3].SpawnY := CurrentMaxY - 6;
+           Players[4].SpawnY := CurrentMinY + 6;
+           Players[5].SpawnY := Players[0].SpawnY + 9;
+           Players[6].SpawnY := Players[1].SpawnY + 11;
+           Players[7].SpawnY := CurrentMaxY - 6;
+         end;
+      4: begin
+           for I := 0 to 3 do
+             Players[I].SpawnX := CurrentMinX + 6;
+           for K := 4 to 7 do
+             Players[K].SpawnX := CurrentMaxX - 6;
+           Players[0].SpawnY := CurrentMinY + 6;
+           Players[1].SpawnY := Players[0].SpawnY + 9;
+           Players[2].SpawnY := Players[1].SpawnY + 9;
+           Players[3].SpawnY := CurrentMaxY - 6;
+           Players[4].SpawnY := CurrentMinY + 6;
+           Players[5].SpawnY := Players[0].SpawnY + 9;
+           Players[6].SpawnY := Players[1].SpawnY + 9;
+           Players[7].SpawnY := CurrentMaxY - 6;
+         end;
+      5: begin
+           for I := 0 to 3 do
+             Players[I].SpawnX := CurrentMinX + 5;
+           for K := 4 to 7 do
+             Players[K].SpawnX := CurrentMaxX - 5;
+           Players[0].SpawnY := CurrentMinY + 5;
+           Players[1].SpawnY := Players[0].SpawnY + 9;
+           Players[2].SpawnY := Players[1].SpawnY + 9;
+           Players[3].SpawnY := CurrentMaxY - 5;
+           Players[4].SpawnY := CurrentMinY + 5;
+           Players[5].SpawnY := Players[0].SpawnY + 9;
+           Players[6].SpawnY := Players[1].SpawnY + 9;
+           Players[7].SpawnY := CurrentMaxY - 5;
+         end;
+      6: begin
+           for I := 0 to 3 do
+             Players[I].SpawnX := CurrentMinX + 5;
+           for K := 4 to 7 do
+             Players[K].SpawnX := CurrentMaxX - 5;
+           Players[0].SpawnY := CurrentMinY + 5;
+           Players[1].SpawnY := Players[0].SpawnY + 8;
+           Players[2].SpawnY := Players[1].SpawnY + 9;
+           Players[3].SpawnY := CurrentMaxY - 5;
+           Players[4].SpawnY := CurrentMinY + 5;
+           Players[5].SpawnY := Players[0].SpawnY + 8;
+           Players[6].SpawnY := Players[1].SpawnY + 9;
+           Players[7].SpawnY := CurrentMaxY - 5;
+         end;
+      7: begin
+           for I := 0 to 3 do
+             Players[I].SpawnX := CurrentMinX + 5;
+           for K := 4 to 7 do
+             Players[K].SpawnX := CurrentMaxX - 5;
+           Players[0].SpawnY := CurrentMinY + 5;
+           Players[1].SpawnY := Players[0].SpawnY + 7;
+           Players[2].SpawnY := Players[1].SpawnY + 9;
+           Players[3].SpawnY := CurrentMaxY - 5;
+           Players[4].SpawnY := CurrentMinY + 5;
+           Players[5].SpawnY := Players[0].SpawnY + 7;
+           Players[6].SpawnY := Players[1].SpawnY + 9;
+           Players[7].SpawnY := CurrentMaxY - 5;
+         end;
+      8: begin
+           for I := 0 to 3 do
+             Players[I].SpawnX := CurrentMinX + 5;
+           for K := 4 to 7 do
+             Players[K].SpawnX := CurrentMaxX - 5;
+           Players[0].SpawnY := CurrentMinY + 5;
+           Players[1].SpawnY := Players[0].SpawnY + 7;
+           Players[2].SpawnY := Players[1].SpawnY + 7;
+           Players[3].SpawnY := CurrentMaxY - 5;
+           Players[4].SpawnY := CurrentMinY + 5;
+           Players[5].SpawnY := Players[0].SpawnY + 7;
+           Players[6].SpawnY := Players[1].SpawnY + 7;
+           Players[7].SpawnY := CurrentMaxY - 5;
+         end;
+      9: begin
+           for I := 0 to 3 do
+             Players[I].SpawnX := CurrentMinX + 5;
+           for K := 4 to 7 do
+             Players[K].SpawnX := CurrentMaxX - 5;
+           Players[0].SpawnY := CurrentMinY + 5;
+           Players[1].SpawnY := Players[0].SpawnY + 6;
+           Players[2].SpawnY := Players[1].SpawnY + 7;
+           Players[3].SpawnY := CurrentMaxY - 5;
+           Players[4].SpawnY := CurrentMinY + 5;
+           Players[5].SpawnY := Players[0].SpawnY + 6;
+           Players[6].SpawnY := Players[1].SpawnY + 7;
+           Players[7].SpawnY := CurrentMaxY - 5;
+         end;
+      10: begin
+            for I := 0 to 3 do
+              Players[I].SpawnX := CurrentMinX + 4;
+            for K := 4 to 7 do
+              Players[K].SpawnX := CurrentMaxX - 4;
+            Players[0].SpawnY := CurrentMinY + 4;
+            Players[1].SpawnY := Players[0].SpawnY + 6;
+            Players[2].SpawnY := Players[1].SpawnY + 7;
+            Players[3].SpawnY := CurrentMaxY - 4;
+            Players[4].SpawnY := CurrentMinY + 4;
+            Players[5].SpawnY := Players[0].SpawnY + 6;
+            Players[6].SpawnY := Players[1].SpawnY + 7;
+            Players[7].SpawnY := CurrentMaxY - 4;
+          end;
     end;
-    for K := 4 to 7 do
-    begin
-      Players[K].SpawnX := CurrentMaxX - 7;
-      Players[K].SpawnY := CurrentMinY + (K - 4) * (11 - ArenaCycles);
-    end;
+    for J := 0 to 7 do
+      begin
+        Actions.MapTileSet(Players[J].SpawnX, Players[J].SpawnY, 47, 0);
+        Actions.MapTileSet(Players[J].SpawnX + 1, Players[J].SpawnY, 64, 3);
+        Actions.MapTileSet(Players[J].SpawnX - 1, Players[J].SpawnY, 64, 1);
+        Actions.MapTileSet(Players[J].SpawnX, Players[J].SpawnY - 1, 64, 2);
+        Actions.MapTileSet(Players[J].SpawnX, Players[J].SpawnY + 1, 64, 0);
+        Actions.MapTileSet(Players[J].SpawnX + 1, Players[J].SpawnY + 1, 247, 3);
+        Actions.MapTileSet(Players[J].SpawnX - 1, Players[J].SpawnY + 1, 247, 0);
+        Actions.MapTileSet(Players[J].SpawnX - 1, Players[J].SpawnY - 1, 247, 1);
+        Actions.MapTileSet(Players[J].SpawnX + 1, Players[J].SpawnY - 1, 247, 2);
+        for aX1 := Players[J].SpawnX - 1 to Players[J].SpawnX + 1 do
+          for aY1 := Players[J].SpawnY - 1 to Players[J].SpawnY + 1 do
+          begin
+            Tiles[aX1][aY1].TileType := States.MapTileType(aX1, aY1);
+            Tiles[aX1][aY1].TileDirection := States.MapTileRotation(aX1, aY1);
+          end;
+      end;
   end;
 end;
 
@@ -15963,7 +16121,7 @@ begin
 
   CheckArenaTimer;
 
-  if (ArenaTime = 0)
+  if (ArenaTime = 1)
   and (States.GameTime > GAME_START_TIME) then
     CheckArena;
 
