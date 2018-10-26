@@ -12637,7 +12637,8 @@ begin
       Actions.GroupKillAll(Players[P].Hero, True);
       Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].ThreadsDX + Players[P].ThreadsX, Players[P].ThreadsDY + Players[P].ThreadsY, Players[P].ThreadsUnitDir, 1, 1);
       Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
-      if Players[P].HeroStunned then
+      if (Players[P].HeroStunned)
+      or (Players[P].HeroInFear) then
         Actions.GroupBlockOrders(Players[P].Hero, True);
       Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
       Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[P].ThreadsAttacker) + ']' + States.PlayerName(Players[P].ThreadsAttacker) + '[]<$71> ' + SkillName(sThreadsOfDeath);
