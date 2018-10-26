@@ -15896,6 +15896,8 @@ begin
       Actions.MapTileSet(aX, CurrentMaxY, 245, 0);
       Actions.MapTileObjectSet(aX, CurrentMinY, 255);
       Actions.MapTileObjectSet(aX, CurrentMaxY, 255);
+      Tiles[aX][CurrentMinY].TileType := 245;
+      Tiles[aX][CurrentMaxY].TileType := 245;
     end;
     for aY := CurrentMinY to CurrentMaxY do
     begin
@@ -15903,6 +15905,8 @@ begin
       Actions.MapTileSet(CurrentMaxX, aY, 245, 0);
       Actions.MapTileObjectSet(CurrentMinX, aY, 255);
       Actions.MapTileObjectSet(CurrentMaxX, aY, 255);
+      Tiles[CurrentMinX][aY].TileType := 245;
+      Tiles[CurrentMaxX][aY].TileType := 245;
     end;
     CurrentMinX := CurrentMinX + 1;
     CurrentMaxX := CurrentMaxX - 1;
