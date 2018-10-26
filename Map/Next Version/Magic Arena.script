@@ -12615,12 +12615,13 @@ begin
   try
     if (States.GameTime = Players[P].ThreadsTime - DELAY_OF_TURNING)
     and (InRange(Players[P].ThreadsAttacker, 0, 7)) then
-    begin
-      Players[P].ThreadsX := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= CurrentMinY, States.UnitPositionX(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastX);
-      Players[P].ThreadsY := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= CurrentMinY, States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastY);
-      Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
-    end;
+      if Players[Players[P].ThreadsAttacker].ThreadsAttackTime > 0 then
+      begin
+        Players[P].ThreadsX := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= CurrentMinY, States.UnitPositionX(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastX);
+        Players[P].ThreadsY := IfThen(States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)) >= CurrentMinY, States.UnitPositionY(States.GroupMember(Players[Players[P].ThreadsAttacker].Hero, 0)), Players[Players[P].ThreadsAttacker].LastY);
+        Actions.GroupKillAll(Players[P].Hero, True);
+        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      end;
   except
     LogError('Exception in the script: cannot check Threads Prepare status for invalid player:', [P], SHOW_ERROR_MSG);
   end;
@@ -12633,16 +12634,17 @@ begin
 
     if (States.GameTime = Players[P].ThreadsTime)
     and (InRange(Players[P].ThreadsAttacker, 0, 7)) then
-    begin
-      Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].ThreadsDX + Players[P].ThreadsX, Players[P].ThreadsDY + Players[P].ThreadsY, Players[P].ThreadsUnitDir, 1, 1);
-      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
-      if (Players[P].HeroStunned)
-      or (Players[P].HeroInFear) then
-        Actions.GroupBlockOrders(Players[P].Hero, True);
-      Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-      Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[P].ThreadsAttacker) + ']' + States.PlayerName(Players[P].ThreadsAttacker) + '[]<$71> ' + SkillName(sThreadsOfDeath);
-    end;
+      if Players[Players[P].ThreadsAttacker].ThreadsAttackTime > 0 then
+      begin
+        Actions.GroupKillAll(Players[P].Hero, True);
+        Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].ThreadsDX + Players[P].ThreadsX, Players[P].ThreadsDY + Players[P].ThreadsY, Players[P].ThreadsUnitDir, 1, 1);
+        Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+        if (Players[P].HeroStunned)
+        or (Players[P].HeroInFear) then
+          Actions.GroupBlockOrders(Players[P].Hero, True);
+        Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[P].ThreadsAttacker) + ']' + States.PlayerName(Players[P].ThreadsAttacker) + '[]<$71> ' + SkillName(sThreadsOfDeath);
+      end;
 
     if (States.GameTime >= Players[P].ThreadsTime + THREADS_DELAY)
     and (Players[P].MovedByThreads) then
