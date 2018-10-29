@@ -364,9 +364,9 @@ const
   BORDER_TIME2 = 40;
   BORDER_TIME3 = 20;
   BORDER_SPACES_TIME = 20;
-  ARENA_FACTOR = 1500;
+  ARENA_FACTOR = 300;//1500;
   ARENA_CYCLES = 10;
-  PLAYER_FACTOR = 200;
+  PLAYER_FACTOR = 25;//200;
 
 //Battlefield
 
@@ -10949,10 +10949,12 @@ begin
             begin
               aObj := States.MapTileObject(aX, aY);
               aTile := States.MapTileType(aX, aY);
-              if (ObjectType(aObj) = otKill)
+              if ((ObjectType(aObj) = otKill)
               or ((aTile = INFERNAL_TILE)
               and (States.UnitType(AIUnits[K]) <> 13))
-              and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
+              and (InRange(Tiles[aX][aY].Owner, 0, 7)))
+              or ((aTile = INFERNAL_TILE)
+              and (Tiles[aX][aY].Owner = TEMP_PLAYER)) then
               begin
                 Actions.UnitKill(AIUnits[K], False);
 
@@ -11094,7 +11096,8 @@ begin
     Exit;
   if ArenaTime > 0 then
     ArenaTime := ArenaTime - 1;
-  if ArenaTime = 0 then
+  if (ArenaTime = 0)
+  and (ArenaCycles < ARENA_CYCLES - 1) then
   begin
     ArenaTime := ArenaCheckTime;
     ArenaTime2 := States.GameTime + BORDER_SPACES_TIME;
@@ -15917,7 +15920,7 @@ begin
   if not NEW_ARENA then
     Exit;
   ArenaCycles := ArenaCycles + 1;
-  if ArenaCycles < ARENA_CYCLES - 1 then
+  if ArenaCycles < ARENA_CYCLES then
   begin
     for aX := CurrentMinX to CurrentMaxX do
     begin
@@ -16153,7 +16156,7 @@ var
 begin
   if not NEW_ARENA then
     Exit;
-  if InRange(ArenaCycles, 0, ARENA_CYCLES - 2) then
+  if InRange(ArenaCycles, 0, ARENA_CYCLES - 1) then
   begin
     for aX := CurrentMinX - 1 to CurrentMaxX + 1 do
     begin
