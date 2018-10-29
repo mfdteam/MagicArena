@@ -350,9 +350,6 @@ const
   TOWERS_TILES_FACTOR = 2;
   ZOMBIE_TAKE_RUNES = True;
   IDLE_CHECK_TIME = 200;
-  ARENA_FACTOR = 1500;
-  ARENA_CYCLES = 10;
-  PLAYER_FACTOR = 200;
 
   NEW_ARENA = True;
   DEBUG_MODE = True;
@@ -361,8 +358,17 @@ const
   SHOW_ERROR_MSG = True;
   DEATH_ANIMATION = False;
 
-//Battlefield
+//Border
 
+  BORDER_TIME1 = 60;
+  BORDER_TIME2 = 40;
+  BORDER_TIME3 = 20;
+  BORDER_SPACES_TIME = 20;
+  ARENA_FACTOR = 1500;
+  ARENA_CYCLES = 10;
+  PLAYER_FACTOR = 200;
+
+//Battlefield
 
   MIN_X = 12;
   MAX_X = 59;
@@ -381,7 +387,7 @@ const
   MAX_TIME_BETWEEN_KILLS = 75;
 
 type
-  aSkill = (sNone,
+  aSkill = (sNone, sBorder,
             sFieryLance, sTeleport, s10kSpears,
             sCrackingEarth, sWaveOfRage, sTotem,
             sSpikedEarth, sZombieSummon, sFear,
@@ -691,7 +697,7 @@ var
   GameOver: Boolean;
   VictoryTime: Integer;
   RuneCleanupTime: array[0..7] of Integer;
-  ArenaCycles, ArenaTime: Integer;
+  ArenaCycles, ArenaTime, ArenaTime2: Integer;
 
 
 function InRange(Value, Min, Max: Integer): Boolean;
@@ -1107,6 +1113,7 @@ begin
 
   ArenaCycles := -1;
   ArenaTime := 0;
+  ArenaTime2 := 0;
 
   FirstBlood := False;
 
@@ -10143,7 +10150,21 @@ begin
     Exit;
 
   if (aTile = INFERNAL_TILE)
-  and (aTime > States.GameTime) then
+  and (Tiles[aX][aY].Owner = TEMP_PLAYER) then
+  begin
+    Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+    Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$147>';
+    for I := 0 to 7 do
+      if I <> P then
+      begin
+        Players[I].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+        Players[I].PlayerStatus := Players[I].PlayerStatus + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$146>';
+      end;
+  end;
+
+  if (aTile = INFERNAL_TILE)
+  and (aTime > States.GameTime)
+  and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
     Exit;
 
   if (ObjectType(aObj) = otKill)
@@ -10151,8 +10172,10 @@ begin
   begin
     T := Players[P].HeroType;
     if (not States.PlayerDefeated(P))
-    and (not Players[P].HeroMagicImmunity)
-    and (not Players[P].HeroTotalImmunity) then
+    and (((not Players[P].HeroMagicImmunity)
+    and (not Players[P].HeroTotalImmunity)
+    and (InRange(Tiles[aX][aY].Owner, 0, 7))
+    or (Tiles[aX][aY].Owner = TEMP_PLAYER))) then
     begin
       if Players[P].HP > 0 then
       begin 
@@ -11072,7 +11095,10 @@ begin
   if ArenaTime > 0 then
     ArenaTime := ArenaTime - 1;
   if ArenaTime = 0 then
+  begin
     ArenaTime := ArenaCheckTime;
+    ArenaTime2 := States.GameTime + BORDER_SPACES_TIME;
+  end;
 end;
 
 
@@ -16087,6 +16113,62 @@ begin
 end;
 
 
+procedure CheckBorder(aTile: Integer);
+var
+  aX, aY: Integer;
+begin
+  if not NEW_ARENA then
+    Exit;
+  if ArenaCycles < ARENA_CYCLES - 1 then
+  begin
+    for aX := CurrentMinX to CurrentMaxX do
+    begin
+      Actions.MapTileSet(aX, CurrentMinY, aTile, 0);
+      Actions.MapTileSet(aX, CurrentMaxY, aTile, 0);
+      Tiles[aX][CurrentMinY].TileType := aTile;
+      Tiles[aX][CurrentMaxY].TileType := aTile;
+      Tiles[aX][CurrentMinY].Skill := sBorder;
+      Tiles[aX][CurrentMaxY].Skill := sBorder;
+      Tiles[aX][CurrentMinY].Owner := TEMP_PLAYER;
+      Tiles[aX][CurrentMaxY].Owner := TEMP_PLAYER;
+    end;
+    for aY := CurrentMinY to CurrentMaxY do
+    begin
+      Actions.MapTileSet(CurrentMinX, aY, aTile, 0);
+      Actions.MapTileSet(CurrentMaxX, aY, aTile, 0);
+      Tiles[CurrentMinX][aY].TileType := aTile;
+      Tiles[CurrentMaxX][aY].TileType := aTile;
+      Tiles[CurrentMinX][aY].Skill := sBorder;
+      Tiles[CurrentMaxX][aY].Skill := sBorder;
+      Tiles[CurrentMinX][aY].Owner := TEMP_PLAYER;
+      Tiles[CurrentMaxX][aY].Owner := TEMP_PLAYER;
+    end;
+  end;
+end;
+
+
+procedure CheckBorderSpaces;
+var
+  aX, aY: Integer;
+begin
+  if not NEW_ARENA then
+    Exit;
+  if InRange(ArenaCycles, 0, ARENA_CYCLES - 2) then
+  begin
+    for aX := CurrentMinX - 1 to CurrentMaxX + 1 do
+    begin
+      Actions.MapTileSet(aX, CurrentMinY - 1, 245, 0);
+      Actions.MapTileSet(aX, CurrentMaxY + 1, 245, 0);
+    end;
+    for aY := CurrentMinY - 1 to CurrentMaxY + 1 do
+    begin
+      Actions.MapTileSet(CurrentMinX - 1, aY, 245, 0);
+      Actions.MapTileSet(CurrentMaxX + 1, aY, 245, 0);
+    end;
+  end;
+end;
+
+
 procedure OnTick;
 var
   N: array[0..19] of Integer;
@@ -16127,6 +16209,21 @@ begin
   if (ArenaTime = 1)
   and (States.GameTime > GAME_START_TIME) then
     CheckArena;
+
+  if (ArenaTime = BORDER_TIME1)
+  and (States.GameTime > GAME_START_TIME) then
+    CheckBorder(INFERNAL_TILE - 2);
+
+  if (ArenaTime = BORDER_TIME2)
+  and (States.GameTime > GAME_START_TIME) then
+    CheckBorder(INFERNAL_TILE - 1);
+
+  if (ArenaTime = BORDER_TIME3)
+  and (States.GameTime > GAME_START_TIME) then
+    CheckBorder(INFERNAL_TILE);
+
+  if States.GameTime = ArenaTime2 then
+    CheckBorderSpaces;
 
   if States.GameTime mod ZOMBIE_STORM_FACTOR = 0 then
   begin
