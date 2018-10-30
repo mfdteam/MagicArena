@@ -7937,7 +7937,8 @@ begin
              begin
                Desync := Desync + 1;
                if not Wall then
-                 Wall := States.MapTileType(DX1, Y1) = 206;
+                 Wall := (States.MapTileType(DX1, Y1) = 206)
+                 or (States.MapTileType(DX1, Y1) = 245);
                if TileOnBattlefield(DX1, Y1) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -7975,7 +7976,8 @@ begin
              end;
 
              if not Wall then
-               Wall := States.MapTileType(X2, Y2 - BOOMERANG_LENGTH - 1) = 206;
+               Wall := (States.MapTileType(X2, Y2 - BOOMERANG_LENGTH - 1) = 206)
+               or (States.MapTileType(X2, Y2 - BOOMERANG_LENGTH - 1) = 245);
 
              for Y1 := Y2 - BOOMERANG_LENGTH to Y2 - 2 do
              begin
@@ -8025,7 +8027,8 @@ begin
              begin
                Desync := Desync + 1;
                if not Wall then
-                 Wall := States.MapTileType(X1, DY1) = 206;
+                 Wall := (States.MapTileType(X1, DY1) = 206)
+                 or (States.MapTileType(X1, DY1) = 245);
                if TileOnBattlefield(X1, DY1) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -8063,7 +8066,8 @@ begin
              end;
 
              if not Wall then
-               Wall := States.MapTileType(X2 + BOOMERANG_LENGTH + 1, Y2) = 206;
+               Wall := (States.MapTileType(X2 + BOOMERANG_LENGTH + 1, Y2) = 206)
+               or (States.MapTileType(X2 + BOOMERANG_LENGTH + 1, Y2) = 245);
 
              for X1 := X2 + BOOMERANG_LENGTH downto X2 + 2 do
              begin
@@ -8113,7 +8117,8 @@ begin
              begin
                Desync := Desync + 1;
                if not Wall then
-                 Wall := States.MapTileType(DX1, Y1) = 206;
+                 Wall := (States.MapTileType(DX1, Y1) = 206)
+                 or (States.MapTileType(DX1, Y1) = 245);
                if TileOnBattlefield(DX1, Y1) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -8151,7 +8156,8 @@ begin
              end;
 
              if not Wall then
-               Wall := States.MapTileType(X2, Y2 + BOOMERANG_LENGTH + 1) = 206;
+               Wall := (States.MapTileType(X2, Y2 + BOOMERANG_LENGTH + 1) = 206)
+               or (States.MapTileType(X2, Y2 + BOOMERANG_LENGTH + 1) = 245);
 
              for Y1 := Y2 + BOOMERANG_LENGTH downto Y2 + 2 do
              begin
@@ -8201,7 +8207,8 @@ begin
              begin
                Desync := Desync + 1;
                if not Wall then
-                 Wall := States.MapTileType(X1, DY1) = 206;
+                 Wall := (States.MapTileType(X1, DY1) = 206)
+                 or (States.MapTileType(X1, DY1) = 245);
                if TileOnBattlefield(X1, DY1) then
                begin
                  TilesRoadLength[P] := TilesRoadLength[P] + 1;
@@ -8239,7 +8246,8 @@ begin
              end;
 
              if not Wall then
-               Wall := States.MapTileType(X2 - BOOMERANG_LENGTH - 1, Y2) = 206;
+               Wall := (States.MapTileType(X2 - BOOMERANG_LENGTH - 1, Y2) = 206)
+               or (States.MapTileType(X2 - BOOMERANG_LENGTH - 1, Y2) = 245);
 
              for X1 := X2 - BOOMERANG_LENGTH to X2 - 2 do
              begin
