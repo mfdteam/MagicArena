@@ -10160,6 +10160,7 @@ begin
   if (aTile = INFERNAL_TILE)
   and (Tiles[aX][aY].Owner = TEMP_PLAYER) then
   begin
+    Actions.PlayWAV(P, 'GorenjePerdaka', 1);
     Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
     Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$147>';
     for I := 0 to 7 do
@@ -11862,6 +11863,9 @@ begin
       Players[O].LastY := aY;
       Players[O].LastDir := States.UnitDirection(aID);
     end;
+
+    if Players[O].HP = 0 then
+      ArenaTime := IfThen(ArenaTime > BORDER_TIME1 + PLAYER_FACTOR + 1, ArenaTime - PLAYER_FACTOR, ArenaTime);
 
   end;
 
