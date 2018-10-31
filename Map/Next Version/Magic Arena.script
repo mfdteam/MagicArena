@@ -10144,7 +10144,8 @@ begin
     Exit;
   if (TileOnBattlefield(aX, aY))
   or ((aX = RUNE_X)
-  and (aY = RUNE_Y)) then
+  and (aY = RUNE_Y))
+  or (Tiles[aX][aY].Owner = TEMP_PLAYER) then
   begin
     aObj := States.MapTileObject(aX, aY);
     aTile := States.MapTileType(aX, aY);
@@ -10954,7 +10955,8 @@ begin
               aY := States.UnitPositionY(AIUnits[K]);
               aU := AIUnits[K];
             end;
-            if TileOnBattlefield(aX, aY) then
+            if (TileOnBattlefield(aX, aY))
+            or (Tiles[aX][aY].Owner = TEMP_PLAYER) then
             begin
               aObj := States.MapTileObject(aX, aY);
               aTile := States.MapTileType(aX, aY);
@@ -11863,6 +11865,11 @@ begin
       Players[O].LastY := aY;
       Players[O].LastDir := States.UnitDirection(aID);
     end;
+
+    if (InRange(aX, MIN_X, MAX_X))
+    and (InRange(aY, MIN_Y, MAX_Y)) then
+      if Tiles[aX][aY].Owner = TEMP_PLAYER then
+        ArenaTime2 := States.GameTime + BORDER_SPACES_TIME;
 
     if Players[O].HP = 0 then
       ArenaTime := IfThen(ArenaTime > BORDER_TIME1 + PLAYER_FACTOR + 1, ArenaTime - PLAYER_FACTOR, ArenaTime);
