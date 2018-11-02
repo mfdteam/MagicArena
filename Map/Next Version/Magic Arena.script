@@ -4978,7 +4978,8 @@ begin
 
   if (Players[P].Hero > 0)
   and (TileOnBattlefield(X, Y))
-  and (TileOnBattlefield(X, Y + 1)) then
+  and (TileOnBattlefield(X, Y + 1))
+  and (Actions.PlanAddHouse(TEMP_PLAYER, 17, X, Y)) then
   begin
     if States.PlayerIsAI(P) then
     begin
@@ -4987,6 +4988,8 @@ begin
       Actions.GroupOrderHalt(Players[P].Hero);
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     end;
+
+    Actions.PlanRemove(TEMP_PLAYER, X, Y);
 
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
@@ -9927,7 +9930,9 @@ begin
 
   for X1 := X - 1 to X do
   for Y1 := Y - 1 to Y do
-    if TileOnBattlefield(X1, Y1) then
+    if (InRange(X1, MIN_X, MAX_X))
+    and (InRange(Y1, MIN_Y, MAX_Y))
+    and (States.MapTileType(X1, Y1) <> 202) then
     begin
       Actions.GiveRoad(10, X1, Y1);
       Actions.RemoveRoad(X1, Y1);
@@ -9935,9 +9940,10 @@ begin
 
   for X1 := X - 2 to X + 1 do
   for Y1 := Y - 2 to Y + 1 do
-    if TileOnBattlefield(X1, Y1) then
+    if (InRange(X1, MIN_X, MAX_X))
+    and (InRange(Y1, MIN_Y, MAX_Y)) then
     begin
-      Actions.MapTileSet(X1, Y1, Tiles[X1][Y1].TileType, Tiles[X1][Y].TileDirection);
+      Actions.MapTileSet(X1, Y1, Tiles[X1][Y1].TileType, Tiles[X1][Y1].TileDirection);
       if Tiles[X1][Y1].Skill = sTower then
         Tiles[X1][Y1].Skill := sNone;
     end;
@@ -10138,9 +10144,9 @@ begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     end;
-  if aX <= 0 then
+  if not InRange(aX, MIN_X, MAX_X) then
     Exit;
-  if aY <= 0 then
+  if not InRange(aY, MIN_Y, MAX_Y) then
     Exit;
   if (TileOnBattlefield(aX, aY))
   or ((aX = RUNE_X)
@@ -10955,6 +10961,13 @@ begin
               aY := States.UnitPositionY(AIUnits[K]);
               aU := AIUnits[K];
             end;
+
+            if not InRange(aX, MIN_X, MAX_X) then
+              Exit; 
+
+            if not InRange(aY, MIN_Y, MAX_Y) then
+              Exit;
+
             if (TileOnBattlefield(aX, aY))
             or (Tiles[aX][aY].Owner = TEMP_PLAYER) then
             begin
@@ -11844,7 +11857,13 @@ begin
   O := States.UnitOwner(aID);
   aX := States.UnitPositionX(aID);
   aY := States.UnitPositionY(aID);
-  G := States.UnitsGroup(aID); 
+  G := States.UnitsGroup(aID);
+
+  if not InRange(aX, MIN_X, MAX_X) then
+    Exit; 
+
+  if not InRange(aY, MIN_Y, MAX_Y) then
+    Exit;
   
   if InRange(O, 0, 7) then
   begin
