@@ -14122,7 +14122,8 @@ begin
           Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
       end;
 
-  if States.GameTime mod EFFECT_CHECK_FACTOR >= 3 then
+  if (States.GameTime mod EFFECT_CHECK_FACTOR >= 3)
+  and (not InRange(States.MapTileType(aX, aY), INFERNAL_TILE - 3, INFERNAL_TILE)) then
   begin
     if Players[P].HeroMagicImmunity then
       Actions.MapTileSet(aX, aY, MAGIC_IMMUNITY_ANIMATION, States.KaMRandomI(4));
@@ -16259,7 +16260,7 @@ begin
   and (States.GameTime > GAME_START_TIME) then
     CheckBorder(INFERNAL_TILE - 1);
 
-  if (ArenaTime = BORDER_TIME3)
+  if (InRange(ArenaTime, BORDER_TIME3, 1))
   and (States.GameTime > GAME_START_TIME) then
     CheckBorder(INFERNAL_TILE);
 
