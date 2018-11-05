@@ -4979,7 +4979,9 @@ begin
   if (Players[P].Hero > 0)
   and (TileOnBattlefield(X, Y))
   and (TileOnBattlefield(X, Y + 1))
-  and (Actions.PlanAddHouse(TEMP_PLAYER, 17, X, Y)) then
+  and (TileOnBattlefield(X, Y - 1))
+  and (TileOnBattlefield(X - 1, Y))
+  and (TileOnBattlefield(X - 1, Y - 1)) then
   begin
     if States.PlayerIsAI(P) then
     begin
@@ -4988,8 +4990,6 @@ begin
       Actions.GroupOrderHalt(Players[P].Hero);
       Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
     end;
-
-    Actions.PlanRemove(TEMP_PLAYER, X, Y);
 
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
