@@ -10151,7 +10151,9 @@ begin
   if (TileOnBattlefield(aX, aY))
   or ((aX = RUNE_X)
   and (aY = RUNE_Y))
-  or (Tiles[aX][aY].Owner = TEMP_PLAYER) then
+  or (Tiles[aX][aY].Owner = TEMP_PLAYER)
+  or ((not TileOnBattlefield(aX, aY))
+  and (States.MapTileType(aX, aY) = INFERNAL_TILE)) then
   begin
     aObj := States.MapTileObject(aX, aY);
     aTile := States.MapTileType(aX, aY);
@@ -16260,7 +16262,7 @@ begin
   and (States.GameTime > GAME_START_TIME) then
     CheckBorder(INFERNAL_TILE - 1);
 
-  if (InRange(ArenaTime, BORDER_TIME3, 1))
+  if (InRange(ArenaTime, BORDER_TIME3, 2))
   and (States.GameTime > GAME_START_TIME) then
     CheckBorder(INFERNAL_TILE);
 
