@@ -9910,15 +9910,19 @@ end;
 procedure OnHouseDestroyed(H, D: Integer);
 var
   Units: array of Integer;
-  I, Owner: Integer;
+  I, Owner, aHome: Integer;
 begin
   Owner := States.HouseOwner(H);
   Units := States.PlayerGetAllUnits(Owner);
   if Length(Units) > 0 then
     for I := 0 to Length(Units) - 1 do
-      if (States.UnitType(Units[I]) = 13)
-      and (H = States.UnitHome(Units[I])) then
-        Actions.UnitKill(Units[I], True);
+      if (States.UnitType(Units[I]) = 13) then
+      begin
+        aHome := States.UnitHome(Units[I]);
+        if (H = States.UnitHome(Units[I]))
+        or (aHome = -1) then
+          Actions.UnitKill(Units[I], True);
+      end;
 end;
 
 
