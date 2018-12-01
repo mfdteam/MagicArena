@@ -502,6 +502,7 @@ type
     MindX: Integer;
     MindY: Integer;
     MindDir: Integer;
+    CancelSkillMindSilent: Integer;
     PikeX: Integer;
     PikeY: Integer;
     PikeDir: Integer;
@@ -1337,6 +1338,7 @@ begin
       MindX := 0;
       MindY := 0;
       MindDir := 0;
+      CancelSkillMindSilent := 0;
       PikeX := 0;
       PikeY := 0;
       PikeDir := 0;
@@ -9969,6 +9971,9 @@ begin
       Players[P].MindTime2 := 0;
       Players[P].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Players[P].CaptureMind := False;
+      Actions.GroupKillAll(Players[P].Hero, True);
+      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+      Players[P].CancelSkillMindSilent := States.GameTime + DELAY_OF_TURNING;
       Players[M[P]].MindStunned := False;
     end;
     
@@ -10131,6 +10136,14 @@ begin
 
 end;
 
+procedure CancelSkillMindSilent(P: Integer);
+begin
+  if States.GameTime = Players[P].CancelSkillMindSilent then
+  begin
+    Actions.GroupKillAll(Players[P].Hero, True);
+    Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[M[P]].MindX, Players[M[P]].MindY, Players[M[P]].MindDir, 1, 1);
+  end;
+end;
 
 procedure CheckTiles(P: Integer);
 var
@@ -13696,6 +13709,7 @@ begin
       ClearAISkills(P);
       ClearBuffsDebuffsStatus(P);
       ClearStatusString(P);
+      CancelSkillMindSilent(P);
     end;
   except
     LogError('Exception in the script: something went wrong when trying to check status:', [P], SHOW_ERROR_MSG);
