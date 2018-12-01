@@ -357,6 +357,7 @@ const
   AI_ENABLED = True;
   SHOW_ERROR_MSG = True;
   DEATH_ANIMATION = False;
+  KILL_STREAK = True;
 
 //Border
 
@@ -529,7 +530,9 @@ type
     GravityTime: Integer;
     ScoutSilenceGiver: Integer;
     ScoutSilenceStartTime: Integer;
-    TotalKills: Integer;
+    KillStreak: Integer;
+    KillStreakStatus: ANSIString;
+    KillStreakStatusTime: Integer;
     KillTimes: array of Integer;
     KillsCountTime: Integer;
     TempKill: Integer;
@@ -1365,7 +1368,9 @@ begin
       GravityTime := 0;
       ScoutSilenceStartTime := 0;
       ScoutSilenceGiver := -1;
-      TotalKills := 0;
+      KillStreak := 0;
+      KillStreakStatus := '';
+      KillStreakStatusTime := 0;
       KillsCountTime := 0;
       DoubleKill := False;
       TripleKill := False;
@@ -1851,6 +1856,16 @@ begin
     Result := '';
 end;
 
+function StatusKillStreak(P: Integer): ANSIString;
+begin
+  if Players[P].KillStreakStatusTime - States.GameTime > 0 then
+    Result := '||' + Players[P].KillStreakStatus
+
+  else
+
+    Result := '';
+end;
+
 
 function RogueStatus(P: Integer): ANSIString;
 begin
@@ -2121,7 +2136,7 @@ begin
   Result := ImmortalStatus(P) + StunnedStatus(P) + FearStatus(P) + WerewolfStatus(P) + RegenStatus(P) + DDStatus(P)
   + SilenceStatus(P) + PreparingStatus(P) + ExileStatus(P) + ShieldStatus(P) + ReChargeStatus(P) + RogueStatus(P) + MirrorStatus(P)
   + MindStatus(P) + MindStunnedStatus(P) + RebornStatus(P) + RebornMindStatus(P) + RebornMindStatus2(P) + FieryTrackStatus(P) 
-  + TotalImmunityStatus(P) + StatusKill(P) + DefeatStatus(P) + GameplayStatus(P);
+  + TotalImmunityStatus(P) + StatusKill(P) + StatusKillStreak(P) + DefeatStatus(P) + GameplayStatus(P);
 end;
 
 
@@ -10466,7 +10481,7 @@ begin
           and (Players[P].PlayersTeam <> Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
             Players[Tiles[aX][aY].Owner].Kills := Players[Tiles[aX][aY].Owner].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
-            Players[Tiles[aX][aY].Owner].TotalKills := Players[Tiles[aX][aY].Owner].TotalKills + 1;
+            Players[Tiles[aX][aY].Owner].KillStreak := Players[Tiles[aX][aY].Owner].KillStreak + 1;
             SetLength(Players[Tiles[aX][aY].Owner].KillTimes, Length(Players[Tiles[aX][aY].Owner].KillTimes) + 1);
             Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] := States.GameTime;
             if Length(Players[Tiles[aX][aY].Owner].KillTimes) >= 4 then
@@ -10500,7 +10515,7 @@ begin
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
             Players[Players[P].HeroFearGiver].Kills := Players[Players[P].HeroFearGiver].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
-            Players[Players[P].HeroFearGiver].TotalKills := Players[Players[P].HeroFearGiver].TotalKills + 1;
+            Players[Players[P].HeroFearGiver].KillStreak := Players[Players[P].HeroFearGiver].KillStreak + 1;
             SetLength(Players[Players[P].HeroFearGiver].KillTimes, Length(Players[Players[P].HeroFearGiver].KillTimes) + 1);
             Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] := States.GameTime;
             if Length(Players[Players[P].HeroFearGiver].KillTimes) >= 4 then
@@ -10541,7 +10556,7 @@ begin
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
             Players[Players[P].GravityUser].Kills := Players[Players[P].GravityUser].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
-            Players[Players[P].GravityUser].TotalKills := Players[Players[P].GravityUser].TotalKills + 1;
+            Players[Players[P].GravityUser].KillStreak := Players[Players[P].HeroFearGiver].KillStreak + 1;
             SetLength(Players[Players[P].GravityUser].KillTimes, Length(Players[Players[P].GravityUser].KillTimes) + 1);
             Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] := States.GameTime;
             if Length(Players[Players[P].GravityUser].KillTimes) >= 4 then
@@ -10582,7 +10597,7 @@ begin
           and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
             Players[Players[P].ThreadsAttacker].Kills := Players[Players[P].ThreadsAttacker].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
-            Players[Players[P].ThreadsAttacker].TotalKills := Players[Players[P].ThreadsAttacker].TotalKills + 1;
+            Players[Players[P].ThreadsAttacker].KillStreak := Players[Players[P].ThreadsAttacker].KillStreak + 1;
             SetLength(Players[Players[P].ThreadsAttacker].KillTimes, Length(Players[Players[P].ThreadsAttacker].KillTimes) + 1);
             Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] := States.GameTime;
             if Length(Players[Players[P].ThreadsAttacker].KillTimes) >= 4 then
@@ -10648,6 +10663,30 @@ begin
             begin
               Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
               Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$127>' + '[]';
+            end;
+          if KILL_STREAK then
+            for I := 0 to 7 do
+            begin
+              if Players[I].KillStreak = 4 then
+              begin
+                Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$129>' + '[]';
+              end;
+              if Players[I].KillStreak = 6 then
+              begin
+                Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$130>' + '[]';
+              end;
+              if Players[I].KillStreak = 8 then
+              begin
+                Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$131>' + '[]';
+              end;
+              if Players[I].KillStreak = 10 then
+              begin
+                Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$132>' + '[]';
+              end;
             end;
         end;
         if not (Players[P].CaptureMind)
@@ -12120,6 +12159,7 @@ begin
       if not Players[O].CaptureMind then
       begin
         Players[LastAttacker].Kills := Players[LastAttacker].Kills + 1;
+        Players[LastAttacker].KillStreak := Players[LastAttacker].KillStreak + 1;
         if not Players[O].MindStunned then
           Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
       end;
@@ -12128,6 +12168,7 @@ begin
         if Players[LastAttacker].MindStunned then
         begin
           Players[M2[LastAttacker]].Kills := Players[M2[LastAttacker]].Kills + 1;
+          Players[M2[LastAttacker]].KillStreak := Players[M2[LastAttacker]].KillStreak + 1;
           Players[O].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
         end;
         if not Players[LastAttacker].MindStunned then 
@@ -12279,7 +12320,6 @@ begin
       Players[O].RespawnCheckTime := States.GameTime + 10;
       if not Players[O].MindStunned then 
       begin
-        Players[LastAttacker].TotalKills := Players[LastAttacker].TotalKills + 1;
         SetLength(Players[LastAttacker].KillTimes, Length(Players[LastAttacker].KillTimes) + 1);
         Players[LastAttacker].KillTimes[Length(Players[LastAttacker].KillTimes) - 1] := States.GameTime;
           if Length(Players[LastAttacker].KillTimes) >= 4 then
@@ -12344,6 +12384,30 @@ begin
                   Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
                   Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$127>' + '[]';
                 end;
+              if KILL_STREAK then
+              for I := 0 to 7 do
+              begin
+                if Players[I].KillStreak = 4 then
+                begin
+                  Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                  Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$129>' + '[]';
+                end;
+                if Players[I].KillStreak = 6 then
+                begin
+                  Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                  Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$130>' + '[]';
+                end;
+                if Players[I].KillStreak = 8 then
+                begin
+                  Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                  Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$131>' + '[]';
+                end;
+                if Players[I].KillStreak = 10 then
+                begin
+                  Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                  Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$132>' + '[]';
+                end;
+              end;
           end;   
       end;
     end;
@@ -12688,6 +12752,7 @@ begin
         Actions.CinematicEnd(P);
       end;
       Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+      Players[P].KillStreak := 0;
       Players[P].HeroReborn := False;
     end;
   except
