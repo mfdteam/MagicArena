@@ -13284,6 +13284,8 @@ begin
       Players[P].RoadSkillDelay := Players[M[P]].RoadSkillDelay;
       Players[P].FieldSkillDelay := Players[M[P]].FieldSkillDelay;
       Players[P].WineSkillDelay := Players[M[P]].WineSkillDelay;
+      Players[P].RocketCharges := Players[M[P]].RocketCharges; 
+      Players[P].RocketChargeTime := Players[M[P]].RocketChargeTime; 
       if Players[M[P]].PlayersTeam = 1 then
       begin
         Players[M[P]].PlayersTeam := 0;
@@ -13428,6 +13430,8 @@ begin
         Players[P].HeroExiled := Players[M[P]].HeroExiled;
         Players[M[P]].HeroExiled := False;
         Players[M[P]].HeroExileBackTime := 0;
+        Players[M[P]].RocketCharges := Players[P].RocketCharges; 
+        Players[M[P]].RocketChargeTime := Players[P].RocketChargeTime; 
         if Players[M[P]].PlayersTeam = 1 then
         begin
           Players[M[P]].PlayersTeam := 0;
