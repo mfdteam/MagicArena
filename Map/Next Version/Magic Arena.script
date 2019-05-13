@@ -16058,7 +16058,7 @@ begin
   if not NEW_ARENA then
     Exit;
   ArenaCycles := ArenaCycles + 1;
-  if ArenaCycles < ARENA_CYCLES then
+  if InRange(ArenaCycles, -1, ARENA_CYCLES - 1) then
   begin
     for aX := CurrentMinX to CurrentMaxX do
     begin
@@ -16260,7 +16260,7 @@ var
 begin
   if not NEW_ARENA then
     Exit;
-  if ArenaCycles < ARENA_CYCLES - 1 then
+  if InRange(ArenaCycles, -1, ARENA_CYCLES - 1) then
   begin
     for aX := CurrentMinX to CurrentMaxX do
     begin
@@ -16296,15 +16296,31 @@ begin
     Exit;
   if InRange(ArenaCycles, 0, ARENA_CYCLES - 1) then
   begin
-    for aX := CurrentMinX - 1 to CurrentMaxX + 1 do
+    for aX := CurrentMinX - 3 to CurrentMaxX + 3 do
     begin
-      Actions.MapTileSet(aX, CurrentMinY - 1, 245, 0);
-      Actions.MapTileSet(aX, CurrentMaxY + 1, 245, 0);
+      Actions.MapTileSet(aX, CurrentMinY - 1, 206, 0);
+      Actions.MapTileSet(aX, CurrentMaxY + 1, 206, 2);
+      Actions.MapTileSet(aX, CurrentMinY - 2, 207, 2);
+      Actions.MapTileSet(aX, CurrentMaxY + 2, 207, 0);
+      Actions.MapTileSet(aX, CurrentMinY - 3, 215, 0);
+      Actions.MapTileSet(aX, CurrentMaxY + 3, 215, 0);
+      Actions.MapTileHeightSet(aX, CurrentMinY - 2, States.MapTileHeight(25, 47));
+      Actions.MapTileHeightSet(aX, CurrentMaxY + 2, States.MapTileHeight(25, 47));
+      Actions.MapTileHeightSet(aX, CurrentMinY - 1, States.MapTileHeight(25, 47));
+      Actions.MapTileHeightSet(aX, CurrentMaxY + 1, States.MapTileHeight(25, 47));
     end;
     for aY := CurrentMinY - 1 to CurrentMaxY + 1 do
     begin
-      Actions.MapTileSet(CurrentMinX - 1, aY, 245, 0);
-      Actions.MapTileSet(CurrentMaxX + 1, aY, 245, 0);
+      Actions.MapTileSet(CurrentMinX - 1, aY, 206, 3);
+      Actions.MapTileSet(CurrentMaxX + 1, aY, 206, 1);
+      Actions.MapTileSet(CurrentMinX - 2, aY, 207, 1);
+      Actions.MapTileSet(CurrentMaxX + 2, aY, 207, 3);
+      Actions.MapTileSet(CurrentMinX - 3, aY, 215, 0);
+      Actions.MapTileSet(CurrentMaxX + 3, aY, 215, 0);
+      Actions.MapTileHeightSet(CurrentMinX - 2, aY, States.MapTileHeight(25, 47));
+      Actions.MapTileHeightSet(CurrentMaxX + 2, aY, States.MapTileHeight(25, 47));
+      Actions.MapTileHeightSet(CurrentMinX - 1, aY, States.MapTileHeight(25, 47));
+      Actions.MapTileHeightSet(CurrentMaxX + 1, aY, States.MapTileHeight(25, 47));
     end;
   end;
 end;
@@ -16361,7 +16377,10 @@ begin
 
   if (InRange(ArenaTime, BORDER_TIME3, 2))
   and (States.GameTime > GAME_START_TIME) then
+  begin
     CheckBorder(INFERNAL_TILE);
+    ArenaTime2 := States.GameTime + BORDER_SPACES_TIME;
+  end;
 
   if States.GameTime = ArenaTime2 then
     CheckBorderSpaces;
