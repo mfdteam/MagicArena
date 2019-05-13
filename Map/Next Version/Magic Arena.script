@@ -11166,7 +11166,17 @@ end;
 
 function ArenaCheckTime: Integer;
 begin
-  Result := ARENA_FACTOR + PLAYER_FACTOR * (AlivePlayersCount - 1);
+  //Result := ARENA_FACTOR + PLAYER_FACTOR * (AlivePlayersCount - 1);
+  case AlivePlayersCount of
+    2: Result := 300;
+    3: Result := 600;
+    4: Result := 900;
+    5: Result := 1500;
+    6: Result := 2000;
+    7: Result := 2200;
+    8: Result := 2400;
+    else Result := 1000000;
+  end;
 end;
 
 
