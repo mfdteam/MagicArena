@@ -365,9 +365,7 @@ const
   BORDER_TIME2 = 40;
   BORDER_TIME3 = 20;
   BORDER_SPACES_TIME = 20;
-  ARENA_FACTOR = 300;//1500;
   ARENA_CYCLES = 10;
-  PLAYER_FACTOR = 25;//200;
 
 //Battlefield
 
@@ -11172,7 +11170,6 @@ end;
 
 function ArenaCheckTime: Integer;
 begin
-  //Result := ARENA_FACTOR + PLAYER_FACTOR * (AlivePlayersCount - 1);
   case AlivePlayersCount of
     2: Result := 300;
     3: Result := 600;
