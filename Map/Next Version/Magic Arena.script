@@ -3752,7 +3752,6 @@ begin
 end;
 
 
-
 //LANCE CARRIER
 
 
@@ -9548,7 +9547,7 @@ begin
                      Players[P].SnakeCharges := Players[P].SnakeCharges - 1;
                      if (Players[P].SnakeCharges <= SNAKE_CHARGES - 1)
                      and (Players[P].SnakeChargeTime <= States.GameTime) then
-                       Players[P].WineSkillDelay := Round(WARRIOR_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                       Players[P].SnakeChargeTime := States.GameTime + Round(WARRIOR_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                    end;
 
       sExile: begin
