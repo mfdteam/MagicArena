@@ -704,14 +704,14 @@ var
   ArenaCycles, ArenaTime, ArenaTime2: Integer;
 
 
-function InRange(Value, Min, Max: Integer): Boolean;
+function InRange(aValue, aMin, aMax: Integer): Boolean;
 begin
-  if Min < Max then
-    Result := (Value >= Min)
-              and (Value <= Max)
+  if aMin < aMax then
+    Result := (aValue >= aMin)
+              and (aValue <= aMax)
   else
-    Result := (Value >= Max)
-              and (Value <= Min);
+    Result := (aValue >= aMax)
+              and (aValue <= aMin);
 end;
 
 
@@ -721,6 +721,12 @@ begin
     Result := aTrue
   else
     Result := aFalse;
+end;
+
+
+function Max(I1, I2: Integer): Integer;
+begin
+  Result := IfThen(I1 > I2, I1, I2);
 end;
 
 
@@ -14163,6 +14169,7 @@ begin
 
 end;
 
+
 procedure CheckLinks(P: Integer);
 var
   G, K, Count: Integer;
@@ -14188,6 +14195,7 @@ begin
     end;
   end;
 end;
+
 
 procedure CheckEffects(P: Integer);
 var
@@ -16296,32 +16304,52 @@ begin
     Exit;
   if InRange(ArenaCycles, 0, ARENA_CYCLES - 1) then
   begin
-    for aX := CurrentMinX - 3 to CurrentMaxX + 3 do
+    for aX := CurrentMinX - 2 to CurrentMaxX + 2 do
     begin
       Actions.MapTileSet(aX, CurrentMinY - 1, 206, 0);
       Actions.MapTileSet(aX, CurrentMaxY + 1, 206, 2);
-      Actions.MapTileSet(aX, CurrentMinY - 2, 207, 2);
-      Actions.MapTileSet(aX, CurrentMaxY + 2, 207, 0);
-      Actions.MapTileSet(aX, CurrentMinY - 3, 215, 0);
-      Actions.MapTileSet(aX, CurrentMaxY + 3, 215, 0);
-      Actions.MapTileHeightSet(aX, CurrentMinY - 2, States.MapTileHeight(25, 47));
-      Actions.MapTileHeightSet(aX, CurrentMaxY + 2, States.MapTileHeight(25, 47));
-      Actions.MapTileHeightSet(aX, CurrentMinY - 1, States.MapTileHeight(25, 47));
-      Actions.MapTileHeightSet(aX, CurrentMaxY + 1, States.MapTileHeight(25, 47));
+      Actions.MapTileSet(aX, CurrentMinY - 2, 7, States.KaMRandomI(4));
+      Actions.MapTileSet(aX, CurrentMaxY + 2, 7, States.KaMRandomI(4));
+      Actions.MapTileHeightSet(aX, CurrentMinY - 2, States.MapTileHeight(25, 47) + States.KaMRandomI(10));
+      Actions.MapTileHeightSet(aX, CurrentMaxY + 2, States.MapTileHeight(25, 47) + States.KaMRandomI(10));
+      Actions.MapTileHeightSet(aX, CurrentMinY - 1, States.MapTileHeight(25, 47) + States.KaMRandomI(5));
+      Actions.MapTileHeightSet(aX, CurrentMaxY + 1, States.MapTileHeight(25, 47) + States.KaMRandomI(5));
+      if TileOnBattlefield(aX, CurrentMinY) then
+      begin
+        Actions.MapTileHeightSet(aX, CurrentMinY, Max(5, States.MapTileHeight(aX, CurrentMinY) + States.KaMRandomI(5) - States.KaMRandomI(8)));
+        Tiles[aX][CurrentMinY].Relief := States.MapTileHeight(aX, CurrentMinY);
+      end;
+      if TileOnBattlefield(aX, CurrentMaxY) then
+      begin
+        Actions.MapTileHeightSet(aX, CurrentMaxY, Max(5, States.MapTileHeight(aX, CurrentMaxY) + States.KaMRandomI(5) - States.KaMRandomI(8)));
+        Tiles[aX][CurrentMaxY].Relief := States.MapTileHeight(aX, CurrentMaxY);
+      end;
     end;
     for aY := CurrentMinY - 1 to CurrentMaxY + 1 do
     begin
       Actions.MapTileSet(CurrentMinX - 1, aY, 206, 3);
       Actions.MapTileSet(CurrentMaxX + 1, aY, 206, 1);
-      Actions.MapTileSet(CurrentMinX - 2, aY, 207, 1);
-      Actions.MapTileSet(CurrentMaxX + 2, aY, 207, 3);
-      Actions.MapTileSet(CurrentMinX - 3, aY, 215, 0);
-      Actions.MapTileSet(CurrentMaxX + 3, aY, 215, 0);
-      Actions.MapTileHeightSet(CurrentMinX - 2, aY, States.MapTileHeight(25, 47));
-      Actions.MapTileHeightSet(CurrentMaxX + 2, aY, States.MapTileHeight(25, 47));
-      Actions.MapTileHeightSet(CurrentMinX - 1, aY, States.MapTileHeight(25, 47));
-      Actions.MapTileHeightSet(CurrentMaxX + 1, aY, States.MapTileHeight(25, 47));
+      Actions.MapTileSet(CurrentMinX - 2, aY, 7, States.KaMRandomI(4));
+      Actions.MapTileSet(CurrentMaxX + 2, aY, 7, States.KaMRandomI(4));
+      Actions.MapTileHeightSet(CurrentMinX - 2, aY, States.MapTileHeight(25, 47) + States.KaMRandomI(10));
+      Actions.MapTileHeightSet(CurrentMaxX + 2, aY, States.MapTileHeight(25, 47) + States.KaMRandomI(10));
+      Actions.MapTileHeightSet(CurrentMinX - 1, aY, States.MapTileHeight(25, 47) + States.KaMRandomI(5));
+      Actions.MapTileHeightSet(CurrentMaxX + 1, aY, States.MapTileHeight(25, 47) + States.KaMRandomI(5));
+      if TileOnBattlefield(CurrentMinX, aY) then
+      begin
+        Actions.MapTileHeightSet(CurrentMinX, aY, Max(5, States.MapTileHeight(CurrentMinX, aY) + States.KaMRandomI(5) - States.KaMRandomI(8)));
+        Tiles[CurrentMinX][aY].Relief := States.MapTileHeight(CurrentMinX, aY);
+      end;
+      if TileOnBattlefield(CurrentMaxX, aY) then
+      begin
+        Actions.MapTileHeightSet(CurrentMaxX, aY, Max(5, States.MapTileHeight(CurrentMaxX, aY) + States.KaMRandomI(5) - States.KaMRandomI(8)));
+        Tiles[CurrentMaxX][aY].Relief := States.MapTileHeight(CurrentMaxX, aY);
+      end;
     end;
+    Actions.MapTileSet(CurrentMinX - 1, CurrentMinY - 1, 202, 1);
+    Actions.MapTileSet(CurrentMinX - 1, CurrentMaxY + 1, 202, 0);
+    Actions.MapTileSet(CurrentMaxX + 1, CurrentMinY - 1, 202, 2);
+    Actions.MapTileSet(CurrentMaxX + 1, CurrentMaxY + 1, 202, 3);
   end;
 end;
 
@@ -16395,7 +16423,7 @@ begin
     RegenRelief;
 
   if States.GameTime mod TILES_RECHECK_TIME = 0 then
-    CheckTileCleanup(True);
+    CheckTileCleanup(False);
 
   for I := 0 to 7 do
     if States.PlayerEnabled(I) then
