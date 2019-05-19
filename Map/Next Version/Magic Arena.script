@@ -118,6 +118,7 @@ const
   MENTAL_DISTANCE = 8;
   TEN_K_SPEARS_WAVES = 1;
   BOWMAN_CHARGES = 4;
+  SNAKE_CHARGES = 2;
 
 //Skills speed
 
@@ -600,6 +601,8 @@ type
     MirrorTime: Integer;
     RocketCharges: Integer;
     RocketChargeTime: Integer;
+    SnakeCharges: Integer;
+    SnakeChargeTime: Integer;
     LastRoadSkill: aSkill;
     LastFieldSkill: aSkill;
     LastWineSkill: aSkill;
@@ -1437,6 +1440,8 @@ begin
       MirrorTime := 0;
       RocketCharges := BOWMAN_CHARGES;
       RocketChargeTime := 0;
+      SnakeCharges := SNAKE_CHARGES;
+      SnakeChargeTime := 0;
       LastRoadSkill := sNone;
       LastFieldSkill := sNone;
       LastWineSkill := sNone;
@@ -1688,6 +1693,8 @@ begin
         Players[P].WineSkillDelay := 0;
         Players[P].RocketCharges := BOWMAN_CHARGES;
         Players[P].RocketChargeTime := 0;
+        Players[P].SnakeCharges := SNAKE_CHARGES;
+        Players[P].SnakeChargeTime := 0;
         RuneTaken := True;
         Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
       end;
@@ -2162,7 +2169,14 @@ begin
   begin
     Players[P].RocketCharges := Players[P].RocketCharges + 1;
     Players[P].RocketChargeTime := States.GameTime + Round(BOWMAN_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-  end; 
+  end;
+
+  if (States.GameTime = Players[P].SnakeChargeTime)
+  and (Players[P].SnakeCharges <= SNAKE_CHARGES - 1) then
+  begin
+    Players[P].SnakeCharges := Players[P].SnakeCharges + 1;
+    Players[P].SnakeChargeTime := States.GameTime + Round(WARRIOR_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+  end;
 
 end;
 
@@ -2326,7 +2340,7 @@ begin
     23: Result := '[$499AEE]<$14>[]';
     24: Result := '[$C2C3C5]<$135>[]';
     25: Result := '[$ADF346]<$55>[]';
-    26: Result := '[$0022FF]<$46>[]';
+    26: Result := '[$0022FF]<$46>.[] <$138>: ' + IntToStr(Players[P].SnakeCharges) + '/' + IntToStr(SNAKE_CHARGES) + IfThenStr(Players[P].SnakeCharges < SNAKE_CHARGES, ' (+1 <$139> ' + IntToStr((Players[P].SnakeChargeTime - States.GameTime)/10) + ')', '');
     27: Result := '[$FF7648]<$15>[]';
   end;
 end;
@@ -2369,6 +2383,8 @@ begin
           Result := '[$AE209F]' + Players[P].StolenSkillName + '[]';
           if Players[P].StolenSkillName = '<$10>' then
             Result := Result + '. <$138>: ' + IntToStr(Players[P].RocketCharges) + '/' + IntToStr(BOWMAN_CHARGES) + IfThenStr(Players[P].RocketCharges < BOWMAN_CHARGES, ' (+1 <$139> ' + IntToStr((Players[P].RocketChargeTime - States.GameTime)/10) + ')', '');
+          if Players[P].StolenSkillName = '<$46>' then
+            Result := Result + '. <$138>: ' + IntToStr(Players[P].SnakeCharges) + '/' + IntToStr(SNAKE_CHARGES) + IfThenStr(Players[P].SnakeCharges < SNAKE_CHARGES, ' (+1 <$139> ' + IntToStr((Players[P].SnakeChargeTime - States.GameTime)/10) + ')', '');
         end;
     26: Result := '[$1707A6]<$48>[]';
     27: Result := '[$00FC7C]<$31>[]';
@@ -2764,6 +2780,8 @@ begin
   Players[P].ReChargeTime := 0;
   Players[P].RocketCharges := BOWMAN_CHARGES;
   Players[P].RocketChargeTime := 0;
+  Players[P].SnakeCharges := SNAKE_CHARGES;
+  Players[P].SnakeChargeTime := 0;
 
 end;
 
@@ -2825,6 +2843,8 @@ begin
     Players[P].WineSkillDelay := 0;
     Players[P].RocketCharges := BOWMAN_CHARGES;
     Players[P].RocketChargeTime := 0;
+    Players[P].SnakeCharges := SNAKE_CHARGES;
+    Players[P].SnakeChargeTime := 0;
   end;
   if HT = 9 then
   begin
@@ -6733,6 +6753,9 @@ begin
   if States.GroupMember(Players[P].Hero, 0) <= 0 then
     Exit;
 
+  if Players[P].SnakeCharges <= 0 then
+    Exit;
+
   if (TileOnBattlefield(X, Y))
   and (Players[P].Hero > 0) then
   begin
@@ -7044,7 +7067,13 @@ begin
 
     Players[P].LastRoadSkill := sFierySnake;
 
-    Players[P].RoadSkillDelay := Round(WARRIOR_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+    if Players[P].SnakeCharges > 0 then
+    begin
+      Players[P].SnakeCharges := Players[P].SnakeCharges - 1 * Byte(Players[P].HeroType <> 25);
+      if (Players[P].SnakeCharges <= SNAKE_CHARGES - 1)
+      and (Players[P].SnakeChargeTime <= States.GameTime) then
+        Players[P].SnakeChargeTime := States.GameTime + Round(WARRIOR_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+    end;
 
     ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
 
@@ -9279,6 +9308,8 @@ begin
           Players[P].WineSkillDelay := ROGUE_WINE_DELAY;
           Players[P].RocketCharges := BOWMAN_CHARGES;
           Players[P].RocketChargeTime := 0;
+          Players[P].SnakeCharges := SNAKE_CHARGES;
+          Players[P].SnakeChargeTime := 0;
           if Players[P].StolenSkill <> sNone then
             Players[P].StolenSkillTime := STOLEN_SKILL_TIME;
         end;
@@ -9509,11 +9540,15 @@ begin
 
       sRevengeFromNowhere: RevengeFromNowhere(P, X, Y, -1);
 
-      sFierySnake: begin
+      sFierySnake: if Players[P].SnakeCharges > 0 then
+                   begin
                      TempRoadSkillDelay := Players[P].RoadSkillDelay;
                      FierySnake(P, X, Y, -1);
                      Players[P].RoadSkillDelay := TempRoadSkillDelay;
-                     Players[P].WineSkillDelay := Round(WARRIOR_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+                     Players[P].SnakeCharges := Players[P].SnakeCharges - 1;
+                     if (Players[P].SnakeCharges <= SNAKE_CHARGES - 1)
+                     and (Players[P].SnakeChargeTime <= States.GameTime) then
+                       Players[P].WineSkillDelay := Round(WARRIOR_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
                    end;
 
       sExile: begin
@@ -10883,6 +10918,8 @@ begin
     Players[P].WineSkillDelay := 0;
     Players[P].RocketCharges := BOWMAN_CHARGES;
     Players[P].RocketChargeTime := 0;
+    Players[P].SnakeCharges := SNAKE_CHARGES;
+    Players[P].SnakeChargeTime := 0;
     if TileOnRuneSpawn(aX, aY) then
       RuneTaken := True;
     Actions.MapTileObjectSet(aX, aY, 255);
@@ -13296,7 +13333,9 @@ begin
       Players[P].FieldSkillDelay := Players[M[P]].FieldSkillDelay;
       Players[P].WineSkillDelay := Players[M[P]].WineSkillDelay;
       Players[P].RocketCharges := Players[M[P]].RocketCharges; 
-      Players[P].RocketChargeTime := Players[M[P]].RocketChargeTime; 
+      Players[P].RocketChargeTime := Players[M[P]].RocketChargeTime;
+      Players[P].SnakeCharges := Players[M[P]].SnakeCharges; 
+      Players[P].SnakeChargeTime := Players[M[P]].SnakeChargeTime; 
       if Players[M[P]].PlayersTeam = 1 then
       begin
         Players[M[P]].PlayersTeam := 0;
@@ -13442,7 +13481,9 @@ begin
         Players[M[P]].HeroExiled := False;
         Players[M[P]].HeroExileBackTime := 0;
         Players[M[P]].RocketCharges := Players[P].RocketCharges; 
-        Players[M[P]].RocketChargeTime := Players[P].RocketChargeTime; 
+        Players[M[P]].RocketChargeTime := Players[P].RocketChargeTime;
+        Players[M[P]].SnakeCharges := Players[P].SnakeCharges; 
+        Players[M[P]].SnakeChargeTime := Players[P].SnakeChargeTime;
         if Players[M[P]].PlayersTeam = 1 then
         begin
           Players[M[P]].PlayersTeam := 0;
@@ -16543,7 +16584,7 @@ begin
     and (not Players[I].ReChoice) then
     begin
       Actions.OverlayTextSet(I, '<$33> [$ADAF67]' + States.UnitTypeName(Players[I].HeroType) + '[]!'
-      + '||<$35>: ' + RoadSkillName(I, Players[I].HeroType) + IfThenStr(Players[I].HeroType <> 17, '. <$34>: ' + IntToStr(Players[I].RoadSkillDelay/10), '.')
+      + '||<$35>: ' + RoadSkillName(I, Players[I].HeroType) + IfThenStr((Players[I].HeroType <> 17) and (Players[I].HeroType <> 26), '. <$34>: ' + IntToStr(Players[I].RoadSkillDelay/10), '.')
       + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '.' + SacrificialTeleportColor(I) + ' <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10) + '[]'
       + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '.' + StolenSacrificialTeleportColor(I) + IfThenStr(Players[I].StolenSkillName <> '<$10>', ' <$34>: ' + IntToStr(Players[I].WineSkillDelay/10) + '[]', '')
       + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + IfThenStr(ArenaTime > 0, '||<$145>: ' + IntToStr(ArenaTime/10) + '|', '')
@@ -16557,7 +16598,7 @@ begin
     and (not Players[I].ReChoice) then
     begin
       Actions.OverlayTextSet(I, '<$33> [$ADAF67]' + States.UnitTypeName(Players[I].HeroType) + '[]!'
-      + '||<$35>: ' + RoadSkillName(I, Players[I].HeroType) + IfThenStr(Players[I].HeroType <> 17, '. <$34>: ' + IntToStr(Players[I].RoadSkillDelay/10), '.')
+      + '||<$35>: ' + RoadSkillName(I, Players[I].HeroType) + IfThenStr((Players[I].HeroType <> 17) and (Players[I].HeroType <> 26), '. <$34>: ' + IntToStr(Players[I].RoadSkillDelay/10), '.')
       + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '.' + SacrificialTeleportColor(I) + ' <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10) + '[]'
       + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '.' + StolenSacrificialTeleportColor(I)  + IfThenStr(Players[I].StolenSkillName <> '<$10>', ' <$34>: ' + IntToStr(Players[I].WineSkillDelay/10) + '[]', '')
       + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + IfThenStr(ArenaTime > 0, '||<$145>: ' + IntToStr(ArenaTime/10) + '|', '')
