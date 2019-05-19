@@ -88,7 +88,7 @@ const
   REPLICA_DELAY = 15;
   REPLICA_KILL_CHANCE = 0.65;
   REPLICA_LURE_CHANCE = 0.45;
-  RIFT_USAGE_RADIUS = 4;
+  RIFT_USAGE_RADIUS = 5;
   RIFT_ZOMBIE_RADIUS = 5;
   RIFT_ADD_ILLUSIONS = 2;
   MIRROR_TIME = 60;
@@ -311,6 +311,7 @@ const
   EXILE_DELAY = 8;
   SHIELD_TIME = 80;
   TOWER_DELAY = 25;
+  RIFT_DELAY = 10;
 
 //Game mechanics
 
@@ -8767,7 +8768,7 @@ begin
     begin
       Players[P].RiftX := X;
       Players[P].RiftY := Y;
-      Players[P].RiftTime := States.GameTime + DELAY_OF_TURNING;
+      Players[P].RiftTime := States.GameTime + RIFT_DELAY;
       Players[P].RiftDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
       
       if Length(Zombies) > 0 then
@@ -11960,9 +11961,6 @@ begin
     and (InRange(aY, MIN_Y, MAX_Y)) then
       if Tiles[aX][aY].Owner = TEMP_PLAYER then
         ArenaTime2 := States.GameTime + BORDER_SPACES_TIME;
-
-    if Players[O].HP = 0 then
-      ArenaTime := IfThen(ArenaTime > BORDER_TIME1 + PLAYER_FACTOR + 1, ArenaTime - PLAYER_FACTOR, ArenaTime);
 
   end;
 
