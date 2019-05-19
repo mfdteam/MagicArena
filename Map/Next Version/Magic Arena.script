@@ -309,7 +309,7 @@ const
   SILENCE_SCOUT_TIME = 50;
   SILENCE_SCOUT_DELAY = 12;
   EXILE_TIME = 30;
-  EXILE_DELAY = 8;
+  EXILE_DELAY = 2;
   SHIELD_TIME = 80;
   TOWER_DELAY = 25;
   RIFT_DELAY = 10;
@@ -7143,10 +7143,10 @@ begin
       for I := 1 to 4 do
         TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := WARRIOR_OBJECT4;
     
-      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 5;
-      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 6;
-      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 7;
-      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 8;
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 4] := States.GameTime + 2;
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 3] := States.GameTime + 3;
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 2] := States.GameTime + 4;
+      ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] := States.GameTime + 5;
     
       SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 4] := States.GameTime + 1;
       SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - 3] := States.GameTime + 2;
