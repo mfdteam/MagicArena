@@ -2171,12 +2171,18 @@ begin
     Players[P].RocketChargeTime := States.GameTime + Round(BOWMAN_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
   end;
 
+  if Players[P].RocketCharges = BOWMAN_CHARGES then
+    Players[P].RocketChargeTime := 0;
+
   if (States.GameTime = Players[P].SnakeChargeTime)
   and (Players[P].SnakeCharges <= SNAKE_CHARGES - 1) then
   begin
     Players[P].SnakeCharges := Players[P].SnakeCharges + 1;
     Players[P].SnakeChargeTime := States.GameTime + Round(WARRIOR_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
   end;
+
+  if Players[P].SnakeCharges = SNAKE_CHARGES then
+    Players[P].SnakeChargeTime := 0;
 
 end;
 
