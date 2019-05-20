@@ -360,6 +360,7 @@ const
   SHOW_ERROR_MSG = True;
   DEATH_ANIMATION = False;
   KILL_STREAK = True;
+  RANDOM_ANIMATIONS = True;
 
 //Border
 
@@ -3763,7 +3764,8 @@ end;
 
 procedure FieryLance(P, X, Y, Dir: Integer);
 var
-  I, X1, Y1, X2, Y2, Desync, Direction: Integer;
+  I, X1, Y1, X2, Y2, Desync, Direction, Pos, Temp: Integer;
+  Points: array[1..4] of Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -3790,6 +3792,18 @@ begin
     if not States.PlayerIsAI(P) then
       Direction := Players[P].SkillDirection;
 
+    for I := 1 to 4 do
+      Points[I] := I;
+
+    if RANDOM_ANIMATIONS then
+      for I := 1 to 4 do
+      begin 
+        Pos := 1 + States.KaMRandomI(4); 
+        Temp := Points[Pos]; 
+        Points[Pos] := Points[I]; 
+        Points[I] := Temp;
+      end; 
+
     TilesRoadLength[P] := TilesRoadLength[P] + 4;
     SetLength(TilesRoadX[P], TilesRoadLength[P]);
     SetLength(TilesRoadY[P], TilesRoadLength[P]);
@@ -3804,18 +3818,18 @@ begin
     TilesRoadY[P][Length(TilesRoadY[P]) - 3] := Y2 - 1;
     TilesRoadY[P][Length(TilesRoadY[P]) - 2] := Y2 + 1;
     TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
-    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 4] := LANCE_OBJECT;
-    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 3] := LANCE_OBJECT;
-    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 2] := LANCE_OBJECT2;
-    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - 1] := LANCE_OBJECT2;
-    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 4] := States.GameTime + 9;
-    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 3] := States.GameTime + 12;
-    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 2] := States.GameTime + 15;
-    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 18;
-    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 4] := States.GameTime + 2;
-    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 3] := States.GameTime + 5;
-    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 2] := States.GameTime + 8;
-    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 11;
+    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - Points[4]] := LANCE_OBJECT;
+    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - Points[3]] := LANCE_OBJECT;
+    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - Points[2]] := LANCE_OBJECT2;
+    TilesRoadObjects[P][Length(TilesRoadObjects[P]) - Points[1]] := LANCE_OBJECT2;
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - Points[4]] := States.GameTime + 9;
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - Points[3]] := States.GameTime + 12;
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - Points[2]] := States.GameTime + 15;
+    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - Points[1]] := States.GameTime + 18;
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - Points[4]] := States.GameTime + 2;
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - Points[3]] := States.GameTime + 5;
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - Points[2]] := States.GameTime + 8;
+    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - Points[1]] := States.GameTime + 11;
 
     Players[P].RoadSkillCancelTime := States.GameTime + 12;
 
