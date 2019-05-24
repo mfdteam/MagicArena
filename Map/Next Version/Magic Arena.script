@@ -10266,21 +10266,6 @@ begin
             TilesWineObjects[M2[P]][I] := SKILL_CANCEL_OBJ;
           end;
 
-    Players[P].TrackStartTime := 0;
-    Players[P].TrackStopTime := 0;
-    Players[P].SettingTrack := False;
-    Players[P].HeroExileTime := 0;
-    Players[P].HeroExileBackTime := 0;
-    Players[P].HeroExiled := False;
-    Players[P].TowerTime := 0;
-    Players[P].ReplicaTime := 0;
-    Players[P].RiftTime := 0;
-    Players[P].MirrorTime := 0;
-    RuneCleanupTime[P] := 0;
-    Players[P].ThreadsAttackTime := 0;
-    Players[P].SpurtStartTime := 0;
-    Players[P].SpurtEndTime := 0;
-
     for I := 0 to 7 do
     begin
 
@@ -10302,6 +10287,21 @@ begin
       end;
 
     end;
+
+    Players[P].TrackStartTime := 0;
+    Players[P].TrackStopTime := 0;
+    Players[P].SettingTrack := False;
+    Players[P].HeroExileTime := 0;
+    Players[P].HeroExileBackTime := 0;
+    Players[P].HeroExiled := False;
+    Players[P].TowerTime := 0;
+    Players[P].ReplicaTime := 0;
+    Players[P].RiftTime := 0;
+    Players[P].MirrorTime := 0;
+    RuneCleanupTime[P] := 0;
+    Players[P].ThreadsAttackTime := 0;
+    Players[P].SpurtStartTime := 0;
+    Players[P].SpurtEndTime := 0;
 
     for K := 0 to SPURT_LENGTH - 1 do
       SpurtTimes[P][K] := 0;
@@ -10377,6 +10377,7 @@ begin
 
 end;
 
+
 procedure CancelSkillMindSilent(P: Integer);
 begin
   if States.GameTime = Players[P].CancelSkillMindSilent then
@@ -10385,6 +10386,7 @@ begin
     Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[M[P]].MindX, Players[M[P]].MindY, Players[M[P]].MindDir, 1, 1);
   end;
 end;
+
 
 procedure CheckTiles(P: Integer);
 var
@@ -10531,6 +10533,28 @@ begin
                 TilesWineObjects[M2[P]][I] := SKILL_CANCEL_OBJ;
               end;
 
+        for I := 0 to 7 do
+        begin
+
+          if Players[I].ThreadsAttacker = P then
+            Players[I].ThreadsAttacker := -1;
+
+          if Players[I].ScoutSilenceGiver = P then
+            Players[I].ScoutSilenceGiver := -1;
+
+          if Players[I].HeroExileGiver = P then
+            Players[I].HeroExileGiver := -1;
+
+          if (Players[I].ThreadsTarget = P)
+          and (Players[P].ThreadsTime - States.GameTime > DELAY_OF_TURNING * 2) then
+          begin
+            Players[P].ThreadsTime := 0;
+            Players[P].MovedByThreads := False;
+            Players[I].ThreadsTarget := -1;
+          end;
+
+        end;
+
         Players[P].TrackStartTime := 0;
         Players[P].TrackStopTime := 0;
         Players[P].SettingTrack := False;
@@ -10559,28 +10583,6 @@ begin
         begin
           Players[P].HeroType := Players[P].TempHeroType;
           Players[P].MindAppearTimeBack := 0;
-        end;
-
-        for I := 0 to 7 do
-        begin
-
-          if Players[I].ThreadsAttacker = P then
-            Players[I].ThreadsAttacker := -1;
-
-          if Players[I].ScoutSilenceGiver = P then
-            Players[I].ScoutSilenceGiver := -1;
-
-          if Players[I].HeroExileGiver = P then
-            Players[I].HeroExileGiver := -1;
-
-          if (Players[I].ThreadsTarget = P)
-          and (Players[P].ThreadsTime - States.GameTime > DELAY_OF_TURNING * 2) then
-          begin
-            Players[P].ThreadsTime := 0;
-            Players[P].MovedByThreads := False;
-            Players[I].ThreadsTarget := -1;
-          end;
-
         end;
 
         for K := 0 to SPURT_LENGTH - 1 do
@@ -12281,19 +12283,6 @@ begin
   if InRange(aKiller, 9, 11) then
   begin
 
-    Players[O].TrackStartTime := 0;
-    Players[O].TrackStopTime := 0;
-    Players[O].SettingTrack := False;
-    Players[O].HeroExileTime := 0;
-    Players[O].HeroExileBackTime := 0;
-    Players[O].HeroExiled := False;
-    Players[O].TowerTime := 0;
-    Players[O].ReplicaTime := 0;
-    Players[O].RiftTime := 0;
-    Players[O].MirrorTime := 0;
-    RuneCleanupTime[O] := 0;
-    Players[O].ThreadsAttackTime := 0;
-
     for I := 0 to 7 do
     begin
 
@@ -12314,6 +12303,19 @@ begin
       end;
 
     end;
+
+    Players[O].TrackStartTime := 0;
+    Players[O].TrackStopTime := 0;
+    Players[O].SettingTrack := False;
+    Players[O].HeroExileTime := 0;
+    Players[O].HeroExileBackTime := 0;
+    Players[O].HeroExiled := False;
+    Players[O].TowerTime := 0;
+    Players[O].ReplicaTime := 0;
+    Players[O].RiftTime := 0;
+    Players[O].MirrorTime := 0;
+    RuneCleanupTime[O] := 0;
+    Players[O].ThreadsAttackTime := 0;
 
     for K := 0 to SPURT_LENGTH - 1 do
       SpurtTimes[O][K] := 0;
