@@ -4057,7 +4057,7 @@ begin
           Points2[I] := Points2[24 - I + 1];
           Points2[24 - I + 1] := Temp2;
         end;
-      for J := 1 to States.KaMRandomI(16) do
+      for J := 1 to States.KaMRandomI(8) do
       begin
         Temp := Points[1];
         for K := 1 to 23 do
