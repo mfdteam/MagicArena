@@ -376,6 +376,8 @@ const
   MAX_X = 59;
   MIN_Y = 51;
   MAX_Y = 98;
+  TEMP_AI_X = 2;
+  TEMP_AI_Y = 15;
   CENTERSCREEN_X = 17;
   CENTERSCREEN_Y = 17;
   TEMP_PLAYER = 11;
@@ -8954,7 +8956,7 @@ end;
 
 procedure Rift(P, X, Y: Integer);
 var
-  I, X2, Y2, X1, Y1: Integer;
+  I, X2, Y2, X1, Y1, Z, UT: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -8984,7 +8986,17 @@ begin
             and (InRange(States.UnitType(Zombies[I].ID), 14, 27))
             and (Abs(X1 - X2) <= RIFT_ZOMBIE_RADIUS)
             and (Abs(Y1 - Y2) <= RIFT_ZOMBIE_RADIUS) then
-              Zombies[I].TeleportTime := Players[P].RiftTime;
+            begin
+              UT := States.UnitType(Zombies[I].ID);
+              Actions.UnitKill(Zombies[I].ID, True);
+              SetLength(Zombies, Length(Zombies) + 1);
+              Zombies[Length(Zombies) - 1].Owner := P;
+              Z := Actions.GiveGroup(Players[P].ZombiePlayer, UT, TEMP_AI_X, TEMP_AI_Y, Players[P].RiftDir, 1, 1);
+              Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+              Zombies[Length(Zombies) - 1].ZombieType := 3;
+              Zombies[Length(Zombies) - 1].TeleportTime := Players[P].RiftTime;
+              Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[P].DD)));
+            end;
           end;
 
       Actions.GroupKillAll(Players[P].Hero, True);
