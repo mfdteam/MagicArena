@@ -1601,7 +1601,7 @@ begin
     Exit;
   try
     for I := 0 to Length(Zombies) - 1 do
-      if not States.UnitDead(Zombies[I].ID) then
+      if Zombies[I].ID > 0 then
       begin
         SetLength(TempZombies, Length(TempZombies) + 1);
         TempZombies[Length(TempZombies) - 1].ID := Zombies[I].ID;
@@ -8956,7 +8956,7 @@ end;
 
 procedure Rift(P, X, Y: Integer);
 var
-  I, X2, Y2, X1, Y1, Z, UT: Integer;
+  I, X2, Y2, X1, Y1, Z: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -8987,15 +8987,20 @@ begin
             and (Abs(X1 - X2) <= RIFT_ZOMBIE_RADIUS)
             and (Abs(Y1 - Y2) <= RIFT_ZOMBIE_RADIUS) then
             begin
-              UT := States.UnitType(Zombies[I].ID);
-              Actions.UnitKill(Zombies[I].ID, True);
               SetLength(Zombies, Length(Zombies) + 1);
               Zombies[Length(Zombies) - 1].Owner := P;
-              Z := Actions.GiveGroup(Players[P].ZombiePlayer, UT, TEMP_AI_X, TEMP_AI_Y, Players[P].RiftDir, 1, 1);
-              Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-              Zombies[Length(Zombies) - 1].ZombieType := 3;
+              Zombies[Length(Zombies) - 1].ZombieType := Zombies[I].ZombieType;
+              Zombies[Length(Zombies) - 1].Hunger := States.UnitHunger(Zombies[I].ID);
               Zombies[Length(Zombies) - 1].TeleportTime := Players[P].RiftTime;
-              Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[P].DD)));
+              Zombies[Length(Zombies) - 1].KillTime := Zombies[I].KillTime;
+              Zombies[Length(Zombies) - 1].ThreadsTime := 0;
+              Zombies[Length(Zombies) - 1].ThreadsX := -1;
+              Zombies[Length(Zombies) - 1].ThreadsY := -1;
+              Zombies[Length(Zombies) - 1].ThreadsDir := -1;
+              Z := Actions.GiveGroup(Players[P].ZombiePlayer, States.UnitType(Zombies[I].ID), TEMP_AI_X, TEMP_AI_Y, States.KaMRandomI(8), 1, 1);
+              Actions.GroupHungerSet(Z, Zombies[Length(Zombies) - 1].Hunger);
+              Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+              Actions.UnitKill(Zombies[I].ID, True);
             end;
           end;
 
@@ -12190,7 +12195,12 @@ begin
   end;
 
   if InRange(O, 8, 11) then
+  begin
+    for I := Low(Zombies) to High(Zombies) do
+      if aID = Zombies[I].ID then
+        Zombies[I].ID := -1;
     CheckZombieArray;
+  end;
 
   if (InRange(O, 0, 7))
   and (InRange(aKiller, 9, 11)) then
