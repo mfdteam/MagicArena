@@ -9133,7 +9133,7 @@ end;
 
 procedure Rift(P, X, Y: Integer);
 var
-  I, X2, Y2, X1, Y1, Z: Integer;
+  X2, Y2, X1, Y1, Z, U: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -9152,33 +9152,31 @@ begin
       Players[P].RiftY := Y;
       Players[P].RiftTime := States.GameTime + RIFT_DELAY;
       Players[P].RiftDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
-      
-      if Length(Zombies) > 0 then
-        for I := 0 to Length(Zombies) - 1 do
-          if not States.UnitDead(Zombies[I].ID) then
+
+      for X1 := X2 - RIFT_ZOMBIE_RADIUS to X2 + RIFT_ZOMBIE_RADIUS do
+        for Y1 := Y2 - RIFT_ZOMBIE_RADIUS to Y2 + RIFT_ZOMBIE_RADIUS do
+          if TileOnBattlefield(X1, Y1) then
           begin
-            X1 := States.UnitPositionX(Zombies[I].ID);
-            Y1 := States.UnitPositionY(Zombies[I].ID);
-            if (Zombies[I].Owner = P)
-            and (InRange(States.UnitType(Zombies[I].ID), 14, 27))
-            and (Abs(X1 - X2) <= RIFT_ZOMBIE_RADIUS)
-            and (Abs(Y1 - Y2) <= RIFT_ZOMBIE_RADIUS) then
-            begin
-              SetLength(Zombies, Length(Zombies) + 1);
-              Zombies[Length(Zombies) - 1].Owner := P;
-              Zombies[Length(Zombies) - 1].ZombieType := Zombies[I].ZombieType;
-              Zombies[Length(Zombies) - 1].Hunger := States.UnitHunger(Zombies[I].ID);
-              Zombies[Length(Zombies) - 1].TeleportTime := Players[P].RiftTime;
-              Zombies[Length(Zombies) - 1].KillTime := Zombies[I].KillTime;
-              Zombies[Length(Zombies) - 1].ThreadsTime := 0;
-              Zombies[Length(Zombies) - 1].ThreadsX := -1;
-              Zombies[Length(Zombies) - 1].ThreadsY := -1;
-              Zombies[Length(Zombies) - 1].ThreadsDir := -1;
-              Z := Actions.GiveGroup(Players[P].ZombiePlayer, States.UnitType(Zombies[I].ID), TEMP_AI_X, TEMP_AI_Y, States.KaMRandomI(8), 1, 1);
-              Actions.GroupHungerSet(Z, Zombies[Length(Zombies) - 1].Hunger);
-              Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-              Actions.UnitKill(Zombies[I].ID, True);
-            end;
+            U := States.UnitAt(X1, Y1);
+            if U > 0 then
+              if (States.UnitOwner(U) = Players[P].ZombiePlayer)
+              and (InRange(States.UnitType(U), 14, 27)) then
+              begin
+                SetLength(Zombies, Length(Zombies) + 1);
+                Zombies[Length(Zombies) - 1].Owner := P;
+                Zombies[Length(Zombies) - 1].ZombieType := 3;
+                Zombies[Length(Zombies) - 1].Hunger := States.UnitHunger(U);
+                Zombies[Length(Zombies) - 1].TeleportTime := Players[P].RiftTime;
+                Zombies[Length(Zombies) - 1].KillTime := 0;
+                Zombies[Length(Zombies) - 1].ThreadsTime := 0;
+                Zombies[Length(Zombies) - 1].ThreadsX := -1;
+                Zombies[Length(Zombies) - 1].ThreadsY := -1;
+                Zombies[Length(Zombies) - 1].ThreadsDir := -1;
+                Z := Actions.GiveGroup(Players[P].ZombiePlayer, States.UnitType(U), TEMP_AI_X, TEMP_AI_Y, States.KaMRandomI(8), 1, 1);
+                Actions.GroupHungerSet(Z, States.UnitHunger(U));
+                Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+                Actions.UnitKill(U, True);
+              end;
           end;
 
       Actions.GroupKillAll(Players[P].Hero, True);
