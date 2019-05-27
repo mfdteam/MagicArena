@@ -9031,7 +9031,7 @@ end;
 
 procedure Replica(P, X, Y: Integer);
 var
-  I, U, O, X2, Y2, Pos, Temp: Integer;
+  I, U, O, X2, Y2, Pos, Temp, UT: Integer;
   Points: array[1..4] of Integer;
 begin
   if Players[P].Hero <= 0 then
@@ -9066,11 +9066,13 @@ begin
       if U <= 0 then
         Exit;
       O := States.UnitOwner(U);
+      UT := States.Unittype(U);
       if ((InRange(O, 0, 7))
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity))
       or ((InRange(O, 8, 11))
+      and (InRange(UT, 14, 27))
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam)) then
       begin
         TilesRoadLength[P] := TilesRoadLength[P] + 4;
@@ -9121,7 +9123,8 @@ begin
           if Length(Zombies) > 0 then
             for I := 0 to Length(Zombies) - 1 do
               if not States.UnitDead(Zombies[I].ID) then
-                if Zombies[I].ID = U then
+                if (Zombies[I].ID = U)
+                and (InRange(UT, 14, 27)) then
                   Zombies[I].KillTime := Players[P].ReplicaTime;
 
         Players[P].RoadSkillDelay := Round(REBEL_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
