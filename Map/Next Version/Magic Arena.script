@@ -3513,7 +3513,7 @@ end;
 
 procedure Fear(P, X, Y: Integer);
 var
-  X2, Y2, U, O, K: Integer;
+  X2, Y2, U, O, K, UT: Integer;
   R: Single;
   Lure: Boolean;
 begin
@@ -3534,10 +3534,14 @@ begin
     begin
       U := States.UnitAt(X, Y);
       if U > 0 then
+      begin
         O := States.UnitOwner(U);
+        UT := States.UnitType(U);
+      end;
 
       if (InRange(O, 8, 11))
-      and (Players[O].PlayersTeam <> Players[P].PlayersTeam) then
+      and (Players[O].PlayersTeam <> Players[P].PlayersTeam)
+      and (InRange(UT, 14, 27)) then
       begin
         R := States.KaMRandom;
         Lure := R < FEAR_LURE_CHANCE;
@@ -9507,7 +9511,7 @@ end;
 
 procedure StealSkill(P, X, Y: Integer);
 var
-  I, X2, Y2, U, O: Integer;
+  I, X2, Y2, U, O, UT: Integer;
   R: Single;
   Lure: Boolean;
 begin 
@@ -9538,12 +9542,14 @@ begin
       if U <= 0 then
         Exit;
       O := States.UnitOwner(U);
+      UT := States.UnitType(U);
       if ((InRange(O, 0, 7))
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam))
       or ((InRange(O, 8, 11))
+      and (InRange(UT, 14, 27))
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam)) then
       begin
         TilesFieldLength[P] := TilesFieldLength[P] + 4;
@@ -9588,7 +9594,8 @@ begin
           Players[P].StolenSkill := Players[O].LastUsedSkill;
 
         if InRange(O, 8, 11)
-        and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
+        and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
+        and (InRange(UT, 14, 27)) then
         begin
           R := States.KaMRandom;
           Lure := R < STEALSKILL_LURE_CHANCE;         
