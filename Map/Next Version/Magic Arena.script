@@ -1602,19 +1602,20 @@ begin
   try
     for I := 0 to Length(Zombies) - 1 do
       if Zombies[I].ID > 0 then
-      begin
-        SetLength(TempZombies, Length(TempZombies) + 1);
-        TempZombies[Length(TempZombies) - 1].ID := Zombies[I].ID;
-        TempZombies[Length(TempZombies) - 1].Owner := Zombies[I].Owner;
-        TempZombies[Length(TempZombies) - 1].Hunger := Zombies[I].Hunger;
-        TempZombies[Length(TempZombies) - 1].ZombieType := Zombies[I].ZombieType;
-        TempZombies[Length(TempZombies) - 1].TeleportTime := Zombies[I].TeleportTime;
-        TempZombies[Length(TempZombies) - 1].KillTime := Zombies[I].KillTime;
-        TempZombies[Length(TempZombies) - 1].ThreadsTime := Zombies[I].ThreadsTime;
-        TempZombies[Length(TempZombies) - 1].ThreadsX := Zombies[I].ThreadsX;
-        TempZombies[Length(TempZombies) - 1].ThreadsY := Zombies[I].ThreadsY;
-        TempZombies[Length(TempZombies) - 1].ThreadsDir := Zombies[I].ThreadsDir;
-      end;
+        if not States.UnitDead(Zombies[I].ID) then
+        begin
+          SetLength(TempZombies, Length(TempZombies) + 1);
+          TempZombies[Length(TempZombies) - 1].ID := Zombies[I].ID;
+          TempZombies[Length(TempZombies) - 1].Owner := Zombies[I].Owner;
+          TempZombies[Length(TempZombies) - 1].Hunger := Zombies[I].Hunger;
+          TempZombies[Length(TempZombies) - 1].ZombieType := Zombies[I].ZombieType;
+          TempZombies[Length(TempZombies) - 1].TeleportTime := Zombies[I].TeleportTime;
+          TempZombies[Length(TempZombies) - 1].KillTime := Zombies[I].KillTime;
+          TempZombies[Length(TempZombies) - 1].ThreadsTime := Zombies[I].ThreadsTime;
+          TempZombies[Length(TempZombies) - 1].ThreadsX := Zombies[I].ThreadsX;
+          TempZombies[Length(TempZombies) - 1].ThreadsY := Zombies[I].ThreadsY;
+          TempZombies[Length(TempZombies) - 1].ThreadsDir := Zombies[I].ThreadsDir;
+        end;
     SetLength(Zombies, Length(TempZombies));
     if Length(Zombies) > 0 then
       for K := 0 to Length(Zombies) - 1 do
@@ -2187,6 +2188,24 @@ begin
   if Players[P].SnakeCharges = SNAKE_CHARGES then
     Players[P].SnakeChargeTime := 0;
 
+end;
+
+
+function AIUnitsCount: Integer;
+var
+  I, K: Integer;
+  Units: array of Integer;
+begin
+  Result := 0;
+  for I := 10 to 11 do
+  begin
+    Units := States.PlayerGetAllUnits(I);
+    for K := Low(Units) to High(Units) do
+      if Units[K] > 0 then
+        if (InRange(States.UnitType(Units[K]), 13, 27))
+        and (States.UnitPositionY(Units[K]) > 5) then
+          Result := Result + 1;
+  end;
 end;
 
 
@@ -16795,6 +16814,7 @@ begin
       + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '.' + SacrificialTeleportColor(I) + ' <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10) + '[]'
       + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '.' + StolenSacrificialTeleportColor(I) + IfThenStr(Players[I].StolenSkillName <> '<$10>', ' <$34>: ' + IntToStr(Players[I].WineSkillDelay/10) + '[]', '')
       + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + IfThenStr(ArenaTime > 0, '||<$145>: ' + IntToStr(ArenaTime/10) + '|', '')
+      + IfThenStr(DEBUG_MODE, '|Array: ' + IntToStr(Length(zombies)) + '|Units: ' + IntToStr(AIUnitsCount) + '|', '')
       + StatusText(I) + '|||<$41>:|' + TeamInfo[0] + '|||<$79>:|' + Scores[0]);
     end;
 
@@ -16809,6 +16829,7 @@ begin
       + '|<$36>: ' + FieldSkillName(I, Players[I].HeroType) + '.' + SacrificialTeleportColor(I) + ' <$34>: ' + IntToStr(Players[I].FieldSkillDelay/10) + '[]'
       + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '.' + StolenSacrificialTeleportColor(I)  + IfThenStr(Players[I].StolenSkillName <> '<$10>', ' <$34>: ' + IntToStr(Players[I].WineSkillDelay/10) + '[]', '')
       + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + IfThenStr(ArenaTime > 0, '||<$145>: ' + IntToStr(ArenaTime/10) + '|', '')
+      + IfThenStr(DEBUG_MODE, '|Array: ' + IntToStr(Length(zombies)) + '|Units: ' + IntToStr(AIUnitsCount) + '|', '')
       + StatusText(I) + '|||<$41>:|' + TeamInfo[1] + '|||<$79>:|' + Scores[1]);
     end;
 
