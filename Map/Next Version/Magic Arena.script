@@ -10425,6 +10425,7 @@ procedure CheckTiles(P: Integer);
 var
   I, K, T, aX, aY, aObj, aTile, aTime, Z: Integer;
 begin
+  try
   aObj := -1;
   aTile := -1;
   if Players[P].Hero <= 0 then
@@ -11257,6 +11258,12 @@ begin
   if (ObjectType(aObj) = otStun)
   and (not Players[P].MindStunned) then
     CancelSkills(P);
+
+  except
+
+    LogError('Exception in the script: cannot check tiles for invalid player:', [aX, aY, P], SHOW_ERROR_MSG);
+
+  end;
 
 end;
 
