@@ -10423,847 +10423,918 @@ end;
 
 procedure CheckTiles(P: Integer);
 var
-  I, K, T, aX, aY, aObj, aTile, aTime, Z: Integer;
+  I, K, T, aX, aY, aObj, aTile, aTime, Z, Module: Integer;
 begin
   try
-  aObj := -1;
-  aTile := -1;
-  if Players[P].Hero <= 0 then
-    Exit;
-  if States.GroupMember(Players[P].Hero, 0) <= 0 then
-    Exit;
-  if Players[P].Hero > 0 then
-    if not States.GroupDead(Players[P].Hero) then
-    begin
-      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    end;
-  if not InRange(aX, MIN_X, MAX_X) then
-    Exit;
-  if not InRange(aY, MIN_Y, MAX_Y) then
-    Exit;
-  if (TileOnBattlefield(aX, aY))
-  or ((aX = RUNE_X)
-  and (aY = RUNE_Y))
-  or (Tiles[aX][aY].Owner = TEMP_PLAYER)
-  or ((not TileOnBattlefield(aX, aY))
-  and (States.MapTileType(aX, aY) = INFERNAL_TILE)) then
-  begin
-    aObj := States.MapTileObject(aX, aY);
-    aTile := States.MapTileType(aX, aY);
-    aTime := Tiles[aX][aY].ShieldTime;
-  end;
-  if aObj = PikeObjects[P] then
-    Exit;
-  if aObj = -1 then
-    Exit;
-  if aTile = -1 then
-    Exit;
+    aObj := -1;
+    aTile := -1;
 
-  if (aTile = INFERNAL_TILE)
-  and (Tiles[aX][aY].Owner = TEMP_PLAYER) then
-  begin
-    Actions.PlayWAV(P, 'GorenjePerdaka', 1);
-    Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-    Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$147>';
-    for I := 0 to 7 do
-      if I <> P then
+    if Players[P].Hero <= 0 then
+      Exit;
+    if States.GroupMember(Players[P].Hero, 0) <= 0 then
+      Exit;
+
+    Module := 0;
+    if Players[P].Hero > 0 then
+      if not States.GroupDead(Players[P].Hero) then
       begin
-        Players[I].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[I].PlayerStatus := Players[I].PlayerStatus + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$146>';
+        aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+        aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
       end;
-  end;
 
-  if (aTile = INFERNAL_TILE)
-  and (aTime > States.GameTime)
-  and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
-    Exit;
+    if not InRange(aX, MIN_X, MAX_X) then
+      Exit;
+    if not InRange(aY, MIN_Y, MAX_Y) then
+      Exit;
 
-  if (ObjectType(aObj) = otKill)
-  or (aTile = INFERNAL_TILE) then
-  begin
-    T := Players[P].HeroType;
-    if (not States.PlayerDefeated(P))
-    and (((not Players[P].HeroMagicImmunity)
-    and (not Players[P].HeroTotalImmunity)
-    and (InRange(Tiles[aX][aY].Owner, 0, 7))
-    or (Tiles[aX][aY].Owner = TEMP_PLAYER))) then
+    Module := 1;
+    if (TileOnBattlefield(aX, aY))
+    or ((aX = RUNE_X)
+    and (aY = RUNE_Y))
+    or (Tiles[aX][aY].Owner = TEMP_PLAYER)
+    or ((not TileOnBattlefield(aX, aY))
+    and (States.MapTileType(aX, aY) = INFERNAL_TILE)) then
     begin
-      if Players[P].HP > 0 then
-      begin 
-        Actions.GroupKillAll(Players[P].Hero, False);
-        if Players[P].MindStunned then
-          Players[M2[P]].RebornMindTime := States.GameTime + REBORN_TIME;
-        Players[P].HeroReborn := True;
-        Players[P].RebornTime := States.GameTime + REBORN_TIME;
-        Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), T, Players[P].TempX, Players[P].TempY, 4, 1, 1);
-        Players[P].HeroInFearTime := 0;
-        if (not Players[P].CaptureMind)
-        and (not Players[P].MindStunned) then
-          Players[P].HeroStunnedTime := 0;
-        Players[P].HeroSilentTime := 0;
-        Players[P].PreparingTime := 0;
-        Players[P].DDTime := 0;
-        Players[P].ReChargeTime := 0;
+      aObj := States.MapTileObject(aX, aY);
+      aTile := States.MapTileType(aX, aY);
+      aTime := Tiles[aX][aY].ShieldTime;
+    end;
 
-        if (Tiles[aX][aY].Skill = sRocket)
-        and (Tiles[aX][aY].Owner = P)
-        and (States.GameTime < Players[P].RoadSkillCancelTime) then
-          Players[P].RoadSkillCancelTime := 0;
+    if aObj = PikeObjects[P] then
+      Exit;
+    if aObj = -1 then
+      Exit;
+    if aTile = -1 then
+      Exit;
 
-        if States.GameTime < Players[P].MindTime2 then
+    Module := 2;
+    if (aTile = INFERNAL_TILE)
+    and (Tiles[aX][aY].Owner = TEMP_PLAYER) then
+    begin
+      Actions.PlayWAV(P, 'GorenjePerdaka', 1);
+      Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+      Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$147>';
+      for I := 0 to 7 do
+        if I <> P then
         begin
-          Players[P].MindTime2 := 0;
-          Players[P].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-          Players[P].CaptureMind := False;
-          Players[M[P]].MindStunned := False;
+          Players[I].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+          Players[I].PlayerStatus := Players[I].PlayerStatus + '|[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[] <$146>';
         end;
+    end;
+
+    if (aTile = INFERNAL_TILE)
+    and (aTime > States.GameTime)
+    and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
+      Exit;
+
+    Module := 3;
+    if (ObjectType(aObj) = otKill)
+    or (aTile = INFERNAL_TILE) then
+    begin
+      T := Players[P].HeroType;
+      if (not States.PlayerDefeated(P))
+      and (((not Players[P].HeroMagicImmunity)
+      and (not Players[P].HeroTotalImmunity)
+      and (InRange(Tiles[aX][aY].Owner, 0, 7))
+      or (Tiles[aX][aY].Owner = TEMP_PLAYER))) then
+      begin
+        Module := 4;
+        if Players[P].HP > 0 then
+        begin
+          Actions.GroupKillAll(Players[P].Hero, False);
+          if Players[P].MindStunned then
+            Players[M2[P]].RebornMindTime := States.GameTime + REBORN_TIME;
+          Players[P].HeroReborn := True;
+          Players[P].RebornTime := States.GameTime + REBORN_TIME;
+          Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), T, Players[P].TempX, Players[P].TempY, 4, 1, 1);
+          Players[P].HeroInFearTime := 0;
+          if (not Players[P].CaptureMind)
+          and (not Players[P].MindStunned) then
+            Players[P].HeroStunnedTime := 0;
+          Players[P].HeroSilentTime := 0;
+          Players[P].PreparingTime := 0;
+          Players[P].DDTime := 0;
+          Players[P].ReChargeTime := 0;
+
+          if (Tiles[aX][aY].Skill = sRocket)
+          and (Tiles[aX][aY].Owner = P)
+          and (States.GameTime < Players[P].RoadSkillCancelTime) then
+            Players[P].RoadSkillCancelTime := 0;
+
+          Module := 5;
+          if States.GameTime < Players[P].MindTime2 then
+          begin
+            Players[P].MindTime2 := 0;
+            Players[P].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+            Players[P].CaptureMind := False;
+            Players[M[P]].MindStunned := False;
+          end;
         
-        if (InRange(M2[P], 0, 7)) then
-          if States.GameTime < Players[M2[P]].MindTime2 then
-          begin
-            Players[M2[P]].MindTime2 := 0;
-            Players[M2[P]].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[M2[P]].ReCharge)));
-            Players[M2[P]].CaptureMind := False;
-            Players[P].MindStunned := False;
-            Actions.GroupBlockOrders(Players[M2[P]].Hero, False);
-          end;
-
-        if TilesRoadLength[P] > 0 then
-          for I := 0 to TilesRoadLength[P] - 1 do
-            if (SetTilesRoadTimes[P][I] > States.GameTime)
-            and (States.GameTime <= Players[P].RoadSkillCancelTime) then
+          Module := 6;
+          if (InRange(M2[P], 0, 7)) then
+            if States.GameTime < Players[M2[P]].MindTime2 then
             begin
-              SetTilesRoadTimes[P][I] := 0;
-              TilesRoadObjects[P][I] := SKILL_CANCEL_OBJ;
+              Players[M2[P]].MindTime2 := 0;
+              Players[M2[P]].WineSkillDelay := Round((SCOUT_WINE_DELAY + CAPTURE_MIND_TIME) * (1 - RECHARGE_FACTOR * Byte(Players[M2[P]].ReCharge)));
+              Players[M2[P]].CaptureMind := False;
+              Players[P].MindStunned := False;
+              Actions.GroupBlockOrders(Players[M2[P]].Hero, False);
             end;
 
-        if TilesFieldLength[P] > 0 then
-          for I := 0 to TilesFieldLength[P] - 1 do
-            if (SetTilesFieldTimes[P][I] > States.GameTime)
-            and (States.GameTime <= Players[P].FieldSkillCancelTime) then
-            begin
-              SetTilesFieldTimes[P][I] := 0;
-              TilesFieldObjects[P][I] := SKILL_CANCEL_OBJ;
-            end;
+            Module := 7;
+            if TilesRoadLength[P] > 0 then
+              for I := 0 to TilesRoadLength[P] - 1 do
+                if (SetTilesRoadTimes[P][I] > States.GameTime)
+                and (States.GameTime <= Players[P].RoadSkillCancelTime) then
+                begin
+                  SetTilesRoadTimes[P][I] := 0;
+                  TilesRoadObjects[P][I] := SKILL_CANCEL_OBJ;
+                end;
 
-        if TilesWineLength[P] > 0 then
-          for I := 0 to TilesWineLength[P] - 1 do
-            if (SetTilesWineTimes[P][I] > States.GameTime)
-            and (States.GameTime <= Players[P].WineSkillCancelTime) then
-            begin
-              SetTilesWineTimes[P][I] := 0;
-              TilesWineObjects[P][I] := SKILL_CANCEL_OBJ;
-            end;
-              
-        if (InRange(M2[P], 0, 7))
-        and Players[M2[P]].MindStunned then
-          if TilesWineLength[M2[P]] > 0 then
-            for I := 0 to TilesWineLength[M2[P]] - 1 do
-              if (SetTilesWineTimes[M2[P]][I] > States.GameTime)
-              and (States.GameTime <= Players[M2[P]].WineSkillCancelTime) then
+          if TilesFieldLength[P] > 0 then
+            for I := 0 to TilesFieldLength[P] - 1 do
+              if (SetTilesFieldTimes[P][I] > States.GameTime)
+              and (States.GameTime <= Players[P].FieldSkillCancelTime) then
               begin
-                SetTilesWineTimes[M2[P]][I] := 0;
-                TilesWineObjects[M2[P]][I] := SKILL_CANCEL_OBJ;
+                SetTilesFieldTimes[P][I] := 0;
+                TilesFieldObjects[P][I] := SKILL_CANCEL_OBJ;
               end;
 
-        for I := 0 to 7 do
-        begin
+          if TilesWineLength[P] > 0 then
+            for I := 0 to TilesWineLength[P] - 1 do
+              if (SetTilesWineTimes[P][I] > States.GameTime)
+              and (States.GameTime <= Players[P].WineSkillCancelTime) then
+              begin
+                SetTilesWineTimes[P][I] := 0;
+                TilesWineObjects[P][I] := SKILL_CANCEL_OBJ;
+              end;
 
-          if Players[I].ThreadsAttacker = P then
-            Players[I].ThreadsAttacker := -1;
+          if (InRange(M2[P], 0, 7))
+          and Players[M2[P]].MindStunned then
+            if TilesWineLength[M2[P]] > 0 then
+              for I := 0 to TilesWineLength[M2[P]] - 1 do
+                if (SetTilesWineTimes[M2[P]][I] > States.GameTime)
+                and (States.GameTime <= Players[M2[P]].WineSkillCancelTime) then
+                begin
+                  SetTilesWineTimes[M2[P]][I] := 0;
+                  TilesWineObjects[M2[P]][I] := SKILL_CANCEL_OBJ;
+                end;
 
-          if Players[I].ScoutSilenceGiver = P then
-            Players[I].ScoutSilenceGiver := -1;
-
-          if Players[I].HeroExileGiver = P then
-            Players[I].HeroExileGiver := -1;
-
-          if (Players[I].ThreadsTarget = P)
-          and (Players[P].ThreadsTime - States.GameTime > DELAY_OF_TURNING * 2) then
-          begin
-            Players[P].ThreadsTime := 0;
-            Players[P].MovedByThreads := False;
-            Players[I].ThreadsTarget := -1;
-          end;
-
-        end;
-
-        Players[P].TrackStartTime := 0;
-        Players[P].TrackStopTime := 0;
-        Players[P].SettingTrack := False;
-        Players[P].HeroExileTime := 0;
-        Players[P].HeroExileBackTime := 0;
-        Players[P].HeroExiled := False;
-        Players[P].TowerTime := 0;
-        Players[P].ReplicaTime := 0;
-        Players[P].RiftTime := 0;
-        Players[P].MirrorTime := 0;
-        RuneCleanupTime[P] := 0;
-        Players[P].ThreadsAttackTime := 0;
-
-        if (InRange(Players[P].WerewolfTime - States.GameTime, 0, 49))
-        and (InRange(Players[P].TempHeroType, 14, 27)) then
-        begin
-          Players[P].HeroType := Players[P].TempHeroType;
-          Players[P].WerewolfTime := 0;
-          Players[P].RoadSkillDelay := 0;
-          Players[P].FieldSkillDelay := 0;
-          Players[P].WineSkillDelay := AXE_WINE_DELAY * (1 - Round(RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - WEREWOLF_TIME;
-        end;
-
-        if (InRange(Players[P].MindAppearTimeBack - States.GameTime, 0, 49))
-        and (InRange(Players[P].TempHeroType, 14, 27)) then
-        begin
-          Players[P].HeroType := Players[P].TempHeroType;
-          Players[P].MindAppearTimeBack := 0;
-        end;
-
-        for K := 0 to SPURT_LENGTH - 1 do
-          SpurtTimes[P][K] := 0;
-
-        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-          for I := 0 to TotemCirclesLength[P][K] - 1 do
-            if (TotemCircles[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime <= Players[P].WineSkillCancelTime)
-            and (TotemCircles[P][K][I].Obj <> 255) then
-              TotemCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
-
-        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-          for I := 0 to ExpCirclesLength[P][K] - 1 do
-            if (ExpCircles[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime <= Players[P].WineSkillCancelTime)
-            and (ExpCircles[P][K][I].Obj <> 255) then
-              ExpCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
-
-        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-          for I := 0 to RogueCirclesLength[P][K] - 1 do
-            if (RogueCircles[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime <= Players[P].RoadSkillCancelTime)
-            and (RogueCircles[P][K][I].Obj <> 255) then
-              RogueCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
-
-        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-          for I := 0 to StolenRogueCirclesLength[P][K] - 1 do
-            if (StolenRogueCircles[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime <= Players[P].RoadSkillCancelTime)
-            and (StolenRogueCircles[P][K][I].Obj <> 255) then
-              StolenRogueCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
-
-        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-          for I := 0 to FireworksCircles1Length[P][K] - 1 do
-            if (FireworksCircles1[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime <= Players[P].FieldSkillCancelTime)
-            and (FireworksCircles1[P][K][I].Obj <> 255) then
-              FireworksCircles1[P][K][I].Obj := SKILL_CANCEL_OBJ;
-
-        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-          for I := 0 to FireworksCircles2Length[P][K] - 1 do
-            if (FireworksCircles2[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime <= Players[P].FieldSkillCancelTime)
-            and (FireworksCircles2[P][K][I].Obj <> 255) then
-              FireworksCircles2[P][K][I].Obj := SKILL_CANCEL_OBJ;
-
-        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-          for I := 0 to FireworksCircles3Length[P][K] - 1 do
-            if (FireworksCircles3[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime <= Players[P].FieldSkillCancelTime)
-            and (FireworksCircles3[P][K][I].Obj <> 255) then
-              FireworksCircles3[P][K][I].Obj := SKILL_CANCEL_OBJ;
-
-        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-          for I := 0 to FireworksCircles4Length[P][K] - 1 do
-            if (FireworksCircles4[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime <= Players[P].FieldSkillCancelTime)
-            and (FireworksCircles4[P][K][I].Obj <> 255) then
-              FireworksCircles4[P][K][I].Obj := SKILL_CANCEL_OBJ;
-
-        for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
-          for I := 0 to FireworksCircles5Length[P][K] - 1 do
-            if (FireworksCircles5[P][K][I].AddTime > States.GameTime)
-            and (States.GameTime <= Players[P].FieldSkillCancelTime)
-            and (FireworksCircles5[P][K][I].Obj <> 255) then
-              FireworksCircles5[P][K][I].Obj := SKILL_CANCEL_OBJ;
-
-        if InRange(Tiles[aX][aY].Owner, 0, 7) then
-        begin
-          if (SkillName(Tiles[aX][aY].Skill) <> '')
-          and (Tiles[aX][aY].Skill <> sTower) then
-          begin
-            if (Tiles[aX][aY].Owner <> P)
-            and (not Players[P].MindStunned)then
-            begin
-              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[Tiles[aX][aY].Owner].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
-              Players[Tiles[aX][aY].Owner].PlayerStatus := Players[Tiles[aX][aY].Owner].PlayerStatus + '|<$84> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$93> ' + SkillName(Tiles[aX][aY].Skill);
-            end;
-            if (Tiles[aX][aY].Owner = P)
-            and (not Players[P].MindStunned) then
-            begin
-              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
-            end;
-            if (Tiles[aX][aY].Owner = M2[P])
-            and (Players[P].MindStunned) then
-            begin
-              Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
-            end;
-          end;
-          if Tiles[aX][aY].Skill = sTower then
-          begin
-            if (Tiles[aX][aY].Owner <> P)
-            and (not Players[P].MindStunned) then
-            begin
-              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[Tiles[aX][aY].Owner].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$118> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner);
-              Players[Tiles[aX][aY].Owner].PlayerStatus := Players[Tiles[aX][aY].Owner].PlayerStatus + '|<$119> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P);
-            end;
-            if (Tiles[aX][aY].Owner = P)
-            and (not Players[P].MindStunned) then
-            begin
-              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$117>';
-            end;
-            if (Tiles[aX][aY].Owner = M2[P])
-            and (Players[P].MindStunned) then
-            begin
-              Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-              Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$117>';
-            end;
-          end;
-          if (P <> Tiles[aX][aY].Owner)
-          and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+          Module := 8;
           for I := 0 to 7 do
-            if Players[I].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam then
-              Actions.PlayWAV(I, 'Retard', 1);
-          if (P <> Tiles[aX][aY].Owner)
-          and (Players[P].PlayersTeam <> Players[Tiles[aX][aY].Owner].PlayersTeam) then
           begin
-            Players[Tiles[aX][aY].Owner].Kills := Players[Tiles[aX][aY].Owner].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
-            Players[Tiles[aX][aY].Owner].KillStreak := Players[Tiles[aX][aY].Owner].KillStreak + 1;
-            SetLength(Players[Tiles[aX][aY].Owner].KillTimes, Length(Players[Tiles[aX][aY].Owner].KillTimes) + 1);
-            Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] := States.GameTime;
-            if Length(Players[Tiles[aX][aY].Owner].KillTimes) >= 4 then
-              if (Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] - Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
-              begin
-                Actions.PlayWAV(-1, 'Rampage', 1);
-                Players[Tiles[aX][aY].Owner].Rampage := True;
-                Players[Tiles[aX][aY].Owner].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              end;
-            if Length(Players[Tiles[aX][aY].Owner].KillTimes) >= 3 then
-              if (Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] - Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
-              and (not Players[Tiles[aX][aY].Owner].TripleKill)
-              and (not Players[Tiles[aX][aY].Owner].Rampage) then
-              begin
-                Actions.PlayWAV(-1, 'TripleKill', 1);
-                Players[Tiles[aX][aY].Owner].TripleKill := True;
-                Players[Tiles[aX][aY].Owner].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              end;
-            if Length(Players[Tiles[aX][aY].Owner].KillTimes) >= 2 then
-              if (Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] - Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
-              and (not Players[Tiles[aX][aY].Owner].DoubleKill)
-              and (not Players[Tiles[aX][aY].Owner].TripleKill)
-              and (not Players[Tiles[aX][aY].Owner].Rampage) then
-              begin
-                Actions.PlayWAV(-1, 'DoubleKill', 1);
-                Players[Tiles[aX][aY].Owner].DoubleKill := True;
-                Players[Tiles[aX][aY].Owner].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              end;
+
+            if Players[I].ThreadsAttacker = P then
+              Players[I].ThreadsAttacker := -1;
+
+            if Players[I].ScoutSilenceGiver = P then
+              Players[I].ScoutSilenceGiver := -1;
+
+            if Players[I].HeroExileGiver = P then
+              Players[I].HeroExileGiver := -1;
+
+            if (Players[I].ThreadsTarget = P)
+            and (Players[P].ThreadsTime - States.GameTime > DELAY_OF_TURNING * 2) then
+            begin
+              Players[P].ThreadsTime := 0;
+              Players[P].MovedByThreads := False;
+              Players[I].ThreadsTarget := -1;
+            end;
+
           end;
-          if (Players[P].HeroInFear)
-          and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+
+          Module := 9;
+          Players[P].TrackStartTime := 0;
+          Players[P].TrackStopTime := 0;
+          Players[P].SettingTrack := False;
+          Players[P].HeroExileTime := 0;
+          Players[P].HeroExileBackTime := 0;
+          Players[P].HeroExiled := False;
+          Players[P].TowerTime := 0;
+          Players[P].ReplicaTime := 0;
+          Players[P].RiftTime := 0;
+          Players[P].MirrorTime := 0;
+          RuneCleanupTime[P] := 0;
+          Players[P].ThreadsAttackTime := 0;
+
+          Module := 10;
+          if (InRange(Players[P].WerewolfTime - States.GameTime, 0, 49))
+          and (InRange(Players[P].TempHeroType, 14, 27)) then
           begin
-            Players[Players[P].HeroFearGiver].Kills := Players[Players[P].HeroFearGiver].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
-            Players[Players[P].HeroFearGiver].KillStreak := Players[Players[P].HeroFearGiver].KillStreak + 1;
-            SetLength(Players[Players[P].HeroFearGiver].KillTimes, Length(Players[Players[P].HeroFearGiver].KillTimes) + 1);
-            Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] := States.GameTime;
-            if Length(Players[Players[P].HeroFearGiver].KillTimes) >= 4 then
-              if (Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] - Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
-              begin
-                Actions.PlayWAV(-1, 'Rampage', 1);
-                Players[Players[P].HeroFearGiver].Rampage := True;
-                Players[Players[P].HeroFearGiver].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              end;
-            if Length(Players[Players[P].HeroFearGiver].KillTimes) >= 3 then
-              if (Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] - Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
-              and (not Players[Players[P].HeroFearGiver].TripleKill)
-              and (not Players[Players[P].HeroFearGiver].Rampage) then
-              begin
-                Actions.PlayWAV(-1, 'TripleKill', 1);
-                Players[Players[P].HeroFearGiver].TripleKill := True;
-                Players[Players[P].HeroFearGiver].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              end;
-            if Length(Players[Players[P].HeroFearGiver].KillTimes) >= 2 then
-              if (Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] - Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
-              and (not Players[Players[P].HeroFearGiver].DoubleKill)
-              and (not Players[Players[P].HeroFearGiver].TripleKill)
-              and (not Players[Players[P].HeroFearGiver].Rampage) then
-              begin
-                Actions.PlayWAV(-1, 'DoubleKill', 1);
-                Players[Players[P].HeroFearGiver].DoubleKill := True;
-                Players[Players[P].HeroFearGiver].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              end;
+            Players[P].HeroType := Players[P].TempHeroType;
+            Players[P].WerewolfTime := 0;
+            Players[P].RoadSkillDelay := 0;
+            Players[P].FieldSkillDelay := 0;
+            Players[P].WineSkillDelay := AXE_WINE_DELAY * (1 - Round(RECHARGE_FACTOR * Byte(Players[P].ReCharge))) - WEREWOLF_TIME;
           end;
-          if (Players[P].MovedByGravity)
-          and (Players[P].PlayersTeam = Players[Players[P].GravityUser].PlayersTeam)
-          and (P <> Players[P].GravityUser) then
-            for I := 0 to 7 do
-              if Players[I].PlayersTeam = Players[Players[P].GravityUser].PlayersTeam then
-                Actions.PlayWAV(I, 'Retard', 1);
-          if (Players[P].MovedByGravity)
-          and (Players[P].PlayersTeam <> Players[Players[P].GravityUser].PlayersTeam)
-          and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+
+          Module := 11;
+          if (InRange(Players[P].MindAppearTimeBack - States.GameTime, 0, 49))
+          and (InRange(Players[P].TempHeroType, 14, 27)) then
           begin
-            Players[Players[P].GravityUser].Kills := Players[Players[P].GravityUser].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
-            Players[Players[P].GravityUser].KillStreak := Players[Players[P].HeroFearGiver].KillStreak + 1;
-            SetLength(Players[Players[P].GravityUser].KillTimes, Length(Players[Players[P].GravityUser].KillTimes) + 1);
-            Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] := States.GameTime;
-            if Length(Players[Players[P].GravityUser].KillTimes) >= 4 then
-              if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
-              begin
-                Actions.PlayWAV(-1, 'Rampage', 1);
-                Players[Players[P].GravityUser].Rampage := True;
-                Players[Players[P].GravityUser].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              end;
-            if Length(Players[Players[P].GravityUser].KillTimes) >= 3 then
-              if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
-              and (not Players[Players[P].GravityUser].TripleKill)
-              and (not Players[Players[P].GravityUser].Rampage) then
-              begin
-                Actions.PlayWAV(-1, 'TripleKill', 1);
-                Players[Players[P].GravityUser].TripleKill := True;
-                Players[Players[P].GravityUser].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              end;
-            if Length(Players[Players[P].GravityUser].KillTimes) >= 2 then
-              if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
-              and (not Players[Players[P].GravityUser].DoubleKill)
-              and (not Players[Players[P].GravityUser].TripleKill)
-              and (not Players[Players[P].GravityUser].Rampage) then
-              begin
-                Actions.PlayWAV(-1, 'DoubleKill', 1);
-                Players[Players[P].GravityUser].DoubleKill := True;
-                Players[Players[P].GravityUser].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              end;
+            Players[P].HeroType := Players[P].TempHeroType;
+            Players[P].MindAppearTimeBack := 0;
           end;
-          if (Players[P].MovedByThreads)
-          and (Players[P].PlayersTeam = Players[Players[P].ThreadsAttacker].PlayersTeam)
-          and (P <> Players[P].ThreadsAttacker) then
-            for I := 0 to 7 do
-              if Players[I].PlayersTeam = Players[Players[P].ThreadsAttacker].PlayersTeam then
-                Actions.PlayWAV(I, 'Retard', 1);
-          if (Players[P].MovedByThreads)
-          and (Players[P].PlayersTeam <> Players[Players[P].ThreadsAttacker].PlayersTeam)
-          and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+
+          Module := 12;
+          for K := 0 to SPURT_LENGTH - 1 do
+            SpurtTimes[P][K] := 0;
+
+          Module := 13;
+          for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+            for I := 0 to TotemCirclesLength[P][K] - 1 do
+              if (TotemCircles[P][K][I].AddTime > States.GameTime)
+              and (States.GameTime <= Players[P].WineSkillCancelTime)
+              and (TotemCircles[P][K][I].Obj <> 255) then
+                TotemCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
+
+          Module := 14;
+          for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+            for I := 0 to ExpCirclesLength[P][K] - 1 do
+              if (ExpCircles[P][K][I].AddTime > States.GameTime)
+              and (States.GameTime <= Players[P].WineSkillCancelTime)
+              and (ExpCircles[P][K][I].Obj <> 255) then
+                ExpCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
+
+          Module := 15;
+          for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+            for I := 0 to RogueCirclesLength[P][K] - 1 do
+              if (RogueCircles[P][K][I].AddTime > States.GameTime)
+              and (States.GameTime <= Players[P].RoadSkillCancelTime)
+              and (RogueCircles[P][K][I].Obj <> 255) then
+                RogueCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
+
+          Module := 16;
+          for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+            for I := 0 to StolenRogueCirclesLength[P][K] - 1 do
+              if (StolenRogueCircles[P][K][I].AddTime > States.GameTime)
+              and (States.GameTime <= Players[P].RoadSkillCancelTime)
+              and (StolenRogueCircles[P][K][I].Obj <> 255) then
+                StolenRogueCircles[P][K][I].Obj := SKILL_CANCEL_OBJ;
+
+          Module := 17;
+          for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+            for I := 0 to FireworksCircles1Length[P][K] - 1 do
+              if (FireworksCircles1[P][K][I].AddTime > States.GameTime)
+              and (States.GameTime <= Players[P].FieldSkillCancelTime)
+              and (FireworksCircles1[P][K][I].Obj <> 255) then
+                FireworksCircles1[P][K][I].Obj := SKILL_CANCEL_OBJ;
+
+          Module := 18;
+          for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+            for I := 0 to FireworksCircles2Length[P][K] - 1 do
+              if (FireworksCircles2[P][K][I].AddTime > States.GameTime)
+              and (States.GameTime <= Players[P].FieldSkillCancelTime)
+              and (FireworksCircles2[P][K][I].Obj <> 255) then
+                FireworksCircles2[P][K][I].Obj := SKILL_CANCEL_OBJ;
+
+          Module := 19;
+          for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+            for I := 0 to FireworksCircles3Length[P][K] - 1 do
+              if (FireworksCircles3[P][K][I].AddTime > States.GameTime)
+              and (States.GameTime <= Players[P].FieldSkillCancelTime)
+              and (FireworksCircles3[P][K][I].Obj <> 255) then
+                FireworksCircles3[P][K][I].Obj := SKILL_CANCEL_OBJ;
+
+          Module := 20;
+          for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+            for I := 0 to FireworksCircles4Length[P][K] - 1 do
+              if (FireworksCircles4[P][K][I].AddTime > States.GameTime)
+              and (States.GameTime <= Players[P].FieldSkillCancelTime)
+              and (FireworksCircles4[P][K][I].Obj <> 255) then
+                FireworksCircles4[P][K][I].Obj := SKILL_CANCEL_OBJ;
+
+          Module := 21;
+          for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
+            for I := 0 to FireworksCircles5Length[P][K] - 1 do
+              if (FireworksCircles5[P][K][I].AddTime > States.GameTime)
+              and (States.GameTime <= Players[P].FieldSkillCancelTime)
+              and (FireworksCircles5[P][K][I].Obj <> 255) then
+                FireworksCircles5[P][K][I].Obj := SKILL_CANCEL_OBJ;
+
+          Module := 22;
+          if InRange(Tiles[aX][aY].Owner, 0, 7) then
           begin
-            Players[Players[P].ThreadsAttacker].Kills := Players[Players[P].ThreadsAttacker].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
-            Players[Players[P].ThreadsAttacker].KillStreak := Players[Players[P].ThreadsAttacker].KillStreak + 1;
-            SetLength(Players[Players[P].ThreadsAttacker].KillTimes, Length(Players[Players[P].ThreadsAttacker].KillTimes) + 1);
-            Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] := States.GameTime;
-            if Length(Players[Players[P].ThreadsAttacker].KillTimes) >= 4 then
-              if (Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] - Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
+            if (SkillName(Tiles[aX][aY].Skill) <> '')
+            and (Tiles[aX][aY].Skill <> sTower) then
+            begin
+              Module := 23;
+              if (Tiles[aX][aY].Owner <> P)
+              and (not Players[P].MindStunned)then
               begin
-                Actions.PlayWAV(-1, 'Rampage', 1);
-                Players[Players[P].ThreadsAttacker].Rampage := True;
-                Players[Players[P].ThreadsAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+                Players[Tiles[aX][aY].Owner].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+                Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$67> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+                Players[Tiles[aX][aY].Owner].PlayerStatus := Players[Tiles[aX][aY].Owner].PlayerStatus + '|<$84> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]<$93> ' + SkillName(Tiles[aX][aY].Skill);
               end;
-            if Length(Players[Players[P].ThreadsAttacker].KillTimes) >= 3 then
-              if (Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] - Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
-              and (not Players[Players[P].ThreadsAttacker].TripleKill)
-              and (not Players[Players[P].ThreadsAttacker].Rampage) then
+              Module := 24;
+              if (Tiles[aX][aY].Owner = P)
+              and (not Players[P].MindStunned) then
               begin
-                Actions.PlayWAV(-1, 'TripleKill', 1);
-                Players[Players[P].ThreadsAttacker].TripleKill := True;
-                Players[Players[P].ThreadsAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+                Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
               end;
-            if Length(Players[Players[P].ThreadsAttacker].KillTimes) >= 2 then
-              if (Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] - Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
-              and (not Players[Players[P].ThreadsAttacker].DoubleKill)
-              and (not Players[Players[P].ThreadsAttacker].TripleKill)
-              and (not Players[Players[P].ThreadsAttacker].Rampage) then
+              Module := 25;
+              if (Tiles[aX][aY].Owner = M2[P])
+              and (Players[P].MindStunned) then
               begin
-                Actions.PlayWAV(-1, 'DoubleKill', 1);
-                Players[Players[P].ThreadsAttacker].DoubleKill := True;
-                Players[Players[P].ThreadsAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+                Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
               end;
+            end;
+            Module := 26;
+            if Tiles[aX][aY].Skill = sTower then
+            begin
+              if (Tiles[aX][aY].Owner <> P)
+              and (not Players[P].MindStunned) then
+              begin
+                Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+                Players[Tiles[aX][aY].Owner].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+                Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$118> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner);
+                Players[Tiles[aX][aY].Owner].PlayerStatus := Players[Tiles[aX][aY].Owner].PlayerStatus + '|<$119> ' + '[$' + States.PlayerColorText(P) + ']' + States.PlayerName(P);
+              end;
+              if (Tiles[aX][aY].Owner = P)
+              and (not Players[P].MindStunned) then
+              begin
+                Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+                Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$117>';
+              end;
+              if (Tiles[aX][aY].Owner = M2[P])
+              and (Players[P].MindStunned) then
+              begin
+                Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+                Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$117>';
+              end;
+            end;
+            Module := 27;
+            if (P <> Tiles[aX][aY].Owner)
+            and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+              for I := 0 to 7 do
+                if Players[I].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam then
+                  Actions.PlayWAV(I, 'Retard', 1);
+            Module := 28;
+            if (P <> Tiles[aX][aY].Owner)
+            and (Players[P].PlayersTeam <> Players[Tiles[aX][aY].Owner].PlayersTeam) then
+            begin
+              Players[Tiles[aX][aY].Owner].Kills := Players[Tiles[aX][aY].Owner].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
+              Players[Tiles[aX][aY].Owner].KillStreak := Players[Tiles[aX][aY].Owner].KillStreak + 1;
+              SetLength(Players[Tiles[aX][aY].Owner].KillTimes, Length(Players[Tiles[aX][aY].Owner].KillTimes) + 1);
+              Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] := States.GameTime;
+              Module := 29;
+              if Length(Players[Tiles[aX][aY].Owner].KillTimes) >= 4 then
+                if (Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] - Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
+                begin
+                  Actions.PlayWAV(-1, 'Rampage', 1);
+                  Players[Tiles[aX][aY].Owner].Rampage := True;
+                  Players[Tiles[aX][aY].Owner].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+              Module := 30;
+              if Length(Players[Tiles[aX][aY].Owner].KillTimes) >= 3 then
+                if (Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] - Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
+                and (not Players[Tiles[aX][aY].Owner].TripleKill)
+                and (not Players[Tiles[aX][aY].Owner].Rampage) then
+                begin
+                  Actions.PlayWAV(-1, 'TripleKill', 1);
+                  Players[Tiles[aX][aY].Owner].TripleKill := True;
+                  Players[Tiles[aX][aY].Owner].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+              Module := 31;
+              if Length(Players[Tiles[aX][aY].Owner].KillTimes) >= 2 then
+                if (Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 1] - Players[Tiles[aX][aY].Owner].KillTimes[Length(Players[Tiles[aX][aY].Owner].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
+                and (not Players[Tiles[aX][aY].Owner].DoubleKill)
+                and (not Players[Tiles[aX][aY].Owner].TripleKill)
+                and (not Players[Tiles[aX][aY].Owner].Rampage) then
+                begin
+                  Actions.PlayWAV(-1, 'DoubleKill', 1);
+                  Players[Tiles[aX][aY].Owner].DoubleKill := True;
+                  Players[Tiles[aX][aY].Owner].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+            end;
+            Module := 32;
+            if (Players[P].HeroInFear)
+            and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+            begin
+              Players[Players[P].HeroFearGiver].Kills := Players[Players[P].HeroFearGiver].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
+              Players[Players[P].HeroFearGiver].KillStreak := Players[Players[P].HeroFearGiver].KillStreak + 1;
+              SetLength(Players[Players[P].HeroFearGiver].KillTimes, Length(Players[Players[P].HeroFearGiver].KillTimes) + 1);
+              Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] := States.GameTime;
+              Module := 33;
+              if Length(Players[Players[P].HeroFearGiver].KillTimes) >= 4 then
+                if (Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] - Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
+                begin
+                  Actions.PlayWAV(-1, 'Rampage', 1);
+                  Players[Players[P].HeroFearGiver].Rampage := True;
+                  Players[Players[P].HeroFearGiver].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+              Module := 34;
+              if Length(Players[Players[P].HeroFearGiver].KillTimes) >= 3 then
+                if (Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] - Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
+                and (not Players[Players[P].HeroFearGiver].TripleKill)
+                and (not Players[Players[P].HeroFearGiver].Rampage) then
+                begin
+                  Actions.PlayWAV(-1, 'TripleKill', 1);
+                  Players[Players[P].HeroFearGiver].TripleKill := True;
+                  Players[Players[P].HeroFearGiver].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+              Module := 35;
+              if Length(Players[Players[P].HeroFearGiver].KillTimes) >= 2 then
+                if (Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 1] - Players[Players[P].HeroFearGiver].KillTimes[Length(Players[Players[P].HeroFearGiver].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
+                and (not Players[Players[P].HeroFearGiver].DoubleKill)
+                and (not Players[Players[P].HeroFearGiver].TripleKill)
+                and (not Players[Players[P].HeroFearGiver].Rampage) then
+                begin
+                  Actions.PlayWAV(-1, 'DoubleKill', 1);
+                  Players[Players[P].HeroFearGiver].DoubleKill := True;
+                  Players[Players[P].HeroFearGiver].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+            end;
+            Module := 36;
+            if (Players[P].MovedByGravity)
+            and (Players[P].PlayersTeam = Players[Players[P].GravityUser].PlayersTeam)
+            and (P <> Players[P].GravityUser) then
+              for I := 0 to 7 do
+                if Players[I].PlayersTeam = Players[Players[P].GravityUser].PlayersTeam then
+                  Actions.PlayWAV(I, 'Retard', 1);
+            Module := 37;
+            if (Players[P].MovedByGravity)
+            and (Players[P].PlayersTeam <> Players[Players[P].GravityUser].PlayersTeam)
+            and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+            begin
+              Players[Players[P].GravityUser].Kills := Players[Players[P].GravityUser].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
+              Players[Players[P].GravityUser].KillStreak := Players[Players[P].HeroFearGiver].KillStreak + 1;
+              SetLength(Players[Players[P].GravityUser].KillTimes, Length(Players[Players[P].GravityUser].KillTimes) + 1);
+              Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] := States.GameTime;
+              Module := 38;
+              if Length(Players[Players[P].GravityUser].KillTimes) >= 4 then
+                if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
+                begin
+                  Actions.PlayWAV(-1, 'Rampage', 1);
+                  Players[Players[P].GravityUser].Rampage := True;
+                  Players[Players[P].GravityUser].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+              Module := 39;
+              if Length(Players[Players[P].GravityUser].KillTimes) >= 3 then
+                if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
+                and (not Players[Players[P].GravityUser].TripleKill)
+                and (not Players[Players[P].GravityUser].Rampage) then
+                begin
+                  Actions.PlayWAV(-1, 'TripleKill', 1);
+                  Players[Players[P].GravityUser].TripleKill := True;
+                  Players[Players[P].GravityUser].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+              Module := 40;
+              if Length(Players[Players[P].GravityUser].KillTimes) >= 2 then
+                if (Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 1] - Players[Players[P].GravityUser].KillTimes[Length(Players[Players[P].GravityUser].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
+                and (not Players[Players[P].GravityUser].DoubleKill)
+                and (not Players[Players[P].GravityUser].TripleKill)
+                and (not Players[Players[P].GravityUser].Rampage) then
+                begin
+                  Actions.PlayWAV(-1, 'DoubleKill', 1);
+                  Players[Players[P].GravityUser].DoubleKill := True;
+                  Players[Players[P].GravityUser].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+            end;
+            Module := 41;
+            if (Players[P].MovedByThreads)
+            and (Players[P].PlayersTeam = Players[Players[P].ThreadsAttacker].PlayersTeam)
+            and (P <> Players[P].ThreadsAttacker) then
+              for I := 0 to 7 do
+                if Players[I].PlayersTeam = Players[Players[P].ThreadsAttacker].PlayersTeam then
+                  Actions.PlayWAV(I, 'Retard', 1);
+            Module := 42;
+            if (Players[P].MovedByThreads)
+            and (Players[P].PlayersTeam <> Players[Players[P].ThreadsAttacker].PlayersTeam)
+            and (Players[P].PlayersTeam = Players[Tiles[aX][aY].Owner].PlayersTeam) then
+            begin
+              Players[Players[P].ThreadsAttacker].Kills := Players[Players[P].ThreadsAttacker].Kills + 1 + (Byte(Players[Tiles[aX][aY].Owner].DD) * Byte(Players[P].HP >= 2));
+              Players[Players[P].ThreadsAttacker].KillStreak := Players[Players[P].ThreadsAttacker].KillStreak + 1;
+              SetLength(Players[Players[P].ThreadsAttacker].KillTimes, Length(Players[Players[P].ThreadsAttacker].KillTimes) + 1);
+              Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] := States.GameTime;
+              Module := 43;
+              if Length(Players[Players[P].ThreadsAttacker].KillTimes) >= 4 then
+                if (Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] - Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 4] <= RAMPAGE_CHECK_TIME) then
+                begin
+                  Actions.PlayWAV(-1, 'Rampage', 1);
+                  Players[Players[P].ThreadsAttacker].Rampage := True;
+                  Players[Players[P].ThreadsAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+              Module := 44;
+              if Length(Players[Players[P].ThreadsAttacker].KillTimes) >= 3 then
+                if (Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] - Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 3] <= TRIPLE_KILL_CHECK_TIME)
+                and (not Players[Players[P].ThreadsAttacker].TripleKill)
+                and (not Players[Players[P].ThreadsAttacker].Rampage) then
+                begin
+                  Actions.PlayWAV(-1, 'TripleKill', 1);
+                  Players[Players[P].ThreadsAttacker].TripleKill := True;
+                  Players[Players[P].ThreadsAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+              Module := 45;
+              if Length(Players[Players[P].ThreadsAttacker].KillTimes) >= 2 then
+                if (Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 1] - Players[Players[P].ThreadsAttacker].KillTimes[Length(Players[Players[P].ThreadsAttacker].KillTimes) - 2] <= DOUBLE_KILL_CHECK_TIME)
+                and (not Players[Players[P].ThreadsAttacker].DoubleKill)
+                and (not Players[Players[P].ThreadsAttacker].TripleKill)
+                and (not Players[Players[P].ThreadsAttacker].Rampage) then
+                begin
+                  Actions.PlayWAV(-1, 'DoubleKill', 1);
+                  Players[Players[P].ThreadsAttacker].DoubleKill := True;
+                  Players[Players[P].ThreadsAttacker].KillsCountTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                end;
+            end;
           end;
-        end;
-        if not (Players[Tiles[aX][aY].Owner].DoubleKill)
-        and not (Players[Tiles[aX][aY].Owner].TripleKill) then
-          Players[Tiles[aX][aY].Owner].TempKill := P;
-        if not (Players[Tiles[aX][aY].Owner].TripleKill) then
-          Players[Tiles[aX][aY].Owner].TempKill2 := P;
-        for K := 0 to 7 do
-        begin
-          if Players[K].Kills > 0 then
-            if not FirstBlood then
+          Module := 46;
+          if not (Players[Tiles[aX][aY].Owner].DoubleKill)
+          and not (Players[Tiles[aX][aY].Owner].TripleKill) then
+            Players[Tiles[aX][aY].Owner].TempKill := P;
+          if not (Players[Tiles[aX][aY].Owner].TripleKill) then
+            Players[Tiles[aX][aY].Owner].TempKill2 := P;
+          Module := 47;
+          for K := 0 to 7 do
+          begin
+            if Players[K].Kills > 0 then
+              if not FirstBlood then
+                for I := 0 to 7 do
+                begin
+                  Actions.PlayWAV(-1, 'FirstBlood', 1);
+                  FirstBlood := True;
+                  Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                  Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$124>' + '[$' + States.PlayerColorText(P) + '] ' + States.PlayerName(P) + '[]';
+                end;
+            Module := 48;
+            if Players[K].DoubleKill then
               for I := 0 to 7 do
               begin
-                Actions.PlayWAV(-1, 'FirstBlood', 1);
-                FirstBlood := True;
                 Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-                Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$124>' + '[$' + States.PlayerColorText(P) + '] ' + States.PlayerName(P) + '[]';
+                Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$125>' + '[$' + States.PlayerColorText(Players[K].TempKill) + '] ' + States.PlayerName(Players[K].TempKill) + ' [$FFFFFF]<$128>' + ' [$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]';
+                Players[K].DoubleKill := False;
               end;
-          if Players[K].DoubleKill then
-            for I := 0 to 7 do
-            begin
-              Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$125>' + '[$' + States.PlayerColorText(Players[K].TempKill) + '] ' + States.PlayerName(Players[K].TempKill) + ' [$FFFFFF]<$128>' + ' [$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]';
-              Players[K].DoubleKill := False;
-            end;
-           if Players[K].TripleKill then
-            for I := 0 to 7 do
-            begin
-              Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$126>' + '[$' + States.PlayerColorText(Players[K].TempKill) + '] ' + States.PlayerName(Players[K].TempKill) +',[$' + States.PlayerColorText(Players[K].TempKill2) + '] ' + States.PlayerName(Players[K].TempKill2) + ' [$FFFFFF]<$128>' + ' [$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]';
-              Players[K].TripleKill := False;
-            end;
-          if Players[K].Rampage then
-            for I := 0 to 7 do
-            begin
-              Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-              Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$127>' + '[]';
-            end;
-          if KILL_STREAK then
-            for I := 0 to 7 do
-            begin
-              if Players[I].KillStreak = 4 then
+            Module := 49;
+            if Players[K].TripleKill then
+              for I := 0 to 7 do
               begin
-                Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-                Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$129>' + '[]';
+                Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$126>' + '[$' + States.PlayerColorText(Players[K].TempKill) + '] ' + States.PlayerName(Players[K].TempKill) +',[$' + States.PlayerColorText(Players[K].TempKill2) + '] ' + States.PlayerName(Players[K].TempKill2) + ' [$FFFFFF]<$128>' + ' [$' + States.PlayerColorText(P) + ']' + States.PlayerName(P) + '[]';
+                Players[K].TripleKill := False;
               end;
-              if Players[I].KillStreak = 6 then
+            Module := 50;
+            if Players[K].Rampage then
+              for I := 0 to 7 do
               begin
-                Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-                Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$130>' + '[]';
+                Players[I].KillStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                Players[I].KillStatus := '[$' + States.PlayerColorText(K) + ']' + States.PlayerName(K) + ' [$FFFFFF]<$127>' + '[]';
               end;
-              if Players[I].KillStreak = 8 then
+            Module := 51;
+            if KILL_STREAK then
+              for I := 0 to 7 do
               begin
-                Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-                Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$131>' + '[]';
+                if Players[I].KillStreak = 4 then
+                begin
+                  Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                  Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$129>' + '[]';
+                end;
+                if Players[I].KillStreak = 6 then
+                begin
+                  Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                  Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$130>' + '[]';
+                end;
+                if Players[I].KillStreak = 8 then
+                begin
+                  Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                  Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$131>' + '[]';
+                end;
+                if Players[I].KillStreak = 10 then
+                begin
+                  Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
+                  Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$132>' + '[]';
+                end;
               end;
-              if Players[I].KillStreak = 10 then
-              begin
-                Players[I].KillStreakStatusTime := States.GameTime + MAX_TIME_BETWEEN_KILLS;
-                Players[I].KillStreakStatus := '[$' + States.PlayerColorText(I) + ']' + States.PlayerName(I) + ' [$FFFFFF]<$132>' + '[]';
-              end;
-            end;
+          end;
+          Module := 52;
+          if not (Players[P].CaptureMind)
+          and not (Players[P].MindStunned)
+          and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
+            Players[P].HP := Players[P].HP - 1 - Byte(Players[Tiles[aX][aY].Owner].DD);
+          if Players[P].CaptureMind then
+            Players[M[P]].HP := Players[M[P]].HP - 1 - Byte(Players[Tiles[aX][aY].Owner].DD);
+          if Players[P].MindStunned then
+          begin
+            Players[M2[P]].HP := Players[M2[P]].HP - 1 - Byte(Players[Tiles[aX][aY].Owner].DD);
+            Actions.GroupBlockOrders(Players[P].Hero, True);
+            Actions.GroupOrderHalt(Players[P].Hero);
+          end;
         end;
-        if not (Players[P].CaptureMind)
-        and not (Players[P].MindStunned)
-        and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
-          Players[P].HP := Players[P].HP - 1 - Byte(Players[Tiles[aX][aY].Owner].DD);
-        if Players[P].CaptureMind then
-          Players[M[P]].HP := Players[M[P]].HP - 1 - Byte(Players[Tiles[aX][aY].Owner].DD);
-        if Players[P].MindStunned then
+        Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+      end;
+    end;
+
+    Module := 53;
+    if aObj = VAGA_OBJECT then
+    begin
+      if (not Players[P].MindStunned)
+      and (not Players[P].CaptureMind) then
+        if States.GameTime > Players[P].RegenDelay then
         begin
-          Players[M2[P]].HP := Players[M2[P]].HP - 1 - Byte(Players[Tiles[aX][aY].Owner].DD);
+          Players[P].HP := Players[P].HP + 1;
+          Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
+          if InRange(Tiles[aX][aY].Owner, 0, 7) then
+          begin
+            if (Tiles[aX][aY].Skill = sRegen)
+            and (Players[P].HP < MAX_HP) then
+            begin
+              Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+            end;
+          end;
+          if TileOnRuneSpawn(aX, aY) then
+            RuneTaken := True;
+          Actions.MapTileObjectSet(aX, aY, 255);
+        end;
+      if Players[P].CaptureMind then
+        if States.GameTime > Players[M[P]].RegenDelay then
+        begin
+          Players[M[P]].HP := Players[M[P]].HP + 1;
+          Players[M[P]].RegenDelay := States.GameTime + REGEN_DELAY;
+          if InRange(Tiles[aX][aY].Owner, 0, 7) then
+          begin
+            if SkillName(Tiles[aX][aY].Skill) <> '' then
+            begin
+              Players[M[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[M[P]].PlayerStatus := Players[M[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+            end;
+          end;
+          if TileOnRuneSpawn(aX, aY) then
+            RuneTaken := True;
+          Actions.MapTileObjectSet(aX, aY, 255);
+        end;
+      if Players[P].MindStunned then
+        if States.GameTime > Players[M2[P]].RegenDelay then
+        begin
+          Players[M2[P]].HP := Players[M2[P]].HP + 1;
+          Players[M2[P]].RegenDelay := States.GameTime + REGEN_DELAY;
+          if InRange(Tiles[aX][aY].Owner, 0, 7) then
+          begin
+            if SkillName(Tiles[aX][aY].Skill) <> '' then
+            begin
+              Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+              Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+            end;
+          end;
+          if TileOnRuneSpawn(aX, aY) then
+            RuneTaken := True;
+          Actions.MapTileObjectSet(aX, aY, 255);
+        end;
+    end;
+
+    Module := 54;
+    if (aObj = BOWMAN_ROCKET)
+    and (not Players[P].HeroMagicImmunity)
+    and (not Players[P].HeroTotalImmunity)
+    and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
+    begin
+      ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := 0;
+      TilesRoadLength[Tiles[aX][aY].Owner] := TilesRoadLength[Tiles[aX][aY].Owner] + 9;
+      SetLength(TilesRoadX[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
+      SetLength(TilesRoadY[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
+      SetLength(ClearTilesRoadTimes[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
+      SetLength(SetTilesRoadTimes[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
+      SetLength(TilesRoadObjects[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
+
+      TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 1] := aX;
+      TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 1] := aY;
+      TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 2] := aX;
+      TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 2] := aY - 1;
+      TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 3] := aX;
+      TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 3] := aY + 1;
+      TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 4] := aX - 1;
+      TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 4] := aY;
+      TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 5] := aX + 1;
+      TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 5] := aY;
+      TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 6] := aX + 1;
+      TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 6] := aY + 1;
+      TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 7] := aX + 1;
+      TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 7] := aY - 1;
+      TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 8] := aX - 1;
+      TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 8] := aY + 1;
+      TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 9] := aX - 1;
+      TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 9] := aY - 1;
+
+      Module := 55;
+      for I := 1 to 9 do
+      begin
+        TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - I] := BOWMAN_ROCKET2;
+        ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 45 + States.KaMRandomI(3);
+        SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 15 + States.KaMRandomI(3);
+
+        if TileOnBattlefield(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) then
+        begin
+          Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].Owner := Tiles[aX][aY].Owner;
+          Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].Skill := sRocket;
+          Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9];
+        end;
+
+        if (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BARB_OBJECT3)
+        or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_ROCKET)
+        or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_OBJECT5)
+        or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = WARRIOR_OBJECT7) then
+          ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] + CLEANUP_TIME;
+
+      end;
+
+      Module := 56;
+      TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - 1] := BOWMAN_ROCKET2;
+      ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 45 + States.KaMRandomI(3);
+      SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 15;
+
+      ClearRoadTilesArrayTime[Tiles[aX][aY].Owner] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9] + CLEAR_ARRAY_FACTOR + 3;
+
+    end;
+
+    Module := 57;
+    if aObj = RUNE_DOUBLE_OBJ then
+    begin
+      if States.GameTime > Players[P].DDTime then
+      begin
+        Players[P].DD := True;
+        Players[P].DDTime := States.GameTime + RUNE_DOUBLE_TIME;
+        if TileOnRuneSpawn(aX, aY) then
+          RuneTaken := True;
+        Actions.MapTileObjectSet(aX, aY, 255);
+      end;
+    end;
+
+    Module := 58;
+    if aObj = RUNE_MAGIC_IMMUNITY_OBJ then
+    begin
+      if States.GameTime > Players[P].HeroMagicImmunityTime then
+      begin
+        Players[P].HeroMagicImmunity := True;
+        Players[P].HeroMagicImmunityTime := States.GameTime + RUNE_MAGIC_IMMUNITY_TIME;
+        if InRange(Tiles[aX][aY].Owner, 0, 7)
+        and (not TileOnRuneSpawn(aX, aY))
+        and (not RuneTaken) then
+        begin
+          Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+          Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$70> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+        end;
+        if TileOnRuneSpawn(aX, aY) then
+          RuneTaken := True;
+        Actions.MapTileObjectSet(aX, aY, 255);
+      end;
+    end;
+
+    Module := 59;
+    if aObj = RUNE_ILLUSION_OBJ then
+      for I := 0 to RUNE_ILLUSIONS_COUNT - 1 do
+      begin
+        Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
+        SetLength(Zombies, Length(Zombies) + 1);
+        Zombies[Length(Zombies) - 1].Owner := P;
+        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+        Zombies[Length(Zombies) - 1].ZombieType := 3;
+        Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
+        if TileOnRuneSpawn(aX, aY) then
+          RuneTaken := True;
+        Actions.MapTileObjectSet(aX, aY, 255);
+      end;
+
+    Module := 60;
+    if aObj = RUNE_RECHARGE_OBJ then
+    begin
+      Players[P].ReCharge := True;
+      Players[P].ReChargeTime := States.GameTime + RUNE_RECHARGE_TIME;
+      Players[P].RoadSkillDelay := 0;
+      Players[P].FieldSkillDelay := 0;
+      Players[P].WineSkillDelay := 0;
+      Players[P].RocketCharges := BOWMAN_CHARGES;
+      Players[P].RocketChargeTime := 0;
+      Players[P].SnakeCharges := SNAKE_CHARGES;
+      Players[P].SnakeChargeTime := 0;
+      if TileOnRuneSpawn(aX, aY) then
+        RuneTaken := True;
+      Actions.MapTileObjectSet(aX, aY, 255);
+    end;
+
+    Module := 61;
+    if InRange(aObj, SWORD_OBJECT1, SWORD_OBJECT1 + 2) then
+    begin
+      if (not States.PlayerDefeated(P))
+      and (not Players[P].HeroMagicImmunity)
+      and (not Players[P].HeroTotalImmunity)
+      and (not Players[P].MindStunned)
+      and (not Players[P].CaptureMind)
+      and (Players[P].HeroStunnedTime - States.GameTime < STUNNED_TIME) then
+      begin
+        if Players[P].Hero > 0 then
+        begin
           Actions.GroupBlockOrders(Players[P].Hero, True);
           Actions.GroupOrderHalt(Players[P].Hero);
         end;
-      end;
-      Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
-    end;
-  end;
-
-  if aObj = VAGA_OBJECT then
-  begin
-    if (not Players[P].MindStunned)
-    and (not Players[P].CaptureMind) then
-      if States.GameTime > Players[P].RegenDelay then
-      begin
-        Players[P].HP := Players[P].HP + 1;
-        Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
-        if InRange(Tiles[aX][aY].Owner, 0, 7) then
+        if InRange(Tiles[aX][aY].Owner, 0, 7)
+        and (not Players[P].HeroStunned)
+        and (Tiles[aX][aY].Skill = sSpikedEarth) then
         begin
-          if (Tiles[aX][aY].Skill = sRegen)
-          and (Players[P].HP < MAX_HP) then
-          begin
-            Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-            Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
-          end;
+          Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+          Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
         end;
-        if TileOnRuneSpawn(aX, aY) then
-          RuneTaken := True;
-        Actions.MapTileObjectSet(aX, aY, 255);
+        Players[P].HeroStunnedTime := States.GameTime + STUNNED_TIME;
+        Players[P].HeroStunned := True;
+        Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
       end;
-    if Players[P].CaptureMind then
-      if States.GameTime > Players[M[P]].RegenDelay then
+    end;
+
+    Module := 62;
+    if aObj = SWORD_OBJECT then
+    begin
+      if (not States.PlayerDefeated(P))
+      and (not Players[P].HeroMagicImmunity)
+      and (not Players[P].HeroTotalImmunity)
+      and (not Players[P].MindStunned)
+      and (not Players[P].CaptureMind)
+      and (Players[P].HeroStunnedTime - States.GameTime < STUNNED_ANIMATION_TIME) then
       begin
-        Players[M[P]].HP := Players[M[P]].HP + 1;
-        Players[M[P]].RegenDelay := States.GameTime + REGEN_DELAY;
-        if InRange(Tiles[aX][aY].Owner, 0, 7) then
+        if Players[P].Hero > 0 then
         begin
-          if SkillName(Tiles[aX][aY].Skill) <> '' then
-          begin
-            Players[M[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-            Players[M[P]].PlayerStatus := Players[M[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
-          end;
+          Actions.GroupBlockOrders(Players[P].Hero, True);
+          Actions.GroupOrderHalt(Players[P].Hero);
         end;
-        if TileOnRuneSpawn(aX, aY) then
-          RuneTaken := True;
-        Actions.MapTileObjectSet(aX, aY, 255);
-      end;
-    if Players[P].MindStunned then
-      if States.GameTime > Players[M2[P]].RegenDelay then
-      begin
-        Players[M2[P]].HP := Players[M2[P]].HP + 1;
-        Players[M2[P]].RegenDelay := States.GameTime + REGEN_DELAY;
-        if InRange(Tiles[aX][aY].Owner, 0, 7) then
+        if InRange(Tiles[aX][aY].Owner, 0, 7)
+        and (not Players[P].HeroStunned)
+        and (Tiles[aX][aY].Skill = sSpikedEarth) then
         begin
-          if SkillName(Tiles[aX][aY].Skill) <> '' then
-          begin
-            Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-            Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$69> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
-          end;
+          Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+          Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
         end;
-        if TileOnRuneSpawn(aX, aY) then
-          RuneTaken := True;
-        Actions.MapTileObjectSet(aX, aY, 255);
+        Players[P].HeroStunnedTime := States.GameTime + STUNNED_ANIMATION_TIME;
+        Players[P].HeroStunned := True;
+        Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
       end;
-  end;
-
-  if (aObj = BOWMAN_ROCKET)
-  and (not Players[P].HeroMagicImmunity)
-  and (not Players[P].HeroTotalImmunity)
-  and (InRange(Tiles[aX][aY].Owner, 0, 7)) then
-  begin
-    ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := 0;
-    TilesRoadLength[Tiles[aX][aY].Owner] := TilesRoadLength[Tiles[aX][aY].Owner] + 9;
-    SetLength(TilesRoadX[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
-    SetLength(TilesRoadY[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
-    SetLength(ClearTilesRoadTimes[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
-    SetLength(SetTilesRoadTimes[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
-    SetLength(TilesRoadObjects[Tiles[aX][aY].Owner], TilesRoadLength[Tiles[aX][aY].Owner]);
-
-    TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 1] := aX;
-    TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 1] := aY;
-    TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 2] := aX;
-    TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 2] := aY - 1;
-    TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 3] := aX;
-    TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 3] := aY + 1;
-    TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 4] := aX - 1;
-    TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 4] := aY;
-    TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 5] := aX + 1;
-    TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 5] := aY;
-    TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 6] := aX + 1;
-    TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 6] := aY + 1;
-    TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 7] := aX + 1;
-    TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 7] := aY - 1;
-    TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 8] := aX - 1;
-    TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 8] := aY + 1;
-    TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 9] := aX - 1;
-    TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 9] := aY - 1;
-
-    for I := 1 to 9 do
-    begin
-      TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - I] := BOWMAN_ROCKET2;
-      ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 45 + States.KaMRandomI(3);
-      SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := States.GameTime + 15 + States.KaMRandomI(3);
-
-      if TileOnBattlefield(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) then
-      begin
-        Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].Owner := Tiles[aX][aY].Owner;
-        Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].Skill := sRocket;
-        Tiles[TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I]][TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9];
-      end;
-
-      if (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BARB_OBJECT3)
-      or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_ROCKET)
-      or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - I], TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - I]) = WARRIOR_OBJECT7) then
-        ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - I] + CLEANUP_TIME;
-
     end;
 
-    TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - 1] := BOWMAN_ROCKET2;
-    ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 45 + States.KaMRandomI(3);
-    SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 15;
-
-    ClearRoadTilesArrayTime[Tiles[aX][aY].Owner] := ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 9] + CLEAR_ARRAY_FACTOR + 3;
-
-  end;
-
-  if aObj = RUNE_DOUBLE_OBJ then
-  begin
-    if States.GameTime > Players[P].DDTime then
+    Module := 63;
+    if aObj = VAGA_OBJECT6 then
     begin
-      Players[P].DD := True;
-      Players[P].DDTime := States.GameTime + RUNE_DOUBLE_TIME;
-      if TileOnRuneSpawn(aX, aY) then
-        RuneTaken := True;
-      Actions.MapTileObjectSet(aX, aY, 255);
-    end;
-  end;
-
-  if aObj = RUNE_MAGIC_IMMUNITY_OBJ then
-  begin
-    if States.GameTime > Players[P].HeroMagicImmunityTime then
-    begin
-      Players[P].HeroMagicImmunity := True;
-      Players[P].HeroMagicImmunityTime := States.GameTime + RUNE_MAGIC_IMMUNITY_TIME;
-      if InRange(Tiles[aX][aY].Owner, 0, 7)
-      and (not TileOnRuneSpawn(aX, aY))
-      and (not RuneTaken) then
+      if (not States.PlayerDefeated(P))
+      and (not Players[P].HeroMagicImmunity)
+      and (not Players[P].HeroTotalImmunity)
+      and (not Players[P].MindStunned)
+      and (not Players[P].CaptureMind)
+      and (Players[P].HeroStunnedTime - States.GameTime < SHOCK_TIME) then
       begin
-        Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$70> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+        if Players[P].Hero > 0 then
+        begin
+          Actions.GroupBlockOrders(Players[P].Hero, True);
+          Actions.GroupOrderHalt(Players[P].Hero);
+        end;
+        if InRange(Tiles[aX][aY].Owner, 0, 7)
+        and (not Players[P].HeroStunned)
+        and (Tiles[aX][aY].Skill = sDisorientation) then
+        begin
+          Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+          Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+        end;
+        Players[P].HeroStunnedTime := States.GameTime + SHOCK_TIME;
+        Players[P].HeroStunned := True;
+        Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
       end;
-      if TileOnRuneSpawn(aX, aY) then
-        RuneTaken := True;
-      Actions.MapTileObjectSet(aX, aY, 255);
-    end;
-  end;
-
-  if aObj = RUNE_ILLUSION_OBJ then
-    for I := 0 to RUNE_ILLUSIONS_COUNT - 1 do
-    begin
-      Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
-      SetLength(Zombies, Length(Zombies) + 1);
-      Zombies[Length(Zombies) - 1].Owner := P;
-      Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-      Zombies[Length(Zombies) - 1].ZombieType := 3;
-      Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
-      if TileOnRuneSpawn(aX, aY) then
-        RuneTaken := True;
-      Actions.MapTileObjectSet(aX, aY, 255);
     end;
 
-  if aObj = RUNE_RECHARGE_OBJ then
-  begin
-    Players[P].ReCharge := True;
-    Players[P].ReChargeTime := States.GameTime + RUNE_RECHARGE_TIME;
-    Players[P].RoadSkillDelay := 0;
-    Players[P].FieldSkillDelay := 0;
-    Players[P].WineSkillDelay := 0;
-    Players[P].RocketCharges := BOWMAN_CHARGES;
-    Players[P].RocketChargeTime := 0;
-    Players[P].SnakeCharges := SNAKE_CHARGES;
-    Players[P].SnakeChargeTime := 0;
-    if TileOnRuneSpawn(aX, aY) then
-      RuneTaken := True;
-    Actions.MapTileObjectSet(aX, aY, 255);
-  end;
-
-  if InRange(aObj, SWORD_OBJECT1, SWORD_OBJECT1 + 2) then
-  begin
-    if (not States.PlayerDefeated(P))
-    and (not Players[P].HeroMagicImmunity)
-    and (not Players[P].HeroTotalImmunity)
-    and (not Players[P].MindStunned)
-    and (not Players[P].CaptureMind)
-    and (Players[P].HeroStunnedTime - States.GameTime < STUNNED_TIME) then
+    Module := 64;
+    if aObj = KNIGHT_OBJECT3 then
     begin
-      if Players[P].Hero > 0 then
+      if (not States.PlayerDefeated(P))
+      and (not Players[P].HeroMagicImmunity)
+      and (not Players[P].HeroTotalImmunity)
+      and (not Players[P].MindStunned)
+      and (not Players[P].CaptureMind)
+      and (Players[P].HeroStunnedTime - States.GameTime < DEAFENING_TIME) then
       begin
-        Actions.GroupBlockOrders(Players[P].Hero, True);
-        Actions.GroupOrderHalt(Players[P].Hero);
+        if Players[P].Hero > 0 then
+        begin
+          Actions.GroupBlockOrders(Players[P].Hero, True);
+          Actions.GroupOrderHalt(Players[P].Hero);
+        end;
+        if InRange(Tiles[aX][aY].Owner, 0, 7)
+        and (not Players[P].HeroStunned)
+        and (Tiles[aX][aY].Skill = sDeafeningClatter) then
+        begin
+          Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+          Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
+        end;
+        Players[P].HeroStunnedTime := States.GameTime + DEAFENING_TIME;
+        Players[P].HeroStunned := True;
+        Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
       end;
-      if InRange(Tiles[aX][aY].Owner, 0, 7)
-      and (not Players[P].HeroStunned)
-      and (Tiles[aX][aY].Skill = sSpikedEarth) then
-      begin
-        Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
-      end;
-      Players[P].HeroStunnedTime := States.GameTime + STUNNED_TIME;
-      Players[P].HeroStunned := True;
-      Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
     end;
-  end;
 
-  if aObj = SWORD_OBJECT then
-  begin
-    if (not States.PlayerDefeated(P))
-    and (not Players[P].HeroMagicImmunity)
-    and (not Players[P].HeroTotalImmunity)
-    and (not Players[P].MindStunned)
-    and (not Players[P].CaptureMind)
-    and (Players[P].HeroStunnedTime - States.GameTime < STUNNED_ANIMATION_TIME) then
-    begin
-      if Players[P].Hero > 0 then
-      begin
-        Actions.GroupBlockOrders(Players[P].Hero, True);
-        Actions.GroupOrderHalt(Players[P].Hero);
-      end;
-      if InRange(Tiles[aX][aY].Owner, 0, 7)
-      and (not Players[P].HeroStunned)
-      and (Tiles[aX][aY].Skill = sSpikedEarth) then
-      begin
-        Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
-      end;
-      Players[P].HeroStunnedTime := States.GameTime + STUNNED_ANIMATION_TIME;
-      Players[P].HeroStunned := True;
-      Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
+    Module := 65;
+    if (ObjectType(aObj) = otStun)
+    and (not Players[P].MindStunned) then
+      CancelSkills(P);
+
+    except
+
+      LogError('Exception in the script in module ' + IntToStr(Module) + ': cannot check tiles for invalid player:', [aX, aY, P, States.GameTime], SHOW_ERROR_MSG);
+
     end;
-  end;
-
-  if aObj = VAGA_OBJECT6 then
-  begin
-    if (not States.PlayerDefeated(P))
-    and (not Players[P].HeroMagicImmunity)
-    and (not Players[P].HeroTotalImmunity)
-    and (not Players[P].MindStunned)
-    and (not Players[P].CaptureMind)
-    and (Players[P].HeroStunnedTime - States.GameTime < SHOCK_TIME) then
-    begin
-      if Players[P].Hero > 0 then
-      begin
-        Actions.GroupBlockOrders(Players[P].Hero, True);
-        Actions.GroupOrderHalt(Players[P].Hero);
-      end;
-      if InRange(Tiles[aX][aY].Owner, 0, 7)
-      and (not Players[P].HeroStunned)
-      and (Tiles[aX][aY].Skill = sDisorientation) then
-      begin
-        Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
-      end;
-      Players[P].HeroStunnedTime := States.GameTime + SHOCK_TIME;
-      Players[P].HeroStunned := True;
-      Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
-    end;
-  end;
-
-  if aObj = KNIGHT_OBJECT3 then
-  begin
-    if (not States.PlayerDefeated(P))
-    and (not Players[P].HeroMagicImmunity)
-    and (not Players[P].HeroTotalImmunity)
-    and (not Players[P].MindStunned)
-    and (not Players[P].CaptureMind)
-    and (Players[P].HeroStunnedTime - States.GameTime < DEAFENING_TIME) then
-    begin
-      if Players[P].Hero > 0 then
-      begin
-        Actions.GroupBlockOrders(Players[P].Hero, True);
-        Actions.GroupOrderHalt(Players[P].Hero);
-      end;
-      if InRange(Tiles[aX][aY].Owner, 0, 7)
-      and (not Players[P].HeroStunned)
-      and (Tiles[aX][aY].Skill = sDeafeningClatter) then
-      begin
-        Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$68> ' + '[$' + States.PlayerColorText(Tiles[aX][aY].Owner) + ']' + States.PlayerName(Tiles[aX][aY].Owner) + '[]<$71> ' + SkillName(Tiles[aX][aY].Skill);
-      end;
-      Players[P].HeroStunnedTime := States.GameTime + DEAFENING_TIME;
-      Players[P].HeroStunned := True;
-      Actions.MapTileSet(aX, aY, STUN_ANIMATION, States.KaMRandomI(4));
-    end;
-  end;
-
-  if (ObjectType(aObj) = otStun)
-  and (not Players[P].MindStunned) then
-    CancelSkills(P);
-
-  except
-
-    LogError('Exception in the script: cannot check tiles for invalid player:', [aX, aY, P], SHOW_ERROR_MSG);
-
-  end;
 
 end;
 
