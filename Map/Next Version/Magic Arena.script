@@ -5239,7 +5239,8 @@ begin
 
     TimeToClearViseArray[P][ViseCirclesCounter[P]] := ViseCircles[P][ViseCirclesCounter[P]][0].AddTime + CLEAR_ARRAY_FACTOR;
 
-    ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
+    if TilesRoadLength[P] > 0 then
+      ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
 
   end;
 
