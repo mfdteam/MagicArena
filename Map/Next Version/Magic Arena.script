@@ -1652,7 +1652,8 @@ begin
       RUNE_REGEN_OBJ:
         if (not Players[P].MindStunned)
         and (not Players[P].CaptureMind) then
-          if States.GameTime > Players[P].RegenDelay then          
+          if (States.GameTime > Players[P].RegenDelay)
+          and (Players[P].HP < MAX_HP) then          
           begin
             Players[P].HP := Players[P].HP + 1;
             Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
@@ -11033,7 +11034,8 @@ begin
     begin
       if (not Players[P].MindStunned)
       and (not Players[P].CaptureMind) then
-        if States.GameTime > Players[P].RegenDelay then
+        if (States.GameTime > Players[P].RegenDelay)
+        and (Players[P].HP < MAX_HP) then
         begin
           Players[P].HP := Players[P].HP + 1;
           Players[P].RegenDelay := States.GameTime + REGEN_DELAY;
@@ -11051,7 +11053,8 @@ begin
           Actions.MapTileObjectSet(aX, aY, 255);
         end;
       if Players[P].CaptureMind then
-        if States.GameTime > Players[M[P]].RegenDelay then
+        if (States.GameTime > Players[M[P]].RegenDelay)
+        and (Players[M[P]].HP < MAX_HP) then
         begin
           Players[M[P]].HP := Players[M[P]].HP + 1;
           Players[M[P]].RegenDelay := States.GameTime + REGEN_DELAY;
@@ -11068,7 +11071,8 @@ begin
           Actions.MapTileObjectSet(aX, aY, 255);
         end;
       if Players[P].MindStunned then
-        if States.GameTime > Players[M2[P]].RegenDelay then
+        if (States.GameTime > Players[M2[P]].RegenDelay)
+        and (Players[M2[P]].HP < MAX_HP) then
         begin
           Players[M2[P]].HP := Players[M2[P]].HP + 1;
           Players[M2[P]].RegenDelay := States.GameTime + REGEN_DELAY;
