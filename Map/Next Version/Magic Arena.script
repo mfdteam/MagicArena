@@ -15031,6 +15031,50 @@ begin
 end;
 
 
+function HeroTypeToReChargePriority(P: Integer): Integer;
+begin
+  Result := 0;
+  case Players[P].HeroType of
+    15: Result := 10;
+    16: Result := 6;
+    17: Result := 7;
+    18: Result := 1;
+    19: Result := 9;
+    20: Result := 1;
+    21: Result := 1;
+    22: Result := 1;
+    23: Result := 8;
+    24: Result := 1;
+    25: Result := 1;
+    26: Result := 1;
+    27: Result := 10
+    else Result := 0;
+  end;
+end;
+
+
+function HeroTypeToDDPriority(P: Integer): Integer;
+begin
+  Result := 0;
+  case Players[P].HeroType of
+    15: Result := 9;
+    16: Result := 1;
+    17: Result := 8;
+    18: Result := 1;
+    19: Result := 1;
+    20: Result := 1;
+    21: Result := 1;
+    22: Result := 1;
+    23: Result := 10;
+    24: Result := 1;
+    25: Result := 1;
+    26: Result := 1;
+    27: Result := 1
+    else Result := 0;
+  end;
+end;
+
+
 function ClosestToRuneLeft: Integer;
 var
   I, J, DX, DY, U, ThisDistSqr, BestDistSqr: Integer;
@@ -15146,7 +15190,8 @@ begin
     ThisHP := Players[I].HP;
     if (ThisHP < LowHP)
     and (ThisHP <> 0)
-    and (I = ClosestToRuneLeft) then
+    and (I = ClosestToRuneLeft)
+    and (Players[I].HP < MAX_HP) then
     begin
       LowHP := ThisHP;
       Result := I;
@@ -15166,9 +15211,90 @@ begin
     ThisHP := Players[I].HP;
     if (ThisHP < LowHP)
     and (ThisHP <> 0)
-    and (I = ClosestToRuneRight) then
+    and (I = ClosestToRuneRight)
+    and (Players[I].HP < MAX_HP) then
     begin
       LowHP := ThisHP;
+      Result := I;
+    end;
+  end;
+end;
+
+
+function NeedsReChargeLeft: Integer;
+var
+  I, HighS, ThisS: Integer;
+begin
+  Result := -1;
+  HighS := 0;
+  for I := 0 to 3 do
+  begin
+    ThisS := HeroTypeToReChargePriority(I);
+    if (ThisS > HighS)
+    and (Players[I].HP > 0)
+    and (I = ClosestToRuneLeft) then
+    begin
+      HighS := ThisS;
+      Result := I;
+    end;
+  end;
+end;
+
+
+function NeedsReChargeRight: Integer;
+var
+  I, HighS, ThisS: Integer;
+begin
+  Result := -1;
+  HighS := 0;
+  for I := 4 to 7 do
+  begin
+    ThisS := HeroTypeToReChargePriority(I);
+    if (ThisS > HighS)
+    and (Players[I].HP > 0)
+    and (I = ClosestToRuneRight) then
+    begin
+      HighS := ThisS;
+      Result := I;
+    end;
+  end;
+end;
+
+
+function NeedsDDLeft: Integer;
+var
+  I, HighS, ThisS: Integer;
+begin
+  Result := -1;
+  HighS := 0;
+  for I := 0 to 3 do
+  begin
+    ThisS := HeroTypeToDDPriority(I);
+    if (ThisS > HighS)
+    and (Players[I].HP > 0)
+    and (I = ClosestToRuneLeft) then
+    begin
+      HighS := ThisS;
+      Result := I;
+    end;
+  end;
+end;
+
+
+function NeedsDDRight: Integer;
+var
+  I, HighS, ThisS: Integer;
+begin
+  Result := -1;
+  HighS := 0;
+  for I := 4 to 7 do
+  begin
+    ThisS := HeroTypeToDDPriority(I);
+    if (ThisS > HighS)
+    and (Players[I].HP > 0)
+    and (I = ClosestToRuneRight) then
+    begin
+      HighS := ThisS;
       Result := I;
     end;
   end;
@@ -15205,20 +15331,45 @@ begin
   and (P <> HasLowestHPRight) then
     Exit;
 
-  if (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_REGEN_OBJ)
-  or ((Players[P].HP < MAX_HP)
-  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_REGEN_OBJ)) then
+  if (InRange(P, 0, 3))
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_RECHARGE_OBJ)
+  and (P <> NeedsReChargeLeft) then
+    Exit;
+
+  if (InRange(P, 4, 7))
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_RECHARGE_OBJ)
+  and (P <> NeedsReChargeRight) then
+    Exit;
+
+  if (InRange(P, 0, 3))
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_DOUBLE_OBJ)
+  and (P <> NeedsDDLeft) then
+    Exit;
+
+  if (InRange(P, 4, 7))
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_DOUBLE_OBJ)
+  and (P <> NeedsDDRight) then
+    Exit;
+
+  if (InRange(P, 0, 3))
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_MAGIC_IMMUNITY_OBJ)
+  and ((P <> ClosestToRuneLeft) or (Players[P].HeroMagicImmunity)) then
+    Exit;
+
+  if (InRange(P, 4, 7))
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_MAGIC_IMMUNITY_OBJ)
+  and ((P <> ClosestToRuneRight) or (Players[P].HeroMagicImmunity)) then
+    Exit;
+
+  Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
+  if (States.KaMRandom < 0.75) then
   begin
-    Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
-    if (States.KaMRandom < 0.75) then
-    begin
-      if Players[P].RoadSkillDelay <= 5 then
-        Players[P].RoadSkillDelay := Players[P].RoadSkillDelay + States.KaMRandomI(100);
-      if Players[P].FieldSkillDelay = 0 then
-        Players[P].FieldSkillDelay := Players[P].FieldSkillDelay + States.KaMRandomI(100);
-      if Players[P].WineSkillDelay = 0 then
-        Players[P].WineSkillDelay := Players[P].WineSkillDelay + States.KaMRandomI(100);
-    end;
+    if Players[P].RoadSkillDelay <= 5 then
+      Players[P].RoadSkillDelay := Players[P].RoadSkillDelay + States.KaMRandomI(100);
+    if Players[P].FieldSkillDelay = 0 then
+      Players[P].FieldSkillDelay := Players[P].FieldSkillDelay + States.KaMRandomI(100);
+    if Players[P].WineSkillDelay = 0 then
+      Players[P].WineSkillDelay := Players[P].WineSkillDelay + States.KaMRandomI(100);
   end;
 end;
 
@@ -17101,6 +17252,8 @@ begin
       + IfThenStr(DEBUG_MODE, '|Array: ' + IntToStr(Length(zombies)) + '|Units: ' + IntToStr(AIUnitsCount) + '|', '')
       + IfThenStr(DEBUG_MODE, '|Lowest HP has player: ' + IntToStr(HasLowestHPLeft) + '|', '')
       + IfThenStr(DEBUG_MODE, '|Strongest hero has player: ' + IntToStr(StrongestHeroLeft) + '|', '')
+      + IfThenStr(DEBUG_MODE, '|Needs double damage: player ' + IntToStr(NeedsDDLeft) + '|', '')
+      + IfThenStr(DEBUG_MODE, '|Needs recharge: player ' + IntToStr(NeedsReChargeLeft) + '|', '')
       + IfThenStr(DEBUG_MODE, '|Closest to rune player: ' + IntToStr(ClosestToRuneLeft) + '|', '')
       + StatusText(I) + '|||<$41>:|' + TeamInfo[0] + '|||<$79>:|' + Scores[0]);
     end;
@@ -17119,6 +17272,8 @@ begin
       + IfThenStr(DEBUG_MODE, '|Array: ' + IntToStr(Length(zombies)) + '|Units: ' + IntToStr(AIUnitsCount) + '|', '')
       + IfThenStr(DEBUG_MODE, '|Lowest HP has player: ' + IntToStr(HasLowestHPRight) + '|', '')
       + IfThenStr(DEBUG_MODE, '|Strongest hero has player: ' + IntToStr(StrongestHeroRight) + '|', '')
+      + IfThenStr(DEBUG_MODE, '|Needs double damage: player ' + IntToStr(NeedsDDRight) + '|', '')
+      + IfThenStr(DEBUG_MODE, '|Needs recharge: player ' + IntToStr(NeedsReChargeRight) + '|', '')
       + IfThenStr(DEBUG_MODE, '|Closest to rune player: ' + IntToStr(ClosestToRuneRight) + '|', '')
       + StatusText(I) + '|||<$41>:|' + TeamInfo[1] + '|||<$79>:|' + Scores[1]);
     end;
