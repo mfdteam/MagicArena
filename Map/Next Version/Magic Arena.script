@@ -14990,6 +14990,104 @@ begin
 end;
 
 
+function HeroTypeToPhysicalStrength(P: Integer): Integer;
+begin
+  Result := 0;
+  case Players[P].HeroType of
+    15: Result := 5;
+    16: Result := 9;
+    17: Result := 3;
+    18: Result := 4;
+    19: Result := 4;
+    20: Result := 6;
+    21: Result := 8;
+    22: Result := 10;
+    23: Result := 7;
+    24: Result := 2;
+    25: Result := 1;
+    26: Result := 7;
+    27: Result := 6
+    else Result := 0;
+  end;
+end;
+
+
+function StrongestHeroLeft: Integer;
+var
+  I, HighS, ThisS: Integer;
+begin
+  Result := -1;
+  HighS := 0;
+  for I := 0 to 3 do
+  begin
+    ThisS := HeroTypeToPhysicalStrength(I);
+    if (ThisS > HighS)
+    and (Players[I].HP > 0) then
+    begin
+      HighS := ThisS;
+      Result := I;
+    end;
+  end;
+end;
+
+
+function StrongestHeroRight: Integer;
+var
+  I, HighS, ThisS: Integer;
+begin
+  Result := -1;
+  HighS := 0;
+  for I := 4 to 7 do
+  begin
+    ThisS := HeroTypeToPhysicalStrength(I);
+    if (ThisS > HighS)
+    and (Players[I].HP > 0) then
+    begin
+      HighS := ThisS;
+      Result := I;
+    end;
+  end;
+end;
+
+
+function HasLowestHPLeft: Integer;
+var
+  I, LowHP, ThisHP: Integer;
+begin
+  Result := -1;
+  LowHP := MAX_HP + 1;
+  for I := 0 to 3 do
+  begin
+    ThisHP := Players[I].HP;
+    if (ThisHP < LowHP)
+    and (ThisHP <> 0) then
+    begin
+      LowHP := ThisHP;
+      Result := I;
+    end;
+  end;
+end;
+
+
+function HasLowestHPRight: Integer;
+var
+  I, LowHP, ThisHP: Integer;
+begin
+  Result := -1;
+  LowHP := MAX_HP + 1;
+  for I := 4 to 7 do
+  begin
+    ThisHP := Players[I].HP;
+    if (ThisHP < LowHP)
+    and (ThisHP <> 0) then
+    begin
+      LowHP := ThisHP;
+      Result := I;
+    end;
+  end;
+end;
+
+
 procedure AITakeRune(P: Integer);
 begin
   if (Players[P].Hero <= 0)
@@ -14998,6 +15096,26 @@ begin
     Exit;
 
   if not AI_ENABLED then
+    Exit;
+
+  if (InRange(P, 0, 3))
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_ILLUSION_OBJ)
+  and (P <> StrongestHeroLeft) then
+    Exit;
+
+  if (InRange(P, 4, 7))
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_ILLUSION_OBJ)
+  and (P <> StrongestHeroRight) then
+    Exit;
+
+  if (InRange(P, 0, 3))
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_REGEN_OBJ)
+  and (P <> HasLowestHPLeft) then
+    Exit;
+
+  if (InRange(P, 4, 7))
+  and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_REGEN_OBJ)
+  and (P <> HasLowestHPRight) then
     Exit;
 
   if (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_REGEN_OBJ)
@@ -16894,6 +17012,8 @@ begin
       + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '.' + StolenSacrificialTeleportColor(I) + IfThenStr(Players[I].StolenSkillName <> '<$10>', ' <$34>: ' + IntToStr(Players[I].WineSkillDelay/10) + '[]', '')
       + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + IfThenStr(ArenaTime > 0, '||<$145>: ' + IntToStr(ArenaTime/10) + '|', '')
       + IfThenStr(DEBUG_MODE, '|Array: ' + IntToStr(Length(zombies)) + '|Units: ' + IntToStr(AIUnitsCount) + '|', '')
+      + IfThenStr(DEBUG_MODE, '|Lowest HP has player: ' + IntToStr(HasLowestHPLeft) + '|', '')
+      + IfThenStr(DEBUG_MODE, '|Strongest hero has player: ' + IntToStr(StrongestHeroLeft) + '|', '')
       + StatusText(I) + '|||<$41>:|' + TeamInfo[0] + '|||<$79>:|' + Scores[0]);
     end;
 
@@ -16909,6 +17029,8 @@ begin
       + '|<$37>: ' + WineSkillName(I, Players[I].HeroType) + '.' + StolenSacrificialTeleportColor(I)  + IfThenStr(Players[I].StolenSkillName <> '<$10>', ' <$34>: ' + IntToStr(Players[I].WineSkillDelay/10) + '[]', '')
       + '|<$39>: ' + HPColor(I) + HPString(I) + '[]|' + '|<$45>: ' + IntToStr(RuneTime/10) + IfThenStr(ArenaTime > 0, '||<$145>: ' + IntToStr(ArenaTime/10) + '|', '')
       + IfThenStr(DEBUG_MODE, '|Array: ' + IntToStr(Length(zombies)) + '|Units: ' + IntToStr(AIUnitsCount) + '|', '')
+      + IfThenStr(DEBUG_MODE, '|Lowest HP has player: ' + IntToStr(HasLowestHPRight) + '|', '')
+      + IfThenStr(DEBUG_MODE, '|Strongest hero has player: ' + IntToStr(StrongestHeroRight) + '|', '')
       + StatusText(I) + '|||<$41>:|' + TeamInfo[1] + '|||<$79>:|' + Scores[1]);
     end;
 
