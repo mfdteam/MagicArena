@@ -11495,15 +11495,33 @@ begin
 end;
 
 
-function AlivePlayersCount: Integer;
+function AlivePlayersLeft: Integer;
 var
   I: Integer;
 begin
   Result := 0;
-  for I := 0 to 7 do
+  for I := 0 to 3 do
     if (States.PlayerEnabled(I))
     and (Players[I].HP > 0) then
       Result := Result + 1;
+end;
+
+
+function AlivePlayersRight: Integer;
+var
+  I: Integer;
+begin
+  Result := 0;
+  for I := 4 to 7 do
+    if (States.PlayerEnabled(I))
+    and (Players[I].HP > 0) then
+      Result := Result + 1;
+end;
+
+
+function AlivePlayersCount: Integer;
+begin
+  Result := AlivePlayersLeft + AlivePlayersRight;
 end;
 
 
@@ -15013,82 +15031,6 @@ begin
 end;
 
 
-function StrongestHeroLeft: Integer;
-var
-  I, HighS, ThisS: Integer;
-begin
-  Result := -1;
-  HighS := 0;
-  for I := 0 to 3 do
-  begin
-    ThisS := HeroTypeToPhysicalStrength(I);
-    if (ThisS > HighS)
-    and (Players[I].HP > 0) then
-    begin
-      HighS := ThisS;
-      Result := I;
-    end;
-  end;
-end;
-
-
-function StrongestHeroRight: Integer;
-var
-  I, HighS, ThisS: Integer;
-begin
-  Result := -1;
-  HighS := 0;
-  for I := 4 to 7 do
-  begin
-    ThisS := HeroTypeToPhysicalStrength(I);
-    if (ThisS > HighS)
-    and (Players[I].HP > 0) then
-    begin
-      HighS := ThisS;
-      Result := I;
-    end;
-  end;
-end;
-
-
-function HasLowestHPLeft: Integer;
-var
-  I, LowHP, ThisHP: Integer;
-begin
-  Result := -1;
-  LowHP := MAX_HP + 1;
-  for I := 0 to 3 do
-  begin
-    ThisHP := Players[I].HP;
-    if (ThisHP < LowHP)
-    and (ThisHP <> 0) then
-    begin
-      LowHP := ThisHP;
-      Result := I;
-    end;
-  end;
-end;
-
-
-function HasLowestHPRight: Integer;
-var
-  I, LowHP, ThisHP: Integer;
-begin
-  Result := -1;
-  LowHP := MAX_HP + 1;
-  for I := 4 to 7 do
-  begin
-    ThisHP := Players[I].HP;
-    if (ThisHP < LowHP)
-    and (ThisHP <> 0) then
-    begin
-      LowHP := ThisHP;
-      Result := I;
-    end;
-  end;
-end;
-
-
 function ClosestToRuneLeft: Integer;
 var
   I, J, DX, DY, U, ThisDistSqr, BestDistSqr: Integer;
@@ -15109,8 +15051,9 @@ begin
             DX := States.UnitPositionX(U) - RUNE_X;
             DY := States.UnitPositionY(U) - RUNE_Y;
             ThisDistSqr := (DX * DX) + (DY * DY);
-            if (ThisDistSqr <= RUNE_CHECK_RADIUS * RUNE_CHECK_RADIUS)
-            and ((Result = -1) or (ThisDistSqr < BestDistSqr)) then
+            if ((ThisDistSqr <= RUNE_CHECK_RADIUS * RUNE_CHECK_RADIUS)
+            and ((Result = -1) or (ThisDistSqr < BestDistSqr)))
+            or (AlivePlayersLeft = 1) then
             begin
               BestDistSqr := ThisDistSqr;
               Result := States.GroupOwner(Groups[J]);
@@ -15140,14 +15083,95 @@ begin
             DX := States.UnitPositionX(U) - RUNE_X;
             DY := States.UnitPositionY(U) - RUNE_Y;
             ThisDistSqr := (DX * DX) + (DY * DY);
-            if (ThisDistSqr <= RUNE_CHECK_RADIUS * RUNE_CHECK_RADIUS)
-            and ((Result = -1) or (ThisDistSqr < BestDistSqr)) then
+            if ((ThisDistSqr <= RUNE_CHECK_RADIUS * RUNE_CHECK_RADIUS)
+            and ((Result = -1) or (ThisDistSqr < BestDistSqr)))
+            or (AlivePlayersRight = 1) then
             begin
               BestDistSqr := ThisDistSqr;
               Result := States.GroupOwner(Groups[J]);
             end;
           end;
      end;
+end;
+
+
+function StrongestHeroLeft: Integer;
+var
+  I, HighS, ThisS: Integer;
+begin
+  Result := -1;
+  HighS := 0;
+  for I := 0 to 3 do
+  begin
+    ThisS := HeroTypeToPhysicalStrength(I);
+    if (ThisS > HighS)
+    and (Players[I].HP > 0)
+    and (I = ClosestToRuneLeft) then
+    begin
+      HighS := ThisS;
+      Result := I;
+    end;
+  end;
+end;
+
+
+function StrongestHeroRight: Integer;
+var
+  I, HighS, ThisS: Integer;
+begin
+  Result := -1;
+  HighS := 0;
+  for I := 4 to 7 do
+  begin
+    ThisS := HeroTypeToPhysicalStrength(I);
+    if (ThisS > HighS)
+    and (Players[I].HP > 0)
+    and (I = ClosestToRuneRight) then
+    begin
+      HighS := ThisS;
+      Result := I;
+    end;
+  end;
+end;
+
+
+function HasLowestHPLeft: Integer;
+var
+  I, LowHP, ThisHP: Integer;
+begin
+  Result := -1;
+  LowHP := MAX_HP + 1;
+  for I := 0 to 3 do
+  begin
+    ThisHP := Players[I].HP;
+    if (ThisHP < LowHP)
+    and (ThisHP <> 0)
+    and (I = ClosestToRuneLeft) then
+    begin
+      LowHP := ThisHP;
+      Result := I;
+    end;
+  end;
+end;
+
+
+function HasLowestHPRight: Integer;
+var
+  I, LowHP, ThisHP: Integer;
+begin
+  Result := -1;
+  LowHP := MAX_HP + 1;
+  for I := 4 to 7 do
+  begin
+    ThisHP := Players[I].HP;
+    if (ThisHP < LowHP)
+    and (ThisHP <> 0)
+    and (I = ClosestToRuneRight) then
+    begin
+      LowHP := ThisHP;
+      Result := I;
+    end;
+  end;
 end;
 
 
@@ -15163,26 +15187,22 @@ begin
 
   if (InRange(P, 0, 3))
   and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_ILLUSION_OBJ)
-  and (P <> StrongestHeroLeft)
-  and (P <> ClosestToRuneLeft) then
+  and (P <> StrongestHeroLeft) then
     Exit;
 
   if (InRange(P, 4, 7))
   and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_ILLUSION_OBJ)
-  and (P <> StrongestHeroRight)
-  and (P <> ClosestToRuneRight) then
+  and (P <> StrongestHeroRight) then
     Exit;
 
   if (InRange(P, 0, 3))
   and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_REGEN_OBJ)
-  and (P <> HasLowestHPLeft)
-  and (P <> ClosestToRuneLeft) then
+  and (P <> HasLowestHPLeft) then
     Exit;
 
   if (InRange(P, 4, 7))
   and (States.MapTileObject(RUNE_X, RUNE_Y) = RUNE_REGEN_OBJ)
-  and (P <> HasLowestHPRight)
-  and (P <> ClosestToRuneRight) then
+  and (P <> HasLowestHPRight) then
     Exit;
 
   if (States.MapTileObject(RUNE_X, RUNE_Y) <> RUNE_REGEN_OBJ)
