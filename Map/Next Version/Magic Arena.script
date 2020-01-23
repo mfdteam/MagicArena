@@ -14994,18 +14994,18 @@ function HeroTypeToPhysicalStrength(P: Integer): Integer;
 begin
   Result := 0;
   case Players[P].HeroType of
-    15: Result := 5;
+    15: Result := 4;
     16: Result := 9;
     17: Result := 3;
-    18: Result := 4;
-    19: Result := 4;
-    20: Result := 6;
+    18: Result := 7;
+    19: Result := 2;
+    20: Result := 4;
     21: Result := 8;
-    22: Result := 10;
-    23: Result := 7;
-    24: Result := 2;
+    22: Result := 11;
+    23: Result := 10;
+    24: Result := 5;
     25: Result := 1;
-    26: Result := 7;
+    26: Result := 10;
     27: Result := 6
     else Result := 0;
   end;
