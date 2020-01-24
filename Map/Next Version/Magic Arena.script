@@ -15079,6 +15079,39 @@ begin
 end;
 
 
+function FindEnemy(P, Radius: Integer): Integer;
+var
+  I, J, DX, DY, U, ThisDistSqr, BestDistSqr: Integer;
+  Groups: array of Integer;
+begin
+  Result := -1;
+  for I := 0 to 11 do
+    if (States.PlayerEnabled(I))
+    and (I <> P)
+    and (Players[P].Hero > 0)
+    and (Players[P].HP > 0)
+    and (Players[P].PlayersTeam <> Players[I].PlayersTeam) then
+    begin
+      Groups := States.PlayerGetAllGroups(I);
+      if Length(Groups) > 0 then
+        for J := 0 to Length(Groups) - 1 do
+          if not States.GroupDead(Groups[J]) then
+          begin
+            U := States.GroupMember(Groups[J], 0);
+            DX := States.UnitPositionX(U) - States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+            DY := States.UnitPositionY(U) - States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+            ThisDistSqr := (DX * DX) + (DY * DY);
+            if ((ThisDistSqr <= Radius * Radius)
+            and ((Result = -1) or (ThisDistSqr < BestDistSqr))) then
+            begin
+              BestDistSqr := ThisDistSqr;
+              Result := U;
+            end;
+          end;
+     end;
+end;
+
+
 function ClosestToRuneLeft: Integer;
 var
   I, J, DX, DY, U, ThisDistSqr, BestDistSqr: Integer;
