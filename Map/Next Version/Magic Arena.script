@@ -333,7 +333,7 @@ const
   ZOMBIE_STORM_FACTOR = 20;
   AI_IGNORE_FACTOR = 5;
   HEAL_CHECK_RADIUS = 4;
-  HEAL_CHECK_TIME = 15;
+  HEAL_CHECK_TIME = 50;
   CLEAR_ARRAY_FACTOR = 5;
   MOVEMENT_DISTANCE = 3;
   MOVEMENT_FACTOR = 2;
@@ -15079,13 +15079,13 @@ begin
 end;
 
 
-function FindEnemy(P, Radius: Integer): Integer;
+function FindEnemy(P, Radius: Integer; CheckZombies: Boolean): Integer;
 var
   I, J, DX, DY, U, ThisDistSqr, BestDistSqr: Integer;
   Groups: array of Integer;
 begin
   Result := -1;
-  for I := 0 to 11 do
+  for I := 0 to 7 + 4 * Byte(CheckZombies) do
     if (States.PlayerEnabled(I))
     and (I <> P)
     and (Players[P].Hero > 0)
@@ -15644,91 +15644,59 @@ end;
 
 procedure AISword(P: Integer);
 var
-  X, Y, aX, aY, uX, uY, O, U: Integer;
+  X, Y, aX, aY, U: Integer;
 begin
 
-  if (States.KaMRandomI(10) > 5)
-  and (Players[P].RoadSkillDelay = 0)
+  if (Players[P].RoadSkillDelay = 0)
   and (Players[P].Hero > 0) then
   begin
-    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    for X := (aX - 7) to (aX + 7) do
-    for Y := (aY - 7) to (aY + 7) do
-    begin
-      U := States.UnitAt(X, Y);
-      if U > 0 then
+    U := FindEnemy(P, 5, False);
+    if U > 0 then
+      if InRange(States.UnitOwner(U), 0, 7) then
       begin
-        O := States.UnitOwner(U);
-        if (P <> O)
-        and (InRange(O, 0, 7))
-        and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-        and (States.KaMRandom > 0.1) then 
-        begin
-          uX := States.UnitPositionX(U);
-          uY := States.UnitPositionY(U);
-          if ((uX = aX) and (uY < (aY - 1)) and (InRange(States.UnitDirection(States.GroupMember(Players[P].Hero, 0)), 0, 7))) then
-          begin
-            SpikedEarth(P, aX, aY, 0);
-            Exit;
-          end;
-          if ((uX = aX) and (uY > (aY + 1)) and (InRange(States.UnitDirection(States.GroupMember(Players[P].Hero, 0)), 0, 7))) then
-          begin
-            SpikedEarth(P, aX, aY, 4);
-            Exit;
-          end;
-          if ((uX < (aX - 1)) and (uY = aY) and (InRange(States.UnitDirection(States.GroupMember(Players[P].Hero, 0)), 0, 7))) then
-          begin
-            SpikedEarth(P, aX, aY, 6);
-            Exit;
-          end;
-          if ((uX > (aX + 1)) and (uY = aY) and (InRange(States.UnitDirection(States.GroupMember(Players[P].Hero, 0)), 0, 7))) then
-          begin
-            SpikedEarth(P, aX, aY, 2);
-            Exit;
-          end;
-        end;
+        aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+        aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+        X := States.UnitPositionX(U);
+        Y := States.UnitPositionY(U);
+        if (X = aX)
+        and (Y < (aY - 1)) then
+          SpikedEarth(P, X, Y, 0);
+        if (X = aX)
+        and (Y > (aY + 1)) then
+          SpikedEarth(P, X, Y, 4);
+        if (Y = aY)
+        and (X < (aX - 1)) then
+          SpikedEarth(P, X, Y, 6);
+        if (Y = aY)
+        and (X > (aX + 1)) then
+          SpikedEarth(P, X, Y, 2);
       end;
-    end;
   end;
 
-  if (States.KaMRandomI(10) > 5)
-  and (Players[P].FieldSkillDelay = 0)
+  if (Players[P].FieldSkillDelay = 0)
   and (Players[P].Hero > 0) then
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    ZombieSummon(P, aX + States.KaMRandomI(5) - States.KaMRandomI(5), aY + States.KaMRandomI(5) - States.KaMRandomI(5));
+    ZombieSummon(P, aX + States.KaMRandomI(MILIZOMBIE_RADIUS) - States.KaMRandomI(MILIZOMBIE_RADIUS), aY + States.KaMRandomI(MILIZOMBIE_RADIUS) - States.KaMRandomI(MILIZOMBIE_RADIUS));
   end;
 
   if (Players[P].WineSkillDelay = 0)
   and (Players[P].Hero > 0) then
-  begin
-    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    for X := aX - IN_FEAR_RADIUS to aX + IN_FEAR_RADIUS do
-    for Y := aY - IN_FEAR_RADIUS to aY + IN_FEAR_RADIUS do
+  begin  
+    U := FindEnemy(P, IN_FEAR_RADIUS, Boolean(States.KaMRandomI(2)));
+    if U > 0 then
     begin
-      U := States.UnitAt(X, Y);
-      if U > 0 then
-      begin
-        O := States.UnitOwner(U);
-        if (P <> O)
-        and (Players[P].PlayersTeam <> Players[O].PlayersTeam) then
-        begin
-          if InRange(O, 0, 7) then
-            Fear(P, X, Y);
-          if InRange(O, 10, 11) then
-            if States.KaMRandom < 0.25 then
-              Fear(P, X, Y);
-        end;
-      end;
+      X := States.UnitPositionX(U);
+      Y := States.UnitPositionY(U);
+      Fear(P, X, Y);
     end;
   end;
 
   AIWalk(P);
 
-  if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
+  if (States.GameTime mod AI_RUNE_CHECK_TIME = 0)
+  and (not RuneTaken) then
     AITakeRune(P);
 
   if States.GameTime mod HEAL_CHECK_TIME = 0 then
