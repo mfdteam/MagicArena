@@ -1,4 +1,4 @@
-Magic Arena v.2.245
+ï»¿Magic Arena v.2.245
 
 - Now every spell will be cancelled if your hero becomes under control spells (stuns, silence, fear effects)
 - Now every lured summon appears in the tile when this summon was, not near
@@ -167,28 +167,28 @@ v.2.101
 - Fixed bug with early clearing of objects 
 - Now Revenge from Nowhere will make a burst if it will hit the walls of the Arena 
 - Fixed bug with repicks and cooldowns
-- Now every effect should’t pierce immortality (except zombies and illusions ofc) 
+- Now every effect shouldnâ€™t pierce immortality (except zombies and illusions ofc) 
 - Cracking Erath now is really cracking =) 
-- Fixed bug when Knight can’t spurt to the walls of arena 
+- Fixed bug when Knight canâ€™t spurt to the walls of arena 
 - Fixed a lot of bugs with counting kills and statuses (but some bugs can still be in game) 
 - Added some new statuses  
 - Fixed some bugs with kill streaks 
 - If you died, every buff and debuff will disappear 
 - Fixed bug with moving new hero after repacking 
-- Fixed bug when Rogue can’t reset cooldown on stolen spell with ReCharge rune 
-- fixed out of range when you cast Fiery Track near the walls 
-- Fixed bug when Knight can’t use Raging Spurt near the walls of Arena
+- Fixed bug when Rogue canâ€™t reset cooldown on stolen spell with ReCharge rune 
+- Fixed out of range when you cast Fiery Track near the walls 
+- Fixed bug when Knight canâ€™t use Raging Spurt near the walls of Arena
 - If object disappears, changing relief will disappear too 
 - Fixed over 9000 bugs with Mind Control (Scout) 
-- Fixed bug when objects of Cracking Earth recolour to Totem’s objects 
+- Fixed bug when objects of Cracking Earth recolour to Totemâ€™s objects 
 - Fixed bug with cleaning heal objects 
-- Fixed but with 2 and more casts of Raging Spurt 
-- Now you’ll have 1 kill with DD rune when you kill enemy with 1 hp 
-- delay between regenerations increased from 6 to 9 seconds 
+- Fixed bug with 2 and more casts of Raging Spurt 
+- Now youâ€™ll have 1 kill with DD rune when you kill enemy with 1 hp 
+- Delay between regenerations increased from 6 to 9 seconds 
 - Sword fighter: Length of Spiked Earth decreased from 10 to 8, now Spiked Earth goes from zombies (half-length). Cooldown increased from 10 to 12 seconds; duration decreased from 5+3 seconds to 1+5 seconds, and animation tiles now stun for 1,5 second 
-- Axe fighter: Werewolf cooldown decreased from 135 to 125 seconds; Regen radius increased from 4 to 6 tiles, heal duration increased from 5 to 8 seconds; now Gravity can’t regen zombies and illusions 
+- Axe fighter: Werewolf cooldown decreased from 135 to 125 seconds; Regen radius increased from 4 to 6 tiles, heal duration increased from 5 to 8 seconds; now Gravity canâ€™t regen zombies and illusions 
 - Lance Carrier: Fiery lance now clears faster, speed increased a little bit; Cooldown on The Thousand spears decreased from 26 to 25 and clears faster 
-- Bowman: Rocket’s speed decreased a little; if rocket kills someone, there will be a burst in 3x3 area  
+- Bowman: Rocketâ€™s speed decreased a little; if rocket kills someone, there will be a burst in 3x3 area  
 - Warrior:  now snake clears faster; speed upped 
 - Barbarian: Radius of Totem usage decreased from 7 to 6 tiles; cooldowns on Cracking Earth and Wave of Rage decreased from 11 and 18 to 10 and 17 seconds respectively 
 - Crossbowman: Cooldown on Accurate shot increased from 10 to 11 seconds; Cooldown on Snipershot decreased from 22 to 20 seconds; Radius of using sudden death decreased from 8 to 7 tiles 
