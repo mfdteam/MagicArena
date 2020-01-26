@@ -16401,210 +16401,202 @@ end;
 
 procedure AIBowman(P: Integer);
 var
-  X, Y, aX, aY, aX1, aY1, aX2, aY2, uX, uY, U, O, sX, sY: Integer;
+  X, Y, aX, aY, U, U1, U2, U3, U4, sX, sY, A, E: Integer;
 begin
 
   if (Players[P].RoadSkillDelay = 0)
   and (Players[P].Hero > 0)
-  and (States.GameTime mod 50 = 0) then
-    if States.GroupMember(Players[P].Hero, 0) > 0 then
+  and (not Players[P].HeroReborn)
+  and (not Players[P].CastingSkill) then
+  begin
+    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    U := FindEnemy(P, aX, aY, ROCKET_USAGE_RADIUS, Boolean(States.KaMRandom > 0.5));
+    if U > 0 then
     begin
-      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - 20) to (aX + 20) do
-      for Y := (aY - 20) to (aY + 20) do
+      X := States.UnitPositionX(U);
+      Y := States.UnitPositionY(U);
+      A := CheckUnitsCount(P, X, Y, 2, True, True);
+      E := CheckUnitsCount(P, X, Y, 2, True, False);
+      if (E > A)
+      and (CanUseSkillAgainstUnit(P, U)) then
       begin
-        if (TileOnBattlefield(X, Y))
-        and (not States.IsRoadAt(8, X, Y)) then
-          U := States.UnitAt(X, Y);
-        if (U > 0) then
+        sX := X;
+        sY := Y;
+
+        if (GroupIsMoving(States.UnitsGroup(U)))
+        or (not States.GroupIdle(States.UnitsGroup(U))) then
         begin
+          case States.UnitDirection(U) of
+            0: begin
+                 sX := X;
+                 sY := Y - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+               end;
 
-          sX := X;
-          sY := Y;
+            1: begin
+                 sX := X + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 sY := Y - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+               end;
 
-          if GroupIsMoving(States.UnitsGroup(U)) then
-          begin
-            case States.UnitDirection(U) of
+            2: begin
+                 sX := X + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 sY := Y;
+               end;
 
-              0: begin
-                   sX := X;
-                   sY := Y - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                 end;
+            3: begin
+                 sX := X + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 sY := Y + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+               end;
 
-              1: begin
-                   sX := X + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                   sY := Y - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                 end;
+            4: begin
+                 sX := X;
+                 sY := Y + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+               end;
 
-              2: begin
-                   sX := X + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                   sY := Y;
-                 end;
+            5: begin
+                 sX := X - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 sY := Y + 1 + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+               end;
 
-              3: begin
-                   sX := X + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                   sY := Y + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                 end;
+            6: begin
+                 sX := X - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 sY := Y;
+               end;
 
-              4: begin
-                   sX := X;
-                   sY := Y + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                 end;
+            7: begin
+                 sX := X - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+                 sY := Y - 1 - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
+               end;
 
-              5: begin
-                   sX := X - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                   sY := Y + States.KaMRandomI(3) + Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                 end;
-
-              6: begin
-                   sX := X - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                   sY := Y;
-                 end;
-
-              7: begin
-                   sX := X - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                   sY := Y - States.KaMRandomI(3) - Byte(States.GroupType(States.UnitsGroup(U)) = 3);
-                 end;
-
-            end;
-          end;
-
-          if CanUseSkillAgainstUnit(P, U) then
-          begin
-            O := States.UnitOwner(U);
-            if (P <> O)
-            and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-            and (States.KaMRandom > 0.1) then 
-            begin
-              LaunchRocket(P, sX, sY);
-              Exit;
-            end;
           end;
         end;
+
+        if (not InRange(sX, aX - 3, aX + 3))
+        and (not InRange(sY, aY - 3, aY + 3)) then
+          LaunchRocket(P, sX, sY);
+
       end;
     end;
+  end;
 
-  if (States.KaMRandomI(10) > 8)
-  and (Players[P].FieldSkillDelay = 0)
-  and (Players[P].Hero > 0) then
-    if States.GroupMember(Players[P].Hero, 0) > 0 then
-    begin
-      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - PRISON_USAGE_RADIUS) to (aX + PRISON_USAGE_RADIUS) do
-      for Y := (aY - PRISON_USAGE_RADIUS) to (aY + PRISON_USAGE_RADIUS) do
-      begin
-        U := States.UnitAt(X, Y);
-        if (U > 0)
-        and (CanUseWineFieldSkill(X, Y)) then
-        begin
-          O := States.UnitOwner(U);
-          if (P <> O)
-          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          and (Abs(X - aX) > 3)
-          and (Abs(Y - aY) > 3)
-          and (States.KaMRandom > 0.1) then 
-          begin
-            Prison(P, X, Y);
-            Exit;
-          end;
-        end;
-      end;
-    end;
-
-  if (States.KaMRandomI(10) > 7)
-  and (States.KaMRandom < 0.4)
-  and (Players[P].WineSkillDelay = 0)
+  if (Players[P].FieldSkillDelay = 0)
   and (Players[P].Hero > 0)
-  and (States.GameTime > CHOOSE_HERO_TIMER + 100)
-  and not (Players[P].CastingSkill) then
-    if States.GroupMember(Players[P].Hero, 0) > 0 then
+  and (not Players[P].HeroReborn)
+  and (not Players[P].CastingSkill) then
+  begin
+    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    U := FindEnemy(P, aX, aY, PRISON_USAGE_RADIUS, Boolean(States.KaMRandom > 0.5));
+    if U > 0 then
     begin
-      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-
-      case States.UnitDirection(States.GroupMember(Players[P].Hero, 0)) of
-
-        0, 1: begin
-                aX1 := aX;
-                aX2 := aX;
-                aY1 := aY - 19;
-                aY2 := aY - 1;
-              end;
-
-        4, 5: begin
-                aX1 := aX;
-                aX2 := aX;
-                aY1 := aY + 1;
-                aY2 := aY + 19;
-              end;
-
-        2, 3: begin
-                aX1 := aX + 1;
-                aX2 := aX + 19;
-                aY1 := aY;
-                aY2 := aY;
-              end;
-
-        6, 7: begin
-                aX1 := aX - 19;
-                aX2 := aX - 1;
-                aY1 := aY;
-                aY2 := aY;
-              end;
-
-      end;
-
-      for X := aX1 to aX2 do
-      for Y := aY1 to aY2 do
+      X := States.UnitPositionX(U);
+      Y := States.UnitPositionY(U);
+      if (CanUseWineFieldSkill(X, Y))
+      and (not InRange(sX, aX - 3, aX + 3))
+      and (not InRange(sY, aY - 3, aY + 3)) then
       begin
-        if TileOnBattlefield(X, Y) then
-          U := States.UnitAt(X, Y);
-        if U > 0 then
-        begin
-          O := States.UnitOwner(U);
-          if (P <> O)
-          and (CanUseSkillAgainstUnit(P, U))
-          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          and (States.KaMRandom > 0.1) then 
-          begin
-            uX := States.UnitPositionX(U);
-            uY := States.UnitPositionY(U);
-            if ((uX = aX) and (uY < (aY - 1)) and (InRange(States.UnitDirection(States.GroupMember(Players[P].Hero, 0)), 0, 1))) then
-            begin
-              RevengeFromNowhere(P, aX, aY, 0);
-              Exit;
-            end;
-            if ((uX = aX) and (uY > (aY + 1)) and (InRange(States.UnitDirection(States.GroupMember(Players[P].Hero, 0)), 4, 5))) then
-            begin
-              RevengeFromNowhere(P, aX, aY, 4);
-              Exit;
-            end;
-            if ((uX < (aX - 1)) and (uY = aY) and (InRange(States.UnitDirection(States.GroupMember(Players[P].Hero, 0)), 6, 7))) then
-            begin
-              RevengeFromNowhere(P, aX, aY, 6);
-              Exit;
-            end;
-            if ((uX > (aX + 1)) and (uY = aY) and (InRange(States.UnitDirection(States.GroupMember(Players[P].Hero, 0)), 2, 3))) then
-            begin
-              RevengeFromNowhere(P, aX, aY, 2);
-              Exit;
-            end;
-          end;
-        end;
+        Prison(P, X, Y);
+        if (Players[P].RoadSkillDelay = 0)
+        and (CanUseSkillAgainstUnit(P, U)) then
+          LaunchRocket(P, X, Y);
       end;
     end;
+  end;
+
+  if (Players[P].WineSkillDelay = 0)
+  and (Players[P].Hero > 0)
+  and (not Players[P].HeroReborn)
+  and (not Players[P].CastingSkill) then
+  begin
+    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    U := FindEnemy(P, aX, aY, 17, Boolean(States.KaMRandom > 0.5));
+    U1 := FindEnemy(P, aX + 15, aY, EXP_RADIUS, Boolean(States.KaMRandom > 0.5));
+    U2 := FindEnemy(P, aX - 15, aY, EXP_RADIUS, Boolean(States.KaMRandom > 0.5));
+    U3 := FindEnemy(P, aX, aY + 15, EXP_RADIUS, Boolean(States.KaMRandom > 0.5));
+    U4 := FindEnemy(P, aX, aY - 15, EXP_RADIUS, Boolean(States.KaMRandom > 0.5));
+    if U > 0 then
+      if CanUseSkillAgainstUnit(P, U) then
+      begin
+        X := States.UnitPositionX(U);
+        Y := States.UnitPositionY(U);
+        A := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, True);
+        E := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, False);
+        if (X = aX)
+        and (Y < (aY - 1))
+        and (E > A) then
+          RevengeFromNowhere(P, X, Y, 0);
+        if (X = aX)
+        and (Y > (aY + 1))
+        and (E > A) then
+          RevengeFromNowhere(P, X, Y, 4);
+        if (Y = aY)
+        and (X < (aX - 1))
+        and (E > A) then
+          RevengeFromNowhere(P, X, Y, 6);
+        if (Y = aY)
+        and (X > (aX + 1))
+        and (E > A) then
+          RevengeFromNowhere(P, X, Y, 2);
+      end;
+    if U1 > 0 then
+      if CanUseSkillAgainstUnit(P, U1) then
+      begin
+        X := States.UnitPositionX(U1);
+        Y := States.UnitPositionY(U1);
+        A := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, True);
+        E := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, False);
+        if (InRange(aY, Y - 3, Y + 3))
+        and (InRange(aX, X - 17, X - 13))
+        and (E > A) then
+          RevengeFromNowhere(P, X, Y, 6);
+      end;
+    if U2 > 0 then
+      if CanUseSkillAgainstUnit(P, U2) then
+      begin
+        X := States.UnitPositionX(U2);
+        Y := States.UnitPositionY(U2);
+        A := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, True);
+        E := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, False);
+        if (InRange(aY, Y - 3, Y + 3))
+        and (InRange(aX, X - 17, X - 13))
+        and (E > A) then
+          RevengeFromNowhere(P, X, Y, 2);
+      end;
+    if U3 > 0 then
+      if CanUseSkillAgainstUnit(P, U3) then
+      begin
+        X := States.UnitPositionX(U3);
+        Y := States.UnitPositionY(U3);
+        A := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, True);
+        E := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, False);
+        if (InRange(aX, X - 3, X + 3))
+        and (InRange(aY, Y + 13, Y + 17))
+        and (E > A) then
+          RevengeFromNowhere(P, X, Y, 4);
+      end;
+    if U4 > 0 then
+      if CanUseSkillAgainstUnit(P, U4) then
+      begin
+        X := States.UnitPositionX(U4);
+        Y := States.UnitPositionY(U4);
+        A := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, True);
+        E := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, False);
+        if (InRange(aX, X - 3, X + 3))
+        and (InRange(aY, Y - 17, Y - 13))
+        and (E > A) then
+          RevengeFromNowhere(P, X, Y, 0);
+      end;
+  end;
 
   AIWalk(P);
 
-  if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
+  if (States.GameTime mod AI_RUNE_CHECK_TIME = 0)
+  and (not RuneTaken) then
     AITakeRune(P);
 
   if States.GameTime mod HEAL_CHECK_TIME = 0 then
     AITakeHealingBush(P);
-
-  Exit;
 
 end;
 
