@@ -12335,6 +12335,7 @@ begin
   end;
 
   for I := 0 to 7 do
+    if aID = Players[I].AITarget then
       Players[I].AITarget := -1;
 
   if (InRange(O, 0, 7))
@@ -15487,6 +15488,7 @@ end;
 
 procedure AIWalk(P: Integer);
 var
+  uX, uY, aX, aY: Integer;
 begin
 
   if not AI_ENABLED then
@@ -15497,10 +15499,14 @@ begin
     and (not Players[P].CastingSkill) then
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
       if Players[P].AITarget < 0 then
         Players[P].AITarget := FindEnemy(P, aX, aY, 48, True);
       if Players[P].AITarget > 0 then
       begin
+        uX := States.UnitPositionX(Players[P].AITarget);
+        uY := States.UnitPositionY(Players[P].AITarget);
+        Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
       end;
     end;
 
@@ -15509,6 +15515,7 @@ end;
 
 procedure AIWalkAfterSkill(P: Integer);
 var
+  aX, aY, uX, uY: Integer;
 begin
 
   if not AI_ENABLED then
@@ -15518,10 +15525,14 @@ begin
     if States.GameTime = Players[P].SkillTime then
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
       if Players[P].AITarget < 0 then
         Players[P].AITarget := FindEnemy(P, aX, aY, 48, True);
       if Players[P].AITarget > 0 then
       begin
+        uX := States.UnitPositionX(Players[P].AITarget);
+        uY := States.UnitPositionY(Players[P].AITarget);
+        Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
       end;
     end;
 
@@ -15530,6 +15541,7 @@ end;
 
 procedure AIWalkIdle(P: Integer);
 var
+  aX, aY, uX, uY: Integer;
 begin
 
   if not AI_ENABLED then
@@ -15542,10 +15554,14 @@ begin
     and (States.PlayerIsAI(P)) then
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
       if Players[P].AITarget < 0 then
         Players[P].AITarget := FindEnemy(P, aX, aY, 48, True);
       if Players[P].AITarget > 0 then
       begin
+        uX := States.UnitPositionX(Players[P].AITarget);
+        uY := States.UnitPositionY(Players[P].AITarget);
+        Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
       end;
     end;
 
