@@ -16663,6 +16663,8 @@ begin
     if TileOnBattlefield(FrontX(P), FrontY(P)) then
       if TileIsDangerous(P, FrontX(P), FrontY(P)) then
       begin
+        aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+        aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
         U := FindEnemy(P, aX, aY, THREADS_RADIUS, Boolean(States.KaMRandomI(2)));
         if U > 0 then
         begin
