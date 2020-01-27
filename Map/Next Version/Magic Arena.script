@@ -16407,7 +16407,8 @@ begin
   if (Players[P].RoadSkillDelay = 0)
   and (Players[P].Hero > 0)
   and (not Players[P].HeroReborn)
-  and (not Players[P].CastingSkill) then
+  and (not Players[P].CastingSkill)
+  and (Players[P].RocketCharges > 1) then
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
@@ -16603,89 +16604,78 @@ end;
 
 procedure AIKnight(P: Integer);
 var
-  X, Y, aX, aY, uX, uY, U, O, A, E, D: Integer;
+  aX, aY, uX, uY, U, A, E, D: Integer;
 begin
 
   if (Players[P].RoadSkillDelay = 0)
   and (Players[P].WineSkillDelay = 0)
   and (Players[P].FieldSkillDelay = 0)
-  and (Players[P].Hero > 0)
-  and (States.GameTime mod 50 = 0) then
+  and (not Players[P].HeroReborn)
+  and (Players[P].Hero > 0) then
     if States.GroupMember(Players[P].Hero, 0) > 0 then
     begin
       D := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
       if D mod 2 = 1 then
         Exit;
-      Actions.GroupOrderHalt(Players[P].Hero);
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - THREADS_RADIUS) to (aX + THREADS_RADIUS) do
-      for Y := (aY - THREADS_RADIUS) to (aY + THREADS_RADIUS) do
-      begin
-        if TileOnBattlefield(X, Y) then
-          if not States.IsRoadAt(8, X, Y) then
-            U := States.UnitAt(X, Y);
-        if (U > 0) then
+      A := CheckUnitsCount(P, aX, aY, DEAFENING_RADIUS, False, True);
+      E := CheckUnitsCount(P, aX, aY, DEAFENING_RADIUS, False, False);
+      U := FindEnemy(P, aX, aY, DEAFENING_RADIUS - 1, False);
+      if (E > A)
+      and (U > 0) then
+        if (E > 1)
+        or ((E = 1) and (U <> FindClosestEnemy(P, aX, aY, 2, False)) and (CanUseSkillAgainstUnit(P, U))) then
         begin
-          if CanUseSkillAgainstUnit(P, U) then
-          begin
-            O := States.UnitOwner(U);
-            if (States.UnitType(U) = 19)
-            and (Players[O].FieldSkillDelay = 0)
-            and (not Players[O].HeroStunned) then
-              Exit;
-            if (P <> O)
-            and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-            and (InRange(O, 0, 7)) then 
-            begin
-              uX := States.UnitPositionX(U);
-              uY := States.UnitPositionY(U);
-              DeafeningClatter(P, uX, uY);
-              ThreadsOfDeath(P, uX, uY);
-              RagingSpurt(P, X, Y);
-              Exit;
-            end;
-          end;
+          uX := States.UnitPositionX(U);
+          uY := States.UnitPositionY(U);
+          DeafeningClatter(P, aX, aY);
+          ThreadsOfDeath(P, uX, uY);
+          RagingSpurt(P, aX, aY);
         end;
-      end;
     end;
 
-  if (States.KaMRandom > 0.85)
-  and (Players[P].FieldSkillDelay = 0)
-  and (Players[P].Hero > 0) then
+  if (Players[P].FieldSkillDelay = 0)
+  and (not Players[P].HeroReborn)
+  and (Players[P].Hero > 0)
+  and (States.KaMRandom > 0.85) then
     if States.GroupMember(Players[P].Hero, 0) > 0 then
     begin
+      D := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+      if D mod 2 = 0 then
+        Exit;
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      for X := (aX - DEAFENING_RADIUS) to (aX + DEAFENING_RADIUS) do
-      for Y := (aY - DEAFENING_RADIUS) to (aY + DEAFENING_RADIUS) do
+      A := CheckUnitsCount(P, aX, aY, DEAFENING_RADIUS, False, True);
+      E := CheckUnitsCount(P, aX, aY, DEAFENING_RADIUS, False, False);
+      U := FindEnemy(P, aX, aY, DEAFENING_RADIUS - 1, False);
+      if (E > A)
+      and (U > 0) then
+        if (E > 1)
+        or ((E = 1) and (U <> FindClosestEnemy(P, aX, aY, 2, False)) and (CanUseSkillAgainstUnit(P, U))) then
+          DeafeningClatter(P, aX, aY);
+    end;
+
+  if (Players[P].FieldSkillDelay = 0)
+  and (not Players[P].HeroReborn)
+  and (Players[P].Hero > 0)
+  and (States.KaMRandom > 0.85) then
+    if TileOnBattlefield(FrontX(P), FrontY(P)) then
+      if TileIsDangerous(P, FrontX(P), FrontY(P)) then
       begin
-        U := States.UnitAt(X, Y);
-        if (U > 0)
-        and (CanUseWineFieldSkill(X, Y)) then
+        U := FindEnemy(P, aX, aY, THREADS_RADIUS, Boolean(States.KaMRandomI(2)));
+        if U > 0 then
         begin
-          O := States.UnitOwner(U);
-          if Players[P].PlayersTeam <> Players[O].PlayersTeam then
-            E := E + 1;
-          if Players[P].PlayersTeam = Players[O].PlayersTeam then
-            A := A + 1;
-          if (P <> O)
-          and (InRange(O, 0, 7))
-          and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
-          and (States.KaMRandom > 0.1)
-          and (E > A)
-          and (States.UnitDirection(States.GroupMember(Players[P].Hero, 0)) mod 2 = 1) then 
-          begin
-            DeafeningClatter(P, X, Y);
-            Exit;
-          end;
+          uX := States.UnitPositionX(U);
+          uY := States.UnitPositionY(U);
+          ThreadsOfDeath(P, uX, uY);
         end;
       end;
-    end;
 
   AIWalk(P);
 
-  if States.GameTime mod AI_RUNE_CHECK_TIME = 0 then
+  if (States.GameTime mod AI_RUNE_CHECK_TIME = 0)
+  and (not RuneTaken) then
     AITakeRune(P);
 
   if States.GameTime mod HEAL_CHECK_TIME = 0 then
