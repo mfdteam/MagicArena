@@ -12298,6 +12298,10 @@ begin
 
   if not InRange(aY, MIN_Y, MAX_Y) then
     Exit;
+
+  for I := 0 to 7 do
+    if aID = Players[I].AITarget then
+      Players[I].AITarget := -1;
   
   if InRange(O, 0, 7) then
   begin
@@ -12333,10 +12337,6 @@ begin
         Zombies[I].ID := -1;
     CheckZombieArray;
   end;
-
-  for I := 0 to 7 do
-    if aID = Players[I].AITarget then
-      Players[I].AITarget := -1;
 
   if (InRange(O, 0, 7))
   and (InRange(aKiller, 9, 11)) then
@@ -15496,17 +15496,19 @@ begin
 
   if States.GameTime mod 80 = 0 then
     if (Players[P].Hero > 0)
-    and (not Players[P].CastingSkill) then
+    and (not Players[P].CastingSkill)
+    and (not Players[P].HeroReborn) then
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      if Players[P].AITarget < 0 then
-        Players[P].AITarget := FindEnemy(P, aX, aY, 48, True);
+      if Players[P].AITarget <= 0 then
+        Players[P].AITarget := FindEnemy(P, aX, aY, 48, False);
       if Players[P].AITarget > 0 then
       begin
         uX := States.UnitPositionX(Players[P].AITarget);
         uY := States.UnitPositionY(Players[P].AITarget);
-        Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
+        if TileOnBattlefield(uX, uY) then
+          Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
       end;
     end;
 
@@ -15521,18 +15523,20 @@ begin
   if not AI_ENABLED then
     Exit;
 
-  if Players[P].Hero > 0 then
+  if (Players[P].Hero > 0)
+  and (not Players[P].HeroReborn) then
     if States.GameTime = Players[P].SkillTime then
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      if Players[P].AITarget < 0 then
-        Players[P].AITarget := FindEnemy(P, aX, aY, 48, True);
+      if Players[P].AITarget <= 0 then
+        Players[P].AITarget := FindEnemy(P, aX, aY, 48, False);
       if Players[P].AITarget > 0 then
       begin
         uX := States.UnitPositionX(Players[P].AITarget);
         uY := States.UnitPositionY(Players[P].AITarget);
-        Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
+        if TileOnBattlefield(uX, uY) then
+          Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
       end;
     end;
 
@@ -15551,17 +15555,19 @@ begin
     if (States.GroupIdle(Players[P].Hero))
     and (not Players[P].CastingSkill)
     and (Players[P].HeroType <> 15)
+    and (not Players[P].HeroReborn)
     and (States.PlayerIsAI(P)) then
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      if Players[P].AITarget < 0 then
-        Players[P].AITarget := FindEnemy(P, aX, aY, 48, True);
+      if Players[P].AITarget <= 0 then
+        Players[P].AITarget := FindEnemy(P, aX, aY, 48, False);
       if Players[P].AITarget > 0 then
       begin
         uX := States.UnitPositionX(Players[P].AITarget);
         uY := States.UnitPositionY(Players[P].AITarget);
-        Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
+        if TileOnBattlefield(uX, uY) then
+          Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
       end;
     end;
 
@@ -15700,7 +15706,9 @@ begin
     Exit;
   if States.PlayerEnabled(P) then
     if States.PlayerIsAI(P) then
-      if Players[P].Hero > 0 then
+      if (Players[P].Hero > 0)
+      and (not Players[P].HeroReborn)
+      and (States.GameTime mod 5 = 0) then
         Result := ((Players[P].HeroType = UT)
                   and (Players[P].HP > 0)
                   and (TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[P].Hero, 0))))
