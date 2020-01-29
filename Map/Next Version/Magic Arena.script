@@ -12408,7 +12408,8 @@ begin
 
   end;
 
-  if InRange(aKiller, 9, 11) then
+  if (InRange(aKiller, 9, 11))
+  and (InRange(O, 0, 7)) then
   begin
 
     for I := 0 to 7 do
