@@ -6712,7 +6712,7 @@ end;
 
 procedure Prison(P, X, Y: Integer);
 var
-  aX, aY, X1, Y1, X2, Y2, X3, Y3, Direction: Integer;
+  aX, aY, X1, Y1, X2, Y2, X3, Y3: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -6735,14 +6735,6 @@ begin
     X3 := X + PRISON_RADIUS;
     Y2 := Y - PRISON_RADIUS;
     Y3 := Y + PRISON_RADIUS;
-
-    if States.PlayerIsAI(P) then
-    begin
-      Players[P].CastingSkill := True;
-      Players[P].SkillTime := States.GameTime + 18;
-      Actions.GroupOrderHalt(Players[P].Hero);
-      Direction := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
-    end;
 
     for aX := X2 to X3 do
     for aY := Y2 to Y3 do
@@ -6769,16 +6761,6 @@ begin
           TilesFieldObjects[P][Length(TilesFieldObjects[P]) - 1] := BOWMAN_OBJECT5;
         end;
       end;
-    end;
-
-    if States.PlayerIsAI(P) then
-    begin
-      Players[P].SkillCastDir := Direction;
-      Players[P].SkillCastRespawnTime := States.GameTime + SKILL_RESPAWN_TIME;
-      Players[P].SkillCastX := X1;
-      Players[P].SkillCastY := Y1;
-      Actions.GroupKillAll(Players[P].Hero, True);
-      Players[P].Hero := Actions.GiveGroup(IfThen(States.PlayerIsAI(P), AI_TEMP_PLAYER, TEMP_PLAYER), Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
     end;
 
     Players[P].LastUsedSkill := sPrison;
@@ -7836,11 +7818,7 @@ begin
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
 
     if States.PlayerIsAI(P) then
-    begin
-      Players[P].CastingSkill := True;
-      Players[P].SkillTime := States.GameTime + 10;
       Actions.GroupOrderHalt(Players[P].Hero);
-    end;
 
     KnightCirclesCounter[P] := KnightCirclesCounter[P] + 1;
     if KnightCirclesCounter[P] = MAX_CIRCLES_AT_ONCE then
@@ -16288,29 +16266,6 @@ begin
          end;
     end;
 
-  if (Players[P].FieldSkillDelay = 0)
-  and (States.KaMRandomI(30 + P) > 4 + P)
-  and (Players[P].Hero > 0)
-  and (States.KaMRandom > 0.8)
-  and (not Players[P].CastingSkill)
-  and (not Players[P].HeroReborn)
-  and (States.GameTime > CHOOSE_HERO_TIMER + 50) then
-    if States.GroupMember(Players[P].Hero, 0) > 0 then
-    begin
-      aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-      aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      X := aX + States.KaMRandomI(TELEPORT_RADIUS) - States.KaMRandomI(TELEPORT_RADIUS);
-      Y := aY + States.KaMRandomI(TELEPORT_RADIUS) - States.KaMRandomI(TELEPORT_RADIUS);
-      if TileOnBattlefield(X, Y) then
-        if (not TileIsDangerous(P, X, Y))
-        and (Tiles[X][Y].Skill = sNone) then
-        begin
-          Teleport(P, X, Y);
-          Actions.GroupOrderWalk(Players[P].Hero, States.KaMRandomI(47) + 12, States.KaMRandomI(47) + 51, States.KaMRandomI(8));
-        end;
-        Exit;
-      end;
-
   if (Players[P].WineSkillDelay = 0)
   and (Players[P].Hero > 0)
   and (not Players[P].HeroReborn)
@@ -16601,7 +16556,7 @@ begin
         A := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, True);
         E := CheckUnitsCount(P, X, Y, EXP_RADIUS, True, False);
         if (InRange(aY, Y - 3, Y + 3))
-        and (InRange(aX, X - 17, X - 13))
+        and (InRange(aX, X + 13, X + 17))
         and (E > A) then
           RevengeFromNowhere(P, X, Y, 6);
       end;
@@ -16709,7 +16664,7 @@ begin
           DeafeningClatter(P, aX, aY);
     end;
 
-  if (Players[P].FieldSkillDelay = 0)
+  if (Players[P].RoadSkillDelay = 0)
   and (not Players[P].HeroReborn)
   and (Players[P].Hero > 0)
   and (States.KaMRandom > 0.85) then
