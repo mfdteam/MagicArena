@@ -619,6 +619,7 @@ type
     LureZombieType: Integer;
     ZombieStunTime: Integer;
     AITarget: Integer;
+    AISpurtTime : Integer;
   end;
 
 
@@ -1459,6 +1460,7 @@ begin
       LureZombieType := 0;
       ZombieStunTime := 0;
       AITarget := -1;
+      AISpurtTime := 0;
     end;
   end;
 
@@ -7662,13 +7664,6 @@ begin
     and (Abs(Y2 - Y) <= THREADS_ALLY_RADIUS)
     and (Players[O].TempPlayersTeam = Players[P].TempPlayersTeam)) then
     begin
-      if States.PlayerIsAI(P) then
-      begin
-        Players[P].CastingSkill := True;
-        Players[P].SkillTime := States.GameTime + 20;
-        Actions.GroupOrderHalt(Players[P].Hero);
-        Actions.GroupOrderWalk(Players[P].Hero, X2, Y2, D);
-      end;
       if U <= 0 then
         Exit;
       if ((InRange(O, 0, 7))
@@ -15683,8 +15678,7 @@ begin
   if States.PlayerEnabled(P) then
     if States.PlayerIsAI(P) then
       if (Players[P].Hero > 0)
-      and (not Players[P].HeroReborn)
-      and (States.GameTime mod 5 = 0) then
+      and (not Players[P].HeroReborn) then
         Result := ((Players[P].HeroType = UT)
                   and (Players[P].HP > 0)
                   and (TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[P].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[P].Hero, 0))))
@@ -16637,11 +16631,21 @@ begin
           uY := States.UnitPositionY(U);
           DeafeningClatter(P, aX, aY);
           ThreadsOfDeath(P, uX, uY);
-          RagingSpurt(P, aX, aY);
+          Players[P].AISpurtTime := States.GameTime + DELAY_OF_TURNING + 1;
         end;
     end;
 
-  if (Players[P].FieldSkillDelay = 0)
+  if (Players[P].Hero > 0)
+  and (not Players[P].HeroReborn)
+  and (Players[P].WineSkillDelay = 0)
+  and (States.GameTime = Players[P].AISpurtTime) then
+  begin
+    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    RagingSpurt(P, aX, aY);
+  end;
+
+  {if (Players[P].FieldSkillDelay = 0)
   and (not Players[P].HeroReborn)
   and (Players[P].Hero > 0)
   and (States.KaMRandom > 0.85) then
@@ -16678,7 +16682,7 @@ begin
           uY := States.UnitPositionY(U);
           ThreadsOfDeath(P, uX, uY);
         end;
-      end;
+      end;}
 
   AIWalk(P);
 
