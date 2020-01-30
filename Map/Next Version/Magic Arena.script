@@ -15400,6 +15400,7 @@ procedure AITakeRune(P: Integer);
 begin
   if (Players[P].Hero <= 0)
   or (Players[P].CastingSkill)
+  or (Players[P].HeroReborn)
   or (States.MapTileObject(RUNE_X, RUNE_Y) = 255) then
     Exit;
 
@@ -15457,15 +15458,7 @@ begin
     Exit;
 
   Actions.GroupOrderWalk(Players[P].Hero, RUNE_X, RUNE_Y, States.KaMRandomI(8));
-  if (States.KaMRandom < 0.75) then
-  begin
-    if Players[P].RoadSkillDelay <= 5 then
-      Players[P].RoadSkillDelay := Players[P].RoadSkillDelay + States.KaMRandomI(100);
-    if Players[P].FieldSkillDelay = 0 then
-      Players[P].FieldSkillDelay := Players[P].FieldSkillDelay + States.KaMRandomI(100);
-    if Players[P].WineSkillDelay = 0 then
-      Players[P].WineSkillDelay := Players[P].WineSkillDelay + States.KaMRandomI(100);
-  end;
+
 end;
 
 
