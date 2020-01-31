@@ -299,8 +299,6 @@ const
   THREADS_DELAY = 14;
   DEAFENING_TIME = 50;
   SPURT_TIME = 35;
-  SPURT_AI_FACTOR = 5;
-  SPURT_AI_RANDOM = 3;
   STOLEN_SKILL_TIME = 1200;
   CAPTURE_MIND_TIME = 169;
   TRACK_TIME = 100;
@@ -619,22 +617,23 @@ type
     LureZombieType: Integer;
     ZombieStunTime: Integer;
     AITarget: Integer;
+    AIThreadsTime: Integer;
     AISpurtTime : Integer;
   end;
 
 
 type
   aZombie = Record
-    Owner: Integer;
-    ID: Integer;
-    Hunger: Integer;
+    ZombieOwner: Integer;
+    ZombieID: Integer;
+    ZombieHunger: Integer;
     ZombieType: Integer;
-    TeleportTime: Integer;
-    KillTime: Integer;
-    ThreadsTime: Integer;
-    ThreadsX: Integer;
-    ThreadsY: Integer;
-    ThreadsDir: Integer;
+    ZombieTeleportTime: Integer;
+    ZombieKillTime: Integer;
+    ZombieThreadsTime: Integer;
+    ZombieThreadsX: Integer;
+    ZombieThreadsY: Integer;
+    ZombieThreadsDir: Integer;
   end;
 
 
@@ -1323,6 +1322,7 @@ begin
       ThreadsAttacker := -1;
       ThreadsTarget := -1;
       ThreadsTime := -1;
+      ThreadsStartTime := -1;
       ThreadsDX := -1;
       ThreadsDY := -1;
       ThreadsX := -1;
@@ -1460,6 +1460,7 @@ begin
       LureZombieType := 0;
       ZombieStunTime := 0;
       AITarget := -1;
+      AIThreadsTime := 0;
       AISpurtTime := 0;
     end;
   end;
@@ -1606,35 +1607,35 @@ begin
     Exit;
   try
     for I := 0 to Length(Zombies) - 1 do
-      if Zombies[I].ID > 0 then
-        if not States.UnitDead(Zombies[I].ID) then
+      if Zombies[I].ZombieID > 0 then
+        if not States.UnitDead(Zombies[I].ZombieID) then
         begin
           SetLength(TempZombies, Length(TempZombies) + 1);
-          TempZombies[Length(TempZombies) - 1].ID := Zombies[I].ID;
-          TempZombies[Length(TempZombies) - 1].Owner := Zombies[I].Owner;
-          TempZombies[Length(TempZombies) - 1].Hunger := Zombies[I].Hunger;
+          TempZombies[Length(TempZombies) - 1].ZombieID := Zombies[I].ZombieID;
+          TempZombies[Length(TempZombies) - 1].ZombieOwner := Zombies[I].ZombieOwner;
+          TempZombies[Length(TempZombies) - 1].ZombieHunger := Zombies[I].ZombieHunger;
           TempZombies[Length(TempZombies) - 1].ZombieType := Zombies[I].ZombieType;
-          TempZombies[Length(TempZombies) - 1].TeleportTime := Zombies[I].TeleportTime;
-          TempZombies[Length(TempZombies) - 1].KillTime := Zombies[I].KillTime;
-          TempZombies[Length(TempZombies) - 1].ThreadsTime := Zombies[I].ThreadsTime;
-          TempZombies[Length(TempZombies) - 1].ThreadsX := Zombies[I].ThreadsX;
-          TempZombies[Length(TempZombies) - 1].ThreadsY := Zombies[I].ThreadsY;
-          TempZombies[Length(TempZombies) - 1].ThreadsDir := Zombies[I].ThreadsDir;
+          TempZombies[Length(TempZombies) - 1].ZombieTeleportTime := Zombies[I].ZombieTeleportTime;
+          TempZombies[Length(TempZombies) - 1].ZombieKillTime := Zombies[I].ZombieKillTime;
+          TempZombies[Length(TempZombies) - 1].ZombieThreadsTime := Zombies[I].ZombieThreadsTime;
+          TempZombies[Length(TempZombies) - 1].ZombieThreadsX := Zombies[I].ZombieThreadsX;
+          TempZombies[Length(TempZombies) - 1].ZombieThreadsY := Zombies[I].ZombieThreadsY;
+          TempZombies[Length(TempZombies) - 1].ZombieThreadsDir := Zombies[I].ZombieThreadsDir;
         end;
     SetLength(Zombies, Length(TempZombies));
     if Length(Zombies) > 0 then
       for K := 0 to Length(Zombies) - 1 do
       begin
-        Zombies[K].ID := TempZombies[K].ID;
-        Zombies[K].Owner := TempZombies[K].Owner;
-        Zombies[K].Hunger := TempZombies[K].Hunger;
+        Zombies[K].ZombieID := TempZombies[K].ZombieID;
+        Zombies[K].ZombieOwner := TempZombies[K].ZombieOwner;
+        Zombies[K].ZombieHunger := TempZombies[K].ZombieHunger;
         Zombies[K].ZombieType := TempZombies[K].ZombieType;
-        Zombies[K].TeleportTime := TempZombies[K].TeleportTime;
-        Zombies[K].KillTime := TempZombies[K].KillTime;
-        Zombies[K].ThreadsTime := TempZombies[K].ThreadsTime;
-        Zombies[K].ThreadsX := TempZombies[K].ThreadsX;
-        Zombies[K].ThreadsY := TempZombies[K].ThreadsY;
-        Zombies[K].ThreadsDir := TempZombies[K].ThreadsDir;
+        Zombies[K].ZombieTeleportTime := TempZombies[K].ZombieTeleportTime;
+        Zombies[K].ZombieKillTime := TempZombies[K].ZombieKillTime;
+        Zombies[K].ZombieThreadsTime := TempZombies[K].ZombieThreadsTime;
+        Zombies[K].ZombieThreadsX := TempZombies[K].ZombieThreadsX;
+        Zombies[K].ZombieThreadsY := TempZombies[K].ZombieThreadsY;
+        Zombies[K].ZombieThreadsDir := TempZombies[K].ZombieThreadsDir;
       end;
   except
     LogError('Exception in the script: Something went wrong when trying to resize Zombies array:', [Length(TempZombies), Length(Zombies)], SHOW_ERROR_MSG);
@@ -1677,10 +1678,10 @@ begin
         for I := 0 to RUNE_ILLUSIONS_COUNT - 1 do
         begin
           SetLength(Zombies, Length(Zombies) + 1);
-          Zombies[Length(Zombies) - 1].Owner := P;
+          Zombies[Length(Zombies) - 1].ZombieOwner := P;
           Zombies[Length(Zombies) - 1].ZombieType := 3;
           Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
-          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+          Zombies[Length(Zombies) - 1].ZombieID := States.GroupMember(Z, 0);
           Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
           RuneTaken := True;
           Actions.MapTileObjectSet(RUNE_X, RUNE_Y, 255);
@@ -1732,11 +1733,11 @@ begin
 
   if Length(Zombies) > 0 then
     for I := 0 to Length(Zombies) - 1 do
-      if not States.UnitDead(Zombies[I].ID) then
+      if not States.UnitDead(Zombies[I].ZombieID) then
       begin
-        aX := States.UnitPositionX(Zombies[I].ID);
-        aY := States.UnitPositionY(Zombies[I].ID);
-        O := Zombies[I].Owner;
+        aX := States.UnitPositionX(Zombies[I].ZombieID);
+        aY := States.UnitPositionY(Zombies[I].ZombieID);
+        O := Zombies[I].ZombieOwner;
         if TileOnRuneSpawn(aX, aY) then
         begin
           aRune := States.MapTileObject(aX, aY);
@@ -3391,11 +3392,11 @@ begin
 
     if Length(Zombies) > 0 then
       for K := 0 to Length(Zombies) - 1 do
-        if not States.UnitDead(Zombies[K].ID) then
-          if (Zombies[K].Owner = P)
+        if not States.UnitDead(Zombies[K].ZombieID) then
+          if (Zombies[K].ZombieOwner = P)
           and (InRange(Zombies[K].ZombieType, 1, 2)) then
-            if not States.UnitDead(Zombies[K].ID) then
-              ZombieStunAnimation(P, Zombies[K].ID);
+            if not States.UnitDead(Zombies[K].ZombieID) then
+              ZombieStunAnimation(P, Zombies[K].ZombieID);
 
     case Direction of
 
@@ -3521,10 +3522,10 @@ begin
     begin
       Zombie := Actions.GiveGroup(Players[P].ZombiePlayer, 14 + 9 * Byte(Players[P].DD), X, Y, States.KaMRandomI(8), 1, 1);
       SetLength(Zombies, Length(Zombies) + 1);
-      Zombies[Length(Zombies) - 1].Owner := P;
+      Zombies[Length(Zombies) - 1].ZombieOwner := P;
       if Zombie > 0 then
       begin
-        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Zombie, 0);
+        Zombies[Length(Zombies) - 1].ZombieID := States.GroupMember(Zombie, 0);
         Actions.GroupHungerSet(Zombie, RUNE_ZOMBIE_LIFE);
       end;
       Zombies[Length(Zombies) - 1].ZombieType := 1 + Byte(Players[P].DD);
@@ -3580,7 +3581,7 @@ begin
           Players[P].LureHunger := States.UnitHunger(U);
           if Length(Zombies) > 0 then
             for K := 0 to Length(Zombies) - 1 do
-              if U = Zombies[K].ID then
+              if U = Zombies[K].ZombieID then
                 Players[P].LureZombieType := Zombies[K].ZombieType;
         end;
         Actions.UnitKill(U, Lure);
@@ -5446,8 +5447,8 @@ begin
       end;
     Recruit := Actions.GiveUnit(Players[P].ZombiePlayer, 13, Players[P].TowerX, Players[P].TowerY + 3, States.KaMRandomI(8));
     SetLength(Zombies, Length(Zombies) + 1);
-    Zombies[Length(Zombies) - 1].Owner := P;
-    Zombies[Length(Zombies) - 1].ID := Recruit;
+    Zombies[Length(Zombies) - 1].ZombieOwner := P;
+    Zombies[Length(Zombies) - 1].ZombieID := Recruit;
     Zombies[Length(Zombies) - 1].ZombieType := 0;
     Actions.UnitHungerSet(Recruit, RECRUIT_HUNGER + States.UnitLowHunger);
     Actions.HouseAddWaresTo(Tower, 1, 5);
@@ -7782,9 +7783,9 @@ begin
         if InRange(O, 8, 11) then
           if Length(Zombies) > 0 then
             for I := 0 to Length(Zombies) - 1 do
-              if not States.UnitDead(Zombies[I].ID) then
-                if U = Zombies[I].ID then
-                  Zombies[I].ThreadsTime := Players[P].ThreadsAttackTime;
+              if not States.UnitDead(Zombies[I].ZombieID) then
+                if U = Zombies[I].ZombieID then
+                  Zombies[I].ZombieThreadsTime := Players[P].ThreadsAttackTime;
 
         Players[P].LastUsedSkill := sThreadsOfDeath;
         Players[P].RoadSkillDelay := Round(KNIGHT_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
@@ -7849,7 +7850,7 @@ end;
 
 procedure RagingSpurt(P, X, Y: Integer);
 var
-  I, X2, Y2, R: Integer;
+  I, X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -7860,7 +7861,6 @@ begin
   if (TileOnBattlefield(X, Y))
   and (Players[P].Hero > 0) then
   begin
-    R := States.KaMRandomI(SPURT_AI_RANDOM);
 
     X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
@@ -7880,15 +7880,15 @@ begin
       Actions.GroupOrderHalt(Players[P].Hero);
     end;
 
-    Players[P].HeroStunnedTime := States.GameTime + SPURT_TIME + 5 + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+    Players[P].HeroStunnedTime := States.GameTime + SPURT_TIME + 5;
     Actions.GroupOrderHalt(Players[P].Hero);
     Actions.GroupBlockOrders(Players[P].Hero, True);
     Players[P].HeroStunned := True;
-    Players[P].SpurtStartTime := States.GameTime + 27 + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-    Players[P].SpurtEndTime := Players[P].SpurtStartTime + 2 + Round(DESYNC_FACTOR * SPURT_LENGTH/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+    Players[P].SpurtStartTime := States.GameTime + 27;
+    Players[P].SpurtEndTime := Players[P].SpurtStartTime + 2 + Round(DESYNC_FACTOR * SPURT_LENGTH/KNIGHT_WINE_SPEED);
     Players[P].Preparing := True;
-    Players[P].PreparingTime := (States.GameTime + SPURT_TIME + 5) - ((SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P)));
-    Players[P].WineSkillCancelTime := States.GameTime + 26 + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+    Players[P].PreparingTime := States.GameTime + SPURT_TIME + 5;
+    Players[P].WineSkillCancelTime := States.GameTime + 26;
 
     TilesWineLength[P] := TilesWineLength[P] + 8;
     SetLength(TilesWineX[P], TilesWineLength[P]);
@@ -7917,25 +7917,25 @@ begin
     TilesWineY[P][Length(TilesWineY[P]) - 2] := Y2 + 1;
     TilesWineY[P][Length(TilesWineY[P]) - 1] := Y2 - 1;
 
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 13 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 15 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 17 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 19 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 8] := States.GameTime + 13;
+    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 7] := States.GameTime + 15;
+    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 6] := States.GameTime + 17;
+    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 5] := States.GameTime + 19;
 
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 2 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 4 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 6 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 8 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));    
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 8] := States.GameTime + 2;
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 7] := States.GameTime + 4;
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 6] := States.GameTime + 6;
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 5] := States.GameTime + 8;    
   
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 21 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 23 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 25 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
-    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 27 + SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 4] := States.GameTime + 21;
+    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 3] := States.GameTime + 23;
+    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 2] := States.GameTime + 25;
+    ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 27;
     
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 10 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 12 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 14 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
-    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 16 + SPURT_AI_FACTOR/2 * Byte(States.PlayerIsAI(P));
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 4] := States.GameTime + 10;
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 3] := States.GameTime + 12;
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 2] := States.GameTime + 14;
+    SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 16;
 
     for I := 1 to 8 do
       if TileOnBattlefield(TilesWineX[P][Length(TilesWineX[P]) - I], TilesWineY[P][Length(TilesWineY[P]) - I]) then
@@ -7970,7 +7970,7 @@ end;
 
 procedure StartSpurt(P: Integer);
 var
-  Desync, Direction, X1, Y1, X2, Y2, R: Integer;
+  Desync, Direction, X1, Y1, X2, Y2: Integer;
 begin
   if Players[P].Hero <= 0 then
     Exit;
@@ -7993,7 +7993,6 @@ begin
       Players[P].ThreadsTime := 0;
     end;
     Desync := 0;
-    R := States.KaMRandomI(SPURT_AI_RANDOM);
     Players[P].CurrentSpurtLength := 0;
 
     case Direction of
@@ -8017,18 +8016,18 @@ begin
                and (Players[P].SettingTrack) then
                begin
                  TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := VAGA_OBJECT8;
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                  ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := Players[P].TrackStopTime + 3;
                  TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1 + 1;
                end
                else
                begin
                  TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                  TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
                end;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+               SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SpurtX[P][Desync - 1] := X2;
                SpurtY[P][Desync - 1] := Y1;
                SpurtDir[P][Desync - 1] := 0;
@@ -8060,18 +8059,18 @@ begin
                and (Players[P].SettingTrack) then
                begin
                  TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := VAGA_OBJECT8;
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                  ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := Players[P].TrackStopTime + 3;
                  TilesWineX[P][Length(TilesWineX[P]) - 1] := X1 - 1;
                end
                else
                begin
                  TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                  TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
                end;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+               SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SpurtX[P][Desync - 1] := X1;
                SpurtY[P][Desync - 1] := Y2;
                SpurtDir[P][Desync - 1] := 2;
@@ -8103,18 +8102,18 @@ begin
                and (Players[P].SettingTrack) then
                begin
                  TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := VAGA_OBJECT8;
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                  ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := Players[P].TrackStopTime + 3;
                  TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1 - 1;
                end
                else
                begin
                  TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                  TilesWineY[P][Length(TilesWineY[P]) - 1] := Y1;
                end;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+               SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SpurtX[P][Desync - 1] := X2;
                SpurtY[P][Desync - 1] := Y1;
                SpurtDir[P][Desync - 1] := 4;
@@ -8146,18 +8145,18 @@ begin
                and (Players[P].SettingTrack) then
                begin
                  TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := VAGA_OBJECT8;
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 3 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                  ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := Players[P].TrackStopTime + 3;
                  TilesWineX[P][Length(TilesWineX[P]) - 1] := X1 + 1;
                end
                else
                begin
                  TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := KNIGHT_OBJECT4;
-                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
-                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+                 SetTilesWineTimes[P][Length(SetTilesWineTimes[P]) - 1] := States.GameTime + 1 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
+                 ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                  TilesWineX[P][Length(TilesWineX[P]) - 1] := X1;
                end;
-               SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED) + (SPURT_AI_FACTOR + R) * Byte(States.PlayerIsAI(P));
+               SpurtTimes[P][Desync - 1] := States.GameTime + 2 + Round(DESYNC_FACTOR * Desync/KNIGHT_WINE_SPEED);
                SpurtX[P][Desync - 1] := X1;
                SpurtY[P][Desync - 1] := Y2;
                SpurtDir[P][Desync - 1] := 6;
@@ -9119,10 +9118,10 @@ begin
         and (States.KaMRandom < REPLICA_KILL_CHANCE) then
           if Length(Zombies) > 0 then
             for I := 0 to Length(Zombies) - 1 do
-              if not States.UnitDead(Zombies[I].ID) then
-                if (Zombies[I].ID = U)
+              if not States.UnitDead(Zombies[I].ZombieID) then
+                if (Zombies[I].ZombieID = U)
                 and (InRange(UT, 14, 27)) then
-                  Zombies[I].KillTime := Players[P].ReplicaTime;
+                  Zombies[I].ZombieKillTime := Players[P].ReplicaTime;
 
         Players[P].RoadSkillDelay := Round(REBEL_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
         Players[P].LastUsedSkill := sReplica;
@@ -9167,18 +9166,18 @@ begin
               and (InRange(States.UnitType(U), 14, 27)) then
               begin
                 SetLength(Zombies, Length(Zombies) + 1);
-                Zombies[Length(Zombies) - 1].Owner := P;
+                Zombies[Length(Zombies) - 1].ZombieOwner := P;
                 Zombies[Length(Zombies) - 1].ZombieType := 3;
-                Zombies[Length(Zombies) - 1].Hunger := States.UnitHunger(U);
-                Zombies[Length(Zombies) - 1].TeleportTime := Players[P].RiftTime;
-                Zombies[Length(Zombies) - 1].KillTime := 0;
-                Zombies[Length(Zombies) - 1].ThreadsTime := 0;
-                Zombies[Length(Zombies) - 1].ThreadsX := -1;
-                Zombies[Length(Zombies) - 1].ThreadsY := -1;
-                Zombies[Length(Zombies) - 1].ThreadsDir := -1;
+                Zombies[Length(Zombies) - 1].ZombieHunger := States.UnitHunger(U);
+                Zombies[Length(Zombies) - 1].ZombieTeleportTime := Players[P].RiftTime;
+                Zombies[Length(Zombies) - 1].ZombieKillTime := 0;
+                Zombies[Length(Zombies) - 1].ZombieThreadsTime := 0;
+                Zombies[Length(Zombies) - 1].ZombieThreadsX := -1;
+                Zombies[Length(Zombies) - 1].ZombieThreadsY := -1;
+                Zombies[Length(Zombies) - 1].ZombieThreadsDir := -1;
                 Z := Actions.GiveGroup(Players[P].ZombiePlayer, States.UnitType(U), TEMP_AI_X, TEMP_AI_Y, States.KaMRandomI(8), 1, 1);
                 Actions.GroupHungerSet(Z, States.UnitHunger(U));
-                Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+                Zombies[Length(Zombies) - 1].ZombieID := States.GroupMember(Z, 0);
                 Actions.UnitKill(U, True);
               end;
           end;
@@ -9609,7 +9608,7 @@ begin
             Players[P].LureHunger := States.UnitHunger(U);
             if Length(Zombies) > 0 then
               for I := 0 to Length(Zombies) - 1 do
-                if U = Zombies[I].ID then
+                if U = Zombies[I].ZombieID then
                   Players[P].LureZombieType := Zombies[I].ZombieType;
             Actions.UnitKill(U, Lure);
           end;
@@ -11172,8 +11171,8 @@ begin
       begin
         Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, RUNE_X + States.KaMRandomI(5) - States.KaMRandomI(5), RUNE_Y + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8), 1, 1);
         SetLength(Zombies, Length(Zombies) + 1);
-        Zombies[Length(Zombies) - 1].Owner := P;
-        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+        Zombies[Length(Zombies) - 1].ZombieOwner := P;
+        Zombies[Length(Zombies) - 1].ZombieID := States.GroupMember(Z, 0);
         Zombies[Length(Zombies) - 1].ZombieType := 3;
         Actions.GroupHungerSet(Z, RUNE_ZOMBIE_LIFE);
         if TileOnRuneSpawn(aX, aY) then
@@ -11557,8 +11556,8 @@ begin
       begin
         if Length(Zombies) > 0 then
           for I := 0 to Length(Zombies) - 1 do
-            if Zombies[I].Owner = J then
-              Actions.UnitKill(Zombies[I].ID, False);
+            if Zombies[I].ZombieOwner = J then
+              Actions.UnitKill(Zombies[I].ZombieID, False);
         for P := 0 to 7 do
           if States.PlayerEnabled(P) then
             begin
@@ -11585,8 +11584,8 @@ begin
       begin
         if Length(Zombies) > 0 then
           for I := 0 to Length(Zombies) - 1 do
-            if Zombies[I].Owner = K then
-              Actions.UnitKill(Zombies[I].ID, False);
+            if Zombies[I].ZombieOwner = K then
+              Actions.UnitKill(Zombies[I].ZombieID, False);
         for P := 0 to 7 do
           if States.PlayerEnabled(P) then
             begin
@@ -12145,10 +12144,10 @@ begin
                     if (InRange(O, 8, 11)) then 
                     begin
                       for I := 0 to Length(Zombies) - 1 do
-                        if U = Zombies[I].ID then
+                        if U = Zombies[I].ZombieID then
                         begin
-                          OT := Zombies[I].Owner;
-                          HT := States.UnitHunger(Zombies[I].ID);
+                          OT := Zombies[I].ZombieOwner;
+                          HT := States.UnitHunger(Zombies[I].ZombieID);
                           ZT := Zombies[I].ZombieType;
                         end;
                       if (InRange(UT, 14, 27))
@@ -12157,8 +12156,8 @@ begin
                         Actions.GroupKillAll(States.UnitsGroup(U), True);
                         G := Actions.GiveGroup(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8), 1, 1);
                         SetLength(Zombies, Length(Zombies) + 1);
-                        Zombies[Length(Zombies) - 1].Owner := OT;
-                        Zombies[Length(Zombies) - 1].ID := States.GroupMember(G, 0);
+                        Zombies[Length(Zombies) - 1].ZombieOwner := OT;
+                        Zombies[Length(Zombies) - 1].ZombieID := States.GroupMember(G, 0);
                         Zombies[Length(Zombies) - 1].ZombieType := ZT;
                         Actions.GroupHungerSet(G, HT);
                         Break;
@@ -12171,8 +12170,8 @@ begin
                           Actions.UnitKill(U, True);
                           G := Actions.GiveUnit(O, UT, Players[P].GravityX + States.KaMRandomI(2) - States.KaMRandomI(2), Players[P].GravityY + States.KaMRandomI(2) - States.KaMRandomI(2), States.KaMRandomI(8));
                           SetLength(Zombies, Length(Zombies) + 1);
-                          Zombies[Length(Zombies) - 1].Owner := OT;
-                          Zombies[Length(Zombies) - 1].ID := G;
+                          Zombies[Length(Zombies) - 1].ZombieOwner := OT;
+                          Zombies[Length(Zombies) - 1].ZombieID := G;
                           Zombies[Length(Zombies) - 1].ZombieType := ZT;
                           Actions.UnitHungerSet(G, HT);
                           Break;
@@ -12212,10 +12211,10 @@ begin
   if Length(Zombies) <= 0 then
     Exit;
   for I := 0 to Length(Zombies) - 1 do
-    if not States.UnitDead(Zombies[I].ID) then
-      if aAttacker = Zombies[I].ID then
+    if not States.UnitDead(Zombies[I].ZombieID) then
+      if aAttacker = Zombies[I].ZombieID then
       begin
-        LastAttacker := Zombies[I].Owner;
+        LastAttacker := Zombies[I].ZombieOwner;
         LastAttackerZombieType := Zombies[I].ZombieType;
         LastAttackerUnitType := States.UnitType(aAttacker);
       end;
@@ -12230,21 +12229,21 @@ begin
     Exit;
   O := States.UnitOwner(aID);
   for I := 0 to Length(Zombies) - 1 do
-    if not States.UnitDead(Zombies[I].ID) then
-      if aAttacker = Zombies[I].ID then
+    if not States.UnitDead(Zombies[I].ZombieID) then
+      if aAttacker = Zombies[I].ZombieID then
       begin
-        P := Zombies[I].Owner;
+        P := Zombies[I].ZombieOwner;
         if (Players[P].MirrorTime >= States.GameTime)
         and (not Players[O].HeroMagicImmunity)
         and (not Players[O].HeroTotalImmunity) then
         begin
           SetLength(Zombies, Length(Zombies) + 1);
-          Zombies[Length(Zombies) - 1].Owner := P;
-          X := States.UnitPositionX(Zombies[I].ID);
-          Y := States.UnitPositionY(Zombies[I].ID);
-          T := States.UnitType(Zombies[I].ID);
+          Zombies[Length(Zombies) - 1].ZombieOwner := P;
+          X := States.UnitPositionX(Zombies[I].ZombieID);
+          Y := States.UnitPositionY(Zombies[I].ZombieID);
+          T := States.UnitType(Zombies[I].ZombieID);
           Z := Actions.GiveGroup(Players[P].ZombiePlayer, T, X, Y, States.KaMRandomI(8), 1, 1);
-          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+          Zombies[Length(Zombies) - 1].ZombieID := States.GroupMember(Z, 0);
           Zombies[Length(Zombies) - 1].ZombieType := 3;
           Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[P].DD)));
         end;
@@ -12310,8 +12309,8 @@ begin
   if InRange(O, 8, 11) then
   begin
     for I := Low(Zombies) to High(Zombies) do
-      if aID = Zombies[I].ID then
-        Zombies[I].ID := -1;
+      if aID = Zombies[I].ZombieID then
+        Zombies[I].ZombieID := -1;
     CheckZombieArray;
   end;
 
@@ -13178,20 +13177,20 @@ begin
     begin
       CheckZombieArray;
       for I := 0 to Length(Zombies) - 1 do
-        if (Zombies[I].ThreadsTime = States.GameTime)
-        and (not States.UnitDead(Zombies[I].ID)) then
+        if (Zombies[I].ZombieThreadsTime = States.GameTime)
+        and (not States.UnitDead(Zombies[I].ZombieID)) then
         begin
-          H := States.UnitHunger(Zombies[I].ID);
+          H := States.UnitHunger(Zombies[I].ZombieID);
           SetLength(Zombies, Length(Zombies) + 1);
-          Zombies[Length(Zombies) - 1].Owner := Zombies[I].Owner;
-          Zombies[Length(Zombies) - 1].ThreadsDir := States.UnitDirection(Zombies[I].ID);
-          Zombies[Length(Zombies) - 1].ThreadsX := FrontX(P);
-          Zombies[Length(Zombies) - 1].ThreadsY := FrontY(P);
-          Z := Actions.GiveGroup(Players[Zombies[I].Owner].ZombiePlayer, States.UnitType(Zombies[I].ID), Zombies[Length(Zombies) - 1].ThreadsX, Zombies[Length(Zombies) - 1].ThreadsY, Zombies[Length(Zombies) - 1].ThreadsDir, 1, 1);
-          Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+          Zombies[Length(Zombies) - 1].ZombieOwner := Zombies[I].ZombieOwner;
+          Zombies[Length(Zombies) - 1].ZombieThreadsDir := States.UnitDirection(Zombies[I].ZombieID);
+          Zombies[Length(Zombies) - 1].ZombieThreadsX := FrontX(P);
+          Zombies[Length(Zombies) - 1].ZombieThreadsY := FrontY(P);
+          Z := Actions.GiveGroup(Players[Zombies[I].ZombieOwner].ZombiePlayer, States.UnitType(Zombies[I].ZombieID), Zombies[Length(Zombies) - 1].ZombieThreadsX, Zombies[Length(Zombies) - 1].ZombieThreadsY, Zombies[Length(Zombies) - 1].ZombieThreadsDir, 1, 1);
+          Zombies[Length(Zombies) - 1].ZombieID := States.GroupMember(Z, 0);
           Zombies[Length(Zombies) - 1].ZombieType := Zombies[I].ZombieType;
           Actions.GroupHungerSet(Z, H);
-          Actions.UnitKill(Zombies[I].ID, True);
+          Actions.UnitKill(Zombies[I].ZombieID, True);
         end;
       end;
   except
@@ -13208,10 +13207,10 @@ begin
     if States.GameTime = Players[P].LureTime then
     begin
        SetLength(Zombies, Length(Zombies) + 1);
-       Zombies[Length(Zombies) - 1].Owner := P;
+       Zombies[Length(Zombies) - 1].ZombieOwner := P;
        Zombies[Length(Zombies) - 1].ZombieType := Players[P].LureZombieType;
        Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].LureType, Players[P].LureX, Players[P].LureY, Players[P].LureDir, 1, 1);
-       Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+       Zombies[Length(Zombies) - 1].ZombieID := States.GroupMember(Z, 0);
        Actions.GroupHungerSet(Z, Players[P].LureHunger);
     end;
   except
@@ -13237,31 +13236,31 @@ begin
         Players[P].ReplicaY := IfThen(TileOnBattlefield(States.UnitPositionX(States.GroupMember(Players[Players[P].ReplicaTarget].Hero, 0)), States.UnitPositionY(States.GroupMember(Players[Players[P].ReplicaTarget].Hero, 0))), BackY(Players[P].ReplicaTarget), Players[Players[P].ReplicaTarget].LastY);
         Players[P].ReplicaDir := States.UnitDirection(States.GroupMember(Players[Players[P].ReplicaTarget].Hero, 0));
         SetLength(Zombies, Length(Zombies) + 1);
-        Zombies[Length(Zombies) - 1].Owner := P;
+        Zombies[Length(Zombies) - 1].ZombieOwner := P;
         Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].ReplicaType, Players[P].ReplicaX, Players[P].ReplicaY, Players[P].ReplicaDir, 1, 1);
-        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+        Zombies[Length(Zombies) - 1].ZombieID := States.GroupMember(Z, 0);
         Zombies[Length(Zombies) - 1].ZombieType := 3;
         Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[P].DD)));
       end;
 
       if Length(Zombies) > 0 then
         for I := 0 to Length(Zombies) - 1 do
-          if (Zombies[I].KillTime = States.GameTime)
-          and (not States.UnitDead(Zombies[I].ID)) then
+          if (Zombies[I].ZombieKillTime = States.GameTime)
+          and (not States.UnitDead(Zombies[I].ZombieID)) then
           begin
             R := States.KaMRandom;
             Lure := R < REPLICA_LURE_CHANCE;
             if Lure then
             begin
-              Players[P].LureType := States.UnitType(Zombies[I].ID);
-              Players[P].LureX := States.UnitPositionX(Zombies[I].ID);
-              Players[P].LureY := States.UnitPositionY(Zombies[I].ID);
-              Players[P].LureDir := States.UnitDirection(Zombies[I].ID);
+              Players[P].LureType := States.UnitType(Zombies[I].ZombieID);
+              Players[P].LureX := States.UnitPositionX(Zombies[I].ZombieID);
+              Players[P].LureY := States.UnitPositionY(Zombies[I].ZombieID);
+              Players[P].LureDir := States.UnitDirection(Zombies[I].ZombieID);
               Players[P].LureTime := States.GameTime + DELAY_OF_TURNING;
-              Players[P].LureHunger := States.UnitHunger(Zombies[I].ID);
+              Players[P].LureHunger := States.UnitHunger(Zombies[I].ZombieID);
               Players[P].LureZombieType := Zombies[I].ZombieType;
             end;
-            Actions.UnitKill(Zombies[I].ID, Lure);
+            Actions.UnitKill(Zombies[I].ZombieID, Lure);
           end;
     end;
   except
@@ -13282,31 +13281,31 @@ begin
       Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
       if Length(Zombies) > 0 then
         for I := 0 to Length(Zombies) - 1 do
-          if (Zombies[I].Owner = P)
-          and (Zombies[I].TeleportTime = States.GameTime)
-          and (not States.UnitDead(Zombies[I].ID)) then
+          if (Zombies[I].ZombieOwner = P)
+          and (Zombies[I].ZombieTeleportTime = States.GameTime)
+          and (not States.UnitDead(Zombies[I].ZombieID)) then
           begin
             SetLength(Zombies, Length(Zombies) + 1);
-            Zombies[Length(Zombies) - 1].Owner := P;
+            Zombies[Length(Zombies) - 1].ZombieOwner := P;
             Zombies[Length(Zombies) - 1].ZombieType := Zombies[I].ZombieType;
-            Zombies[Length(Zombies) - 1].Hunger := States.UnitHunger(Zombies[I].ID);
-            Zombies[Length(Zombies) - 1].TeleportTime := Zombies[I].TeleportTime;
-            Zombies[Length(Zombies) - 1].KillTime := Zombies[I].KillTime;
-            Zombies[Length(Zombies) - 1].ThreadsTime := Zombies[I].ThreadsTime;
-            Zombies[Length(Zombies) - 1].ThreadsX := Zombies[I].ThreadsX;
-            Zombies[Length(Zombies) - 1].ThreadsY := Zombies[I].ThreadsY;
-            Zombies[Length(Zombies) - 1].ThreadsDir := Zombies[I].ThreadsDir;
-            Z := Actions.GiveGroup(Players[P].ZombiePlayer, States.UnitType(Zombies[I].ID), Players[P].RiftX, Players[P].RiftY, States.KaMRandomI(8), 1, 1);
-            Actions.GroupHungerSet(Z, Zombies[Length(Zombies) - 1].Hunger);
-            Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
-            Actions.UnitKill(Zombies[I].ID, True);
+            Zombies[Length(Zombies) - 1].ZombieHunger := States.UnitHunger(Zombies[I].ZombieID);
+            Zombies[Length(Zombies) - 1].ZombieTeleportTime := Zombies[I].ZombieTeleportTime;
+            Zombies[Length(Zombies) - 1].ZombieKillTime := Zombies[I].ZombieKillTime;
+            Zombies[Length(Zombies) - 1].ZombieThreadsTime := Zombies[I].ZombieThreadsTime;
+            Zombies[Length(Zombies) - 1].ZombieThreadsX := Zombies[I].ZombieThreadsX;
+            Zombies[Length(Zombies) - 1].ZombieThreadsY := Zombies[I].ZombieThreadsY;
+            Zombies[Length(Zombies) - 1].ZombieThreadsDir := Zombies[I].ZombieThreadsDir;
+            Z := Actions.GiveGroup(Players[P].ZombiePlayer, States.UnitType(Zombies[I].ZombieID), Players[P].RiftX, Players[P].RiftY, States.KaMRandomI(8), 1, 1);
+            Actions.GroupHungerSet(Z, Zombies[Length(Zombies) - 1].ZombieHunger);
+            Zombies[Length(Zombies) - 1].ZombieID := States.GroupMember(Z, 0);
+            Actions.UnitKill(Zombies[I].ZombieID, True);
           end;
       for K := 0 to RIFT_ADD_ILLUSIONS - 1 do
       begin
         SetLength(Zombies, Length(Zombies) + 1);
-        Zombies[Length(Zombies) - 1].Owner := P;
+        Zombies[Length(Zombies) - 1].ZombieOwner := P;
         Z := Actions.GiveGroup(Players[P].ZombiePlayer, Players[P].HeroType, Players[P].RiftX + States.KaMRandomI(3) - States.KaMRandomI(3), Players[P].RiftY + States.KaMRandomI(3) - States.KaMRandomI(3), Players[P].RiftDir, 1, 1);
-        Zombies[Length(Zombies) - 1].ID := States.GroupMember(Z, 0);
+        Zombies[Length(Zombies) - 1].ZombieID := States.GroupMember(Z, 0);
         Zombies[Length(Zombies) - 1].ZombieType := 3;
         Actions.GroupHungerSet(Z, REBEL_ZOMBIE_LIFE * (1 + Byte(Players[P].DD)));
       end;
@@ -13490,11 +13489,11 @@ begin
     if States.GameTime = Players[P].ZombieStunTime then
       if Length(Zombies) > 0 then
         for K := 0 to Length(Zombies) - 1 do
-          if not States.UnitDead(Zombies[K].ID) then
-            if (Zombies[K].Owner = P)
+          if not States.UnitDead(Zombies[K].ZombieID) then
+            if (Zombies[K].ZombieOwner = P)
             and (InRange(Zombies[K].ZombieType, 1, 2)) then
-              if not States.UnitDead(Zombies[K].ID) then
-                ZombieStun(P, Zombies[K].ID);
+              if not States.UnitDead(Zombies[K].ZombieID) then
+                ZombieStun(P, Zombies[K].ZombieID);
 
   except
     LogError('Exception in the script: cannot check Stun for invalid Zombie:', [P], SHOW_ERROR_MSG);
@@ -13882,7 +13881,7 @@ begin
       StartSpurt(P);
       if not Players[P].HeroMagicImmunity then
       begin
-        Players[P].HeroMagicImmunityTime := (States.GameTime + SPURT_TIME + 5) - 27 - SPURT_AI_FACTOR * Byte(States.PlayerIsAI(P));
+        Players[P].HeroMagicImmunityTime := (States.GameTime + SPURT_TIME + 5) - 27;
         Players[P].HeroMagicImmunity := True;
       end;
     end;
@@ -14734,6 +14733,9 @@ begin
 end;
 
 
+//AI
+
+
 function GroupIsMoving(G: Integer): Boolean;
 var
   O: Integer;
@@ -14761,9 +14763,6 @@ begin
             or (OldY[O] div MOVEMENT_DISTANCE <> NewY[O] div MOVEMENT_DISTANCE);
 
 end;
-
-
-//AI
 
 
 procedure RespawnUnit(P: Integer);
@@ -16604,7 +16603,7 @@ end;
 
 procedure AIKnight(P: Integer);
 var
-  aX, aY, uX, uY, U, A, E, D: Integer;
+  aX, aY, uX, uY, U, A, E, D, O: Integer;
 begin
 
   if (Players[P].RoadSkillDelay = 0)
@@ -16627,13 +16626,29 @@ begin
         if (E > 1)
         or ((E = 1) and (U <> FindClosestEnemy(P, aX, aY, 2, False)) and (CanUseSkillAgainstUnit(P, U))) then
         begin
-          uX := States.UnitPositionX(U);
-          uY := States.UnitPositionY(U);
           DeafeningClatter(P, aX, aY);
-          ThreadsOfDeath(P, uX, uY);
-          Players[P].AISpurtTime := States.GameTime + DELAY_OF_TURNING + 1;
+          Players[P].AIThreadsTime := States.GameTime + 4;
         end;
     end;
+
+  if (Players[P].Hero > 0)
+  and (not Players[P].HeroReborn)
+  and (Players[P].RoadSkillDelay = 0)
+  and (States.GameTime = Players[P].AIThreadsTime) then
+  begin
+    aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+    U := FindEnemy(P, aX, aY, DEAFENING_RADIUS - 1, False);
+    if U > 0 then
+      if CanUseSkillAgainstUnit(P, U) then
+      begin
+        O := States.UnitOwner(U);
+        uX := States.UnitPositionX(U);
+        uY := States.UnitPositionY(U);
+        ThreadsOfDeath(P, uX, uY);
+        Players[P].AISpurtTime := States.GameTime + 10;
+      end;
+  end;
 
   if (Players[P].Hero > 0)
   and (not Players[P].HeroReborn)
@@ -17015,6 +17030,77 @@ begin
   if States.GameTime = 1 then
     SetScreen;
 
+  for I := 0 to 7 do
+    if States.Gametime > CHOOSE_HERO_TIMER then
+    begin
+      if States.GameTime = Players[I].DefenceTime then
+        ClearDefence(I);
+
+      if States.GameTime = Players[I].ClearPikeObjTime then
+        ClearPikeObj(I);
+
+      if not Players[I].HeroReborn then
+      begin
+        if States.GameTime >= Players[I].SkillCastRespawnTime then
+          if Players[I].Hero > 0 then
+            if InRange(States.GroupOwner(Players[I].Hero), AI_TEMP_PLAYER, TEMP_PLAYER) then
+              RespawnUnit(I);
+
+        CheckRespawn(I);
+
+      end;
+
+      AIWalkAfterSkill(I);
+
+      AIWalkIdle(I);
+
+      if Players[I].Hero > 0 then
+        if States.GroupMember(Players[I].Hero, 0) > 0 then
+          if AICanUseSkills(I, 22) then
+            AIKnight(I);
+      
+      if Players[I].Hero > 0 then
+        if States.GroupMember(Players[I].Hero, 0) > 0 then
+          if AICanUseSkills(I, 16) then
+            AISword(I);
+
+      if Players[I].Hero > 0 then
+        if States.GroupMember(Players[I].Hero, 0) > 0 then
+          if AICanUseSkills(I, 23) then
+            AIBarb(I);
+
+      if Players[I].Hero > 0 then
+        if States.GroupMember(Players[I].Hero, 0) > 0 then
+          if AICanUseSkills(I, 18) then
+            AICrossbow(I);
+
+      if Players[I].Hero > 0 then
+        if States.GroupMember(Players[I].Hero, 0) > 0 then
+          if (AICanUseSkills(I, 20)) then
+            AIPikeman(I);
+
+      if Players[I].Hero > 0 then
+        if States.GroupMember(Players[I].Hero, 0) > 0 then
+          if AICanUseSkills(I, 19) then
+            AILance(I);
+
+      if Players[I].Hero > 0 then
+        if States.GroupMember(Players[I].Hero, 0) > 0 then
+          if (AICanUseSkills(I, 26)) then
+            AIWarrior(I);
+
+      if Players[I].Hero > 0 then
+        if States.GroupMember(Players[I].Hero, 0) > 0 then
+          if AICanUseSkills(I, 17) then
+            AIBowman(I);
+
+      if Players[I].Hero > 0 then
+        if States.GroupMember(Players[I].Hero, 0) > 0 then
+          if AICanUseSkills(I, 15) then
+            AIAxe(I);
+
+    end;
+
   CheckRuneTime;
 
   CheckRuneCleanup;
@@ -17314,75 +17400,5 @@ begin
   for S8 := 0 to (Players[7].CurrentSpurtLength - 1) do
     CheckSpurt(7, S8);
 
-  for I := 0 to 7 do
-    if States.Gametime > CHOOSE_HERO_TIMER then
-    begin
-      if States.GameTime = Players[I].DefenceTime then
-        ClearDefence(I);
-
-      if States.GameTime = Players[I].ClearPikeObjTime then
-        ClearPikeObj(I);
-
-      if not Players[I].HeroReborn then
-      begin
-        if States.GameTime >= Players[I].SkillCastRespawnTime then
-          if Players[I].Hero > 0 then
-            if InRange(States.GroupOwner(Players[I].Hero), AI_TEMP_PLAYER, TEMP_PLAYER) then
-              RespawnUnit(I);
-
-        CheckRespawn(I);
-
-      end;
-
-      AIWalkAfterSkill(I);
-
-      AIWalkIdle(I);
-      
-      if Players[I].Hero > 0 then
-        if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if AICanUseSkills(I, 15) then
-            AIAxe(I);
-
-      if Players[I].Hero > 0 then
-        if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if AICanUseSkills(I, 16) then
-            AISword(I);
-
-      if Players[I].Hero > 0 then
-        if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if AICanUseSkills(I, 23) then
-            AIBarb(I);
-
-      if Players[I].Hero > 0 then
-        if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if AICanUseSkills(I, 18) then
-            AICrossbow(I);
-
-      if Players[I].Hero > 0 then
-        if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if (AICanUseSkills(I, 20)) then
-            AIPikeman(I);
-
-      if Players[I].Hero > 0 then
-        if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if AICanUseSkills(I, 19) then
-            AILance(I);
-
-      if Players[I].Hero > 0 then
-        if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if (AICanUseSkills(I, 26)) then
-            AIWarrior(I);
-
-      if Players[I].Hero > 0 then
-        if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if AICanUseSkills(I, 17) then
-            AIBowman(I);
-
-      if Players[I].Hero > 0 then
-        if States.GroupMember(Players[I].Hero, 0) > 0 then
-          if AICanUseSkills(I, 22) then
-            AIKnight(I);
-
-    end;
 
 end;
