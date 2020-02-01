@@ -13307,7 +13307,8 @@ begin
       and (not Players[P].HeroTotalImmunity)
       and (not Players[P].MindStunned)
       and (not Players[P].CaptureMind)
-      and (Players[P].HeroStunnedTime - States.GameTime < DEAFENING_TIME) then
+      and (Players[P].HeroStunnedTime - States.GameTime < DEAFENING_TIME)
+      and (Tiles[aX][aY].Owner <> P) then
       begin
         if Players[P].Hero > 0 then
         begin
