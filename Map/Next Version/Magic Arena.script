@@ -12302,9 +12302,10 @@ begin
         if (E > 1)
         or ((E = 1) and (U <> FindClosestEnemy(P, aX, aY, 2, False)) and (CanUseSkillAgainstUnit(P, U))) then
         begin
+          Actions.GroupOrderWalk(Players[P].Hero, aX, aY, D);
+          Actions.GroupOrderHalt(Players[P].Hero);
           DeafeningClatter(P, aX, aY);
           Players[P].AIThreadsTime := States.GameTime + 10;
-          Actions.GroupOrderHalt(Players[P].Hero);
           Players[P].AIKnightCombo := True;
           Players[P].AIKnightComboTime := States.GameTime + 20;
         end;
