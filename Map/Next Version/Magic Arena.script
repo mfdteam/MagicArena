@@ -343,7 +343,6 @@ const
   TILES_RECHECK_TIME = 100;
   SKILL_CANCEL_OBJ = -2;
   REBORN_TIME = 50;
-  BOWMAN_PRISON_AI_CHANCE = 0.9;
   EFFECT_CHECK_FACTOR = 6;
   RECRUIT_HUNGER = 161;
   VICTORY_DELAY = 300;
@@ -12464,7 +12463,8 @@ begin
 
     Module := 2;
     if (aTile = INFERNAL_TILE)
-    and (Tiles[aX][aY].Owner = TEMP_PLAYER) then
+    and (Tiles[aX][aY].Owner = TEMP_PLAYER)
+    and (Tiles[aX][aY].Skill = sBorder) then
     begin
       Actions.PlayWAV(P, 'GorenjePerdaka', 1);
       Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
@@ -12724,14 +12724,16 @@ begin
               end;
               Module := 24;
               if (Tiles[aX][aY].Owner = P)
-              and (not Players[P].MindStunned) then
+              and (not Players[P].MindStunned)
+              and (Tiles[aX][aY].Skill <> sBorder) then
               begin
                 Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
                 Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
               end;
               Module := 25;
               if (Tiles[aX][aY].Owner = M2[P])
-              and (Players[P].MindStunned) then
+              and (Players[P].MindStunned)
+              and (Tiles[aX][aY].Skill <> sBorder) then
               begin
                 Players[M2[P]].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
                 Players[M2[P]].PlayerStatus := Players[M2[P]].PlayerStatus + '|<$82> ' + SkillName(Tiles[aX][aY].Skill);
