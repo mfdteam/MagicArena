@@ -10563,7 +10563,8 @@ begin
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     D := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
 
-    if not Players[P].CastingSkill then
+    if (not Players[P].CastingSkill)
+    and (TileOnBattlefield(aX, aY)) then
     begin
       case D of
 
@@ -11184,7 +11185,7 @@ begin
   if not AI_ENABLED then
     Exit;
 
-  if States.GameTime mod 20 = 0 then
+  if States.GameTime mod 20 = P then
     if (Players[P].Hero > 0)
     and (not Players[P].CastingSkill)
     and (not Players[P].HeroReborn)
@@ -11253,7 +11254,8 @@ begin
   if not AI_ENABLED then
     Exit;
 
-  if Players[P].Hero > 0 then
+  if (Players[P].Hero > 0)
+  and (States.GameTime mod 4 = P) then
     if (States.GroupIdle(Players[P].Hero))
     and (not Players[P].CastingSkill)
     and (Players[P].HeroType <> 15)
@@ -17416,24 +17418,24 @@ begin
     PlantTrees;
 
   for I := 0 to 7 do
-    if (States.GameTime mod AVOID_FACTOR = 0)
+    if (States.GameTime mod AVOID_FACTOR = I)
     and (States.Gametime > CHOOSE_HERO_TIMER) then
       AvoidDanger(I);
 
   for I := 0 to 3 do
-    if (States.GameTime mod AVOID_FACTOR = 0)
+    if (States.GameTime mod AVOID_FACTOR = I)
     and (States.Gametime > CHOOSE_HERO_TIMER)
     and (Length(States.PlayerGetAllHouses(Players[4].ZombiePlayer)) > 0) then
       AvoidTowers(I);
 
   for I := 4 to 7 do
-    if (States.GameTime mod AVOID_FACTOR = 0)
+    if (States.GameTime mod AVOID_FACTOR = I)
     and (States.Gametime > CHOOSE_HERO_TIMER)
     and (Length(States.PlayerGetAllHouses(Players[0].ZombiePlayer)) > 0) then
       AvoidTowers(I);
 
-  if States.GameTime mod AI_IGNORE_FACTOR = 0 then
-    for I := 0 to 7 do
+  for I := 0 to 7 do
+    if States.GameTime mod AI_IGNORE_FACTOR = I then
       AIIgnore(I);
 
   if States.GameTime mod TOWERS_CHECK_FACTOR = 0 then
