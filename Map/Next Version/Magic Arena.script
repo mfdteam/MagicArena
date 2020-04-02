@@ -13407,18 +13407,17 @@ begin
 end;
 
 
-procedure CheckTilesForAI;
+procedure CheckTilesForAI(P: Integer);
 var
   AIUnits: array of Integer;
-  I, J, K, aObj, aX, aY, aTile, aU: Integer;
+  I, K, aObj, aX, aY, aTile, aU: Integer;
 begin
   try
     aObj := -1;
-    for J := 9 to 11 do
-    if States.PlayerEnabled(J) then
-      if not States.PlayerDefeated(J) then
+    if States.PlayerEnabled(P) then
+      if not States.PlayerDefeated(P) then
       begin
-        AIUnits := States.PlayerGetAllUnits(J);
+        AIUnits := States.PlayerGetAllUnits(P);
         if Length(AIUnits) > 0 then
           for K := 0 to Length(AIUnits) - 1 do
           begin
@@ -13517,7 +13516,7 @@ begin
 
   except
 
-    LogError('Exception in the script: cannot check tiles for invalid AI player:', [aX, aY, Tiles[aX][aY].Owner, aU], SHOW_ERROR_MSG);
+    LogError('Exception in the script: cannot check tiles for invalid AI player:', [P, aX, aY, Tiles[aX][aY].Owner, aU], SHOW_ERROR_MSG);
 
   end;
 
@@ -17226,7 +17225,8 @@ begin
     if Players[I].Hero > 0 then
       CheckTiles(I);
 
-  CheckTilesForAI;
+  for I := 8 to 11 do
+    CheckTilesForAI(I);
 
   for N[0] := 0 to 7 do
     CheckRageCircles(N[0]);
