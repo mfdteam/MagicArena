@@ -11131,6 +11131,51 @@ begin
 end;
 
 
+function ClosestDistance(P: Integer): Integer;
+var
+  SelfSkillDistance, EnemySkillDistance: Integer;
+begin
+  Result := 0;
+  SelfSkillDistance := 0;
+  EnemySkillDistance := 0;
+  case Players[P].HeroType of
+    15: SelfSkillDistance := FIREWORKS1_RADIUS - 1;
+    16: SelfSkillDistance := IN_FEAR_RADIUS - 1;
+    17: SelfSkillDistance := PRISON_USAGE_RADIUS - 1;
+    18: SelfSkillDistance := BOMB_RADIUS - 1;
+    19: SelfSkillDistance := 8;
+    20: SelfSkillDistance := VISE_RADIUS;
+    21: SelfSkillDistance := MIND_RADIUS - 1;
+    22: SelfSkillDistance := DEAFENING_RADIUS - 1;
+    23: SelfSkillDistance := RAGE_RADIUS - 1;
+    24: SelfSkillDistance := REPLICA_RADIUS - 1;
+    25: SelfSkillDistance := STEAL_RADIUS - 2;
+    26: SelfSkillDistance := EXILE_RADIUS - 1;
+    27: SelfSkillDistance := SHOCK_RADIUS - 1
+    else SelfSkillDistance := 0;
+  end;
+  if Players[P].AITarget > 0 then
+    if InRange(States.UnitOwner(Players[P].AITarget), 0, 7) then
+      case States.UnitType(Players[P].AITarget) of
+        15: EnemySkillDistance := FIREWORKS1_RADIUS - 1;
+        16: EnemySkillDistance := IN_FEAR_RADIUS - 1;
+        17: EnemySkillDistance := PRISON_USAGE_RADIUS - 1;
+        18: EnemySkillDistance := BOMB_RADIUS - 1;
+        19: EnemySkillDistance := 8;
+        20: EnemySkillDistance := VISE_RADIUS;
+        21: EnemySkillDistance := MIND_RADIUS - 1;
+        22: EnemySkillDistance := DEAFENING_RADIUS - 1;
+        23: EnemySkillDistance := RAGE_RADIUS - 1;
+        24: EnemySkillDistance := REPLICA_RADIUS - 1;
+        25: EnemySkillDistance := STEAL_RADIUS - 2;
+        26: EnemySkillDistance := EXILE_RADIUS - 1;
+        27: EnemySkillDistance := SHOCK_RADIUS - 1
+        else EnemySkillDistance := 0;
+      end;
+  Result := Max(SelfSkillDistance, EnemySkillDistance);
+end;
+
+
 procedure AIWalk(P: Integer);
 var
   uX, uY, aX, aY: Integer;
@@ -11139,7 +11184,7 @@ begin
   if not AI_ENABLED then
     Exit;
 
-  if States.GameTime mod 80 = 0 then
+  if States.GameTime mod 20 = 0 then
     if (Players[P].Hero > 0)
     and (not Players[P].CastingSkill)
     and (not Players[P].HeroReborn)
@@ -11154,7 +11199,12 @@ begin
         uX := States.UnitPositionX(Players[P].AITarget);
         uY := States.UnitPositionY(Players[P].AITarget);
         if TileOnBattlefield(uX, uY) then
-          Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
+        begin
+          if (((uX - aX) * (uX - aX) + (uY - aY) * (uY - aY)) >= ClosestDistance(P) * ClosestDistance(P)) then
+            Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8))
+          else
+            Actions.GroupOrderHalt(Players[P].Hero);
+        end;
       end;
     end;
 
@@ -11182,7 +11232,13 @@ begin
         uX := States.UnitPositionX(Players[P].AITarget);
         uY := States.UnitPositionY(Players[P].AITarget);
         if TileOnBattlefield(uX, uY) then
-          Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
+          if (((uX - aX) * (uX - aX) + (uY - aY) * (uY - aY)) >= ClosestDistance(P) * ClosestDistance(P)) then
+        begin
+          if (((uX - aX) * (uX - aX) + (uY - aY) * (uY - aY)) >= ClosestDistance(P) * ClosestDistance(P)) then
+            Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8))
+          else
+            Actions.GroupOrderHalt(Players[P].Hero);
+        end;
       end;
     end;
 
@@ -11214,7 +11270,13 @@ begin
         uX := States.UnitPositionX(Players[P].AITarget);
         uY := States.UnitPositionY(Players[P].AITarget);
         if TileOnBattlefield(uX, uY) then
-          Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8));
+          if (((uX - aX) * (uX - aX) + (uY - aY) * (uY - aY)) >= ClosestDistance(P) * ClosestDistance(P)) then
+        begin
+          if (((uX - aX) * (uX - aX) + (uY - aY) * (uY - aY)) >= ClosestDistance(P) * ClosestDistance(P)) then
+            Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8))
+          else
+            Actions.GroupOrderHalt(Players[P].Hero);
+        end;
       end;
     end;
 
