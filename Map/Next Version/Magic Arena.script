@@ -11949,30 +11949,54 @@ begin
         begin
           X := States.UnitPositionX(U);
           Y := States.UnitPositionY(U);
-          R := States.KaMRandomI(4);
+          R := States.KaMRandomI(8);
           case R of
 
             0: begin
                  aX1 := X;
-                 aY1 := Y + 1;
+                 aY1 := Y + 2;
                  D := 0;
                end;
 
             1: begin
                  aX1 := X;
-                 aY1 := Y - 1;
+                 aY1 := Y - 2;
                  D := 4;
                end;
 
             2: begin
-                 aX1 := X + 1;
+                 aX1 := X + 2;
                  aY1 := Y;
                  D := 6;
                end;
 
             3: begin
-                 aX1 := X - 1;
+                 aX1 := X - 2;
                  aY1 := Y;
+                 D := 2;
+               end;
+
+            4: begin
+                 aX1 := X + 1;
+                 aY1 := Y + 1;
+                 D := 0;
+               end;
+
+            5: begin
+                 aX1 := X - 1;
+                 aY1 := Y - 1;
+                 D := 4;
+               end;
+
+            6: begin
+                 aX1 := X + 1;
+                 aY1 := Y - 1;
+                 D := 6;
+               end;
+
+            7: begin
+                 aX1 := X - 1;
+                 aY1 := Y + 1;
                  D := 2;
                end;
 
