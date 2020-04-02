@@ -4216,7 +4216,7 @@ begin
         Players[P].Hero := Actions.GiveGroup(TEMP_PLAYER, Players[P].HeroType, Players[P].TempX, Players[P].TempY, 4, 1, 1);
       end
       else
-        Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, X, Y, NewDir, 1, 1);
+        Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, X, Y, IfThen(Players[P].SkillCastDir >= 0, Players[P].SkillCastDir, NewDir), 1, 1);
       Players[P].FieldSkillDelay := Round(LANCE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
     end;
   end;
