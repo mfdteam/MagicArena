@@ -14940,18 +14940,20 @@ var
   TowersLeft, TowersRight: array of Integer;
 begin
   for I := 10 to 13 do
+  begin
     TowersLeft := States.PlayerGetAllHouses(I);
+    if Length(TowersLeft) > 0 then
+      for K := 0 to Length(TowersLeft) - 1 do
+        Actions.HouseAddDamage(TowersLeft[K], 3);
+  end;
 
   for I := 14 to 17 do
+  begin
     TowersRight := States.PlayerGetAllHouses(I);
-
-  if Length(TowersLeft) > 0 then
-    for I := 0 to Length(TowersLeft) - 1 do
-      Actions.HouseAddDamage(TowersLeft[I], 3);
-
-  if Length(TowersRight) > 0 then
-    for K := 0 to Length(TowersRight) - 1 do
-      Actions.HouseAddDamage(TowersRight[K], 3);
+    if Length(TowersRight) > 0 then
+      for K := 0 to Length(TowersRight) - 1 do
+        Actions.HouseAddDamage(TowersRight[K], 3);
+  end;
 
 end;
 
@@ -14962,52 +14964,54 @@ var
   I, K, X, Y, X1, Y1: Integer;
 begin
   for I := 10 to 13 do
+  begin
     TowersLeft := States.PlayerGetAllHouses(I);
+    if Length(TowersLeft) > 0 then
+      for K := 0 to Length(TowersLeft) - 1 do
+        if TowersLeft[K] > 0 then
+        begin
+          X := States.HousePositionX(TowersLeft[K]);
+          Y := States.HousePositionY(TowersLeft[K]);
+          for X1 := X - 2 to X + 1 do
+          for Y1 := Y - 2 to Y + 1 do
+            if TileOnBattlefield(X1, Y1) then
+            begin
+              if InRange(States.HouseDamage(TowersLeft[K]), 185, 190) then
+                Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 3, Tiles[X1][Y1].TileDirection);
+              if InRange(States.HouseDamage(TowersLeft[K]), 191, 195) then
+                Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 2, Tiles[X1][Y1].TileDirection);
+              if InRange(States.HouseDamage(TowersLeft[K]), 196, 200) then
+                Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 1, Tiles[X1][Y1].TileDirection);
+              if InRange(States.HouseDamage(TowersLeft[K]), 201, 250) then
+                Actions.MapTileSet(X1, Y1, INFERNAL_TILE, Tiles[X1][Y1].TileDirection);
+            end;
+        end;
+  end;
 
   for I := 14 to 17 do
+  begin
     TowersRight := States.PlayerGetAllHouses(I);
-
-  if Length(TowersLeft) > 0 then
-    for I := 0 to Length(TowersLeft) - 1 do
-    if TowersLeft[I] > 0 then
-      begin
-        X := States.HousePositionX(TowersLeft[I]);
-        Y := States.HousePositionY(TowersLeft[I]);
-        for X1 := X - 2 to X + 1 do
-        for Y1 := Y - 2 to Y + 1 do
-          if TileOnBattlefield(X1, Y1) then
-          begin
-            if InRange(States.HouseDamage(TowersLeft[I]), 185, 190) then
-              Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 3, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersLeft[I]), 191, 195) then
-              Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 2, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersLeft[I]), 196, 200) then
-              Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 1, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersLeft[I]), 201, 250) then
-              Actions.MapTileSet(X1, Y1, INFERNAL_TILE, Tiles[X1][Y1].TileDirection);
-          end;
-      end;
-
-  if Length(TowersRight) > 0 then
-    for K := 0 to Length(TowersRight) - 1 do
-      if TowersRight[K] > 0 then
-      begin
-        X := States.HousePositionX(TowersRight[K]);
-        Y := States.HousePositionY(TowersRight[K]);
-        for X1 := X - 2 to X + 1 do
-        for Y1 := Y - 2 to Y + 1 do
-          if TileOnBattlefield(X1, Y1) then
-          begin
-            if InRange(States.HouseDamage(TowersRight[K]), 185, 190) then
-              Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 3, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersRight[K]), 191, 195) then
-              Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 2, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersRight[K]), 196, 200) then
-              Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 1, Tiles[X1][Y1].TileDirection);
-            if InRange(States.HouseDamage(TowersRight[K]), 201, 250) then
-              Actions.MapTileSet(X1, Y1, INFERNAL_TILE, Tiles[X1][Y1].TileDirection);
-          end;
-      end;
+    if Length(TowersRight) > 0 then
+      for K := 0 to Length(TowersRight) - 1 do
+        if TowersRight[K] > 0 then
+        begin
+          X := States.HousePositionX(TowersRight[K]);
+          Y := States.HousePositionY(TowersRight[K]);
+          for X1 := X - 2 to X + 1 do
+          for Y1 := Y - 2 to Y + 1 do
+            if TileOnBattlefield(X1, Y1) then
+            begin
+              if InRange(States.HouseDamage(TowersRight[K]), 185, 190) then
+                Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 3, Tiles[X1][Y1].TileDirection);
+              if InRange(States.HouseDamage(TowersRight[K]), 191, 195) then
+                Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 2, Tiles[X1][Y1].TileDirection);
+              if InRange(States.HouseDamage(TowersRight[K]), 196, 200) then
+                Actions.MapTileSet(X1, Y1, INFERNAL_TILE - 1, Tiles[X1][Y1].TileDirection);
+              if InRange(States.HouseDamage(TowersRight[K]), 201, 250) then
+                Actions.MapTileSet(X1, Y1, INFERNAL_TILE, Tiles[X1][Y1].TileDirection);
+            end;
+        end;
+  end;
 
 end;
 
