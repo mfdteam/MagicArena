@@ -380,6 +380,7 @@ const
   CENTERSCREEN_Y = 17;
   TEMP_PLAYER = 11;
   AI_TEMP_PLAYER = 10;
+  MAX_PLAYERS = 18;
 
 //Sound
 
@@ -669,37 +670,37 @@ type
 
 var
   CurrentMaxX, CurrentMinX, CurrentMaxY, CurrentMinY: Integer;
-  Players: array[0..11] of aPlayer;
+  Players: array[0..MAX_PLAYERS - 1] of aPlayer;
   ClearTilesRoadTimes, SetTilesRoadTimes, TilesRoadX, TilesRoadY, TilesRoadObjects,
   ClearTilesFieldTimes, SetTilesFieldTimes, TilesFieldX, TilesFieldY, TilesFieldObjects,
-  ClearTilesWineTimes, SetTilesWineTimes, TilesWineX, TilesWineY, TilesWineObjects: array[0..11] of array of Integer;
+  ClearTilesWineTimes, SetTilesWineTimes, TilesWineX, TilesWineY, TilesWineObjects: array[0..MAX_PLAYERS - 1] of array of Integer;
   RageCircles, TotemCircles, ViseCircles, ExpCircles,
   FireworksCircles1, FireworksCircles2, FireworksCircles3, FireworksCircles4, 
-  FireworksCircles5, KnightCircles, RogueCircles, StolenRogueCircles: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of array of aCircle;
-  GravityCircles: array[0..11] of array of aCircle;
+  FireworksCircles5, KnightCircles, RogueCircles, StolenRogueCircles: array[0..MAX_PLAYERS - 1] of array[0..MAX_CIRCLES_AT_ONCE - 1] of array of aCircle;
+  GravityCircles: array[0..MAX_PLAYERS - 1] of array of aCircle;
   RageCirclesCounter, TotemCirclesCounter, ViseCirclesCounter, ExpCirclesCounter,
   FireworksCircles1Counter, FireworksCircles2Counter, FireworksCircles3Counter, FireworksCircles4Counter, 
-  FireworksCircles5Counter, KnightCirclesCounter, RogueCirclesCounter, StolenRogueCirclesCounter: array[0..11] of Integer;
-  TilesRoadLength, TilesFieldLength, TilesWineLength: array[0..11] of Integer;
+  FireworksCircles5Counter, KnightCirclesCounter, RogueCirclesCounter, StolenRogueCirclesCounter: array[0..MAX_PLAYERS - 1] of Integer;
+  TilesRoadLength, TilesFieldLength, TilesWineLength: array[0..MAX_PLAYERS - 1] of Integer;
   RageCirclesLength, TotemCirclesLength, ViseCirclesLength, ExpCirclesLength,
   FireworksCircles1Length, FireworksCircles2Length, FireworksCircles3Length, 
-  FireworksCircles4Length, FireworksCircles5Length, KnightCirclesLength, RogueCirclesLength, StolenRogueCirclesLength: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
-  GravityCirclesLength, TimeToClearGravityArray: array[0..11] of Integer;
+  FireworksCircles4Length, FireworksCircles5Length, KnightCirclesLength, RogueCirclesLength, StolenRogueCirclesLength: array[0..MAX_PLAYERS - 1] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
+  GravityCirclesLength, TimeToClearGravityArray: array[0..MAX_PLAYERS - 1] of Integer;
   TimeToClearRageArray, TimeToClearTotemArray, TimeToClearViseArray, TimeToClearExpArray,
   TimeToClearFireworks1Array, TimeToClearFireworks2Array, TimeToClearFireworks3Array, 
   TimeToClearFireworks4Array, TimeToClearFireworks5Array, TimeToClearKnightArray,
-  TimeToClearRogueArray, TimeToClearStolenRogueArray: array[0..11] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
+  TimeToClearRogueArray, TimeToClearStolenRogueArray: array[0..MAX_PLAYERS - 1] of array[0..MAX_CIRCLES_AT_ONCE - 1] of Integer;
   PikeObjects, ShieldObjects: array[0..7] of Integer;
   Tiles: array[MIN_X..MAX_X] of array[MIN_Y..MAX_Y] of aTile;
   TeamChoice: array[0..1] of ANSIString;
   TeamInfo, Scores: array[0..1] of ANSIString;
-  ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime: array[0..11] of Integer;
+  ClearRoadTilesArrayTime, ClearFieldTilesArrayTime, ClearWineTilesArrayTime: array[0..MAX_PLAYERS - 1] of Integer;
   RuneTime: Integer;
   M, M2, Q: array[0..7] of Integer;
   AISoldiers: array of Integer;
-  SpurtTimes, SpurtX, SpurtY, SpurtDir: array[0..11] of array[0..SPURT_LENGTH - 1] of Integer;
+  SpurtTimes, SpurtX, SpurtY, SpurtDir: array[0..MAX_PLAYERS - 1] of array[0..SPURT_LENGTH - 1] of Integer;
   RUNE_Y: Integer;
-  OldX, OldY, NewX, NewY: array[0..11] of Integer;
+  OldX, OldY, NewX, NewY: array[0..MAX_PLAYERS - 1] of Integer;
   PlayersLeft, SortedPlayersLeft, PlayersRight, SortedPlayersRight: array of Integer;
   Zombies: array of aZombie;
   LastAttacker, LastAttackerUnitType, LastAttackerZombieType: Integer;
@@ -881,6 +882,12 @@ begin
   Actions.UnitKill(States.UnitAt(26, 9), True);
   Actions.UnitKill(States.UnitAt(26, 11), True);
   Actions.UnitKill(States.UnitAt(26, 13), True);
+  Actions.UnitKill(States.UnitAt(9, 16), True);
+  Actions.UnitKill(States.UnitAt(9, 18), True);
+  Actions.UnitKill(States.UnitAt(9, 20), True);
+  Actions.UnitKill(States.UnitAt(22, 26), True);
+  Actions.UnitKill(States.UnitAt(24, 26), True);
+  Actions.UnitKill(States.UnitAt(26, 26), True);
 
 end;
 
@@ -975,7 +982,7 @@ begin
       and (not InRange(aObj, 149, 172))
       and (TileOnBattlefield(aX, aY))
       and (States.GameTime > Tiles[aX][aY].ObjectRefreshTime)
-      and (InRange(Tiles[aX][aY].Owner, 0, 11)) then
+      and (InRange(Tiles[aX][aY].Owner, 0, MAX_PLAYERS - 1)) then
         if States.PlayerIsAI(Tiles[aX][aY].Owner) then
           Actions.MapTileObjectSet(aX, aY, 255);
     end;
@@ -1160,8 +1167,8 @@ begin
   ShieldObjects[6] := SHIELD_OBJECT7;
   ShieldObjects[7] := SHIELD_OBJECT8;
 
-  for I := 0 to 11 do
-  for K := 0 to 11 do
+  for I := 0 to MAX_PLAYERS - 1 do
+  for K := 0 to MAX_PLAYERS - 1 do
   begin
     if (States.PlayerEnabled(I))
     and (States.PlayerEnabled(K))
@@ -1180,17 +1187,19 @@ begin
   end;
 
   for I := 0 to 3 do
+  for K := 14 to 17 do
     if States.PlayerEnabled(I) then
     begin
-      Actions.PlayerAllianceChange(I, 11, True, True);
-      Actions.PlayerAllianceChange(11, I, False, False);
+      Actions.PlayerAllianceChange(I, K, True, True);
+      Actions.PlayerAllianceChange(K, I, False, False);
     end;
 
   for I := 4 to 7 do
+  for K := 10 to 13 do
     if States.PlayerEnabled(I) then
     begin
-      Actions.PlayerAllianceChange(I, 10, True, True);
-      Actions.PlayerAllianceChange(10, I, False, False);
+      Actions.PlayerAllianceChange(I, K, True, True);
+      Actions.PlayerAllianceChange(K, I, False, False);
     end;
 
   for I := 4 to 7 do
@@ -1217,7 +1226,7 @@ begin
     end;
   end;
 
-  for I := 0 to 11 do
+  for I := 0 to MAX_PLAYERS - 1 do
   for K := 0 to MAX_CIRCLES_AT_ONCE - 1 do
   begin
     RageCirclesLength[I][K] := 0;
@@ -1234,7 +1243,7 @@ begin
     StolenRogueCirclesLength[I][K] := 0;
   end;
 
-  for I := 0 to 11 do
+  for I := 0 to MAX_PLAYERS - 1 do
   begin
     ClearRoadTilesArrayTime[I] := -1;
     ClearFieldTilesArrayTime[I] := -1;
@@ -1262,11 +1271,17 @@ begin
     Players[I].TempPlayersTeam := -1;
   end;
 
-  Players[10].PlayersTeam := 0;
-  Players[10].TempPlayersTeam := 0;
+  for I := 10 to 13 do
+  begin
+    Players[I].PlayersTeam := 0;
+    Players[I].TempPlayersTeam := 0;
+  end;
 
-  Players[11].PlayersTeam := 1;
-  Players[11].TempPlayersTeam := 1;
+  for I := 14 to 17 do
+  begin
+    Players[I].PlayersTeam := 1;
+    Players[I].TempPlayersTeam := 1;
+  end;
 
   for I := 0 to 7 do
     if States.PlayerEnabled(I) then
@@ -1485,7 +1500,7 @@ begin
       Direction := 2;
       TribuneY := 3;
       TribuneX := 43 + 2 * I;
-      ZombiePlayer := 10;
+      ZombiePlayer := 10 + I;
       PlayersTeam := 0;
       TempPlayersTeam := 0;
     end;
@@ -1500,21 +1515,21 @@ begin
       Direction := 6;
       TribuneY := 26;
       TribuneX := 55 + ((I - 4) * 2);
-      ZombiePlayer := 11;
+      ZombiePlayer := 10 + I;
       PlayersTeam := 1;
       TempPlayersTeam := 1;
     end;
   end;
 
-  for I := 0 to 11 do
-  for K := 0 to 11 do
+  for I := 0 to MAX_PLAYERS - 1 do
+  for K := 0 to MAX_PLAYERS - 1 do
     if (States.PlayerEnabled(I))
     and (States.PlayerEnabled(K))
     and (I <> K) then
       if Players[I].PlayersTeam <> Players[K].PlayersTeam then
       begin
-        Actions.PlayerShareBeacons(I, K, False);
-        Actions.PlayerShareBeacons(K, I, False);
+        Actions.PlayerShareBeacons(I, K, False, False);
+        Actions.PlayerShareBeacons(K, I, False, False);
       end;
 
 end;
@@ -2209,7 +2224,7 @@ var
   Units: array of Integer;
 begin
   Result := 0;
-  for I := 10 to 11 do
+  for I := 10 to MAX_PLAYERS - 1 do
   begin
     Units := States.PlayerGetAllUnits(I);
     for K := Low(Units) to High(Units) do
@@ -3570,7 +3585,7 @@ begin
         UT := States.UnitType(U);
       end;
 
-      if (InRange(O, 8, 11))
+      if (InRange(O, 8, MAX_PLAYERS - 1))
       and (Players[O].PlayersTeam <> Players[P].PlayersTeam)
       and (InRange(UT, 14, 27)) then
       begin
@@ -7677,7 +7692,7 @@ begin
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity)
       and (U = States.GroupMember(Players[O].Hero, 0)))
-      or ((InRange(O, 8, 11))
+      or ((InRange(O, 8, MAX_PLAYERS - 1))
       and (InRange(States.UnitType(U), 14, 27)))
       and (States.MapTileObject(X2, Y2) <> WARRIOR_OBJECT7) then
       begin
@@ -7785,7 +7800,7 @@ begin
 
         end;
 
-        if InRange(O, 8, 11) then
+        if InRange(O, 8, MAX_PLAYERS - 1) then
           if Length(Zombies) > 0 then
             for I := 0 to Length(Zombies) - 1 do
               if not States.UnitDead(Zombies[I].ZombieID) then
@@ -9072,7 +9087,7 @@ begin
       and (U = States.GroupMember(Players[O].Hero, 0))
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity))
-      or ((InRange(O, 8, 11))
+      or ((InRange(O, 8, MAX_PLAYERS - 1))
       and (InRange(UT, 14, 27))
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam)) then
       begin
@@ -9119,7 +9134,7 @@ begin
         Players[P].ReplicaTime := States.GameTime + REPLICA_DELAY;
         Players[P].ReplicaTarget := O; 
 
-        if (InRange(Players[P].ReplicaTarget, 8, 11))
+        if (InRange(Players[P].ReplicaTarget, 8, MAX_PLAYERS - 1))
         and (States.KaMRandom < REPLICA_KILL_CHANCE) then
           if Length(Zombies) > 0 then
             for I := 0 to Length(Zombies) - 1 do
@@ -9552,7 +9567,7 @@ begin
       and (not Players[O].HeroMagicImmunity)
       and (not Players[O].HeroTotalImmunity)
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam))
-      or ((InRange(O, 8, 11))
+      or ((InRange(O, 8, MAX_PLAYERS - 1))
       and (InRange(UT, 14, 27))
       and (Players[P].PlayersTeam <> Players[O].PlayersTeam)) then
       begin
@@ -9597,7 +9612,7 @@ begin
         if InRange(O, 0, 7) then
           Players[P].StolenSkill := Players[O].LastUsedSkill;
 
-        if InRange(O, 8, 11)
+        if InRange(O, 8, MAX_PLAYERS - 1)
         and (Players[P].PlayersTeam <> Players[O].PlayersTeam)
         and (InRange(UT, 14, 27)) then
         begin
@@ -9806,7 +9821,7 @@ begin
                  if ((InRange(O, 0, 7))
                  and (not Players[O].HeroMagicImmunity)
                  and (not Players[O].HeroTotalImmunity))
-                 or ((InRange(O, 8, 11))
+                 or ((InRange(O, 8, MAX_PLAYERS - 1))
                  and (Players[O].PlayersTeam <> Players[P].PlayersTeam)) then
                    Fear(P, X, Y);
 
@@ -9962,12 +9977,12 @@ begin
       sThreadsOfDeath: begin
                          if U <= 0 then
                            Exit;
-                         if ((InRange(O, 0, 11))
+                         if ((InRange(O, 0, MAX_PLAYERS - 1))
                          and (Abs(X - X2) <= THREADS_RADIUS)
                          and (Abs(Y - Y2) <= THREADS_RADIUS)
                          and (Players[P].TempPlayersTeam <> Players[O].TempPlayersTeam)
                          and (States.MapTileObject(X, Y) <> WARRIOR_OBJECT7))
-                         or ((InRange(O, 0, 11))
+                         or ((InRange(O, 0, MAX_PLAYERS - 1))
                          and (Abs(X - X2) <= THREADS_ALLY_RADIUS)
                          and (Abs(Y - Y2) <= THREADS_ALLY_RADIUS)
                          and (Players[P].TempPlayersTeam = Players[O].TempPlayersTeam)
@@ -9999,7 +10014,7 @@ begin
                   if ((InRange(O, 0, 7))
                   and (not Players[O].HeroMagicImmunity)
                   and (not Players[O].HeroTotalImmunity))
-                  or (InRange(O, 8, 11)) then
+                  or (InRange(O, 8, MAX_PLAYERS - 1)) then
                   begin
                     TempFieldSkillDelay := Players[P].FieldSkillDelay;
                     StealSkill(P, X, Y);
@@ -10046,7 +10061,7 @@ begin
                     if ((InRange(O, 0, 7)) 
                     and (not Players[O].HeroMagicImmunity)
                     and (not Players[O].HeroTotalImmunity))
-                    or ((InRange(O, 8, 11))
+                    or ((InRange(O, 8, MAX_PLAYERS - 1))
                     and (Players[O].PlayersTeam <> Players[P].PlayersTeam)) then
                     begin
                       TempRoadSkillDelay := Players[P].RoadSkillDelay;
@@ -11317,7 +11332,8 @@ var
   GR: array of Integer;
   I, K, X1, X2, Y1, Y2, D1, D2, H, Z, DX, DY: Integer;
 begin
-  GR := States.PlayerGetAllGroups(11);
+  for I := 14 to 17 do
+    GR := States.PlayerGetAllGroups(I);
   if Length(PlayersLeft) > 0 then
     for I := 0 to Length(PlayersLeft) - 1 do
     begin
@@ -11363,7 +11379,8 @@ var
   GL: array of Integer;
   I, K, X1, X2, Y1, Y2, D1, D2, H, Z, DX, DY: Integer;
 begin
-  GL := States.PlayerGetAllGroups(10);
+  for I := 10 to 13 do
+    GL := States.PlayerGetAllGroups(I);
   if Length(PlayersRight) > 0 then
     for I := 0 to Length(PlayersRight) - 1 do
     begin
@@ -14183,7 +14200,7 @@ begin
                     Exit;
                   end
                   else
-                    if (InRange(O, 8, 11)) then 
+                    if (InRange(O, 8, MAX_PLAYERS - 1)) then 
                     begin
                       for I := 0 to Length(Zombies) - 1 do
                         if U = Zombies[I].ZombieID then
@@ -14220,7 +14237,7 @@ begin
                           Exit;
                         end;
                     end;
-                  if not InRange (O, 0, 11) then
+                  if not InRange (O, 0, MAX_PLAYERS - 1) then
                     Exit;
                 end;
               end;
@@ -14348,7 +14365,7 @@ begin
 
   end;
 
-  if InRange(O, 8, 11) then
+  if InRange(O, 8, MAX_PLAYERS - 1) then
   begin
     for I := Low(Zombies) to High(Zombies) do
       if aID = Zombies[I].ZombieID then
@@ -14357,7 +14374,7 @@ begin
   end;
 
   if (InRange(O, 0, 7))
-  and (InRange(aKiller, 9, 11)) then
+  and (InRange(aKiller, 9, MAX_PLAYERS - 1)) then
   begin
 
     Players[O].HeroSilentTime := 0;
@@ -14444,7 +14461,7 @@ begin
 
   end;
 
-  if (InRange(aKiller, 9, 11))
+  if (InRange(aKiller, 9, MAX_PLAYERS - 1))
   and (InRange(O, 0, 7)) then
   begin
 
@@ -14550,11 +14567,11 @@ begin
 
   end;
 
-  if (InRange(aKiller, 9, 11))
+  if (InRange(aKiller, 9, MAX_PLAYERS - 1))
   and (InRange(States.UnitOwner(aID), 0, 7))
   and (aID = States.GroupMember(Players[O].Hero, 0)) then
   begin
-    if InRange(LastAttacker, 0, 11) then
+    if InRange(LastAttacker, 0, MAX_PLAYERS - 1) then
     begin
       Players[LastAttacker].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
       if not Players[O].CaptureMind then
@@ -14922,8 +14939,11 @@ var
 var
   TowersLeft, TowersRight: array of Integer;
 begin
-  TowersLeft := States.PlayerGetAllHouses(10);
-  TowersRight := States.PlayerGetAllHouses(11);
+  for I := 10 to 13 do
+    TowersLeft := States.PlayerGetAllHouses(I);
+
+  for I := 14 to 17 do
+    TowersRight := States.PlayerGetAllHouses(I);
 
   if Length(TowersLeft) > 0 then
     for I := 0 to Length(TowersLeft) - 1 do
@@ -14941,8 +14961,11 @@ var
   TowersLeft, TowersRight: array of Integer;
   I, K, X, Y, X1, Y1: Integer;
 begin
-  TowersLeft := States.PlayerGetAllHouses(10);
-  TowersRight := States.PlayerGetAllHouses(11);
+  for I := 10 to 13 do
+    TowersLeft := States.PlayerGetAllHouses(I);
+
+  for I := 14 to 17 do
+    TowersRight := States.PlayerGetAllHouses(I);
 
   if Length(TowersLeft) > 0 then
     for I := 0 to Length(TowersLeft) - 1 do
@@ -15900,7 +15923,7 @@ procedure CheckScoutSilence(P: Integer);
 begin
   try
     if (States.GameTime = Players[P].ScoutSilenceStartTime)
-    and (InRange(Players[P].ScoutSilenceGiver, 0, 11)) then
+    and (InRange(Players[P].ScoutSilenceGiver, 0, MAX_PLAYERS - 1)) then
     begin
       Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
       Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$73> ' + '[$' + States.PlayerColorText(Players[P].ScoutSilenceGiver) + ']' + States.PlayerName(Players[P].ScoutSilenceGiver) + '[]<$71> ' + SkillName(sSilence);
@@ -16456,7 +16479,7 @@ var
   I, K: Integer;
 begin
 
-  for I := 0 to 11 do
+  for I := 0 to MAX_PLAYERS - 1 do
   begin
 
     if States.GameTime = ClearRoadTilesArrayTime[I] then
@@ -17234,16 +17257,16 @@ begin
         PlaceTower(I);
     end;
 
-  for N[13] := 0 to 11 do
+  for N[13] := 0 to MAX_PLAYERS - 1 do
     if (States.PlayerEnabled(N[13])) then
       if TilesRoadLength[N[13]] > 0 then
         CheckTileRoadObjects(N[13]);
 
-  for N[14] := 0 to 11 do
+  for N[14] := 0 to MAX_PLAYERS - 1 do
     if TilesFieldLength[N[14]] > 0 then
       CheckTileFieldObjects(N[14]);
 
-  for N[15] := 0 to 11 do
+  for N[15] := 0 to MAX_PLAYERS - 1 do
     if TilesWineLength[N[15]] > 0 then
       CheckTileWineObjects(N[15]);
 
@@ -17251,7 +17274,7 @@ begin
     if Players[I].Hero > 0 then
       CheckTiles(I);
 
-  for I := 8 to 11 do
+  for I := 8 to MAX_PLAYERS - 1 do
     CheckTilesForAI(I);
 
   for N[0] := 0 to 7 do
