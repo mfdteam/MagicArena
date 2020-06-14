@@ -1,0 +1,169 @@
+﻿0:Wybierz swojego herosa, poprzez umieszczenie na nim drogi. Jeśli ustawisz drogę na rekrucie, to Twój heros zostanie wybrany losowo.
+1:Regeneracja!
+2:Ogłuszony!
+3:Wystraszony!
+5:Magiczna odporność!
+6:Transformacja!
+7:Następne użycie za
+8:Grawitacja
+9:Kolczasta ziemia
+10:Rakieta
+11:Celny strzał
+12:Płonąca lanca
+13:Runa śmierci
+14:Trzęsienie ziemi
+15:Dezorientacja
+16:Zabójcze fajerwerki
+17:Zombie
+18:Więzienie
+19:Nagła śmierć
+20:Teleportacja
+21:Teleportacja wroga
+22:Fala hejtu
+23:Ognisty ślad
+24:Transformacja
+25:Strach
+26:Zemsta znikąd
+27:Strzał snajpera
+28:Dziesięć tysięcy strzałów
+29:Płonąca wieża
+30:Totem przodków
+31:Regeneracja
+32:wybiera
+33:Wybrałeś
+34:Opóźnienie
+35:Ulica
+36:Pole
+37:Winnica
+38:Czas na wybór herosa
+39:HP
+40:[$0080FF]Postaw drogę na jednostce, którą wybierasz.|W przeciwnym razie, Twój heros zostanie wybrany losowo.[]
+41:Twoja drużyna
+42:Heros
+44:Podwójne obrażenia!
+45:Następna runda za
+46:Ognisty wąż
+47:Wygnanie
+48:Mroczna zasłona
+49:Bezgłośny!
+50:Pocisk śmierci
+51:Ogłuszający łomot
+52:Szalony zryw
+53:Przygotowywanie...
+54:Doładowanie!
+55:Wybuch psychiczny
+56:Kradzież zaklęcia
+57:Umiejętność nieaktywowana. Możesz jednak ją wykraść.
+58:Błąd: Umiejętność nieaktywowana albo gracz, od którego chciałeś wykraść jeszcze jej nie użył.
+59:Możesz użyć skradzioną umiejętność
+60:w ciągu
+61:Potem przepadnie.
+62:Umieść na mapie szkołę, aby poznać umiejętności Twojego herosa.
+63:Umieść na mapie warownię, jeśli chcesz zmienić herosa. Możesz skorzystać z tej możliwości tylko raz ;)
+64:Pozostały czas na wybór nowego herosa:
+65:Dokonałeś już zmiany herosa. Dozwolona jest tylko jedna wymiana.
+66:Wybierz nowego herosa
+67:Zostałeś zabity przez
+68:Zostałeś ogłuszony przez
+69:Zostałeś uzdrowiony przez
+71: umiejętnością
+72:Zostałeś przeniesiony przez
+73:Zostałeś uciszony przez
+74:Zostałeś przestraszony przez
+75:Zostałeś zabity przez zombie
+76:Zostałeś zabity przez iluzję
+78:ukradł Twoją umiejętność
+79:Zabójstwa
+80:Bumerang
+81:Milczenie
+82:Popełniłeś samobójstwo przez
+83:Odrodzenie...
+84:Zabiłeś
+85:Ogłuszyłeś
+86:Uzdrowiłeś
+87:Przestraszyłeś
+88:Uciszyłeś
+89:Twój zombie zabił
+90:Twoja iluzja zabiła
+92:Przeniosłeś
+93: umiejętnością
+102:Kontrola umysłu
+103:Twoim umysłem może teraz kontrolować:
+104:Kontrolujesz umysł przeciwnika:
+105:Zostałeś zabity przez płonącą wieżę, postawioną przez
+106:Twoja płonąca wieża zabiła
+107:Zabił Cię ulepszony zombie, stworzony przez
+108:Twój ulepszony zombie zabił
+109:Wygnany!
+110:Zostałeś wygnany przez
+111:Wygnałeś
+112:Wygnanie
+113:Chroniony przez mroczną zasłonę
+114:Jesteś nieśmiertelny w tym obszarze przez
+115:Losowy wybór przez
+116:Nieśmiertelność!
+117:Spaliłeś w swoich płonących wieżach
+118:Spłonąłeś w płonącej wieży, ustawionej przez
+119:Twoja płonąca wieża zabiła
+120:Zginąłeś od swojej płonącej wieży. Jesteś samobójcą :)
+121:Zginąłeś od swojego zombie. Jesteś samobójcą :)
+122:Zginąłeś od swojej iluzji. Jesteś samobójcą :)
+123:Zginąłeś od swojego ulepszonego zombie. Jesteś samobójcą :)
+124:przelał pierwszą krew, zabijając
+125:zabił dwóch przeciwników
+126:zabił trzech przeciwników
+127:zwariował. Ktoś powinien go uspokoić!
+128:i
+129:zabił czterech przeciwników.
+130:zabił sześciu przeciwników. Prawdziwy walczak!
+131:zabił ośmiu przeciwników. Masakrator!
+132:jest KAPITALNY, zabił dziesięciu przeciwników. Niewiarygodne!
+134:został pokonany
+150:Znajdujesz się w astralnym świecie, gdzie nie można korzystać z tradycyjnej walki. Tutaj używa się tylko i wyłącznie magii. Wybierz swojego herosa, zastosuj jego indywidualne umiejętności i wygraj bitwę na Magic Arena!||Gramy [$0000FF]lokacje: 1234 vs 5678 ![]|Opis całej rozgrywki jest w pliku PDF.|Autorzy:|Pomysł - [$FACE64]vovets1[]|Skrypty - [$25259E]andreus[] i [$FA1010]Sertask[]|Tłumaczenie - [$00FF00]Hoster[]|Specjalne podziękowania: [$076CF8]Rey[]||[$A730BC]Magic Arena v.2.ххх[]|| - Runes' appearance cooldown decreased from 90s to 60s | - Duration on bonus from Recharge rune decreased from 60 to 45 seconds| - HP maximum decreased from 12 to 10 | - Rebel wasn't able to be chosen randomly. Fixed. | - Fixed a bug, when knight's Raging Spurt couldn't be cancelled by control spells | - Fixed a bug, when Mind Control could be cancelled by stunning the target of capturing | - Fixed a bug, when shorter stun could overwrite longer one | - Now using Mind Control under effect of Recharge rune will count new shorter CD for this spell | - Now Fiery track will be cancelled, if Werewolf form ended | - Bowman: Range of Revenge from Nowhere decreased from 18 to 15 tiles 
+201:Wybrałeś piechura z lancą. Jego atuty to szybkie i dokładne ataki, a także zdolność uchylania się od czarów wroga. Daje on dobre wsparcie na dużym zasięgu. Jednak nie ma tyle dużej siły, aby walczyć blisko przeciwnika, dlatego lepiej zachowuj dystans.
+202:Wybrałeś barbarzyńcę. Jego atuty to walka wręcz oraz blokowanie ataków wroga. Nie może jednak zabijać z odległości, dlatego konieczne jest być blisko przeciwnika.
+203:Wybrałeś kusznika. Dobrze walczy na dystans w prostej linii, ale potrafi też przyzwoicie walczyć wręcz. Jest jednak powolny oraz podatny na ataki piechura z mieczem.
+204:Wybrałeś piechura z mieczem. Jest najlepszy w sterowaniu przeciwnikiem. Ma możliwość przywołania zombie, którzy dobrze radzą sobie z herosom atakującym z dystansu. Jednak nie ma żadnych indywidualnych możliwości ataku.
+205:Wybrałeś łucznika. Jest silny na dystans i może zabić z dowolnego miejsca. Daje wsparcie sojusznikom, bo potrafi unieruchomić wroga. Podatny jest jednak na atak ze strony piechura z mieczem oraz iluzje.
+206:Wybrałeś pikiniera. Jest on silny w walce wręcz, a jednocześnie ma możliwość szybkiego dotarcia do celu i ataku, jednak kosztem utraty punktów zdrowia do 1HP. Z powodu zwiększonego czasu oczekiwania na ponowne użycie czaru, powinieneś powstrzymać swoją agresywność i w porę się wycofać.
+207:Wybrałeś topornika. To najbardziej uniwersalny heros, bo posiada 6 zdolności. Potrafi przenieść przeciwników, zadaje mocne obrażenia, a gdy użyje transformacji to zmieni się we włóczęgę i uzyska jego zdolności m.in. regenerację. Z powodu sporego czasu oczekiwania, nie może korzystać z wszystkich umiejętności jednocześnie.
+208:Wybrałeś wojownika. Trudno jest go zabić, bo może stać się nieśmiertelny oraz uczynić swoich sojuszników nieśmiertelnymi. Daje to duży komfort w grze zespołowej. Jednak qojownik nie ma indywidualnego ataku.
+209:Wybrałeś ciężką jazdę. Twoim atutem jest walka przeciwko pojedynczemu wrogowi. Posiadasz również zdolność przyciągania. Nie dysponujesz jednak atakami obszarowymi na kilku przeciwników.
+210:Wybrałeś pachołka. Jego główna zaleta to kradzież umiejętności przeciwnika. Możesz z niej skorzystać częściej od właściciela! Nie posiadasz jednak własnych zaklęć i jesteś podatny na iluzje.
+211:Wybrałeś lekką jazdę. Jesteś zdolny do kontroli umysłu wroga, co daje przewagę Twojemu zespołowi, gdyż pod Twoją kontrolą przeciwnik może popełnić samobójstwo. Nie potrafisz jednak zadawać obrażeń, przez co musisz kooperować ze swoją drużyną.
+301:Płonąca lanca. Odległość: 10x1, opóźnienie: 8s, animacja: 4 kratki. Działanie: -1 HP
+302:Trzęsienie ziemi. Odległość: 8x1, opóźnienie: 7s, animacja: 4 kratki. Działanie: -1 HP, zapadnięta ziemia pozostaje na czas 6,5s.
+303:Celny strzał. Odległość: 12x1, opóźnienie: 9s, animacja: 4 kratki. Działanie: -1 HP
+304:Kolczasta ziemia. Odległość: 8x1 lub 3x1 dla zombie, opóźnienie: 11s, czas trwania: do 6s, animacja: 4 kratki. Działanie: ogłuszenie.
+305:Rakieta. Zasięg: 48 kratek (cała mapa), opóźnienie: 10s, animacja: 4 kratki. Działanie: -1 HP oraz pozostawia po sobie niewybuch, który może eksplodować i zabić na obszarze 3x3.
+306:Runa śmierci. Zasięg: 5 kratek, odległość: 8x1, opóźnienie: 15s. Działanie: -1 HP oraz blokuje większość ataków wroga.
+307:Grawitacja. Zasięg działania: 5 kratek, opóźnienie: 13s. Działanie: gwałtowne przyciąganie herosów.
+308:Ognisty wąż. Odległość: 12 kratek, szerokość: 3 kratki, opóźnienie: 10s, animacja: 4 kratki. Działanie: -1 HP
+309:Pocisk śmierci. Zasięg działania: 5 kratek, a na sojuszników 7, opóźnienie: 10s, animacja: 4 kratki (nie zabija). Działanie: cel zostanie ustawiony w kierunku, na który jesteś zwrócony.
+310:Wybuch psychiczny. Odległość: 8 kratek, zasięg: 3 kratki, opóźnienie: 6s, animacja: 4 kratki. Działanie: -1 HP
+311:Bumerang. Odległość: 10x3, opóźnienie: 9s, animacja: 4 kratki. Działanie: -1 HP
+313:Dezorientacja. Zasięg działania: 6 kratek, na obszarze: 3x3, opóźnienie: 8s, czas trwania: 2s. Działanie: ogłuszenie.
+401:Teleportacja. Zasięg: 5 kratek, opóźnienie: 8s.
+402:Fala hejtu. Zasięg: od 2 do 5 kratek, opóźnienie: 15s. Działanie: -1 HP oraz blokuje większość ataków wroga.
+403:Nagła śmierć. Zasięg działania: 7 kratek, na obszarze: 3x3, opóźnienie: 16s, animacja: 4 kratki. Działanie: -1 HP
+404:Zombie. Zasięg przywołania: 4 kratki, opóźnienie: 13s, czas życia zombie: 3 min. Działanie: zombie może pokonać wroga jego własną bronią, natomiast przeciwnik aby pokonać zombie musi skorzystać z innych umiejętności.
+405:Więzienie. Zasięg działania: 6 kratek, na obszarze: 4 kratek, czas trwania: 6s, opóźnienie: 14s. Działanie: więźniowie nie mogą się poruszać, ale też nikt nie może ich zaatakować.
+406:Teleportacja wroga. Zasięg: 8 kratek, opóźnienie: 17s. Działanie: teleportacja wroga oraz strata 1 HP. Nie można używać, gdy pozostał tylko 1 HP.
+407:Zabójcze fajerwerki. Zasięg pierwszego wybuchu: 5 kratek, zasięg kolejnych wybuchów: 4 kratki, zasięg działania: 5 kratek, opóźnienie: 20s, animacja: 4 kratki. Działanie: -1 HP. Każdy może zobaczyć miejsce, gdzie ustawiasz fajerwerki.
+408:Wygnanie. Zasięg działa na sojuszników: 7 kratek, a dla wrogów: 4, czas trwania: 3s, opóźnienie: 12s, animacja: 4 kratki (nie zabija). Działanie: cel znika z Areny.
+409:Ogłuszający łomot. Zasięg: od 2 do 4 kratek, opóźnienie: 15s, czas trwania: 5s, Działanie: ogłusza cel.
+410:Kradzież zaklęcia. Zasięg: 8 kratek, opóźnienie: 9s, animacja: 4 kratki (nie zabija), czas trwania: 120s. Działanie: kradnie umiejętność, którą można użyć stawiając winnice. Ma 70% szans na zabicie zombie i iluzje.
+411:Milczenie. Zasięg: 5 kratek, czas trwania: 5s, opóźnienie: 15s, animacja: 4 kratki (nie zabija). Działanie: Przeciwnik nie może używać czarów.
+413:Ognisty ślad. Czas trwania: 10s, opóźnienie: 14s. Działanie: -1 HP
+501:10000 strzałów. Zasięg: 20x3, opóźnienie: 25s, animacja: 4 kratek. Działanie: -1 HP.
+502:Totem przodków. Zasięg działania: 7 kratek, a fali: 4 kratki, ilość fal: 5, opóźnienie: 30s, animacja: 8 kratek (z możliwością ucieczki). Działanie: -1 HP. Totem może niszczyć runy.
+503:Strzał snajpera. Zasięg: 48 kratek (cała mapa), opóźnienie: 20s, animacja: 8 kratek. Działanie: -1 HP
+504:Strach. Zasięg: 4 kratek, opóźnienie: 25s, czas trwania: 7s. Działanie: Wróg nie można używać czarów i chodzi jakby był pijany. Strach zabija zombie i iluzje.
+505:Zemsta znikąd. Zasięg: 16x1, promień wybuchu: 6 kratek, ilość wybuchów: 1, opóźnienie: 25s, animacja: 8 kratek. Działanie: -1 HP.
+506:Płonąca wieża. Zasięg działania: 5 kratek, opóźnienie: 35s, animacja: 8 kratek. Działanie: -1 HP.
+507:Transformacja. Czas trwania: 45s, opóźnienie: 125s. Działanie: Staniesz się Włóczęgą i jego czary zastąpią Twoje.
+508:Mroczna zasłona. Zasięg działania: 5x5, czas trwania: 8s, opóźnienie: 25s, animacja: 8 kratek. Działanie: każdy heros w zasięgu działania staje się nieśmiertelny.
+509:Szalony zryw. Zasięg: 12 kratek, opóźnienie: 18s, animacja: 8 kratek (nie zabija). Działanie: przemieszczenie o 12 kratek w linii prostej oraz -1 HP dla każdego, kto znalazł się w zasięgu działania. Nieśmiertelność podczas zrywu.
+510:Ukradzione umiejętności
+511:Kontrola umysłu. Zasięg działania: 4 kratki, czas trwania: 15s, opóźnienie: 50s, animacja: 8 kratek (nie zabija). Działanie: Sterowanie przeciwnikiem.
+513:Regeneracja. Zasięg działania: 6 kratek, na obszarze: 3x3, opóźnienie: 60s, animacja: 4 kratki, czas trwania: 5s. Działanie: +1 HP co 9 sekund. Oznacza to, że można zregenerować tylko 1 HP podczas jednego użyciu czaru. Bądź ostrożny: twoi wrogowie również mogą wykorzystać Twój czar.
