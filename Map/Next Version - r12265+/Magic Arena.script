@@ -1506,7 +1506,7 @@ begin
     end;
   end;
 
-  {for I := 0 to 11 do
+  for I := 0 to 11 do
   for K := 0 to 11 do
     if (States.PlayerEnabled(I))
     and (States.PlayerEnabled(K))
@@ -1515,7 +1515,7 @@ begin
       begin
         Actions.PlayerShareBeacons(I, K, False);
         Actions.PlayerShareBeacons(K, I, False);
-      end;}
+      end;
 
 end;
 
