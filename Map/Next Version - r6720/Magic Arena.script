@@ -2855,12 +2855,14 @@ begin
     Players[P].TrackStartTime := 0;
     Players[P].TrackStopTime := 0;
     Players[P].SettingTrack := False;
+    if Players[P].HeroExileTime > States.GameTime then
+    begin
+      Players[P].HeroExileBackTime := 0;
+      Players[P].HeroExiled := False;
+    end;
     Players[P].HeroExileTime := 0;
-    Players[P].HeroExileBackTime := 0;
-    Players[P].HeroExiled := False;
     Players[P].TowerTime := 0;
     Players[P].ReplicaTime := 0;
-    Players[P].RiftTime := 0;
     Players[P].MirrorTime := 0;
     RuneCleanupTime[P] := 0;
     Players[P].ThreadsAttackTime := 0;
@@ -11133,8 +11135,8 @@ end;
 
 
 function ClosestDistance(P: Integer): Integer;
-var
-  //SelfSkillDistance, EnemySkillDistance: Integer;
+{var
+  SelfSkillDistance, EnemySkillDistance: Integer;}
 begin
   Result := 0;
   {SelfSkillDistance := 0;
