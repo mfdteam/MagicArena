@@ -13109,12 +13109,28 @@ begin
             Actions.GroupBlockOrders(Players[P].Hero, True);
             Actions.GroupOrderHalt(Players[P].Hero);
           end;
+          Module := 53;
+          if (Tiles[aX][aY].Owner = TEMP_PLAYER)
+          and (States.MapTileType(aX, aY) = INFERNAL_TILE) then
+          begin
+            if not (Players[P].CaptureMind)
+            and not (Players[P].MindStunned) then
+              Players[P].HP := Players[P].HP - 1;
+            if Players[P].CaptureMind then
+              Players[M[P]].HP := Players[M[P]].HP - 1;
+            if Players[P].MindStunned then
+            begin
+              Players[M2[P]].HP := Players[M2[P]].HP - 1;
+              Actions.GroupBlockOrders(Players[P].Hero, True);
+              Actions.GroupOrderHalt(Players[P].Hero);
+            end;
+          end;
         end;
         Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
       end;
     end;
 
-    Module := 53;
+    Module := 54;
     if aObj = VAGA_OBJECT then
     begin
       if (not Players[P].MindStunned)
@@ -13175,7 +13191,7 @@ begin
         end;
     end;
 
-    Module := 54;
+    Module := 55;
     if (aObj = BOWMAN_ROCKET)
     and (not Players[P].HeroMagicImmunity)
     and (not Players[P].HeroTotalImmunity)
@@ -13209,7 +13225,7 @@ begin
       TilesRoadX[Tiles[aX][aY].Owner][Length(TilesRoadX[Tiles[aX][aY].Owner]) - 9] := aX - 1;
       TilesRoadY[Tiles[aX][aY].Owner][Length(TilesRoadY[Tiles[aX][aY].Owner]) - 9] := aY - 1;
 
-      Module := 55;
+      Module := 56;
       if Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) > 0 then
         for I := 1 to 9 do
         begin
@@ -13232,7 +13248,7 @@ begin
 
         end;
 
-      Module := 56;
+      Module := 57;
       TilesRoadObjects[Tiles[aX][aY].Owner][Length(TilesRoadObjects[Tiles[aX][aY].Owner]) - 1] := BOWMAN_ROCKET2;
       ClearTilesRoadTimes[Tiles[aX][aY].Owner][Length(ClearTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 45 + States.KaMRandomI(3);
       SetTilesRoadTimes[Tiles[aX][aY].Owner][Length(SetTilesRoadTimes[Tiles[aX][aY].Owner]) - 1] := States.GameTime + 15;
@@ -13241,7 +13257,7 @@ begin
 
     end;
 
-    Module := 57;
+    Module := 58;
     if aObj = RUNE_DOUBLE_OBJ then
     begin
       if States.GameTime > Players[P].DDTime then
@@ -13254,7 +13270,7 @@ begin
       end;
     end;
 
-    Module := 58;
+    Module := 59;
     if aObj = RUNE_MAGIC_IMMUNITY_OBJ then
     begin
       if States.GameTime > Players[P].HeroMagicImmunityTime then
@@ -13274,7 +13290,7 @@ begin
       end;
     end;
 
-    Module := 59;
+    Module := 60;
     if aObj = RUNE_ILLUSION_OBJ then
       for I := 0 to RUNE_ILLUSIONS_COUNT - 1 do
       begin
@@ -13289,7 +13305,7 @@ begin
         Actions.MapTileObjectSet(aX, aY, 255);
       end;
 
-    Module := 60;
+    Module := 61;
     if aObj = RUNE_RECHARGE_OBJ then
     begin
       Players[P].ReCharge := True;
@@ -13306,7 +13322,7 @@ begin
       Actions.MapTileObjectSet(aX, aY, 255);
     end;
 
-    Module := 61;
+    Module := 62;
     if InRange(aObj, SWORD_OBJECT1, SWORD_OBJECT1 + 2) then
     begin
       if (not States.PlayerDefeated(P))
@@ -13334,7 +13350,7 @@ begin
       end;
     end;
 
-    Module := 62;
+    Module := 63;
     if aObj = SWORD_OBJECT then
     begin
       if (not States.PlayerDefeated(P))
@@ -13362,7 +13378,7 @@ begin
       end;
     end;
 
-    Module := 63;
+    Module := 64;
     if aObj = VAGA_OBJECT6 then
     begin
       if (not States.PlayerDefeated(P))
@@ -13390,7 +13406,7 @@ begin
       end;
     end;
 
-    Module := 64;
+    Module := 65;
     if aObj = KNIGHT_OBJECT3 then
     begin
       if (not States.PlayerDefeated(P))
@@ -13419,7 +13435,7 @@ begin
       end;
     end;
 
-    Module := 65;
+    Module := 66;
     if (ObjectType(aObj) = otStun)
     and (not Players[P].MindStunned) then
       CancelSkills(P);
