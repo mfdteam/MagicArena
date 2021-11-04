@@ -11134,10 +11134,10 @@ end;
 
 function ClosestDistance(P: Integer): Integer;
 var
-  SelfSkillDistance, EnemySkillDistance: Integer;
+  //SelfSkillDistance, EnemySkillDistance: Integer;
 begin
   Result := 0;
-  SelfSkillDistance := 0;
+  {SelfSkillDistance := 0;
   EnemySkillDistance := 0;
   case Players[P].HeroType of
     15: SelfSkillDistance := FIREWORKS1_RADIUS - 1;
@@ -11173,7 +11173,7 @@ begin
         27: EnemySkillDistance := SHOCK_RADIUS - 1
         else EnemySkillDistance := 0;
       end;
-  Result := Max(SelfSkillDistance, EnemySkillDistance);
+  Result := Max(SelfSkillDistance, EnemySkillDistance);}
 end;
 
 
@@ -11202,7 +11202,7 @@ begin
         if TileOnBattlefield(uX, uY) then
         begin
           if (((uX - aX) * (uX - aX) + (uY - aY) * (uY - aY)) >= ClosestDistance(P) * ClosestDistance(P)) then
-            Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8))
+            Actions.GroupOrderWalk(Players[P].Hero, uX + States.KaMRandomI(4) - States.KaMRandomI(4), uY + States.KaMRandomI(4) - States.KaMRandomI(4), States.KaMRandomI(8))
           else
             Actions.GroupOrderHalt(Players[P].Hero);
         end;
@@ -11236,7 +11236,7 @@ begin
           if (((uX - aX) * (uX - aX) + (uY - aY) * (uY - aY)) >= ClosestDistance(P) * ClosestDistance(P)) then
         begin
           if (((uX - aX) * (uX - aX) + (uY - aY) * (uY - aY)) >= ClosestDistance(P) * ClosestDistance(P)) then
-            Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8))
+            Actions.GroupOrderWalk(Players[P].Hero, uX + States.KaMRandomI(4) - States.KaMRandomI(4), uY + States.KaMRandomI(4) - States.KaMRandomI(4), States.KaMRandomI(8))
           else
             Actions.GroupOrderHalt(Players[P].Hero);
         end;
@@ -11275,9 +11275,12 @@ begin
           if (((uX - aX) * (uX - aX) + (uY - aY) * (uY - aY)) >= ClosestDistance(P) * ClosestDistance(P)) then
         begin
           if (((uX - aX) * (uX - aX) + (uY - aY) * (uY - aY)) >= ClosestDistance(P) * ClosestDistance(P)) then
-            Actions.GroupOrderWalk(Players[P].Hero, uX, uY, States.KaMRandomI(8))
+            Actions.GroupOrderWalk(Players[P].Hero, uX + States.KaMRandomI(4) - States.KaMRandomI(4), uY + States.KaMRandomI(4) - States.KaMRandomI(4), States.KaMRandomI(8))
           else
-            Actions.GroupOrderHalt(Players[P].Hero);
+            begin
+              Actions.GroupOrderHalt(Players[P].Hero);
+              Players[P].AITarget := -1;
+            end;
         end;
       end;
     end;
@@ -11291,7 +11294,7 @@ var
 begin
   if (Players[P].Hero <= 0)
   or (Players[P].CastingSkill)
-  or (Players[P].HP = 12)
+  or (Players[P].HP = MAX_HP)
   or (Players[P].RegenDelay - States.GameTime > 0) then
     Exit;
 
@@ -11521,7 +11524,10 @@ begin
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    U := FindEnemy(P, aX, aY, IN_FEAR_RADIUS, Boolean(States.KaMRandomI(2)));
+    if Length(Zombies) > 0 then
+      U := FindEnemy(P, aX, aY, IN_FEAR_RADIUS, Boolean(States.KaMRandomI(2)))
+    else
+      U := FindEnemy(P, aX, aY, 5, False);
     if U > 0 then
     begin
       X := States.UnitPositionX(U);
@@ -11554,7 +11560,10 @@ begin
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    U := FindEnemy(P, aX, aY, 7, Boolean(States.KaMRandom > 0.5));
+    if Length(Zombies) > 0 then
+      U := FindEnemy(P, aX, aY, 7, Boolean(States.KaMRandomI(2)))
+    else
+      U := FindEnemy(P, aX, aY, 7, False);
     if U > 0 then
       if CanUseSkillAgainstUnit(P, U) then
       begin
@@ -11583,7 +11592,10 @@ begin
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
     A := CheckUnitsCount(P, aX, aY, RAGE_RADIUS, True, True);
     E := CheckUnitsCount(P, aX, aY, RAGE_RADIUS, True, False);
-    U := FindEnemy(P, aX, aY, RAGE_RADIUS, Boolean(States.KaMRandom > 0.5));
+    if Length(Zombies) > 0 then
+      U := FindEnemy(P, aX, aY, RAGE_RADIUS, Boolean(States.KaMRandomI(2)))
+    else
+      U := FindEnemy(P, aX, aY, RAGE_RADIUS, False);
     if (E > A)
     and (U > 0) then
       if (E > 1)
@@ -11598,7 +11610,10 @@ begin
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    U := FindEnemy(P, aX, aY, TOTEM_ADD_RADIUS, Boolean(States.KaMRandom > 0.5));
+    if Length(Zombies) > 0 then
+      U := FindEnemy(P, aX, aY, TOTEM_ADD_RADIUS, Boolean(States.KaMRandomI(2)))
+    else
+      U := FindEnemy(P, aX, aY, TOTEM_ADD_RADIUS, False);
     if U > 0 then
     begin
       X := States.UnitPositionX(U);
@@ -11691,7 +11706,10 @@ begin
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    U := FindEnemy(P, aX, aY, 10, Boolean(States.KaMRandom > 0.5));
+    if Length(Zombies) > 0 then
+      U := FindEnemy(P, aX, aY, 10, Boolean(States.KaMRandomI(2)))
+    else
+      U := FindEnemy(P, aX, aY, 10, False);
     if U > 0 then
       if CanUseSkillAgainstUnit(P, U) then
       begin
@@ -11719,7 +11737,10 @@ begin
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    U := FindEnemy(P, aX, aY, BOMB_RADIUS, Boolean(States.KaMRandom > 0.5));
+    if Length(Zombies) > 0 then
+      U := FindEnemy(P, aX, aY, BOMB_RADIUS, Boolean(States.KaMRandomI(2)))
+    else
+      U := FindEnemy(P, aX, aY, BOMB_RADIUS, False);
     if U > 0 then
     begin
       X := States.UnitPositionX(U);
@@ -11796,7 +11817,10 @@ begin
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    U := FindEnemy(P, aX, aY, 48, Boolean(States.KaMRandom > 0.5));
+    if Length(Zombies) > 0 then
+      U := FindEnemy(P, aX, aY, 48, Boolean(States.KaMRandomI(2)))
+    else
+      U := FindEnemy(P, aX, aY, 48, False);
     if U > 0 then
       if CanUseSkillAgainstUnit(P, U) then
       begin
@@ -11916,7 +11940,10 @@ begin
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    U := FindEnemy(P, aX, aY, 8, Boolean(States.KaMRandom > 0.5));
+    if Length(Zombies) > 0 then
+      U := FindEnemy(P, aX, aY, 8, Boolean(States.KaMRandomI(2)))
+    else
+      U := FindEnemy(P, aX, aY, 8, False);
     if U > 0 then
       if CanUseSkillAgainstUnit(P, U) then
       begin
@@ -11945,7 +11972,10 @@ begin
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
       aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-      U := FindEnemy(P, aX, aY, TELEPORT_RADIUS, True);
+      if Length(Zombies) > 0 then
+        U := FindEnemy(P, aX, aY, TELEPORT_RADIUS, Boolean(States.KaMRandomI(2)))
+      else
+        U := FindEnemy(P, aX, aY, TELEPORT_RADIUS, False);
       if U > 0 then
         if CanUseSkillAgainstUnit(P, U) then
         begin
@@ -12011,11 +12041,13 @@ begin
               if Players[P].RoadSkillDelay = 0 then
               begin
                 Teleport(P, aX1, aY1);
+                Actions.GroupOrderWalk(Players[P].Hero, aX1, aY1, D);
                 FieryLance(P, aX1, aY1, D);
               end;
               if Players[P].WineSkillDelay = 0 then
               begin
                 Teleport(P, aX1, aY1);
+                Actions.GroupOrderWalk(Players[P].Hero, aX1, aY1, D);
                 TenThousandsSpears(P, aX1, aY1, D);
               end;
            end;
@@ -12029,7 +12061,10 @@ begin
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    U := FindEnemy(P, aX, aY, 20, Boolean(States.KaMRandom > 0.5));
+    if Length(Zombies) > 0 then
+      U := FindEnemy(P, aX, aY, 20, Boolean(States.KaMRandomI(2)))
+    else
+      U := FindEnemy(P, aX, aY, 20, False);
     if U > 0 then
       if CanUseSkillAgainstUnit(P, U) then
       begin
@@ -12176,7 +12211,10 @@ begin
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    U := FindEnemy(P, aX, aY, ROCKET_USAGE_RADIUS, Boolean(States.KaMRandom > 0.5));
+    if Length(Zombies) > 0 then
+      U := FindEnemy(P, aX, aY, ROCKET_USAGE_RADIUS, Boolean(States.KaMRandomI(2)))
+    else
+      U := FindEnemy(P, aX, aY, ROCKET_USAGE_RADIUS, False);
     if U > 0 then
     begin
       X := States.UnitPositionX(U);
@@ -12251,7 +12289,10 @@ begin
   begin
     aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
     aY := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-    U := FindEnemy(P, aX, aY, PRISON_USAGE_RADIUS, Boolean(States.KaMRandom > 0.5));
+    if Length(Zombies) > 0 then
+      U := FindEnemy(P, aX, aY, PRISON_USAGE_RADIUS, Boolean(States.KaMRandomI(2)))
+    else
+      U := FindEnemy(P, aX, aY, PRISON_USAGE_RADIUS, False);
     if U > 0 then
     begin
       X := States.UnitPositionX(U);
