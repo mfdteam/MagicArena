@@ -13027,6 +13027,7 @@ begin
             end;
             Module := 41;
             if (Players[P].MovedByThreads)
+            and (InRange(Players[P].ThreadsAttacker, 0, 7))
             and (Players[P].PlayersTeam = Players[Players[P].ThreadsAttacker].PlayersTeam)
             and (P <> Players[P].ThreadsAttacker) then
               for I := 0 to 7 do
