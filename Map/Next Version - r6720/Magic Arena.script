@@ -107,7 +107,7 @@ const
   RAGE_CYCLES = 1;
   TOTEM_CYCLES = 5;
   VISE_CYCLES = 1;
-  EXP_CYCLES = 1;
+  EXP_CYCLES = 2;
   GRAVITY_CYCLES = 1;
   FIREWORKS1_CYCLES = 1;
   FIREWORKS2_CYCLES = 1;
@@ -7012,12 +7012,22 @@ begin
       ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 1] := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I);
       TilesWineObjects[P][Length(TilesWineObjects[P]) - 1] := CIRCLE_FILL_OBJ;
 
-      ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I);
+      if EXP_CYCLES = 1 then
+        ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I);
+
+      if EXP_CYCLES = 2 then
+      begin
+        if I <= ExpCirclesLength[P][ExpCirclesCounter[P]] div 2 then
+          ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I) + 1 - 3 * (EXP_RADIUS div 2 - 1)
+        else
+          ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I) + 5;
+      end;
 
       if I mod EXP_RADIUS > 0 then
         ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Radius := EXP_RADIUS + 1 - I mod EXP_RADIUS
       else
         ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].Radius := 1;
+
     end;
         
     for I := 0 to ExpCirclesLength[P][ExpCirclesCounter[P]] - 1 do 
