@@ -1312,7 +1312,7 @@ begin
       SkillTime := 0;
       SkillCastX := 0;
       SkillCastY := 0;
-      SkillCastDir := 0;
+      SkillCastDir := -1;
       SkillCastRespawnTime := 0;
       HeroSilent := False;
       HeroSilentTime := 0;
@@ -12040,16 +12040,15 @@ begin
             if (not TileIsDangerous(P, aX1, aY1))
             and (Tiles[aX1][aY1].Skill = sNone) then
             begin
+              Players[P].SkillCastDir := D;
               if Players[P].RoadSkillDelay = 0 then
               begin
                 Teleport(P, aX1, aY1);
-                Actions.GroupOrderWalk(Players[P].Hero, aX1, aY1, D);
                 FieryLance(P, aX1, aY1, D);
               end;
               if Players[P].WineSkillDelay = 0 then
               begin
                 Teleport(P, aX1, aY1);
-                Actions.GroupOrderWalk(Players[P].Hero, aX1, aY1, D);
                 TenThousandsSpears(P, aX1, aY1, D);
               end;
            end;
