@@ -1,4 +1,4 @@
-//Script version 2.245 (11 may 2018)
+//Script version r978_AI_Test (01 feb 2020)
 
 const
 
@@ -2866,6 +2866,10 @@ begin
     Players[P].MirrorTime := 0;
     RuneCleanupTime[P] := 0;
     Players[P].ThreadsAttackTime := 0;
+    if InRange(Players[P].ThreadsTarget, 0, 7) then
+      Players[Players[P].ThreadsTarget].ThreadsTime := 0;
+    Players[P].ThreadsTarget := -1;
+    Players[P].ThreadsTime := 0;
     Players[P].SpurtStartTime := 0;
     Players[P].SpurtEndTime := 0;
 
@@ -12742,6 +12746,10 @@ begin
           Players[P].MirrorTime := 0;
           RuneCleanupTime[P] := 0;
           Players[P].ThreadsAttackTime := 0;
+          if InRange(Players[P].ThreadsTarget, 0, 7) then
+            Players[Players[P].ThreadsTarget].ThreadsTime := 0;
+          Players[P].ThreadsTime := 0;
+          Players[P].ThreadsTarget := -1;
 
           Module := 10;
           if (InRange(Players[P].WerewolfTime - States.GameTime, 0, 49))
@@ -14539,7 +14547,11 @@ begin
     Players[O].RiftTime := 0;
     Players[O].MirrorTime := 0;
     RuneCleanupTime[O] := 0;
+    Players[O].ThreadsTime := 0;
     Players[O].ThreadsAttackTime := 0;
+    if InRange(Players[O].ThreadsTarget, 0, 7) then
+      Players[Players[O].ThreadsTarget].ThreadsTime := 0;
+    Players[O].ThreadsTarget := -1;
 
     for K := 0 to SPURT_LENGTH - 1 do
       SpurtTimes[O][K] := 0;
@@ -15244,7 +15256,11 @@ begin
   try
 
     if (States.GameTime = Players[P].ThreadsTime)
-    and (InRange(Players[P].ThreadsAttacker, 0, 7)) then
+    and (InRange(Players[P].ThreadsAttacker, 0, 7))
+    and (not Players[Players[P].ThreadsAttacker].HeroReborn)
+    and (not Players[Players[P].ThreadsAttacker].HeroStunned)
+    and (not Players[Players[P].ThreadsAttacker].HeroInFear)
+    and (not Players[Players[P].ThreadsAttacker].HeroSilent) then
       if Players[Players[P].ThreadsAttacker].ThreadsAttackTime > 0 then
       begin
         Actions.GroupKillAll(Players[P].Hero, True);
