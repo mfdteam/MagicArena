@@ -17494,8 +17494,8 @@ begin
     and (Length(States.PlayerGetAllHouses(Players[0].ZombiePlayer)) > 0) then
       AvoidTowers(I);
 
-  for I := 0 to 7 do
-    if States.GameTime mod AI_IGNORE_FACTOR = I then
+  if States.GameTime mod AI_IGNORE_FACTOR = 0 then
+    for I := 0 to 7 do
       AIIgnore(I);
 
   if States.GameTime mod TOWERS_CHECK_FACTOR = 0 then
