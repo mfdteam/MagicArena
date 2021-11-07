@@ -15262,25 +15262,31 @@ end;
 
 
 procedure CheckThreads(P: Integer);
+var
+  StunnedByControl: Boolean;
 begin
   try
 
     if (States.GameTime = Players[P].ThreadsTime)
-    and (InRange(Players[P].ThreadsAttacker, 0, 7))
-    and (not Players[Players[P].ThreadsAttacker].HeroReborn)
-    and (not Players[Players[P].ThreadsAttacker].HeroStunned)
-    and (not Players[Players[P].ThreadsAttacker].HeroInFear)
-    and (not Players[Players[P].ThreadsAttacker].HeroSilent) then
+    and (InRange(Players[P].ThreadsAttacker, 0, 7)) then
+    begin
+      StunnedByControl := (Players[Players[P].ThreadsAttacker].HeroStunned)
+                          and (not Players[Players[P].ThreadsAttacker].Preparing);
+      if (not Players[Players[P].ThreadsAttacker].HeroReborn)
+      and (not Players[Players[P].ThreadsAttacker].HeroInFear)
+      and (not Players[Players[P].ThreadsAttacker].HeroSilent)
+      and (not StunnedByControl) then
       if Players[Players[P].ThreadsAttacker].ThreadsAttackTime > 0 then
-      begin
-        Actions.GroupKillAll(Players[P].Hero, True);
-        Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].ThreadsDX + Players[P].ThreadsX, Players[P].ThreadsDY + Players[P].ThreadsY, Players[P].ThreadsUnitDir, 1, 1);
-        Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
-        if (Players[P].HeroStunned)
-        or (Players[P].HeroInFear) then
-          Actions.GroupBlockOrders(Players[P].Hero, True);
-        Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
-        Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[P].ThreadsAttacker) + ']' + States.PlayerName(Players[P].ThreadsAttacker) + '[]<$71> ' + SkillName(sThreadsOfDeath);
+        begin
+          Actions.GroupKillAll(Players[P].Hero, True);
+          Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, Players[P].ThreadsDX + Players[P].ThreadsX, Players[P].ThreadsDY + Players[P].ThreadsY, Players[P].ThreadsUnitDir, 1, 1);
+          Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
+          if (Players[P].HeroStunned)
+          or (Players[P].HeroInFear) then
+            Actions.GroupBlockOrders(Players[P].Hero, True);
+          Players[P].PlayerStatusTime := States.GameTime + GAMEPLAY_STATUS_TIME;
+          Players[P].PlayerStatus := Players[P].PlayerStatus + '|<$72> ' + '[$' + States.PlayerColorText(Players[P].ThreadsAttacker) + ']' + States.PlayerName(Players[P].ThreadsAttacker) + '[]<$71> ' + SkillName(sThreadsOfDeath);
+        end;
       end;
 
     if (States.GameTime >= Players[P].ThreadsTime + THREADS_DELAY)
