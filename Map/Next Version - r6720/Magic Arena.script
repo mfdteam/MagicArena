@@ -6699,6 +6699,7 @@ begin
     begin
       Actions.GroupOrderWalk(Players[P].Hero, X1, Y1, States.KaMRandomI(8));
       Players[P].SkillCastRespawnTime := States.GameTime + SKILL_RESPAWN_TIME;
+      Players[P].SkillCastDir := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
       Players[P].SkillCastX := X1;
       Players[P].SkillCastY := Y1;
       Actions.GroupKillAll(Players[P].Hero, True);
