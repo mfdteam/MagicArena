@@ -7019,9 +7019,9 @@ begin
       if EXP_CYCLES = 2 then
       begin
         if I <= ExpCirclesLength[P][ExpCirclesCounter[P]] div 2 then
-          ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I) + 1 - 3 * (EXP_RADIUS div 2 - 1)
+          ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I) - 2 - 3 * (EXP_RADIUS div 2 - 1)
         else
-          ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I) + 5;
+          ExpCircles[P][ExpCirclesCounter[P]][ExpCirclesLength[P][ExpCirclesCounter[P]] - I].AddTime := CircleTime + 2 * (ExpCirclesLength[P][ExpCirclesCounter[P]] - I) + 2;
       end;
 
       if I mod EXP_RADIUS > 0 then
@@ -11262,7 +11262,7 @@ begin
   if not AI_ENABLED then
     Exit;
 
-  if States.GameTime mod 2 = P then
+  if States.GameTime mod 2 = 0 then
     if (Players[P].Hero > 0)
     and (not Players[P].CastingSkill)
     and (not Players[P].HeroStunned)
@@ -14100,17 +14100,18 @@ begin
               if not CHANGE_RELIEF then
                 Exit;
 
-              for PosX := ExpCircles[P][K][I].X - ExpCircles[P][K][I].Radius to ExpCircles[P][K][I].X + ExpCircles[P][K][I].Radius do
-              for PosY := ExpCircles[P][K][I].Y - ExpCircles[P][K][I].Radius to ExpCircles[P][K][I].Y + ExpCircles[P][K][I].Radius do
-              begin
-                aRelief := States.MapTileHeight(PosX, PosY) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
-                if aRelief < 0 then
-                  aRelief := -1 * aRelief;
-                if (((ExpCircles[P][K][I].X - PosX) * (ExpCircles[P][K][I].X - PosX) + (ExpCircles[P][K][I].Y - PosY) * (ExpCircles[P][K][I].Y - PosY)) <= ExpCircles[P][K][I].Radius * ExpCircles[P][K][I].Radius) then
-                  if (TileOnBattlefield(PosX, PosY))
-                  and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
-                    Actions.MapTileHeightSet(PosX, PosY, aRelief);
-              end;
+              if I > ExpCirclesLength[P][ExpCirclesCounter[P]] div 2 then
+                for PosX := ExpCircles[P][K][I].X - ExpCircles[P][K][I].Radius to ExpCircles[P][K][I].X + ExpCircles[P][K][I].Radius do
+                for PosY := ExpCircles[P][K][I].Y - ExpCircles[P][K][I].Radius to ExpCircles[P][K][I].Y + ExpCircles[P][K][I].Radius do
+                begin
+                  aRelief := States.MapTileHeight(PosX, PosY) + States.KaMRandomI(RELIEF_CHANGE_FACTOR) - States.KaMRandomI(RELIEF_CHANGE_FACTOR);
+                  if aRelief < 0 then
+                    aRelief := -1 * aRelief;
+                  if (((ExpCircles[P][K][I].X - PosX) * (ExpCircles[P][K][I].X - PosX) + (ExpCircles[P][K][I].Y - PosY) * (ExpCircles[P][K][I].Y - PosY)) <= ExpCircles[P][K][I].Radius * ExpCircles[P][K][I].Radius) then
+                    if (TileOnBattlefield(PosX, PosY))
+                    and (InRange(States.MapTileHeight(PosX, PosY), 0, 45)) then
+                      Actions.MapTileHeightSet(PosX, PosY, aRelief);
+                end;
 
               if I = ExpCirclesLength[P][K] - 1 then
                 for PosX := ExpCircles[P][K][I].X - ExpCircles[P][K][I].Radius to ExpCircles[P][K][I].X + ExpCircles[P][K][I].Radius do
