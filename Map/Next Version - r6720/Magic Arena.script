@@ -9708,7 +9708,7 @@ begin
             Players[P].StolenSkillTime := STOLEN_SKILL_TIME;
         end;
 
-        ClearFieldTilesArrayTime[P] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR;
+        ClearFieldTilesArrayTime[P] := Max(ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1] + CLEAR_ARRAY_FACTOR, ClearFieldTilesArrayTime[P]);
 
       end;
     end;
@@ -11266,6 +11266,7 @@ begin
     if (Players[P].Hero > 0)
     and (not Players[P].CastingSkill)
     and (not Players[P].HeroStunned)
+    and (States.PlayerIsAI(P))
     and (Imprisoned(P)) then
     begin
       aX := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
