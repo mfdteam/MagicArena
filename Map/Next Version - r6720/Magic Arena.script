@@ -3010,6 +3010,8 @@ end;
 
 
 procedure OnHousePlanPlaced(P, X, Y, HT: Integer);
+var
+  TX, TY, TD: Integer;
 begin
   Actions.PlanRemove(P, X, Y);
   if Players[P].Hero < 0 then
@@ -3023,7 +3025,8 @@ begin
   and (HT <> 9)
   and (HT <> 21)
   and (HT <> 27)
-  and (HT <> 11) then
+  and (HT <> 11)
+  and (HT <> 3) then
     Exit;
   if HT = 13 then
   begin
@@ -3079,8 +3082,25 @@ begin
   begin
     if not NEW_ARENA then
       Exit;
+    if not InRange(ArenaCycles, -1, ARENA_CYCLES - 2) then
+      Exit;
     Actions.ShowMsg(-1, 'DEBUG: ' + States.PlayerName(P) + ' has reduced arena size');
     ArenaTime := BORDER_TIME1 + 5;
+  end;
+  if HT = 3 then
+  begin
+    if Players[P].Hero <= 0 then
+      Exit;
+    if Players[P].HeroReborn then
+      Exit;
+    TX := X;
+    TY := Y;
+    TD := States.UnitDirection(States.GroupMember(Players[P].Hero, 0));
+    if not TileOnBattlefield(TX, TY) then
+      Exit;
+    Actions.GroupKillAll(Players[P].Hero, True);
+    Players[P].Hero := Actions.GiveGroup(P, Players[P].HeroType, TX, TY, TD, 1, 1);
+    Actions.GroupHungerSet(Players[P].Hero, States.UnitMaxHunger);
   end;
 end;
 
@@ -15080,6 +15100,8 @@ begin
       Actions.HouseUnlock(I, 9);
       Actions.HouseAllow(I, 11, True);
       Actions.HouseUnlock(I, 11);
+      Actions.HouseAllow(I, 3, True);
+      Actions.HouseUnlock(I, 3);
     end;
 end;
 
