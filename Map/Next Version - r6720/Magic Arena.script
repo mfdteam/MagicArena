@@ -620,6 +620,8 @@ type
     AISpurtTime : Integer;
     AIKnightCombo: Boolean;
     AIKnightComboTime: Integer;
+    LastSnakeTime: Integer;
+    LastSnakeRandom: Integer;
   end;
 
 
@@ -1467,6 +1469,8 @@ begin
       AISpurtTime := 0;
       AIKnightCombo := False;
       AIKnightComboTime := 0;
+      LastSnakeTime := 0;
+      LastSnakeRandom := 0;
     end;
   end;
 
@@ -7093,7 +7097,7 @@ end;
 
 procedure FierySnake(P, X, Y, Dir: Integer);
 var
-  I, X1, Y1, X2, Y2, Desync, DX1, DX2, DX3, DY1, DY2, DY3, Direction, R, Pos, Temp: Integer;
+  I, X1, Y1, X2, Y2, Desync, DX1, DX2, DX3, DY1, DY2, DY3, Direction, R, Pos, Temp, TempTime: Integer;
   Place: Boolean;
   Points: array[1..4] of Integer;
 begin
@@ -7117,7 +7121,11 @@ begin
     DY2 := 0;
     DY3 := 0;
 
-    R := States.KaMRandomI(2);
+    TempTime := Players[P].LastSnakeTime;
+    Players[P].LastSnakeTime := States.GameTime;
+    if States.GameTime - TempTime <= 10 then
+      while R = Players[P].LastSnakeRandom do
+        R := States.KaMRandomI(2);
 
     if States.PlayerIsAI(P) then
     begin
