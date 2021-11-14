@@ -633,6 +633,8 @@ type
     AIKnightComboTime: Integer;
     LastSnakeTime: Integer;
     LastSnakeRandom: Integer;
+    ShieldStartTime: Integer;
+    ShieldEndTime: Integer;
   end;
 
 
@@ -1482,6 +1484,8 @@ begin
       AIKnightComboTime := 0;
       LastSnakeTime := 0;
       LastSnakeRandom := 0;
+      ShieldStartTime := 0;
+      ShieldEndTime := 0;
     end;
   end;
 
@@ -6283,6 +6287,9 @@ begin
 
     ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 9] + CLEAR_ARRAY_FACTOR + 3;
 
+    Players[P].ShieldStartTime := States.GameTime + 1;
+    Players[P].ShieldEndTime := States.GameTime + 1 + AXE_SHIELD_TIME;
+
   end;
 
 end;
@@ -8044,6 +8051,9 @@ begin
 
       Players[P].WineSkillDelay := Round(WARRIOR_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       ClearWineTilesArrayTime[P] := ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - 13] + CLEAR_ARRAY_FACTOR;
+
+      Players[P].ShieldStartTime := States.GameTime + 22;
+      Players[P].ShieldEndTime := States.GameTime + 22 + SHIELD_TIME;
 
     end;
   end;
@@ -10986,6 +10996,17 @@ begin
 end;
 
 
+procedure CheckAlliancesAfterShield(P: Integer);
+var
+  I: Integer;
+begin
+  if (States.GameTime = Players[P].ShieldStartTime)
+  or (States.GameTime = Players[P].ShieldEndTime) then
+    for I := 0 to 7 do
+      AIIgnore(I);
+end;
+
+
 procedure AvoidDanger(P: Integer);
 var
   aX, aY, D: Integer;
@@ -11015,6 +11036,7 @@ begin
         0: if (TileIsDangerous(P, aX, aY - 2))
            or (TileIsDangerous(P, aX, aY - 1)) then
            begin
+             Players[P].AITarget := -1;
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5) - States.KaMRandomI(5), aY + States.KaMRandomI(5), States.KaMRandomI(8));
            end;
@@ -11024,6 +11046,7 @@ begin
            or (TileIsDangerous(P, aX + 2, aY - 2))
            or (TileIsDangerous(P, aX + 2, aY - 1)) then
            begin
+             Players[P].AITarget := -1;
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5) - States.KaMRandomI(5), aY + States.KaMRandomI(5), States.KaMRandomI(8));
            end;
@@ -11040,6 +11063,7 @@ begin
            or (TileIsDangerous(P, aX + 2, aY + 2))
            or (TileIsDangerous(P, aX + 2, aY + 1)) then
            begin
+             Players[P].AITarget := -1;
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX - States.KaMRandomI(5), aY - States.KaMRandomI(5), States.KaMRandomI(8));
            end;
@@ -11047,6 +11071,7 @@ begin
         4: if (TileIsDangerous(P, aX, aY + 2))
            or (TileIsDangerous(P, aX, aY + 1)) then
            begin
+             Players[P].AITarget := -1;
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5) - States.KaMRandomI(5), aY - States.KaMRandomI(5), States.KaMRandomI(8));
            end;
@@ -11056,6 +11081,7 @@ begin
            or (TileIsDangerous(P, aX - 2, aY + 2))
            or (TileIsDangerous(P, aX - 2, aY + 1)) then
            begin
+             Players[P].AITarget := -1;
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5), aY - States.KaMRandomI(5), States.KaMRandomI(8));
            end;
@@ -11063,6 +11089,7 @@ begin
         6: if (TileIsDangerous(P, aX - 2, aY))
            or (TileIsDangerous(P, aX - 1, aY)) then
            begin
+             Players[P].AITarget := -1;
              Actions.GroupOrderHalt(Players[P].Hero);
              Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5), aY + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8));
            end;
@@ -11072,8 +11099,9 @@ begin
            or (TileIsDangerous(P, aX - 2, aY - 2))
            or (TileIsDangerous(P, aX - 2, aY - 1)) then
            begin
+             Players[P].AITarget := -1;
              Actions.GroupOrderHalt(Players[P].Hero);
-             Actions.GroupOrderWalk(Players[P].Hero, aX - States.KaMRandomI(5), aY - States.KaMRandomI(5), States.KaMRandomI(8));
+             Actions.GroupOrderWalk(Players[P].Hero, aX - States.KaMRandomI(5), aY + States.KaMRandomI(5), States.KaMRandomI(8));
            end;
 
       end;
@@ -11109,7 +11137,11 @@ begin
       for X1 := aX - 6 to aX + 6 do
       for Y1 := aY - 6 to aY + 6 do
         if TileHasEnemyTower(P, X1, Y1) then
+        begin
+          Players[P].AITarget := -1;
+          Actions.GroupOrderHalt(Players[P].Hero);
           Actions.GroupOrderWalk(Players[P].Hero, aX + States.KaMRandomI(5) - States.KaMRandomI(5), aY + States.KaMRandomI(5) - States.KaMRandomI(5), States.KaMRandomI(8));
+        end;
 
   end;
 
@@ -17718,6 +17750,8 @@ begin
 
       AIEscapePrison(I);
 
+      CheckAlliancesAfterShield(I);
+
       if Players[I].Hero > 0 then
         if States.GroupMember(Players[I].Hero, 0) > 0 then
           if AICanUseSkills(I, 22) then
@@ -18007,21 +18041,21 @@ begin
   if States.GameTime mod PLANT_TREES_TIME = 0 then
     PlantTrees;
 
-  for I := 0 to 7 do
-    if (States.GameTime mod AVOID_FACTOR = I)
-    and (States.Gametime > CHOOSE_HERO_TIMER) then
+  if (States.GameTime mod AVOID_FACTOR = 0)
+  and (States.GameTime > CHOOSE_HERO_TIMER) then
+    for I := 0 to 7 do
       AvoidDanger(I);
 
-  for I := 0 to 3 do
-    if (States.GameTime mod AVOID_FACTOR = I)
-    and (States.Gametime > CHOOSE_HERO_TIMER)
-    and (Length(States.PlayerGetAllHouses(Players[4].ZombiePlayer)) > 0) then
+  if (States.GameTime mod AVOID_FACTOR = 0)
+  and (States.GameTime > CHOOSE_HERO_TIMER)
+  and (Length(States.PlayerGetAllHouses(Players[4].ZombiePlayer)) > 0) then
+    for I := 0 to 3 do
       AvoidTowers(I);
 
-  for I := 4 to 7 do
-    if (States.GameTime mod AVOID_FACTOR = I)
-    and (States.Gametime > CHOOSE_HERO_TIMER)
-    and (Length(States.PlayerGetAllHouses(Players[0].ZombiePlayer)) > 0) then
+  if (States.GameTime mod AVOID_FACTOR = 0)
+  and (States.GameTime > CHOOSE_HERO_TIMER)
+  and (Length(States.PlayerGetAllHouses(Players[0].ZombiePlayer)) > 0) then
+    for I := 4 to 7 do
       AvoidTowers(I);
 
   if States.GameTime mod AI_IGNORE_FACTOR = 0 then
