@@ -5943,12 +5943,12 @@ begin
       for I := FireworksCircles2Length[P][FireworksCircles2Counter[P]] downto FireworksCircles2Length[P][FireworksCircles2Counter[P]] - FIREWORKS2_CYCLES * FIREWORKS2_RADIUS + 1 do
       begin
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Obj := VAGA_OBJECT10;
-        FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS;
+        FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS - 1;
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y := Y;
         if R1 < 2 then
         begin
-          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS - R2;
-          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + R2;
+          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS - R2 - 1;
+          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + R2 + 1;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 28] := FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 28] := FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y;
@@ -5969,12 +5969,12 @@ begin
       for I := FireworksCircles3Length[P][FireworksCircles3Counter[P]] downto FireworksCircles3Length[P][FireworksCircles3Counter[P]] - FIREWORKS2_CYCLES * FIREWORKS2_RADIUS + 1 do
       begin
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Obj := VAGA_OBJECT10;
-        FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS;
+        FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS + 1;
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y := Y;
         if R1 < 2 then
         begin
-          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS + R2;
-          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + R2;
+          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS + R2 + 1;
+          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + R2 + 1;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 29] := FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 29] := FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y;
@@ -5996,11 +5996,11 @@ begin
       begin
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Obj := VAGA_OBJECT10;
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X := X;
-        FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS;
+        FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - 1;
         if R1 < 2 then
         begin
-          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X := X + FIREWORKS1_RADIUS - R2;
-          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - R2;
+          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X := X + FIREWORKS1_RADIUS - R2 - 1;
+          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - R2 - 1;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 30] := FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 30] := FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y;
@@ -6022,11 +6022,11 @@ begin
       begin
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Obj := VAGA_OBJECT10;
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X := X;
-        FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS;
+        FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + 1;
         if R1 < 2 then
         begin
-          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X := X - FIREWORKS1_RADIUS + R2;
-          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - R2;
+          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X := X - FIREWORKS1_RADIUS + R2 + 1;
+          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + R2 + 1;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 31] := FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 31] := FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y;
