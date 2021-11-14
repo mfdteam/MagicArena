@@ -197,7 +197,7 @@ const
   AXE_OBJECT = 60;
   AXE_OBJECT2 = 23;
   AXE_OBJECT3 = 5;
-  AXE_OBJECT4 = 5;
+  AXE_OBJECT4 = 6;
   AXE_OBJECT5 = 196;
   AXE_OBJECT6 = 24;
 
@@ -6201,6 +6201,9 @@ begin
     if Players[P].PlayersTeam <> Players[O].PlayersTeam then
       Exit;
 
+    if not InRange(O, 0, 7) then
+      Exit;
+
     if (O = P)
     or (Players[P].PlayersTeam = Players[O].PlayersTeam) then
     begin
@@ -6233,12 +6236,11 @@ begin
       Players[P].RoadSkillCancelTime := States.GameTime + 1;
 
       for I := 1 to 9 do
-      begin
-        TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := AXE_OBJECT5;    
-        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := States.GameTime + 1 + AXE_SHIELD_TIME;
-        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := States.GameTime + 1;
         if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
         begin
+          TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := AXE_OBJECT5;    
+          ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := States.GameTime + 1 + AXE_SHIELD_TIME;
+          SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := States.GameTime + 1;
           Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Owner := P;
           Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].Skill := sStrongWill;
           if Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ShieldTime < States.GameTime + 2 + AXE_SHIELD_TIME then
@@ -6251,7 +6253,6 @@ begin
           or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
             ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
         end;
-      end;
 
       if (P <> O) then
       begin
@@ -6319,46 +6320,46 @@ begin
         Points[I] := Temp;
       end;
 
-    TilesRoadLength[P] := TilesRoadLength[P] + 4;
-    SetLength(TilesRoadX[P], TilesRoadLength[P]);
-    SetLength(TilesRoadY[P], TilesRoadLength[P]);
-    SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
-    SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
-    SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
+    TilesFieldLength[P] := TilesFieldLength[P] + 4;
+    SetLength(TilesFieldX[P], TilesFieldLength[P]);
+    SetLength(TilesFieldY[P], TilesFieldLength[P]);
+    SetLength(ClearTilesFieldTimes[P], TilesFieldLength[P]);
+    SetLength(SetTilesFieldTimes[P], TilesFieldLength[P]);
+    SetLength(TilesFieldObjects[P], TilesFieldLength[P]);
     
-    TilesRoadX[P][Length(TilesRoadX[P]) - 4] := X2 + 1;
-    TilesRoadX[P][Length(TilesRoadX[P]) - 3] := X2 - 1;
-    TilesRoadX[P][Length(TilesRoadX[P]) - 2] := X2 - 1;
-    TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X2 + 1;
+    TilesFieldX[P][Length(TilesFieldX[P]) - 4] := X2 + 1;
+    TilesFieldX[P][Length(TilesFieldX[P]) - 3] := X2 - 1;
+    TilesFieldX[P][Length(TilesFieldX[P]) - 2] := X2 - 1;
+    TilesFieldX[P][Length(TilesFieldX[P]) - 1] := X2 + 1;
     
-    TilesRoadY[P][Length(TilesRoadY[P]) - 4] := Y2 + 1;
-    TilesRoadY[P][Length(TilesRoadY[P]) - 3] := Y2 - 1;
-    TilesRoadY[P][Length(TilesRoadY[P]) - 2] := Y2 + 1;
-    TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y2 - 1;
+    TilesFieldY[P][Length(TilesFieldY[P]) - 4] := Y2 + 1;
+    TilesFieldY[P][Length(TilesFieldY[P]) - 3] := Y2 - 1;
+    TilesFieldY[P][Length(TilesFieldY[P]) - 2] := Y2 + 1;
+    TilesFieldY[P][Length(TilesFieldY[P]) - 1] := Y2 - 1;
     
-    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - Points[4]] := States.GameTime + 9;
-    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - Points[3]] := States.GameTime + 10;
-    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - Points[2]] := States.GameTime + 11;
-    ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - Points[1]] := States.GameTime + 12;
+    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - Points[4]] := States.GameTime + 9;
+    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - Points[3]] := States.GameTime + 10;
+    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - Points[2]] := States.GameTime + 11;
+    ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - Points[1]] := States.GameTime + 12;
     
-    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - Points[4]] := States.GameTime + 1;
-    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - Points[3]] := States.GameTime + 3;
-    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - Points[2]] := States.GameTime + 5;
-    SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - Points[1]] := States.GameTime + 7;
+    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - Points[4]] := States.GameTime + 1;
+    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - Points[3]] := States.GameTime + 3;
+    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - Points[2]] := States.GameTime + 5;
+    SetTilesFieldTimes[P][Length(SetTilesFieldTimes[P]) - Points[1]] := States.GameTime + 7;
 
-    Players[P].RoadSkillCancelTime := States.GameTime + 12;
+    Players[P].FieldSkillCancelTime := States.GameTime + 12;
 
     for I := 1 to 4 do
-    begin   
-      TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := AXE_OBJECT4;
-      if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-        Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1];
-      if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
-      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
-      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-      or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
-        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
-    end;
+      if TileOnBattlefield(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) then
+      begin   
+        TilesFieldObjects[P][Length(TilesFieldObjects[P]) - I] := AXE_OBJECT3;
+        Tiles[TilesFieldX[P][Length(TilesFieldX[P]) - I]][TilesFieldY[P][Length(TilesFieldY[P]) - I]].ObjectRefreshTime := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - 1];
+        if (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BARB_OBJECT3)
+        or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_ROCKET)
+        or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = BOWMAN_OBJECT5)
+        or (States.MapTileObject(TilesFieldX[P][Length(TilesFieldX[P]) - I], TilesFieldY[P][Length(TilesFieldY[P]) - I]) = WARRIOR_OBJECT7) then
+          ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] := ClearTilesFieldTimes[P][Length(ClearTilesFieldTimes[P]) - I] + CLEANUP_TIME;
+      end;
 
     case Direction of
 
