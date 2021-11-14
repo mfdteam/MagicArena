@@ -5514,6 +5514,127 @@ begin
 end;
 
 
+//OLD VAGA_VAGA
+
+
+procedure Disorientation(P, X, Y: Integer);
+var
+  I, X2, Y2: Integer;
+begin
+  if Players[P].Hero <= 0 then
+    Exit;
+
+  if States.GroupMember(Players[P].Hero, 0) <= 0 then
+    Exit;
+
+  if (TileOnBattlefield(X, Y))
+  and (Players[P].Hero > 0) then
+  begin
+    {if States.PlayerIsAI(P) then
+    begin
+      Players[P].CastingSkill := True;
+      Players[P].SkillTime := States.GameTime + 11;
+      Actions.GroupOrderHalt(Players[P].Hero);
+    end;}
+
+    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
+    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
+
+    if (Abs(X2 - X) <= SHOCK_RADIUS)
+    and (Abs(Y2 - Y) <= SHOCK_RADIUS) then
+    begin
+      TilesRoadLength[P] := TilesRoadLength[P] + 9;
+      SetLength(TilesRoadX[P], TilesRoadLength[P]);
+      SetLength(TilesRoadY[P], TilesRoadLength[P]);
+      SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
+      SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
+      SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
+        
+      TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X;
+      TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y;
+      TilesRoadX[P][Length(TilesRoadX[P]) - 2] := X;
+      TilesRoadY[P][Length(TilesRoadY[P]) - 2] := Y - 1;
+      TilesRoadX[P][Length(TilesRoadX[P]) - 3] := X;
+      TilesRoadY[P][Length(TilesRoadY[P]) - 3] := Y + 1;
+      TilesRoadX[P][Length(TilesRoadX[P]) - 4] := X - 1;
+      TilesRoadY[P][Length(TilesRoadY[P]) - 4] := Y;
+      TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X + 1;
+      TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y;
+      TilesRoadX[P][Length(TilesRoadX[P]) - 6] := X + 1;
+      TilesRoadY[P][Length(TilesRoadY[P]) - 6] := Y + 1;
+      TilesRoadX[P][Length(TilesRoadX[P]) - 7] := X + 1;
+      TilesRoadY[P][Length(TilesRoadY[P]) - 7] := Y - 1;
+      TilesRoadX[P][Length(TilesRoadX[P]) - 8] := X - 1;
+      TilesRoadY[P][Length(TilesRoadY[P]) - 8] := Y + 1;
+      TilesRoadX[P][Length(TilesRoadX[P]) - 9] := X - 1;
+      TilesRoadY[P][Length(TilesRoadY[P]) - 9] := Y - 1;
+
+      for I := 1 to 9 do
+        TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := VAGA_OBJECT6;
+
+      for I := 6 to 9 do
+      begin
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := States.GameTime + 10;
+        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := States.GameTime + 6;
+      end;
+
+      for I := 2 to 5 do
+      begin
+        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := States.GameTime + 8;
+        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := States.GameTime + 4;
+      end;
+
+      ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 6;
+      SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 2;
+
+      for I := 1 to 9 do
+      begin
+        if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
+          Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 9];
+        if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
+        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
+        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
+        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
+          ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
+      end;
+
+      Players[P].LastUsedSkill := sDisorientation;
+
+      Players[P].LastRoadSkill := sDisorientation;
+
+      Players[P].RoadSkillDelay := Round(VAGA_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+
+      ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 9] + CLEAR_ARRAY_FACTOR;
+
+    end;
+
+  end;
+
+end;
+
+
+procedure FieryTrack(P, X, Y: Integer);
+begin
+  if Players[P].Hero <= 0 then
+    Exit;
+
+  if States.GroupMember(Players[P].Hero, 0) <= 0 then
+    Exit;
+
+  if Players[P].SettingTrack then
+    Exit;
+
+  if (TileOnBattlefield(X, Y))
+  and (Players[P].Hero > 0) then
+  begin
+    Players[P].TrackStartTime := States.GameTime + TRACK_DELAY;
+    Players[P].LastUsedSkill := sTrack;
+    Players[P].FieldSkillDelay := Round(VAGA_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
+  end;
+
+end;
+
+
 //VAGA-VAGA
 
 
@@ -5573,7 +5694,7 @@ end;
 
 procedure DeadlyFireworks(P, X, Y: Integer);
 var
-  I, X2, Y2: Integer;
+  I, X2, Y2, R1, R2: Integer;
   R: array[0..9] of Integer;
   Points: array[1..4] of Integer;
 begin
@@ -5811,6 +5932,8 @@ begin
         if I mod FIREWORKS1_RADIUS = 1 then
           FireworksCircles1[P][FireworksCircles1Counter[P]][FireworksCircles1Length[P][FireworksCircles1Counter[P]] - I].Obj := 255;
 
+      R1 := R[States.KaMRandomI(10)];
+      R2 := R[States.KaMRandomI(10)];
       FireworksCircles2Length[P][FireworksCircles2Counter[P]] := FireworksCircles2Length[P][FireworksCircles2Counter[P]] + FIREWORKS2_CYCLES * FIREWORKS2_RADIUS;
       SetLength(FireworksCircles2[P][FireworksCircles2Counter[P]], FireworksCircles2Length[P][FireworksCircles2Counter[P]]);
       for I := FireworksCircles2Length[P][FireworksCircles2Counter[P]] downto FireworksCircles2Length[P][FireworksCircles2Counter[P]] - FIREWORKS2_CYCLES * FIREWORKS2_RADIUS + 1 do
@@ -5818,10 +5941,10 @@ begin
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Obj := VAGA_OBJECT10;
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS;
         FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y := Y;
-        if R[3] < 2 then
+        if R1 < 2 then
         begin
-          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS - R[States.KaMRandomI(10)];
-          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + R[States.KaMRandomI(10)];
+          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X := X + FIREWORKS1_RADIUS - R2;
+          FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + R2;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 28] := FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 28] := FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Y;
@@ -5835,6 +5958,8 @@ begin
         if I mod FIREWORKS2_RADIUS = 1 then
           FireworksCircles2[P][FireworksCircles2Counter[P]][FireworksCircles2Length[P][FireworksCircles2Counter[P]] - I].Obj := 255;
 
+      R1 := R[States.KaMRandomI(10)];
+      R2 := R[States.KaMRandomI(10)];
       FireworksCircles3Length[P][FireworksCircles3Counter[P]] := FireworksCircles3Length[P][FireworksCircles3Counter[P]] + FIREWORKS2_CYCLES * FIREWORKS2_RADIUS;
       SetLength(FireworksCircles3[P][FireworksCircles3Counter[P]], FireworksCircles3Length[P][FireworksCircles3Counter[P]]);
       for I := FireworksCircles3Length[P][FireworksCircles3Counter[P]] downto FireworksCircles3Length[P][FireworksCircles3Counter[P]] - FIREWORKS2_CYCLES * FIREWORKS2_RADIUS + 1 do
@@ -5842,10 +5967,10 @@ begin
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Obj := VAGA_OBJECT10;
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS;
         FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y := Y;
-        if R[2] < 2 then
+        if R1 < 2 then
         begin
-          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS + R[States.KaMRandomI(10)];
-          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + R[States.KaMRandomI(10)];
+          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X := X - FIREWORKS1_RADIUS + R2;
+          FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS + R2;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 29] := FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 29] := FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Y;
@@ -5859,6 +5984,8 @@ begin
         if I mod FIREWORKS2_RADIUS = 1 then
           FireworksCircles3[P][FireworksCircles3Counter[P]][FireworksCircles3Length[P][FireworksCircles3Counter[P]] - I].Obj := 255;
 
+      R1 := R[States.KaMRandomI(10)];
+      R2 := R[States.KaMRandomI(10)];
       FireworksCircles4Length[P][FireworksCircles4Counter[P]] := FireworksCircles4Length[P][FireworksCircles4Counter[P]] + FIREWORKS2_CYCLES * FIREWORKS2_RADIUS;
       SetLength(FireworksCircles4[P][FireworksCircles4Counter[P]], FireworksCircles4Length[P][FireworksCircles4Counter[P]]);
       for I := FireworksCircles4Length[P][FireworksCircles4Counter[P]] downto FireworksCircles4Length[P][FireworksCircles4Counter[P]] - FIREWORKS2_CYCLES * FIREWORKS2_RADIUS + 1 do
@@ -5866,10 +5993,10 @@ begin
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Obj := VAGA_OBJECT10;
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X := X;
         FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS;
-        if R[1] < 2 then
+        if R1 < 2 then
         begin
-          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X := X + FIREWORKS1_RADIUS - R[States.KaMRandomI(10)];
-          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - R[States.KaMRandomI(10)];
+          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X := X + FIREWORKS1_RADIUS - R2;
+          FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - R2;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 30] := FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 30] := FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Y;
@@ -5883,6 +6010,8 @@ begin
         if I mod FIREWORKS2_RADIUS = 1 then
           FireworksCircles4[P][FireworksCircles4Counter[P]][FireworksCircles4Length[P][FireworksCircles4Counter[P]] - I].Obj := 255;
 
+      R1 := R[States.KaMRandomI(10)];
+      R2 := R[States.KaMRandomI(10)];
       FireworksCircles5Length[P][FireworksCircles5Counter[P]] := FireworksCircles5Length[P][FireworksCircles5Counter[P]] + FIREWORKS2_CYCLES * FIREWORKS2_RADIUS;
       SetLength(FireworksCircles5[P][FireworksCircles5Counter[P]], FireworksCircles5Length[P][FireworksCircles5Counter[P]]);
       for I := FireworksCircles5Length[P][FireworksCircles5Counter[P]] downto FireworksCircles5Length[P][FireworksCircles5Counter[P]] - FIREWORKS2_CYCLES * FIREWORKS2_RADIUS + 1 do
@@ -5890,10 +6019,10 @@ begin
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Obj := VAGA_OBJECT10;
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X := X;
         FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y - FIREWORKS1_RADIUS;
-        if R[0] < 2 then
+        if R1 < 2 then
         begin
-          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X := X - FIREWORKS1_RADIUS + R[States.KaMRandomI(10)];
-          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - R[States.KaMRandomI(10)];
+          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X := X - FIREWORKS1_RADIUS + R2;
+          FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y := Y + FIREWORKS1_RADIUS - R2;
         end;
         TilesFieldX[P][Length(TilesFieldX[P]) - 31] := FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].X;
         TilesFieldY[P][Length(TilesFieldY[P]) - 31] := FireworksCircles5[P][FireworksCircles5Counter[P]][FireworksCircles5Length[P][FireworksCircles5Counter[P]] - I].Y;
@@ -5932,124 +6061,6 @@ begin
 
     end;
 
-  end;
-
-end;
-
-
-procedure Disorientation(P, X, Y: Integer);
-var
-  I, X2, Y2: Integer;
-begin
-  if Players[P].Hero <= 0 then
-    Exit;
-
-  if States.GroupMember(Players[P].Hero, 0) <= 0 then
-    Exit;
-
-  if (TileOnBattlefield(X, Y))
-  and (Players[P].Hero > 0) then
-  begin
-    {if States.PlayerIsAI(P) then
-    begin
-      Players[P].CastingSkill := True;
-      Players[P].SkillTime := States.GameTime + 11;
-      Actions.GroupOrderHalt(Players[P].Hero);
-    end;}
-
-    X2 := States.UnitPositionX(States.GroupMember(Players[P].Hero, 0));
-    Y2 := States.UnitPositionY(States.GroupMember(Players[P].Hero, 0));
-
-    if (Abs(X2 - X) <= SHOCK_RADIUS)
-    and (Abs(Y2 - Y) <= SHOCK_RADIUS) then
-    begin
-      TilesRoadLength[P] := TilesRoadLength[P] + 9;
-      SetLength(TilesRoadX[P], TilesRoadLength[P]);
-      SetLength(TilesRoadY[P], TilesRoadLength[P]);
-      SetLength(ClearTilesRoadTimes[P], TilesRoadLength[P]);
-      SetLength(SetTilesRoadTimes[P], TilesRoadLength[P]);
-      SetLength(TilesRoadObjects[P], TilesRoadLength[P]);
-        
-      TilesRoadX[P][Length(TilesRoadX[P]) - 1] := X;
-      TilesRoadY[P][Length(TilesRoadY[P]) - 1] := Y;
-      TilesRoadX[P][Length(TilesRoadX[P]) - 2] := X;
-      TilesRoadY[P][Length(TilesRoadY[P]) - 2] := Y - 1;
-      TilesRoadX[P][Length(TilesRoadX[P]) - 3] := X;
-      TilesRoadY[P][Length(TilesRoadY[P]) - 3] := Y + 1;
-      TilesRoadX[P][Length(TilesRoadX[P]) - 4] := X - 1;
-      TilesRoadY[P][Length(TilesRoadY[P]) - 4] := Y;
-      TilesRoadX[P][Length(TilesRoadX[P]) - 5] := X + 1;
-      TilesRoadY[P][Length(TilesRoadY[P]) - 5] := Y;
-      TilesRoadX[P][Length(TilesRoadX[P]) - 6] := X + 1;
-      TilesRoadY[P][Length(TilesRoadY[P]) - 6] := Y + 1;
-      TilesRoadX[P][Length(TilesRoadX[P]) - 7] := X + 1;
-      TilesRoadY[P][Length(TilesRoadY[P]) - 7] := Y - 1;
-      TilesRoadX[P][Length(TilesRoadX[P]) - 8] := X - 1;
-      TilesRoadY[P][Length(TilesRoadY[P]) - 8] := Y + 1;
-      TilesRoadX[P][Length(TilesRoadX[P]) - 9] := X - 1;
-      TilesRoadY[P][Length(TilesRoadY[P]) - 9] := Y - 1;
-
-      for I := 1 to 9 do
-        TilesRoadObjects[P][Length(TilesRoadObjects[P]) - I] := VAGA_OBJECT6;
-
-      for I := 6 to 9 do
-      begin
-        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := States.GameTime + 10;
-        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := States.GameTime + 6;
-      end;
-
-      for I := 2 to 5 do
-      begin
-        ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := States.GameTime + 8;
-        SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - I] := States.GameTime + 4;
-      end;
-
-      ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 1] := States.GameTime + 6;
-      SetTilesRoadTimes[P][Length(SetTilesRoadTimes[P]) - 1] := States.GameTime + 2;
-
-      for I := 1 to 9 do
-      begin
-        if TileOnBattlefield(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) then
-          Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 9];
-        if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
-        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
-        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-        or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
-          ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
-      end;
-
-      Players[P].LastUsedSkill := sDisorientation;
-
-      Players[P].LastRoadSkill := sDisorientation;
-
-      Players[P].RoadSkillDelay := Round(VAGA_ROAD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
-
-      ClearRoadTilesArrayTime[P] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 9] + CLEAR_ARRAY_FACTOR;
-
-    end;
-
-  end;
-
-end;
-
-
-procedure FieryTrack(P, X, Y: Integer);
-begin
-  if Players[P].Hero <= 0 then
-    Exit;
-
-  if States.GroupMember(Players[P].Hero, 0) <= 0 then
-    Exit;
-
-  if Players[P].SettingTrack then
-    Exit;
-
-  if (TileOnBattlefield(X, Y))
-  and (Players[P].Hero > 0) then
-  begin
-    Players[P].TrackStartTime := States.GameTime + TRACK_DELAY;
-    Players[P].LastUsedSkill := sTrack;
-    Players[P].FieldSkillDelay := Round(VAGA_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
   end;
 
 end;
