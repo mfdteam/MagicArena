@@ -880,6 +880,15 @@ begin
 end;
 
 
+function UnbreakableObject(aObj: Integer): Boolean;
+begin
+  Result := (aObj = WARRIOR_OBJECT7)
+            or (aObj = BOWMAN_ROCKET)
+            or (aObj = BARB_OBJECT3)
+            or (aObj = BOWMAN_OBJECT5);
+end;
+
+
 procedure KillUnneeded;
 var
   Units: array of Integer;
@@ -6261,11 +6270,9 @@ begin
           if Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ShieldTime < States.GameTime + 2 + AXE_SHIELD_TIME then
             Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ShieldTime := States.GameTime + 2 + AXE_SHIELD_TIME;
 
-          Tiles[TilesRoadX[P][Length(TilesRoadX[P]) - I]][TilesRoadY[P][Length(TilesRoadY[P]) - I]].ObjectRefreshTime := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - 9];
           if (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BARB_OBJECT3)
           or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_ROCKET)
-          or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5)
-          or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = WARRIOR_OBJECT7) then
+          or (States.MapTileObject(TilesRoadX[P][Length(TilesRoadX[P]) - I], TilesRoadY[P][Length(TilesRoadY[P]) - I]) = BOWMAN_OBJECT5) then
             ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] := ClearTilesRoadTimes[P][Length(ClearTilesRoadTimes[P]) - I] + CLEANUP_TIME;
         end;
 
@@ -7993,7 +8000,7 @@ begin
       TilesWineY[P][Length(TilesWineY[P]) - Points2[1]] := Y2;
 
       for I := 1 to 8 do
-        TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := WARRIOR_OBJECT6;
+        TilesWineObjects[P][Length(TilesWineObjects[P]) - I] := IfThen(States.MapTileObject(TilesWineX[P][Length(TilesWineX[P]) - Points2[I]], TilesWineY[P][Length(TilesWineY[P]) - Points2[I]]) = WARRIOR_OBJECT7, SKILL_CANCEL_OBJ, WARRIOR_OBJECT6);
 
       ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - Points[8]] := States.GameTime + 13;
       ClearTilesWineTimes[P][Length(ClearTilesWineTimes[P]) - Points[7]] := States.GameTime + 14;
@@ -16868,6 +16875,10 @@ begin
         if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
         and (TilesRoadObjects[P][K] = WARRIOR_OBJECT5) then
           Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], WARRIOR_OBJECT5);
+
+        if (InRange(States.GameTime, SetTilesRoadTimes[P][K], ClearTilesRoadTimes[P][K] - 1))
+        and (TilesRoadObjects[P][K] = WARRIOR_OBJECT7) then
+          Actions.MapTileObjectSet(TilesRoadX[P][K], TilesRoadY[P][K], WARRIOR_OBJECT7);
 
         if States.GameTime = ClearTilesRoadTimes[P][K] + CLEAR_ARRAY_FACTOR - 1 then
           Tiles[TilesRoadX[P][K]][TilesRoadY[P][K]].Skill := sNone;
