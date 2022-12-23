@@ -11283,7 +11283,7 @@ begin
               if Length(Enemies) > 0 then
               begin
                 Enemies[Length(Enemies) - 1] := U;
-                Result := Enemies[States.KaMRandomI(Length(Enemies))];
+                Result := IfThen(TileOnBattlefield(States.UnitPositionX(U), States.UnitPositionY(U)), Enemies[States.KaMRandomI(Length(Enemies))], -1);
               end;
             end;
           end;
