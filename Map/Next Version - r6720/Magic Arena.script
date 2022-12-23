@@ -347,6 +347,7 @@ const
   MOVEMENT_FACTOR = 2;
   MAX_CIRCLES_AT_ONCE = 4;
   RECHOICE_TIME = 150;
+  RECHOICE_MAX_TIME = 3000;
   GAMEPLAY_STATUS_TIME = 75;
   AI_RUNE_CHECK_TIME = 25;
   STORM_CHECK_RADIUS = 6;
@@ -16617,6 +16618,16 @@ begin
 end;
 
 
+procedure BlockReChoice;
+var
+  I: Integer;
+begin
+  for I := 0 to 7 do
+    Players[I].ReChoiceAllowed := False;
+  Actions.ShowMsg(-1, '<$151>');
+end;
+
+
 procedure CheckLocation(P: Integer);
 begin
   try
@@ -17820,6 +17831,9 @@ begin
       CheckEffects(I);
       CheckLinks(I);
     end;
+
+  if States.GameTime = RECHOICE_MAX_TIME then
+    BlockReChoice;
 
   ZombieTakeRune;
 
