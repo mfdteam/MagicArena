@@ -5324,6 +5324,20 @@ begin
 end;
 
 
+function CanUseSacrificialTeleport(P: Integer): Boolean;
+begin
+
+  if (not Players[P].HeroMagicImmunity)
+  and (not Players[P].HeroTotalImmunity) then
+    Result := Players[P].HP >= 2;
+
+  if (Players[P].HeroMagicImmunity)
+  or (Players[P].HeroTotalImmunity) then
+    Result := Players[P].HP >= 1;
+
+end;
+
+
 procedure SacrificialTeleport(P, X, Y: Integer);
 var
   X2, Y2, NewDir: Integer;
@@ -5335,7 +5349,7 @@ begin
     Exit;
 
   if (Players[P].Hero > 0)
-  and (Players[P].HP >= 2)
+  and (CanUseSacrificialTeleport(P))
   and (TileOnBattlefield(X, Y))
   and not (Players[P].CaptureMind) then
   begin
@@ -5348,7 +5362,9 @@ begin
       Players[P].LastUsedSkill := sSacrificialTeleport;
       Players[P].FieldSkillDelay := Round(PIKE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
       Actions.GroupKillAll(Players[P].Hero, False);
-      Players[P].HP := Players[P].HP - 1;  
+      if (not Players[P].HeroMagicImmunity)
+      and (not Players[P].HeroTotalImmunity) then
+        Players[P].HP := Players[P].HP - 1;  
       Players[P].TeleportTime := States.GameTime + DELAY_OF_TURNING;
       Players[P].TeleportX := X;
       Players[P].TeleportY := Y;
@@ -5359,7 +5375,7 @@ begin
 
   if InRange(M[P], 0, 7) then
     if (Players[M[P]].Hero > 0)
-    and (Players[M[P]].HP >= 2)
+    and (CanUseSacrificialTeleport(M[P]))
     and (TileOnBattlefield(X, Y))
     and (Players[P].CaptureMind) then
     begin
@@ -5372,7 +5388,9 @@ begin
         Players[P].LastUsedSkill := sSacrificialTeleport;
         Players[P].FieldSkillDelay := Round(PIKE_FIELD_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
         Actions.GroupKillAll(Players[P].Hero, False);
-        Players[M[P]].HP := Players[M[P]].HP - 1;  
+        if (not Players[M[P]].HeroMagicImmunity)
+        and (not Players[M[P]].HeroTotalImmunity) then
+          Players[M[P]].HP := Players[M[P]].HP - 1;  
         Players[P].TeleportTime := States.GameTime + DELAY_OF_TURNING;
         Players[P].TeleportX := X;
         Players[P].TeleportY := Y;
