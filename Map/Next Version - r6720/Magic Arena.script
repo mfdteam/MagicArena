@@ -17846,7 +17846,8 @@ begin
       CheckLinks(I);
     end;
 
-  if States.GameTime = RECHOICE_MAX_TIME then
+  if (States.GameTime = RECHOICE_MAX_TIME)
+  and (not DEBUG_MODE) then
     BlockReChoice;
 
   ZombieTakeRune;
