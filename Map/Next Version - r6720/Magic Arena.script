@@ -280,6 +280,7 @@ const
   FEAR_ANIMATION = 220;
   STUN_ANIMATION = 16;
   MIND_ANIMATION = 9;
+  MIRROR_ANIMATION = 8;
   RECHARGE_ANIMATION = 0;
   ANIMATION_CHECK_RADIUS = 4;
 
@@ -612,6 +613,7 @@ type
     RiftY: Integer;
     RiftDir: Integer;
     MirrorTime: Integer;
+    Mirroring: Boolean;
     RocketCharges: Integer;
     RocketChargeTime: Integer;
     SnakeCharges: Integer;
@@ -1472,6 +1474,7 @@ begin
       RiftY := 0;
       RiftDir := -1;
       MirrorTime := 0;
+      Mirroring := False;
       RocketCharges := BOWMAN_CHARGES;
       RocketChargeTime := 0;
       SnakeCharges := SNAKE_CHARGES;
@@ -2895,6 +2898,7 @@ begin
     Players[P].TowerTime := 0;
     Players[P].ReplicaTime := 0;
     Players[P].MirrorTime := 0;
+    Players[P].Mirroring := False;
     RuneCleanupTime[P] := 0;
     Players[P].ThreadsAttackTime := 0;
     if InRange(Players[P].ThreadsTarget, 0, 7) then
@@ -9651,6 +9655,7 @@ begin
     Exit;
 
   Players[P].MirrorTime := States.GameTime + MIRROR_TIME;
+  Players[P].Mirroring := True;
   Players[P].WineSkillDelay := Round(REBEL_WINE_DELAY * (1 - RECHARGE_FACTOR * Byte(Players[P].ReCharge)));
   Players[P].LastUsedSkill := sMirror;
 
@@ -13288,6 +13293,7 @@ begin
           Players[P].ReplicaTime := 0;
           Players[P].RiftTime := 0;
           Players[P].MirrorTime := 0;
+          Players[P].Mirroring := False;
           RuneCleanupTime[P] := 0;
           Players[P].ThreadsAttackTime := 0;
           if InRange(Players[P].ThreadsTarget, 0, 7) then
@@ -15103,6 +15109,7 @@ begin
     Players[O].ReplicaTime := 0;
     Players[O].RiftTime := 0;
     Players[O].MirrorTime := 0;
+    Players[O].Mirroring := False;
     RuneCleanupTime[O] := 0;
     Players[O].ThreadsTime := 0;
     Players[O].ThreadsAttackTime := 0;
@@ -16164,6 +16171,24 @@ begin
 end;
 
 
+procedure CheckMirror(P: Integer);
+var
+  aX, aY: Integer;
+begin
+  try
+
+    if (States.GameTime >= Players[P].MirrorTime)
+    and (Players[P].Mirroring)
+    and (Players[P].Hero > 0) then
+      Players[P].Mirroring := False;
+
+  except
+    LogError('Exception in the script: cannot check Mirror status for invalid player:', [P], SHOW_ERROR_MSG);
+  end;
+
+end;
+
+
 procedure CheckZombieStun(P: Integer);
 var
   K: Integer;
@@ -16848,6 +16873,7 @@ begin
       ClearStatusString(P);
       CancelSkillMindSilent(P);
       CheckAIKnightCombo(P);
+      CheckMirror(P);
     end;
   except
     LogError('Exception in the script: something went wrong when trying to check status:', [P], SHOW_ERROR_MSG);
@@ -17282,7 +17308,8 @@ begin
         or (Tile = MIND_ANIMATION)
         or (Tile = STUN_ANIMATION)
         or (Tile = FEAR_ANIMATION)
-        or (Tile = SILENCE_ANIMATION) then
+        or (Tile = SILENCE_ANIMATION)
+        or (Tile = MIRROR_ANIMATION) then
           Actions.MapTileSet(X, Y, Tiles[X][Y].TileType, Tiles[X][Y].TileDirection);
       end;
 
@@ -17305,6 +17332,8 @@ begin
       Actions.MapTileSet(aX, aY, SILENCE_ANIMATION, States.KaMRandomI(4));
     if Players[P].MindStunned then
       Actions.MapTileSet(aX, aY, MIND_ANIMATION, States.KaMRandomI(4));
+    if Players[P].Mirroring then
+      Actions.MapTileSet(aX, aY, MIRROR_ANIMATION, States.KaMRandomI(4));
   end;
 
 end;
